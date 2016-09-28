@@ -1,0 +1,58 @@
+@(opportunity: Opportunity, section: Int)
+
+@proposition = {
+    <div class="header-proposition">
+        <div class="content">
+            <nav id="proposition-menu" class="header__menu" role="navigation">
+                <span class="header__menu__proposition-name">Research and Innovation Funding Service</span>
+
+                <ul id="proposition-links" class="header__menu__proposition-links">
+                    <li><a id="logOutNavHref" href="" data-journey-click="primary-navigation:Click:Sign out">
+                        Sign out</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+}
+
+@titleCols() = @{
+    val titles = opportunity.description.map(_.title).zipWithIndex.map{case (title, index) => (title, index + 1)}
+    val midpoint: Int = Math.round(titles.length / 2.0).toInt
+    val (leftCols, b) = titles.splitAt(midpoint)
+    val rightCols = b.map(Some(_)) :+ None
+    leftCols.zip(rightCols)
+}
+
+@main(s"Opportunity ${opportunity.id.id}", insideHeader = proposition) {
+    <div>
+        <h1>@opportunity.title</h1>
+
+        <header>
+            <table>
+                <tbody>
+                @titleCols.map { case (left, right) =>
+                <tr>
+                    <td>@left._2. @left._1</td>
+                    <td>@right.map(t => s"${t._2}. ${t._1}").getOrElse("")</td>
+                </tr>
+                }
+                </tbody>
+            </table>
+        </header>
+
+        <article>
+            <h1>1. About this opportunity</h1>
+            <h3>Start date</h3>
+            @opportunity.startDate
+            <h3>Days duration</h3>
+            @opportunity.duration.map(d => s"${d.duration} ${d.units}").getOrElse("Open indefinitely")
+            <h3>Opportunity value</h3>
+                &pound;@opportunity.value.amount @opportunity.value.unit
+            <div>
+            @opportunity.description(section - 1).paragraphs.map { p =>
+                <p>@p</p>
+            }
+            </div>
+        </article>
+    </div>
+}
