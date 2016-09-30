@@ -1,5 +1,5 @@
 # Routes
-# This file defines all application routes (Higher priority routes first)
+# This file defines all showApplication routes (Higher priority routes first)
 # ~~~~
 
 # Map static resources from the /public folder to the /assets URL path
@@ -8,3 +8,5 @@ GET        /assets/*file                      controllers.Assets.at(path="/publi
 GET        /                                  controllers.StartPageController.startPage
 GET        /opportunities                     controllers.OpportunityController.showOpportunities
 GET        /opportunity/:opportunityId        controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
+
+GET        /application/:applicationId        controllers.ApplicationController.show(applicationId:ApplicationId)

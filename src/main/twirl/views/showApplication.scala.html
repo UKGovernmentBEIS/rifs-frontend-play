@@ -1,0 +1,63 @@
+@(opportunityId: OpportunityId)
+
+@proposition = {
+    <div class="header-proposition">
+        <div class="content">
+            <nav id="proposition-menu" class="header__menu" role="navigation">
+                <span class="header__menu__proposition-name">Research and Innovation Funding Service</span>
+
+                <ul id="proposition-links" class="header__menu__proposition-links">
+                    <li><a id="logOutNavHref" href="" data-journey-click="primary-navigation:Click:Sign out">
+                        Sign out</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+}
+
+
+@main(s"Overview", insideHeader = proposition) {
+    <div>
+        <h1>Application Overview</h1>
+        <h2>Complete all application sections before submitting to RIFS.</h2>
+        <a href="@controllers.routes.OpportunityController.showOpportunity(opportunityId, None)">View opportunity</a>
+    </div>
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Event details</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1. Event title</td>
+                    <td>Not started</td>
+                </tr>
+                <tr>
+                    <td>2. Provisional date</td>
+                    <td>Not started</td>
+                </tr>
+                <tr>
+                    <td>3. Event objectives</td>
+                    <td>Not started</td>
+                </tr>
+                <tr>
+                    <td>4. Topics and speakers</td>
+                    <td>Not started</td>
+                </tr>
+                <tr>
+                    <td>5. Event audience</td>
+                    <td>Not started</td>
+                </tr>
+                <tr>
+                    <td>6. Costs</td>
+                    <td>Not started</td>
+                </tr>
+            </tbody>
+        </table>
+        <a href="" class="button">Submit application to RIFS</a>
+        <a href="">Preview application</a>
+    </div>
+}

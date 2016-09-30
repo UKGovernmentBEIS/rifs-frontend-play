@@ -36,10 +36,10 @@
 }
 
 @main(s"Opportunity ${opportunity.id.id}", insideHeader = proposition) {
-    <div>
+    <div class="grid-row">
         <h1>@opportunity.title</h1>
 
-        <header>
+        <header class="page-header">
             <table>
                 <tbody>
                 @titleCols.map { case (col1, col2) =>
@@ -53,6 +53,12 @@
             </table>
         </header>
 
+        <div>
+            <h2>Apply for funding</h2>
+            <a href="@controllers.routes.ApplicationController.show(ApplicationId(1))">Seminar showApplication form</a>
+            <p/>
+        </div>
+
         @if(sectionNumber == 1) {
             <div>
                 <h3>Start date</h3>
@@ -62,6 +68,7 @@
                 <h3>Opportunity value</h3>
                     &pound; @opportunity.value.amount @opportunity.value.unit
             </div>
+            <p/>
         }
 
         @section.map { s =>
