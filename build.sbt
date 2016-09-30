@@ -1,8 +1,8 @@
-name := "rifs-frontend"
+name := "rifs-frontend-play"
 
 scalaVersion := "2.11.8"
 
-lazy val `rifs-frontend` = (project in file("."))
+lazy val `rifs-frontend-play` = (project in file("."))
   .enablePlugins(PlayScala)
   .disablePlugins(PlayLayoutPlugin)
   .enablePlugins(GitVersioning)
