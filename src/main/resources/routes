@@ -7,4 +7,4 @@ GET        /assets/*file                      controllers.Assets.at(path="/publi
 
 GET        /                                  controllers.StartPageController.startPage
 GET        /opportunities                     controllers.OpportunityController.showOpportunities
-GET        /opportunity/:opportunityId        controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId)
+GET        /opportunity/:opportunityId        controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])

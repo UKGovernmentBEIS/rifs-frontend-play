@@ -14,9 +14,9 @@ class OpportunityController @Inject()(opportunities: OpportunityOps)(implicit ec
     opportunities.getOpenOpportunities.map {os => Ok(views.html.showOpportunities(os))}
   }
 
-  def showOpportunity(id: OpportunityId) = Action.async {
+  def showOpportunity(id: OpportunityId, sectionNumber:Option[Int]) = Action.async {
     opportunities.getOpportunity(id).map {
-      case Some(o) => Ok(views.html.showOpportunity(o, 1))
+      case Some(o) => Ok(views.html.showOpportunity(o, sectionNumber.getOrElse(1)))
       case None => NotFound
     }
   }

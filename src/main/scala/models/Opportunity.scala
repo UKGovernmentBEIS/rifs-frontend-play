@@ -2,7 +2,7 @@ package models
 
 case class OpportunityId(id: Long) extends AnyVal
 
-case class OpportunityDescriptionSection(title: String, paragraphs: Seq[String])
+case class OpportunityDescriptionSection(sectionNumber:Int, title: String, paragraphs: Seq[String])
 
 case class OpportunityValue(amount: BigDecimal, unit: String)
 

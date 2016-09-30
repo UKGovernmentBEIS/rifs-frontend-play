@@ -1,4 +1,4 @@
-@(opportunity: Opportunity, section: Int)
+@(opportunity: Opportunity, sectionNumber: Int)
 
 @proposition = {
     <div class="header-proposition">
@@ -15,12 +15,24 @@
     </div>
 }
 
+@sectionLink(title: String, sectionNum: Int) = @{
+    if(sectionNum == sectionNumber) s"$sectionNum. $title"
+    else {
+        val link = controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(sectionNum))
+        s"""$sectionNum. <a href="$link">$title</a>"""
+    }
+}
+
 @titleCols() = @{
-    val titles = opportunity.description.map(_.title).zipWithIndex.map{case (title, index) => (title, index + 1)}
+    val titles = opportunity.description.sortBy(_.sectionNumber).map(s => (s.title, s.sectionNumber))
     val midpoint: Int = Math.round(titles.length / 2.0).toInt
     val (leftCols, b) = titles.splitAt(midpoint)
     val rightCols = b.map(Some(_)) :+ None
     leftCols.zip(rightCols)
+}
+
+@section = @{
+    opportunity.description.find(_.sectionNumber == sectionNumber)
 }
 
 @main(s"Opportunity ${opportunity.id.id}", insideHeader = proposition) {
@@ -30,29 +42,35 @@
         <header>
             <table>
                 <tbody>
-                @titleCols.map { case (left, right) =>
+                @titleCols.map { case (col1, col2) =>
                 <tr>
-                    <td>@left._2. @left._1</td>
-                    <td>@right.map(t => s"${t._2}. ${t._1}").getOrElse("")</td>
+                    <td>@Html(sectionLink(col1._1, col1._2))</td>
+                    <td>@col2.map { t => @Html(sectionLink(t._1, t._2)) }.getOrElse("")
+                </td>
                 </tr>
                 }
                 </tbody>
             </table>
         </header>
 
-        <article>
-            <h1>1. About this opportunity</h1>
-            <h3>Start date</h3>
-            @opportunity.startDate
-            <h3>Days duration</h3>
-            @opportunity.duration.map(d => s"${d.duration} ${d.units}").getOrElse("Open indefinitely")
-            <h3>Opportunity value</h3>
-                &pound;@opportunity.value.amount @opportunity.value.unit
+        @if(sectionNumber == 1) {
             <div>
-            @opportunity.description(section - 1).paragraphs.map { p =>
-                <p>@p</p>
-            }
+                <h3>Start date</h3>
+                @opportunity.startDate
+                <h3>Days duration</h3>
+                @opportunity.duration.map(d => s"${d.duration} ${d.units}").getOrElse("Open indefinitely")
+                <h3>Opportunity value</h3>
+                    &pound; @opportunity.value.amount @opportunity.value.unit
             </div>
-        </article>
+        }
+
+        @section.map { s =>
+            <article>
+                <h1>@s.sectionNumber. @s.title</h1>
+                @s.paragraphs.map { p =>
+                    <p>@p</p>
+                }
+            </article>
+        }
     </div>
 }
