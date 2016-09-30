@@ -17,6 +17,10 @@ routesImport ++= Seq(
 )
 
 PlayKeys.devSettings := Seq("play.server.http.port" -> "9000")
+javaOptions := Seq(
+  "-Dconfig.file=src/main/resources/development.application.conf",
+  "-Dlogger.file=src/main/resources/development.logger.xml"
+)
 
 // need this because we've disabled the PlayLayoutPlugin. without it twirl templates won't get
 // re-compiled on change in dev mode
