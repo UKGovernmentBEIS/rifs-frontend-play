@@ -3,55 +3,50 @@ package services
 import javax.inject.Inject
 
 import com.google.inject.ImplementedBy
-import models.{Opportunity, OpportunityDescriptionSection, OpportunityId, OpportunityValue}
+import com.wellfactored.playbindings.ValueClassFormats
+import models._
+import play.api.Logger
+import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@ImplementedBy(classOf[DummyOpportunities])
+@ImplementedBy(classOf[OpportunityService])
 trait OpportunityOps {
   def getOpenOpportunities: Future[Seq[Opportunity]]
 
   def getOpportunity(id: OpportunityId): Future[Option[Opportunity]]
 }
 
-class OpportunityService @Inject()(ws: WSClient)(implicit ec: ExecutionContext) extends OpportunityOps{
-  override def getOpenOpportunities: Future[Seq[Opportunity]] = ???
+class OpportunityService @Inject()(ws: WSClient)(implicit ec: ExecutionContext) extends OpportunityOps with ValueClassFormats {
+  implicit val odsRead = Json.reads[OpportunityDescriptionSection]
+  implicit val ovRead = Json.reads[OpportunityValue]
+  implicit val odRead = Json.reads[OpportunityDuration]
+  implicit val oppRead = Json.reads[Opportunity]
 
-  override def getOpportunity(id: OpportunityId): Future[Option[Opportunity]] = ???
-}
-
-class DummyOpportunities extends OpportunityOps {
-  override def getOpenOpportunities: Future[Seq[Opportunity]] = Future.successful(opportunities)
-
-  override def getOpportunity(id: OpportunityId): Future[Option[Opportunity]] = Future.successful {
-    opportunities.find(_.id == id)
+  override def getOpenOpportunities: Future[Seq[Opportunity]] = {
+    val url = s"http://localhost:9100/opportunity/open"
+    ws.url(url).get.map { response =>
+      response.status match {
+        case 200 => response.json.validate[Seq[Opportunity]].getOrElse(Seq())
+        case s =>
+          Logger.debug(s"got status $s calling $url")
+          Seq()
+      }
+    }
   }
 
-  lazy val opportunities = Seq(opportunity1)
-
-  lazy val opportunity1 = Opportunity(
-    OpportunityId(1),
-    "Research priorities in health care",
-    "4 March 2017",
-    None,
-    OpportunityValue(2000, "per event maximum"),
-    Seq(
-      OpportunityDescriptionSection("About this opportunity", Seq(
-        "We want to achieve the widest benefit to society and the economy from the research we fund.",
-        "As part of this, we want to help you to develop innovative ways of building on the research they carry out.",
-        "This may be by sharing knowledge, commercialising ideas, exploring social benefits or other ways to increase the impact of your research.",
-        "Under the Exploring Innovation Seminars programme, we will pay up to &pound;2,000 for each event promoting innovation and collaboration. We will not pay for food or drink.",
-        "Only organisations which receive funding from UK Research Councils may apply."
-      )),
-      OpportunityDescriptionSection("The events we will fund", Seq()),
-      OpportunityDescriptionSection("What events should cover", Seq()),
-      OpportunityDescriptionSection("How to get funding", Seq()),
-      OpportunityDescriptionSection("Assessment criteria", Seq()),
-      OpportunityDescriptionSection("Further information", Seq())
-
-    )
-  )
-
-
+  override def getOpportunity(id: OpportunityId): Future[Option[Opportunity]] = {
+    val url = s"http://localhost:9100/opportunity/${id.id}"
+    ws.url(url).get.map { response =>
+      response.status match {
+        case 200 => response.json.validate[Opportunity].asOpt
+        case s =>
+          Logger.debug(s"got status $s calling $url")
+          None
+      }
+    }
+  }
 }
+
+

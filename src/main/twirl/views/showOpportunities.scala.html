@@ -1,4 +1,4 @@
-@()
+@(os: Seq[Opportunity])
 
 @proposition = {
     <div class="header-proposition">
@@ -23,7 +23,9 @@
 
         <div>
             <ul>
-                <li><a href="/opportunity/1">Research priorities in health care</a></li>
+                @os.map { o =>
+                    <li><a href="/opportunity/@o.id.id">@o.title</a></li>
+                }
             </ul>
         </div>
     </div>
