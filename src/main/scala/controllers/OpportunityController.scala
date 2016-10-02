@@ -11,7 +11,7 @@ import scala.concurrent.ExecutionContext
 class OpportunityController @Inject()(opportunities: OpportunityOps)(implicit ec: ExecutionContext) extends Controller {
 
   def showOpportunities = Action.async {
-    opportunities.getOpenOpportunities.map {os => Ok(views.html.showOpportunities(os))}
+    opportunities.getOpenOpportunitySummaries.map {os => Ok(views.html.showOpportunities(os))}
   }
 
   def showOpportunity(id: OpportunityId, sectionNumber:Option[Int]) = Action.async {

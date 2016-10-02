@@ -19,8 +19,9 @@ class OpportunityService @Inject()(ws: WSClient)(implicit ec: ExecutionContext) 
 
   val baseUrl = Config.config.business.baseUrl
 
-  override def getOpenOpportunities: Future[Seq[Opportunity]] = {
-    val url = s"$baseUrl/opportunity/open"
+  override def getOpenOpportunitySummaries: Future[Seq[Opportunity]] = {
+    val url = s"$baseUrl/opportunity/open/summaries"
+    Logger.debug(s"calling $url")
     ws.url(url).get.map { response =>
       response.status match {
         case 200 => response.json.validate[Seq[Opportunity]].getOrElse(Seq())
