@@ -16,6 +16,8 @@ class OpportunityService @Inject()(ws: WSClient)(implicit ec: ExecutionContext) 
   implicit val ovRead = Json.reads[OpportunityValue]
   implicit val odRead = Json.reads[OpportunityDuration]
   implicit val oppRead = Json.reads[Opportunity]
+  implicit val appSecRead = Json.reads[ApplicationSection]
+  implicit val appRead = Json.reads[Application]
 
   val baseUrl = Config.config.business.baseUrl
 
@@ -39,6 +41,22 @@ class OpportunityService @Inject()(ws: WSClient)(implicit ec: ExecutionContext) 
         case 200 => response.json.validate[Opportunity].asOpt
         case s =>
           Logger.debug(s"got status $s calling $url")
+          None
+      }
+    }
+  }
+
+  override def getApplicationForOpportunity(id: OpportunityId): Future[Option[Application]] = {
+    val url = s"$baseUrl/opportunity/${id.id}/application"
+
+    ws.url(url).get.map { response =>
+      response.status match {
+        case 200 =>
+          Logger.debug(s"body is ${response.body}")
+          response.json.validate[Application].asOpt
+        case s =>
+          Logger.debug(s"got status $s calling $url")
+          Logger.debug(s"body is ${response.body}")
           None
       }
     }

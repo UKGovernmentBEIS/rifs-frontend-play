@@ -1,4 +1,6 @@
-@(opportunityId: OpportunityId)
+@import models.Application
+
+@(app: Application)
 
 @proposition = {
     <div class="header-proposition">
@@ -20,7 +22,7 @@
     <div>
         <h1>Application Overview</h1>
         <h2>Complete all application sections before submitting to RIFS.</h2>
-        <a href="@controllers.routes.OpportunityController.showOpportunity(opportunityId, None)">View opportunity</a>
+        <a href="@controllers.routes.OpportunityController.showOpportunity(app.opportunityId, None)">View opportunity</a>
     </div>
     <div>
         <table>
@@ -31,30 +33,12 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>1. Event title</td>
-                    <td>Not started</td>
-                </tr>
-                <tr>
-                    <td>2. Provisional date</td>
-                    <td>Not started</td>
-                </tr>
-                <tr>
-                    <td>3. Event objectives</td>
-                    <td>Not started</td>
-                </tr>
-                <tr>
-                    <td>4. Topics and speakers</td>
-                    <td>Not started</td>
-                </tr>
-                <tr>
-                    <td>5. Event audience</td>
-                    <td>Not started</td>
-                </tr>
-                <tr>
-                    <td>6. Costs</td>
-                    <td>Not started</td>
-                </tr>
+                @app.sections.sortBy(_.sectionNumber).map { s =>
+                    <tr>
+                        <td>@s.sectionNumber. @s.title</td>
+                        <td>Not started</td>
+                    </tr>
+                }
             </tbody>
         </table>
         <a href="" class="button">Submit application to RIFS</a>

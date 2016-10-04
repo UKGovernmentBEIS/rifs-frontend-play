@@ -9,4 +9,4 @@ GET        /                                  controllers.StartPageController.st
 GET        /opportunities                     controllers.OpportunityController.showOpportunities
 GET        /opportunity/:opportunityId        controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
 
-GET        /application/:applicationId        controllers.ApplicationController.show(applicationId:ApplicationId)
+GET        /application/:opportunityId        controllers.ApplicationController.show(opportunityId: OpportunityId)

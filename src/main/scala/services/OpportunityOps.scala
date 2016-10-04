@@ -10,6 +10,8 @@ trait OpportunityOps {
   def getOpenOpportunitySummaries: Future[Seq[Opportunity]]
 
   def getOpportunity(id: OpportunityId): Future[Option[Opportunity]]
+
+  def getApplicationForOpportunity(id:OpportunityId):Future[Option[Application]]
 }
 
 
