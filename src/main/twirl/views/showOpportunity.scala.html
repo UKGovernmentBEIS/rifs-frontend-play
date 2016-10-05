@@ -79,16 +79,16 @@
             </article>
             <footer>
                 @if(sectionNumber > 1) {
-                    Previous page
-                    <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(sectionNumber - 1))">
-                    @opportunity.description(sectionNumber - 1).title
-                    </a>
+                    <div>Previous page<br>
+                        <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(sectionNumber - 1))">
+                        @opportunity.description(sectionNumber - 1).title
+                        </a></div>
                 }
                 @if(sectionNumber < opportunity.description.length) {
-                    Next page
-                    <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(sectionNumber + 1))">
-                    @opportunity.description(sectionNumber + 1).title
-                    </a>
+                    <div>Next page<br>
+                        <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(sectionNumber + 1))">
+                        @opportunity.description(sectionNumber + 1).title
+                        </a></div>
                 }
             </footer>
         }
