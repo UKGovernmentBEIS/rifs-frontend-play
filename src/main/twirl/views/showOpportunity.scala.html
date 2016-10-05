@@ -55,29 +55,42 @@
 
         <div>
             <h2>Apply for funding</h2>
-            <a href="@controllers.routes.ApplicationController.show(opportunity.id)">Seminar application form</a>
+            <a href="@controllers.routes.ApplicationController.show(opportunity.id)">Make an application</a>
             <p/>
         </div>
-
-        @if(sectionNumber == 1) {
-            <div>
-                <h3>Start date</h3>
-                @opportunity.startDate
-                <h3>Days duration</h3>
-                @opportunity.duration.map(d => s"${d.duration} ${d.units}").getOrElse("Open indefinitely")
-                <h3>Opportunity value</h3>
-                    &pound; @opportunity.value.amount @opportunity.value.unit
-            </div>
-            <p/>
-        }
 
         @section.map { s =>
             <article>
                 <h1>@s.sectionNumber. @s.title</h1>
+                @if(sectionNumber == 1) {
+                    <div>
+                        <h3>Start date</h3>
+                        @opportunity.startDate
+                        <h3>Days duration</h3>
+                        @opportunity.duration.map(d => s"${d.duration} ${d.units}").getOrElse("Open indefinitely")
+                        <h3>Opportunity value</h3>
+                            &pound; @opportunity.value.amount @opportunity.value.unit
+                    </div>
+                    <p/>
+                }
                 @s.paragraphs.map { p =>
                     <p>@p</p>
                 }
             </article>
+            <footer>
+                @if(sectionNumber > 1) {
+                    Previous page
+                    <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(sectionNumber - 1))">
+                    @opportunity.description(sectionNumber - 1).title
+                    </a>
+                }
+                @if(sectionNumber < opportunity.description.length) {
+                    Next page
+                    <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(sectionNumber + 1))">
+                    @opportunity.description(sectionNumber + 1).title
+                    </a>
+                }
+            </footer>
         }
     </div>
 }
