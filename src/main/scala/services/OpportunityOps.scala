@@ -11,7 +11,7 @@ trait OpportunityOps {
 
   def getOpportunity(id: OpportunityId): Future[Option[Opportunity]]
 
-  def getApplicationForOpportunity(id:OpportunityId):Future[Option[Application]]
+
 }
 
 
