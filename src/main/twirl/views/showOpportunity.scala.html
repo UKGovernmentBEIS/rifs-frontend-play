@@ -31,7 +31,15 @@
     leftCols.zip(rightCols)
 }
 
-@section = @{
+@nextSection = @{
+    opportunity.description.find(_.sectionNumber == sectionNumber + 1)
+}
+
+@prevSection = @{
+    opportunity.description.find(_.sectionNumber == sectionNumber - 1)
+}
+
+@currentSection = @{
     opportunity.description.find(_.sectionNumber == sectionNumber)
 }
 
@@ -59,7 +67,7 @@
             <p/>
         </div>
 
-        @section.map { s =>
+        @currentSection.map { s =>
             <article>
                 <h1>@s.sectionNumber. @s.title</h1>
                 @if(sectionNumber == 1) {
@@ -78,16 +86,16 @@
                 }
             </article>
             <footer>
-                @if(sectionNumber > 1) {
+                @prevSection.map { s =>
                     <div>Previous page<br>
-                        <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(sectionNumber - 1))">
-                        @opportunity.description(sectionNumber - 1).title
+                        <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(s.sectionNumber))">
+                        @s.title
                         </a></div>
                 }
-                @if(sectionNumber < opportunity.description.length) {
+                @nextSection.map { s =>
                     <div>Next page<br>
-                        <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(sectionNumber + 1))">
-                        @opportunity.description(sectionNumber + 1).title
+                        <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(s.sectionNumber))">
+                        @s.title
                         </a></div>
                 }
             </footer>
