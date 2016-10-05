@@ -10,3 +10,8 @@ GET        /opportunities                     controllers.OpportunityController.
 GET        /opportunity/:opportunityId        controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
 
 GET        /application/:opportunityId        controllers.ApplicationController.show(opportunityId: OpportunityId)
+
+
+# Health check
+
+GET        /ping                              controllers.HealthCheckController.ping()
