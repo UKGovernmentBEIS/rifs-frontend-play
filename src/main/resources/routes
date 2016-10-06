@@ -7,11 +7,11 @@ GET        /assets/*file                      controllers.Assets.at(path="/publi
 
 GET        /                                  controllers.StartPageController.startPage
 GET        /opportunities                     controllers.OpportunityController.showOpportunities
+GET        /opportunities/guidance            controllers.OpportunityController.showGuidancePage
 GET        /opportunity/:opportunityId        controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
 
 GET        /application/:opportunityId        controllers.ApplicationController.show(opportunityId: OpportunityId)
 
 
 # Health check
-
 GET        /ping                              controllers.HealthCheckController.ping()

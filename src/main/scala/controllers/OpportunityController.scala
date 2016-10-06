@@ -21,4 +21,6 @@ class OpportunityController @Inject()(opportunities: OpportunityOps)(implicit ec
     }
   }
 
+  def showGuidancePage = Action { Ok(views.html.guidance())}
+
 }
