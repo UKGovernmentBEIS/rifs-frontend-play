@@ -40,6 +40,8 @@
 
 @main(s"Opportunity ${opportunity.id.id}", insideHeader = proposition) {
     <div class="grid-row">
+        <a href="@controllers.routes.OpportunityController.showOpportunities()">&lt; Return to opportunity list</a>
+        <p></p>
         <h1>@opportunity.title</h1>
 
         <header class="page-header">
