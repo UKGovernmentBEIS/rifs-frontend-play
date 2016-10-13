@@ -11,6 +11,7 @@ GET        /opportunities/guidance            controllers.OpportunityController.
 GET        /opportunity/:opportunityId        controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
 
 GET        /application/:opportunityId        controllers.ApplicationController.show(opportunityId: OpportunityId)
+GET        /wip                               controllers.OpportunityController.wip
 
 
 # Health check

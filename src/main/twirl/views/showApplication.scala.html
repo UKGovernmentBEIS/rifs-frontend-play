@@ -31,7 +31,11 @@
             <tbody>
                 @app.sections.sortBy(_.sectionNumber).map { s =>
                     <tr>
-                        <td>@s.sectionNumber. @s.title</td>
+                        <td>
+                            <a href="@controllers.routes.OpportunityController.wip()">
+                            @s.sectionNumber. @s.title
+                            </a>
+                        </td>
                         <td>Not started</td>
                     </tr>
                 }
