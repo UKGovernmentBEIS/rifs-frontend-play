@@ -17,7 +17,6 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
   }
 
   def showOpportunity(id: OpportunityId, sectionNumber: Option[Int]) = Action.async {
-
     val ft = for {
       o <- OptionT(opportunities.byId(id))
       a <- OptionT(applications.byOpportunityId(id))

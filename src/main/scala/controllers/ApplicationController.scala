@@ -20,6 +20,11 @@ class ApplicationController @Inject()(applications: ApplicationOps, opportunitie
     }
   }
 
+  def sectionForm(id:ApplicationId, sectionNumber:Int) = {
+    if (sectionNumber == 1) title(id)
+    else Action { Ok(views.html.wip())}
+  }
+
   def title(id: ApplicationId) = Action.async {
     val ft = for {
       a <- OptionT(applications.byId(id))
