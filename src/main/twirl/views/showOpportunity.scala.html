@@ -1,6 +1,4 @@
-@(opportunity: Opportunity, sectionNumber: Int)
-
-
+@(applicationId: ApplicationId, opportunity: Opportunity, sectionNumber: Int)
 
 @sectionLink(title: String, sectionNum: Int) = @{
     if(sectionNum == sectionNumber) s"$sectionNum. $title"
@@ -52,7 +50,7 @@
 
         <div>
             <h2>Apply for funding</h2>
-            <a href="@controllers.routes.ApplicationController.show(opportunity.id)">Make an application</a>
+            <a href="@controllers.routes.ApplicationController.show(applicationId)">Make an application</a>
             <p></p>
             <a href="@controllers.routes.OpportunityController.showGuidancePage()">Guidance on seminars</a>
             <p></p>

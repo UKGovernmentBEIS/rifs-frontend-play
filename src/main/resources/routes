@@ -10,7 +10,9 @@ GET        /opportunities                     controllers.OpportunityController.
 GET        /opportunities/guidance            controllers.OpportunityController.showGuidancePage
 GET        /opportunity/:opportunityId        controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
 
-GET        /application/:opportunityId        controllers.ApplicationController.show(opportunityId: OpportunityId)
+GET        /application/:id                   controllers.ApplicationController.show(id: ApplicationId)
+GET        /application/:id/title             controllers.ApplicationController.title(id: ApplicationId)
+
 GET        /wip                               controllers.OpportunityController.wip
 
 

@@ -1,0 +1,10 @@
+@(applicationId: ApplicationId, opportunity: Opportunity)
+
+
+@main(s"Event title") {
+    <div class="grid-row">
+        <a href="@controllers.routes.ApplicationController.show(applicationId)">&lt; Return to application overview</a>
+        <p></p>
+        <h1>@opportunity.title</h1>
+    </div>
+}

@@ -23,7 +23,7 @@ class OpportunityService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     getMany[Opportunity](url)
   }
 
-  override def getOpportunity(id: OpportunityId): Future[Option[Opportunity]] = {
+  override def byId(id: OpportunityId): Future[Option[Opportunity]] = {
     val url = s"$baseUrl/opportunity/${id.id}"
     getOpt[Opportunity](url)
   }
