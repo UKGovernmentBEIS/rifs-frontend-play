@@ -6,10 +6,11 @@ import cats.data.OptionT
 import cats.instances.future._
 import models.ApplicationId
 import play.api.Logger
-import play.api.mvc.{Action, Controller}
+import play.api.libs.json.{JsArray, JsObject, JsString, JsValue}
+import play.api.mvc.{Action, Controller, Result}
 import services.{ApplicationOps, OpportunityOps}
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class ApplicationController @Inject()(applications: ApplicationOps, opportunities: OpportunityOps)(implicit ec: ExecutionContext) extends Controller {
 
@@ -20,19 +21,20 @@ class ApplicationController @Inject()(applications: ApplicationOps, opportunitie
     }
   }
 
-  def sectionForm(id:ApplicationId, sectionNumber:Int) = {
+  def sectionForm(id: ApplicationId, sectionNumber: Int) = Action.async {
     if (sectionNumber == 1) title(id)
-    else Action { Ok(views.html.wip())}
+    else Future.successful(Ok(views.html.wip()))
   }
 
-  def title(id: ApplicationId) = Action.async {
+  def title(id: ApplicationId, formValues: Option[JsObject] = None) = {
     val ft = for {
       a <- OptionT(applications.byId(id))
       o <- OptionT(opportunities.byId(a.opportunityId))
     } yield (a, o)
 
+
     ft.value.map {
-      case Some((app, opp)) => Ok(views.html.titleForm(app, app.sections.find(_.sectionNumber == 1).get, opp))
+      case Some((app, opp)) => Ok(views.html.titleForm(formValues.getOrElse(JsObject(Seq())), app, app.sections.find(_.sectionNumber == 1).get, opp))
       case None => NotFound
     }
   }
@@ -43,11 +45,21 @@ class ApplicationController @Inject()(applications: ApplicationOps, opportunitie
     */
   def decodeAction(keys: Set[String]): Option[ButtonAction] = keys.flatMap(ButtonAction.unapply).headOption
 
-  def section(id: ApplicationId, sectionNumber: Int) = Action(parse.urlFormEncoded) { implicit request =>
+  def section(id: ApplicationId, sectionNumber: Int) = Action.async(parse.urlFormEncoded) { implicit request =>
     Logger.debug(request.body.toString)
 
     val buttonAction: Option[ButtonAction] = decodeAction(request.body.keySet)
     Logger.debug(s"Button action is $buttonAction")
+
+    val jmap: Map[String, JsValue] = request.body.map {
+      case (k, s :: Nil) => k -> JsString(s)
+      case (k, ss) => k -> JsArray(ss.map(JsString(_)))
+    }
+
+    takeAction(id, buttonAction, JsObject(jmap))
+  }
+
+  def takeAction(id: ApplicationId, buttonAction: Option[ButtonAction], values: JsObject): Future[Result] = Future {
     buttonAction.map {
       case Complete => Redirect(routes.ApplicationController.show(id))
       case Save => Redirect(routes.ApplicationController.show(id))

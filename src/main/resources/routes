@@ -11,7 +11,6 @@ GET         /opportunities/guidance              controllers.OpportunityControll
 GET         /opportunity/:opportunityId          controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
 
 GET         /application/:id                     controllers.ApplicationController.show(id: ApplicationId)
-GET         /application/:id/title               controllers.ApplicationController.title(id: ApplicationId)
 
 GET         /application/:id/section/:num        controllers.ApplicationController.sectionForm(id: ApplicationId, num:Int)
 POST        /application/:id/section/:num        controllers.ApplicationController.section(id: ApplicationId, num:Int)
