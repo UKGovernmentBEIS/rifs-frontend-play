@@ -1,10 +1,24 @@
-@(applicationId: ApplicationId, opportunity: Opportunity)
+@(application: Application, section: ApplicationSection, opportunity: Opportunity)
 
 
 @main(s"Event title") {
     <div class="grid-row">
-        <a href="@controllers.routes.ApplicationController.show(applicationId)">&lt; Return to application overview</a>
+        <a href="@controllers.routes.ApplicationController.show(application.id)">&lt; Return to application overview</a>
         <p></p>
-        <h1>@opportunity.title</h1>
+        <h2>RIFS0001: @opportunity.title</h2>
+
+        <h1>@section.title</h1>
+
+        <form method="POST" action="@controllers.routes.ApplicationController.section(application.id, section.sectionNumber)">
+            <fieldset>
+                <label for="title">What is your event called?</label>
+                <input type="text">
+            </fieldset>
+            <input type="submit" name="_complete_button" class="button--link-style" value="Mark question as complete"/>
+            <div>
+            <input type="submit" name="_save_button" class="button--get-started" value="Save and continue">
+            <input type="submit" name="_preview_button" class="button--link-style" value="Preview this page"/>
+            </div>
+        </form>
     </div>
 }

@@ -3,18 +3,20 @@
 # ~~~~
 
 # Map static resources from the /public folder to the /assets URL path
-GET        /assets/*file                      controllers.Assets.at(path="/public", file)
+GET         /assets/*file                        controllers.Assets.at(path="/public", file)
 
-GET        /                                  controllers.StartPageController.startPage
-GET        /opportunities                     controllers.OpportunityController.showOpportunities
-GET        /opportunities/guidance            controllers.OpportunityController.showGuidancePage
-GET        /opportunity/:opportunityId        controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
+GET         /                                    controllers.StartPageController.startPage
+GET         /opportunities                       controllers.OpportunityController.showOpportunities
+GET         /opportunities/guidance              controllers.OpportunityController.showGuidancePage
+GET         /opportunity/:opportunityId          controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
 
-GET        /application/:id                   controllers.ApplicationController.show(id: ApplicationId)
-GET        /application/:id/title             controllers.ApplicationController.title(id: ApplicationId)
+GET         /application/:id                     controllers.ApplicationController.show(id: ApplicationId)
+GET         /application/:id/title               controllers.ApplicationController.title(id: ApplicationId)
 
-GET        /wip                               controllers.OpportunityController.wip
+POST        /application/:id/section/:num        controllers.ApplicationController.section(id: ApplicationId, num:Int)
+
+GET         /wip                                 controllers.OpportunityController.wip
 
 
 # Health check
-GET        /ping                              controllers.HealthCheckController.ping()
+GET         /ping                                controllers.HealthCheckController.ping()

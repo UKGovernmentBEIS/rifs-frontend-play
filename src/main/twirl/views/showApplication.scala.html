@@ -17,16 +17,14 @@
                 </tr>
             </thead>
             <tbody>
-                @app.sections.sortBy(_.sectionNumber).map { s =>
-                    <tr>
-                        <td>
-                            <a href="@controllers.routes.OpportunityController.wip()">
-                            @s.sectionNumber. @s.title
-                            </a>
-                        </td>
-                        <td>Not started</td>
-                    </tr>
-                }
+            @app.sections.sortBy(_.sectionNumber).map { s =>
+                <tr>
+                    <td>
+                        @s.sectionNumber. <a href="@controllers.routes.OpportunityController.wip()"> @s.title</a>
+                    </td>
+                    <td>Not started</td>
+                </tr>
+            }
             </tbody>
         </table>
         <a href="@controllers.routes.OpportunityController.wip()" class="button"> Submit application to RIFS</a>

@@ -5,6 +5,7 @@ import javax.inject.Inject
 import cats.data.OptionT
 import cats.instances.future._
 import models.ApplicationId
+import play.api.Logger
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationOps, OpportunityOps}
 
@@ -26,8 +27,26 @@ class ApplicationController @Inject()(applications: ApplicationOps, opportunitie
     } yield (a, o)
 
     ft.value.map {
-      case Some((app, opp)) => Ok(views.html.titleForm(app.id, opp))
+      case Some((app, opp)) => Ok(views.html.titleForm(app, app.sections.find(_.sectionNumber == 1).get, opp))
       case None => NotFound
     }
+  }
+
+  /**
+    * Note if more than one button action name is present in the keys then it is indeterminate as to
+    * which one will be returned.
+    */
+  def decodeAction(keys: Set[String]): Option[ButtonAction] = keys.flatMap(ButtonAction.unapply).headOption
+
+  def section(id: ApplicationId, sectionNumber: Int) = Action(parse.urlFormEncoded) { implicit request =>
+    Logger.debug(request.body.toString)
+
+    val buttonAction: Option[ButtonAction] = decodeAction(request.body.keySet)
+    Logger.debug(s"Button action is $buttonAction")
+    buttonAction.map {
+      case Complete => Redirect(routes.ApplicationController.show(id))
+      case Save => Redirect(routes.ApplicationController.show(id))
+      case Preview => Redirect(routes.ApplicationController.show(id))
+    }.getOrElse(BadRequest)
   }
 }
