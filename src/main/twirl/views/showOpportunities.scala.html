@@ -1,17 +1,6 @@
 @(os: Seq[Opportunity])
 
-@proposition = {
-    <div class="header-proposition">
-        <div class="content">
-            <nav id="proposition-menu" class="header__menu" role="navigation">
-                <span class="header__menu__proposition-name">Research and Innovation Funding Service</span>
-
-            </nav>
-        </div>
-    </div>
-}
-
-@main("Opportunity list", insideHeader = proposition) {
+@main("Opportunity list") {
     <div>
         <h1>Open opportunities</h1>
 

@@ -1,14 +1,6 @@
 @(opportunity: Opportunity, sectionNumber: Int)
 
-@proposition = {
-    <div class="header-proposition">
-        <div class="content">
-            <nav id="proposition-menu" class="header__menu" role="navigation">
-                <span class="header__menu__proposition-name">Research and Innovation Funding Service</span>
-            </nav>
-        </div>
-    </div>
-}
+
 
 @sectionLink(title: String, sectionNum: Int) = @{
     if(sectionNum == sectionNumber) s"$sectionNum. $title"
@@ -38,7 +30,7 @@
     opportunity.description.find(_.sectionNumber == sectionNumber)
 }
 
-@main(s"Opportunity ${opportunity.id.id}", insideHeader = proposition) {
+@main(s"Opportunity ${opportunity.id.id}") {
     <div class="grid-row">
         <a href="@controllers.routes.OpportunityController.showOpportunities()">&lt; Return to opportunity list</a>
         <p></p>

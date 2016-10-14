@@ -9,7 +9,17 @@
 
 @empty = {}
 
-@layouts.govuk_template2(Some(title), None)(head, empty, bodyEnd, insideHeader, empty, empty, empty, empty, empty) {
+@proposition = {
+    <div class="header-proposition">
+        <div class="content">
+            <nav id="proposition-menu" class="header__menu" role="navigation">
+                <span class="header__menu__proposition-name">Research and Innovation Funding Service</span>
+            </nav>
+        </div>
+    </div>
+}
+
+@layouts.govuk_template2(Some(title), None)(head, empty, bodyEnd, proposition, empty, empty, empty, empty, empty) {
     <main id="content" class="@mainClass" role="main">
         <div class="service-info ">
         @alphaBanner()
