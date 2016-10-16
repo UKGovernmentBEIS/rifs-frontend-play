@@ -23,7 +23,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, opportunitie
 
   def sectionForm(id: ApplicationId, sectionNumber: Int) = Action.async {
     if (sectionNumber == 1) title(id)
-    else Future.successful(Ok(views.html.wip()))
+    else Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
   }
 
   def title(id: ApplicationId, formValues: Option[JsObject] = None) = {

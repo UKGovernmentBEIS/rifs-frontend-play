@@ -1,17 +1,9 @@
-@proposition = {
-    <div class="header-proposition">
-        <div class="content">
-            <nav id="proposition-menu" class="header__menu" role="navigation">
-                <span class="header__menu__proposition-name">Research and Innovation Funding Service</span>
+@(backUrl:String)
 
-            </nav>
-        </div>
-    </div>
-}
 
-@main("Wip Page", insideHeader = proposition) {
+@main("Wip Page") {
     <div>
-        <a href="javascript:history.back();">&lt; Go Back</a>
+        <a href="@backUrl">&lt; Go Back</a>
         <br/><br/>
         <h1>Work in Progress</h1>
         <br/><br/>

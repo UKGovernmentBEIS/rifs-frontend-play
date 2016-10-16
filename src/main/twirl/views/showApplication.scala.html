@@ -27,7 +27,7 @@
             }
             </tbody>
         </table>
-        <a href="@controllers.routes.OpportunityController.wip()" class="button"> Submit application to RIFS</a>
-        <a href="@controllers.routes.OpportunityController.wip()">Preview application</a>
+        <a href="@controllers.routes.OpportunityController.wip(controllers.routes.ApplicationController.show(app.id).url)" class="button"> Submit application to RIFS</a>
+        <a href="@controllers.routes.OpportunityController.wip(controllers.routes.ApplicationController.show(app.id).url)">Preview application</a>
     </div>
 }
