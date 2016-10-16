@@ -1,7 +1,7 @@
 package services
 
 import play.api.data.validation.ValidationError
-import play.api.libs.json.{JsError, JsPath, JsSuccess, Reads}
+import play.api.libs.json._
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import services.RestService.{JsonParseException, RestFailure}
 
@@ -38,6 +38,11 @@ trait RestService {
         case _ => throw RestFailure("GET", request, response)
       }
     }
+  }
+
+  def post[A: Writes](url: String, body: A): Future[Unit] = {
+    val request = ws.url(url)
+    request.post(Json.toJson(body)).map(_ => ())
   }
 }
 

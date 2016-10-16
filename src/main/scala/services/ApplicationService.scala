@@ -26,5 +26,13 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     getOpt[Application](url)
   }
 
+  override def saveSection(id: ApplicationId, sectionNumber: Int, doc:JsObject): Future[Unit] = {
+    val url = s"$baseUrl/application/${id.id}/section/$sectionNumber"
+    post(url, doc)
+  }
 
+  override def getSection(id: ApplicationId, sectionNumber: Int): Future[Option[JsObject]] = {
+    val url = s"$baseUrl/application/${id.id}/section/$sectionNumber"
+    getOpt[JsObject](url)
+  }
 }

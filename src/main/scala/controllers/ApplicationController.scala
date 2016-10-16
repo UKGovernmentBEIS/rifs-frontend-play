@@ -22,7 +22,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, opportunitie
   }
 
   def sectionForm(id: ApplicationId, sectionNumber: Int) = Action.async {
-    if (sectionNumber == 1) title(id)
+    if (sectionNumber == 1) applications.getSection(id, sectionNumber).flatMap { doco => title(id, doco) }
     else Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
   }
 
@@ -56,14 +56,17 @@ class ApplicationController @Inject()(applications: ApplicationOps, opportunitie
       case (k, ss) => k -> JsArray(ss.map(JsString(_)))
     }
 
-    takeAction(id, buttonAction, JsObject(jmap))
+    takeAction(id, sectionNumber, buttonAction, JsObject(jmap))
   }
 
-  def takeAction(id: ApplicationId, buttonAction: Option[ButtonAction], values: JsObject): Future[Result] = Future {
+  def takeAction(id: ApplicationId, sectionNumber: Int, buttonAction: Option[ButtonAction], doc: JsObject): Future[Result] = {
     buttonAction.map {
-      case Complete => Redirect(routes.ApplicationController.show(id))
-      case Save => Redirect(routes.ApplicationController.show(id))
-      case Preview => Redirect(routes.ApplicationController.show(id))
-    }.getOrElse(BadRequest)
+      case Complete => Future.successful(Redirect(routes.ApplicationController.show(id)))
+      case Save =>
+        applications.saveSection(id, sectionNumber, doc).map { _ =>
+          Redirect(routes.ApplicationController.show(id))
+        }
+      case Preview => Future.successful(Redirect(routes.ApplicationController.show(id)))
+    }.getOrElse(Future.successful(BadRequest))
   }
 }
