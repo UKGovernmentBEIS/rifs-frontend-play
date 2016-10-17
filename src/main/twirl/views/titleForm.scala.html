@@ -1,5 +1,5 @@
 
-@(formValues:play.api.libs.json.JsObject, application: Application, section: ApplicationSection, opportunity: Opportunity)
+@(formValues:play.api.libs.json.JsObject, application: ApplicationForm, section: ApplicationFormSection, opportunity: Opportunity)
 
 @import play.api.libs.json._
 
@@ -21,7 +21,7 @@
         <form method="POST" action="@controllers.routes.ApplicationController.section(application.id, section.sectionNumber)">
             <fieldset>
                 <label for="title">What is your event called?</label>
-                <input type="text" name="title" value='@valueFor("title")'>
+                <input type="text" title="title" name="title" value='@valueFor("title")'>
             </fieldset>
             <input type="submit" name="_complete_button" class="button--link-style" value="Mark question as complete"/>
             <div>

@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import cats.data.OptionT
 import cats.instances.future._
-import models.ApplicationId
+import models.ApplicationFormId
 import play.api.Logger
 import play.api.libs.json.{JsArray, JsObject, JsString, JsValue}
 import play.api.mvc.{Action, Controller, Result}
@@ -14,19 +14,19 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ApplicationController @Inject()(applications: ApplicationOps, opportunities: OpportunityOps)(implicit ec: ExecutionContext) extends Controller {
 
-  def show(id: ApplicationId) = Action.async {
+  def show(id: ApplicationFormId) = Action.async {
     applications.byId(id).map {
-      case Some(application) => Ok(views.html.showApplication(application))
+      case Some(application) => Ok(views.html.showApplicationForm(application))
       case None => NotFound
     }
   }
 
-  def sectionForm(id: ApplicationId, sectionNumber: Int) = Action.async {
+  def sectionForm(id: ApplicationFormId, sectionNumber: Int) = Action.async {
     if (sectionNumber == 1) applications.getSection(id, sectionNumber).flatMap { doco => title(id, doco) }
     else Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
   }
 
-  def title(id: ApplicationId, formValues: Option[JsObject] = None) = {
+  def title(id: ApplicationFormId, formValues: Option[JsObject] = None) = {
     val ft = for {
       a <- OptionT(applications.byId(id))
       o <- OptionT(opportunities.byId(a.opportunityId))
@@ -45,7 +45,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, opportunitie
     */
   def decodeAction(keys: Set[String]): Option[ButtonAction] = keys.flatMap(ButtonAction.unapply).headOption
 
-  def section(id: ApplicationId, sectionNumber: Int) = Action.async(parse.urlFormEncoded) { implicit request =>
+  def section(id: ApplicationFormId, sectionNumber: Int) = Action.async(parse.urlFormEncoded) { implicit request =>
     Logger.debug(request.body.toString)
 
     val buttonAction: Option[ButtonAction] = decodeAction(request.body.keySet)
@@ -53,13 +53,13 @@ class ApplicationController @Inject()(applications: ApplicationOps, opportunitie
 
     val jmap: Map[String, JsValue] = request.body.map {
       case (k, s :: Nil) => k -> JsString(s)
-      case (k, ss) => k -> JsArray(ss.map(JsString(_)))
+      case (k, ss) => k -> JsArray(ss.map(JsString))
     }
 
     takeAction(id, sectionNumber, buttonAction, JsObject(jmap))
   }
 
-  def takeAction(id: ApplicationId, sectionNumber: Int, buttonAction: Option[ButtonAction], doc: JsObject): Future[Result] = {
+  def takeAction(id: ApplicationFormId, sectionNumber: Int, buttonAction: Option[ButtonAction], doc: JsObject): Future[Result] = {
     buttonAction.map {
       case Complete => Future.successful(Redirect(routes.ApplicationController.show(id)))
       case Save =>

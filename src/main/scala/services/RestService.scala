@@ -1,5 +1,6 @@
 package services
 
+import play.api.Logger
 import play.api.data.validation.ValidationError
 import play.api.libs.json._
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
@@ -19,7 +20,9 @@ trait RestService {
       response.status match {
         case 200 => response.json.validate[A] match {
           case JsSuccess(a, _) => Some(a)
-          case JsError(errs) => throw JsonParseException("GET", request, response, errs)
+          case JsError(errs) =>
+            Logger.debug(errs.toString())
+            throw JsonParseException("GET", request, response, errs)
         }
         case 404 => None
         case _ => throw RestFailure("GET", request, response)

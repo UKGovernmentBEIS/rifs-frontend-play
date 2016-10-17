@@ -1,4 +1,4 @@
-@(applicationId: ApplicationId, opportunity: Opportunity, sectionNumber: Int)
+@(applicationId: ApplicationFormId, opportunity: Opportunity, sectionNumber: Int)
 
 @sectionLink(title: String, sectionNum: Int) = @{
     if(sectionNum == sectionNumber) s"$sectionNum. $title"
@@ -68,7 +68,7 @@
                         <h3>Opportunity value</h3>
                             &pound; @opportunity.value.amount @opportunity.value.unit
                     </div>
-                    <p/>
+                    <p></p>
                 }
                 @s.paragraphs.map { p =>
                     <p>@p</p>

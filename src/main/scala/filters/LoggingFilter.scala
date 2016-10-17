@@ -13,17 +13,22 @@ class LoggingFilter @Inject()(implicit val mat: Materializer, ec: ExecutionConte
   def apply(nextFilter: RequestHeader => Future[Result])
            (requestHeader: RequestHeader): Future[Result] = {
 
-    val startTime = System.currentTimeMillis
+    if (requestHeader.uri.startsWith("/assets")) nextFilter(requestHeader)
+    else {
+      val startTime = System.currentTimeMillis
 
-    nextFilter(requestHeader).map { result =>
+      Logger.debug(s"${requestHeader.method} ${requestHeader.uri} received...")
 
-      val endTime = System.currentTimeMillis
-      val requestTime = endTime - startTime
+      nextFilter(requestHeader).map { result =>
 
-      if (!requestHeader.uri.startsWith("/assets"))
-        Logger.info(s"${requestHeader.method} ${requestHeader.uri} took ${requestTime}ms and returned ${result.header.status}")
+        val endTime = System.currentTimeMillis
+        val requestTime = endTime - startTime
 
-      result.withHeaders("Request-Time" -> requestTime.toString)
+        if (!requestHeader.uri.startsWith("/assets"))
+          Logger.info(s"${requestHeader.method} ${requestHeader.uri} took ${requestTime}ms and returned ${result.header.status}")
+
+        result.withHeaders("Request-Time" -> requestTime.toString)
+      }
     }
   }
 }
