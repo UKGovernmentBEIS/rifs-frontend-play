@@ -6,11 +6,11 @@ import cats.data.OptionT
 import cats.instances.future._
 import models.OpportunityId
 import play.api.mvc.{Action, Controller}
-import services.{ApplicationOps, OpportunityOps}
+import services.{ApplicationFormOps, OpportunityOps}
 
 import scala.concurrent.ExecutionContext
 
-class OpportunityController @Inject()(opportunities: OpportunityOps, applications: ApplicationOps)(implicit ec: ExecutionContext) extends Controller {
+class OpportunityController @Inject()(opportunities: OpportunityOps, applications: ApplicationFormOps)(implicit ec: ExecutionContext) extends Controller {
 
   def showOpportunities = Action.async {
     opportunities.getOpenOpportunitySummaries.map { os => Ok(views.html.showOpportunities(os)) }

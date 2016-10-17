@@ -8,27 +8,27 @@ import models.ApplicationFormId
 import play.api.Logger
 import play.api.libs.json.{JsArray, JsObject, JsString, JsValue}
 import play.api.mvc.{Action, Controller, Result}
-import services.{ApplicationOps, OpportunityOps}
+import services.{ApplicationFormOps, OpportunityOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ApplicationController @Inject()(applications: ApplicationOps, opportunities: OpportunityOps)(implicit ec: ExecutionContext) extends Controller {
+class ApplicationController @Inject()(applicationForms: ApplicationFormOps, opportunities: OpportunityOps)(implicit ec: ExecutionContext) extends Controller {
 
   def show(id: ApplicationFormId) = Action.async {
-    applications.byId(id).map {
+    applicationForms.byId(id).map {
       case Some(application) => Ok(views.html.showApplicationForm(application))
       case None => NotFound
     }
   }
 
   def sectionForm(id: ApplicationFormId, sectionNumber: Int) = Action.async {
-    if (sectionNumber == 1) applications.getSection(id, sectionNumber).flatMap { doco => title(id, doco) }
+    if (sectionNumber == 1) applicationForms.getSection(id, sectionNumber).flatMap { doco => title(id, doco) }
     else Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
   }
 
   def title(id: ApplicationFormId, formValues: Option[JsObject] = None) = {
     val ft = for {
-      a <- OptionT(applications.byId(id))
+      a <- OptionT(applicationForms.byId(id))
       o <- OptionT(opportunities.byId(a.opportunityId))
     } yield (a, o)
 
@@ -63,7 +63,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, opportunitie
     buttonAction.map {
       case Complete => Future.successful(Redirect(routes.ApplicationController.show(id)))
       case Save =>
-        applications.saveSection(id, sectionNumber, doc).map { _ =>
+        applicationForms.saveSection(id, sectionNumber, doc).map { _ =>
           Redirect(routes.ApplicationController.show(id))
         }
       case Preview => Future.successful(Redirect(routes.ApplicationController.show(id)))
