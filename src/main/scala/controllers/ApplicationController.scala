@@ -6,13 +6,13 @@ import cats.data.OptionT
 import cats.instances.future._
 import models.ApplicationFormId
 import play.api.Logger
-import play.api.libs.json.{JsArray, JsObject, JsString, JsValue}
+import play.api.libs.json._
 import play.api.mvc.{Action, Controller, Result}
-import services.{ApplicationFormOps, OpportunityOps}
+import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ApplicationController @Inject()(applicationForms: ApplicationFormOps, opportunities: OpportunityOps)(implicit ec: ExecutionContext) extends Controller {
+class ApplicationController @Inject()(applications:ApplicationOps, applicationForms: ApplicationFormOps, opportunities: OpportunityOps)(implicit ec: ExecutionContext) extends Controller {
 
   def show(id: ApplicationFormId) = Action.async {
     applicationForms.byId(id).map {
@@ -22,7 +22,7 @@ class ApplicationController @Inject()(applicationForms: ApplicationFormOps, oppo
   }
 
   def sectionForm(id: ApplicationFormId, sectionNumber: Int) = Action.async {
-    if (sectionNumber == 1) applicationForms.getSection(id, sectionNumber).flatMap { doco => title(id, doco) }
+    if (sectionNumber == 1) applications.getSection(id, sectionNumber).flatMap { section => title(id, section.map(_.answers)) }
     else Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
   }
 
@@ -31,7 +31,6 @@ class ApplicationController @Inject()(applicationForms: ApplicationFormOps, oppo
       a <- OptionT(applicationForms.byId(id))
       o <- OptionT(opportunities.byId(a.opportunityId))
     } yield (a, o)
-
 
     ft.value.map {
       case Some((app, opp)) => Ok(views.html.titleForm(formValues.getOrElse(JsObject(Seq())), app, app.sections.find(_.sectionNumber == 1).get, opp))
@@ -63,7 +62,7 @@ class ApplicationController @Inject()(applicationForms: ApplicationFormOps, oppo
     buttonAction.map {
       case Complete => Future.successful(Redirect(routes.ApplicationController.show(id)))
       case Save =>
-        applicationForms.saveSection(id, sectionNumber, doc).map { _ =>
+        applications.saveSection(id, sectionNumber, doc).map { _ =>
           Redirect(routes.ApplicationController.show(id))
         }
       case Preview => Future.successful(Redirect(routes.ApplicationController.show(id)))

@@ -11,8 +11,6 @@ trait ApplicationFormOps {
   def byId(id: ApplicationFormId): Future[Option[ApplicationForm]]
 
   def byOpportunityId(id: OpportunityId): Future[Option[ApplicationForm]]
-
-  def saveSection(id: ApplicationFormId, sectionNumber: Int, doc: JsObject): Future[Unit]
-
-  def getSection(id: ApplicationFormId, sectionNumber: Int): Future[Option[JsObject]]
 }
+
+

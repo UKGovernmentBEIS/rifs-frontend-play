@@ -6,6 +6,10 @@
 @valueFor(key:String) = @{
     formValues.value.get(key).map{
         case JsString(s) => s
+        case JsArray(ss) => ss.headOption.map {
+            case JsString(s) => s
+            case _ => ""
+        }
         case _ => ""
     }
 }
