@@ -12,8 +12,8 @@ GET         /opportunity/:opportunityId          controllers.OpportunityControll
 
 GET         /application/:id                     controllers.ApplicationController.show(id: ApplicationFormId)
 
-GET         /application/:id/section/:num        controllers.ApplicationController.sectionForm(id: ApplicationFormId, num:Int)
-POST        /application/:id/section/:num        controllers.ApplicationController.section(id: ApplicationFormId, num:Int)
+GET         /application/:id/section/:num        controllers.ApplicationController.showSectionForm(id: ApplicationFormId, num:Int)
+POST        /application/:id/section/:num        controllers.ApplicationController.postSection(id: ApplicationFormId, num:Int)
 
 GET         /wip                                 controllers.OpportunityController.wip(backUrl: String)
 

@@ -6,10 +6,6 @@
 @valueFor(key:String) = @{
     formValues.value.get(key).map{
         case JsString(s) => s
-        case JsArray(ss) => ss.headOption.map {
-            case JsString(s) => s
-            case _ => ""
-        }
         case _ => ""
     }
 }
@@ -22,7 +18,7 @@
 
         <h1>@section.title</h1>
 
-        <form method="POST" action="@controllers.routes.ApplicationController.section(application.id, section.sectionNumber)">
+        <form method="POST" action="@controllers.routes.ApplicationController.postSection(application.id, section.sectionNumber)">
             <fieldset>
                 <label for="title">What is your event called?</label>
                 <input type="text" title="title" name="title" value='@valueFor("title")'>

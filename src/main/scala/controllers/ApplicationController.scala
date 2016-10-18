@@ -5,14 +5,15 @@ import javax.inject.Inject
 import cats.data.OptionT
 import cats.instances.future._
 import models.ApplicationFormId
-import play.api.Logger
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller, Result}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ApplicationController @Inject()(applications:ApplicationOps, applicationForms: ApplicationFormOps, opportunities: OpportunityOps)(implicit ec: ExecutionContext) extends Controller {
+class ApplicationController @Inject()(applications: ApplicationOps, applicationForms: ApplicationFormOps, opportunities: OpportunityOps)(implicit ec: ExecutionContext)
+  extends Controller
+    with ControllerUtils {
 
   def show(id: ApplicationFormId) = Action.async {
     val t = for {
@@ -20,15 +21,13 @@ class ApplicationController @Inject()(applications:ApplicationOps, applicationFo
       a <- OptionT(applicationForms.overview(id))
     } yield (af, a)
 
-
-
     t.value.map {
       case Some((form, overview)) => Ok(views.html.showApplicationForm(form, overview))
       case None => NotFound
     }
   }
 
-  def sectionForm(id: ApplicationFormId, sectionNumber: Int) = Action.async {
+  def showSectionForm(id: ApplicationFormId, sectionNumber: Int) = Action.async {
     if (sectionNumber == 1) applications.getSection(id, sectionNumber).flatMap { section => title(id, section.map(_.answers)) }
     else Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
   }
@@ -47,32 +46,23 @@ class ApplicationController @Inject()(applications:ApplicationOps, applicationFo
 
   /**
     * Note if more than one button action name is present in the keys then it is indeterminate as to
-    * which one will be returned.
+    * which one will be returned. This shouldn't occur if the form is properly submitted from a
+    * browser, though.
     */
   def decodeAction(keys: Set[String]): Option[ButtonAction] = keys.flatMap(ButtonAction.unapply).headOption
 
-  def section(id: ApplicationFormId, sectionNumber: Int) = Action.async(parse.urlFormEncoded) { implicit request =>
-    Logger.debug(request.body.toString)
-
-    val buttonAction: Option[ButtonAction] = decodeAction(request.body.keySet)
-    Logger.debug(s"Button action is $buttonAction")
-
-    val jmap: Map[String, JsValue] = request.body.map {
-      case (k, s :: Nil) => k -> JsString(s)
-      case (k, ss) => k -> JsArray(ss.map(JsString))
-    }
-
-    takeAction(id, sectionNumber, buttonAction, JsObject(jmap))
+  def postSection(id: ApplicationFormId, sectionNumber: Int) = Action.async(parse.urlFormEncoded) { implicit request =>
+    takeAction(id, sectionNumber, decodeAction(request.body.keySet), formToJson(request.body.filterKeys(k => !k.startsWith("_"))))
   }
 
-  def takeAction(id: ApplicationFormId, sectionNumber: Int, buttonAction: Option[ButtonAction], doc: JsObject): Future[Result] = {
-    buttonAction.map {
-      case Complete => Future.successful(Redirect(routes.ApplicationController.show(id)))
-      case Save =>
-        applications.saveSection(id, sectionNumber, doc).map { _ =>
-          Redirect(routes.ApplicationController.show(id))
-        }
-      case Preview => Future.successful(Redirect(routes.ApplicationController.show(id)))
-    }.getOrElse(Future.successful(BadRequest))
+  def takeAction(id: ApplicationFormId, sectionNumber: Int, buttonAction: Option[ButtonAction], fieldValues: JsObject): Future[Result] = {
+    val result: Option[Future[Unit]] = buttonAction.map {
+      case Complete => Future.successful(Unit)
+      case Save => applications.saveSection(id, sectionNumber, fieldValues)
+      case Preview => Future.successful(Unit)
+    }
+
+    result.map(f => f.map(_ => Redirect(routes.ApplicationController.show(id))))
+      .getOrElse(Future.successful(BadRequest))
   }
 }

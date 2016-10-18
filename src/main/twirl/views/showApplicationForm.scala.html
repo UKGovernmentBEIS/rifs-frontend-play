@@ -20,7 +20,7 @@
             @app.sections.sortBy(_.sectionNumber).map { s =>
                 <tr>
                     <td>
-                        @s.sectionNumber. <a href="@controllers.routes.ApplicationController.sectionForm(app.id, s.sectionNumber)"> @s.title</a>
+                        @s.sectionNumber. <a href="@controllers.routes.ApplicationController.showSectionForm(app.id, s.sectionNumber)"> @s.title</a>
                     </td>
                     <td>@overview.sections.find(_.sectionNumber == s.sectionNumber).map(os => os.status).getOrElse("Not started")</td>
                 </tr>
