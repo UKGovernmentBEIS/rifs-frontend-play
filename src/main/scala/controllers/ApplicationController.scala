@@ -50,14 +50,18 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     * which one will be returned. This shouldn't occur if the form is properly submitted from a
     * browser, though.
     */
-  def decodeAction(keys: Set[String]): Option[ButtonAction] = keys.flatMap(ButtonAction.unapply).headOption
+  def decodeButton(keys: Set[String]): Option[ButtonAction] = keys.flatMap(ButtonAction.unapply).headOption
 
   def postSection(id: ApplicationFormId, sectionNumber: Int) = Action.async(parse.urlFormEncoded) { implicit request =>
-    takeAction(id, sectionNumber, decodeAction(request.body.keySet), formToJson(request.body.filterKeys(k => !k.startsWith("_"))))
+    // Drop keys that start with '_' as these are "system" keys like the button name
+    val jsonFormValues = formToJson(request.body.filterKeys(k => !k.startsWith("_")))
+    val button: Option[ButtonAction] = decodeButton(request.body.keySet)
+
+    takeAction(id, sectionNumber, button, jsonFormValues)
   }
 
-  def takeAction(id: ApplicationFormId, sectionNumber: Int, buttonAction: Option[ButtonAction], fieldValues: JsObject): Future[Result] = {
-    val result: Option[Future[Unit]] = buttonAction.map {
+  def takeAction(id: ApplicationFormId, sectionNumber: Int, button: Option[ButtonAction], fieldValues: JsObject): Future[Result] = {
+    val result: Option[Future[Unit]] = button.map {
       case Complete => applications.saveSection(id, sectionNumber, fieldValues, Some(LocalDateTime.now()))
       case Save => applications.saveSection(id, sectionNumber, fieldValues)
       case Preview => Future.successful(Unit)
