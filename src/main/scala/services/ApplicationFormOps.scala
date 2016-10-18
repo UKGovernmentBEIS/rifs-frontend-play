@@ -1,8 +1,7 @@
 package services
 
 import com.google.inject.ImplementedBy
-import models.{ApplicationForm, ApplicationFormId, OpportunityId}
-import play.api.libs.json.JsObject
+import models._
 
 import scala.concurrent.Future
 
@@ -11,6 +10,8 @@ trait ApplicationFormOps {
   def byId(id: ApplicationFormId): Future[Option[ApplicationForm]]
 
   def byOpportunityId(id: OpportunityId): Future[Option[ApplicationForm]]
+
+  def overview(id:ApplicationFormId):Future[Option[ApplicationOverview]]
 }
 
 

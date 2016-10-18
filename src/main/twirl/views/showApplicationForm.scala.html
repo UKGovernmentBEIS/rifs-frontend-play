@@ -1,6 +1,6 @@
-@import models.ApplicationForm
+@import models._
 
-@(app: ApplicationForm)
+@(app: ApplicationForm, overview:ApplicationOverview)
 
 @main(s"Overview") {
     <div>
@@ -22,7 +22,7 @@
                     <td>
                         @s.sectionNumber. <a href="@controllers.routes.ApplicationController.sectionForm(app.id, s.sectionNumber)"> @s.title</a>
                     </td>
-                    <td>Not started</td>
+                    <td>@overview.sections.find(_.sectionNumber == s.sectionNumber).map(os => os.status).getOrElse("Not started")</td>
                 </tr>
             }
             </tbody>

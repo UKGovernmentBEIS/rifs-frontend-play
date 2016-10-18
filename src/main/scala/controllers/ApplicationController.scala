@@ -15,8 +15,15 @@ import scala.concurrent.{ExecutionContext, Future}
 class ApplicationController @Inject()(applications:ApplicationOps, applicationForms: ApplicationFormOps, opportunities: OpportunityOps)(implicit ec: ExecutionContext) extends Controller {
 
   def show(id: ApplicationFormId) = Action.async {
-    applicationForms.byId(id).map {
-      case Some(application) => Ok(views.html.showApplicationForm(application))
+    val t = for {
+      af <- OptionT(applicationForms.byId(id))
+      a <- OptionT(applicationForms.overview(id))
+    } yield (af, a)
+
+
+
+    t.value.map {
+      case Some((form, overview)) => Ok(views.html.showApplicationForm(form, overview))
       case None => NotFound
     }
   }
