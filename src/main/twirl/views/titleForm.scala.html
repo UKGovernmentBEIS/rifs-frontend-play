@@ -1,20 +1,23 @@
+@(formValues: play.api.libs.json.JsObject, application: ApplicationForm, section: ApplicationFormSection, opportunity: Opportunity)
 
-@(formValues:play.api.libs.json.JsObject, application: ApplicationForm, section: ApplicationFormSection, opportunity: Opportunity)
+    @import play.api.libs.json._
 
-@import play.api.libs.json._
-
-@valueFor(key:String) = @{
-    formValues.value.get(key).map{
+@valueFor(key: String) = @{
+    formValues.value.get(key).map {
         case JsString(s) => s
         case _ => ""
     }
+}
+
+@formatId(id: Long) = @{
+    f"RIFS$id%05d"
 }
 
 @main(s"Event title") {
     <div class="grid-row">
         <a href="@controllers.routes.ApplicationController.show(application.id)">&lt; Return to application overview</a>
         <p></p>
-        <h2>RIFS0001: @opportunity.title</h2>
+        <h2>@formatId(opportunity.id.id): @opportunity.title</h2>
 
         <h1>@section.title</h1>
 
@@ -24,9 +27,18 @@
                 <input type="text" title="title" name="title" value='@valueFor("title")'>
             </fieldset>
             <input type="submit" name="_complete_button" class="button--link-style" value="Mark question as complete"/>
+            @{
+                valueFor("title") match {
+                    case None | Some("") => "Maximum 20 words"
+                    case Some(s) =>
+                        val remaining = 20 - s.split("\\s+").length
+                        if(remaining >= 0) s"$remaining words remaining"
+                        else s"${-remaining} words over limit"
+                }
+            }
             <div>
-            <input type="submit" name="_save_button" class="button--get-started" value="Save and continue">
-            <input type="submit" name="_preview_button" class="button--link-style" value="Preview this page"/>
+                <input type="submit" name="_save_button" class="button--get-started" value="Save and continue">
+                <input type="submit" name="_preview_button" class="button--link-style" value="Preview this page"/>
             </div>
         </form>
     </div>
