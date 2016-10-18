@@ -4,7 +4,8 @@ import javax.inject.Inject
 
 import cats.data.OptionT
 import cats.instances.future._
-import models.ApplicationFormId
+import models.{ApplicationFormId, ApplicationSection}
+import org.joda.time.LocalDateTime
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller, Result}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
@@ -28,18 +29,18 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
   }
 
   def showSectionForm(id: ApplicationFormId, sectionNumber: Int) = Action.async {
-    if (sectionNumber == 1) applications.getSection(id, sectionNumber).flatMap { section => title(id, section.map(_.answers)) }
+    if (sectionNumber == 1) applications.getSection(id, sectionNumber).flatMap { section => title(id, section) }
     else Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
   }
 
-  def title(id: ApplicationFormId, formValues: Option[JsObject] = None) = {
+  def title(id: ApplicationFormId, section: Option[ApplicationSection]) = {
     val ft = for {
-      a <- OptionT(applicationForms.byId(id))
-      o <- OptionT(opportunities.byId(a.opportunityId))
-    } yield (a, o)
+      af <- OptionT(applicationForms.byId(id))
+      o <- OptionT(opportunities.byId(af.opportunityId))
+    } yield (af, o)
 
     ft.value.map {
-      case Some((app, opp)) => Ok(views.html.titleForm(formValues.getOrElse(JsObject(Seq())), app, app.sections.find(_.sectionNumber == 1).get, opp))
+      case Some((appForm, opp)) => Ok(views.html.titleForm(section, appForm, appForm.sections.find(_.sectionNumber == 1).get, opp))
       case None => NotFound
     }
   }
@@ -57,7 +58,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
 
   def takeAction(id: ApplicationFormId, sectionNumber: Int, buttonAction: Option[ButtonAction], fieldValues: JsObject): Future[Result] = {
     val result: Option[Future[Unit]] = buttonAction.map {
-      case Complete => Future.successful(Unit)
+      case Complete => applications.saveSection(id, sectionNumber, fieldValues, Some(LocalDateTime.now()))
       case Save => applications.saveSection(id, sectionNumber, fieldValues)
       case Preview => Future.successful(Unit)
     }

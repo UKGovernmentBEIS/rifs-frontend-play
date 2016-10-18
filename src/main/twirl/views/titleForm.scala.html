@@ -1,11 +1,14 @@
-@(formValues: play.api.libs.json.JsObject, application: ApplicationForm, section: ApplicationFormSection, opportunity: Opportunity)
+@(section: Option[ApplicationSection], applicationForm: ApplicationForm, formSection: ApplicationFormSection, opportunity: Opportunity)
 
-    @import play.api.libs.json._
+@import play.api.libs.json._
+@import org.joda.time.format.DateTimeFormat
 
 @valueFor(key: String) = @{
-    formValues.value.get(key).map {
-        case JsString(s) => s
-        case _ => ""
+    section.flatMap {
+        _.answers.value.get(key).map {
+            case JsString(s) => s
+            case _ => ""
+        }
     }
 }
 
@@ -15,18 +18,27 @@
 
 @main(s"Event title") {
     <div class="grid-row">
-        <a href="@controllers.routes.ApplicationController.show(application.id)">&lt; Return to application overview</a>
+        <a href="@controllers.routes.ApplicationController.show(applicationForm.id)">&lt; Return to application overview</a>
         <p></p>
         <h2>@formatId(opportunity.id.id): @opportunity.title</h2>
 
-        <h1>@section.title</h1>
+        <h1>@formSection.title</h1>
 
-        <form method="POST" action="@controllers.routes.ApplicationController.postSection(application.id, section.sectionNumber)">
+        <form method="POST" action="@controllers.routes.ApplicationController.postSection(applicationForm.id, formSection.sectionNumber)">
             <fieldset>
                 <label for="title">What is your event called?</label>
                 <input type="text" title="title" name="title" value='@valueFor("title")'>
             </fieldset>
-            <input type="submit" name="_complete_button" class="button--link-style" value="Mark question as complete"/>
+            @{
+                section.flatMap {
+                    _.completedAt.map { d =>
+                        val dtf = DateTimeFormat.forPattern("d MMMM HH:mm")
+                        val s = dtf.print(d)
+                        s"Completed $s"
+                    }
+                }.getOrElse(<input type="submit" name="_complete_button" class="button--link-style" value="Mark question as complete"/>)
+            }
+            &nbsp;&nbsp;
             @{
                 valueFor("title") match {
                     case None | Some("") => "Maximum 20 words"

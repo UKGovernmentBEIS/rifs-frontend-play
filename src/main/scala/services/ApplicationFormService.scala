@@ -10,7 +10,8 @@ import play.api.libs.ws.WSClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ApplicationFormService @Inject()(val ws: WSClient)(implicit val ec: ExecutionContext) extends ApplicationFormOps with RestService with ValueClassFormats {
+class ApplicationFormService @Inject()(val ws: WSClient)(implicit val ec: ExecutionContext)
+  extends ApplicationFormOps with JodaFormats with RestService with ValueClassFormats {
   implicit val appSecRead = Json.reads[ApplicationFormSection]
   implicit val appRead = Json.reads[ApplicationForm]
   implicit val appSecOvRead = Json.reads[ApplicationSectionOverview]
