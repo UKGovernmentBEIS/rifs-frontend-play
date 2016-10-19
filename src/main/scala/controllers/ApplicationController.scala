@@ -40,9 +40,9 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
   type FieldErrors = Map[String, NonEmptyList[String]]
   val noErrors: FieldErrors = Map()
 
-  def showSectionForm(id: ApplicationId, sectionNumber: Int, withValidation: Option[Boolean]) = Action.async {
+  def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
     if (sectionNumber == 1) applications.getSection(id, sectionNumber).flatMap { section =>
-      val doValidation = withValidation.getOrElse(false)
+      val doValidation = request.flash.get("doValidation").exists(_ => true)
 
       val errs: FieldErrors = section.map { s =>
         if (doValidation) validate(s.answers, rules) else noErrors
@@ -92,7 +92,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
           }
         } else {
           applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
-            Redirect(routes.ApplicationController.showSectionForm(id, sectionNumber, Some(true)))
+            Redirect(routes.ApplicationController.showSectionForm(id, sectionNumber)).flashing(("doValidation", "true"))
           }
         }
       case Save =>
