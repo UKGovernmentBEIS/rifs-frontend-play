@@ -4,6 +4,7 @@ import javax.inject.Inject
 
 import cats.data.OptionT
 import cats.instances.future._
+import forms.{MandatoryRule, WordCountRule}
 import models.{ApplicationFormId, ApplicationSection}
 import org.joda.time.LocalDateTime
 import play.api.libs.json._
@@ -34,13 +35,15 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
   }
 
   def title(id: ApplicationFormId, section: Option[ApplicationSection]) = {
+    val rules = Map("title" -> Seq(WordCountRule(20), MandatoryRule))
+
     val ft = for {
       af <- OptionT(applicationForms.byId(id))
       o <- OptionT(opportunities.byId(af.opportunityId))
     } yield (af, o)
 
     ft.value.map {
-      case Some((appForm, opp)) => Ok(views.html.titleForm(section, appForm, appForm.sections.find(_.sectionNumber == 1).get, opp))
+      case Some((appForm, opp)) => Ok(views.html.titleForm(section, appForm, appForm.sections.find(_.sectionNumber == 1).get, opp, rules))
       case None => NotFound
     }
   }

@@ -1,6 +1,12 @@
-@(section: Option[ApplicationSection], applicationForm: ApplicationForm, formSection: ApplicationFormSection, opportunity: Opportunity)
+@(
+        section: Option[ApplicationSection],
+        applicationForm: ApplicationForm,
+        formSection: ApplicationFormSection,
+        opportunity: Opportunity,
+        fieldRules: Map[String, Seq[forms.FieldRule]]
+)
 
-@import play.api.libs.json._
+@import play.api.libs.json.JsString
 @import org.joda.time.format.DateTimeFormat
 
 @valueFor(key: String) = @{
@@ -14,6 +20,10 @@
 
 @formatId(id: Long) = @{
     f"RIFS$id%05d"
+}
+
+@rulesFor(key: String) = @{
+    fieldRules.getOrElse(key, Seq())
 }
 
 @main(s"Event title") {
@@ -38,14 +48,10 @@
                     }
                 }.getOrElse(<input type="submit" name="_complete_button" class="button--link-style" value="Mark question as complete"/>)
             }
-            &nbsp;&nbsp;
+                &nbsp&nbsp
             @{
-                valueFor("title") match {
-                    case None | Some("") => "Maximum 20 words"
-                    case Some(s) =>
-                        val remaining = 20 - s.split("\\s+").length
-                        if(remaining >= 0) s"$remaining words remaining"
-                        else s"${-remaining} words over limit"
+                valueFor("title").map { value =>
+                    rulesFor("title").flatMap(_.helpText(value))
                 }
             }
             <div>
