@@ -35,14 +35,26 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     }
   }
 
-  def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async {
-    if (sectionNumber == 1) applications.getSection(id, sectionNumber).flatMap { section => title(id, section) }
+  val rules: Map[String, Seq[FieldRule]] = Map("title" -> Seq(WordCountRule(20), MandatoryRule))
+
+  type FieldErrors = Map[String, NonEmptyList[String]]
+  val noErrors: FieldErrors = Map()
+
+  def showSectionForm(id: ApplicationId, sectionNumber: Int, withValidation: Option[Boolean]) = Action.async {
+    if (sectionNumber == 1) applications.getSection(id, sectionNumber).flatMap { section =>
+      val doValidation = withValidation.getOrElse(false)
+
+      val errs: FieldErrors = section.map { s =>
+        if (doValidation) validate(s.answers, rules) else noErrors
+      }.getOrElse(noErrors)
+
+      title(id, section, errs)
+    }
     else Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
   }
 
-  val rules: Map[String, Seq[FieldRule]] = Map("title" -> Seq(WordCountRule(20), MandatoryRule))
 
-  def title(id: ApplicationId, section: Option[ApplicationSection]) = {
+  def title(id: ApplicationId, section: Option[ApplicationSection], errs: FieldErrors) = {
     val ft = for {
       a <- OptionT(applications.byId(id))
       af <- OptionT(applicationForms.byId(a.applicationFormId))
@@ -50,7 +62,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     } yield (a, af, o)
 
     ft.value.map {
-      case Some((app, appForm, opp)) => Ok(views.html.titleForm(app, section, appForm.sections.find(_.sectionNumber == 1).get, opp, rules))
+      case Some((app, appForm, opp)) => Ok(views.html.titleForm(app, section, appForm.sections.find(_.sectionNumber == 1).get, opp, rules, errs))
       case None => NotFound
     }
   }
@@ -80,7 +92,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
           }
         } else {
           applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
-            Redirect(routes.ApplicationController.showSectionForm(id, sectionNumber))
+            Redirect(routes.ApplicationController.showSectionForm(id, sectionNumber, Some(true)))
           }
         }
       case Save =>
