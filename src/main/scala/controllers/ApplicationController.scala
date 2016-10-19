@@ -5,7 +5,7 @@ import javax.inject.Inject
 import cats.data.OptionT
 import cats.instances.future._
 import forms.{MandatoryRule, WordCountRule}
-import models.{ApplicationFormId, ApplicationSection}
+import models.{ApplicationFormId, ApplicationId, ApplicationSection}
 import org.joda.time.LocalDateTime
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller, Result}
@@ -17,10 +17,17 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
   extends Controller
     with ControllerUtils {
 
-  def show(id: ApplicationFormId) = Action.async {
+  def showOrCreateForForm(id: ApplicationFormId) = Action.async {
+    applications.getOrCreateForForm(id).map {
+      case Some(app) => Redirect(controllers.routes.ApplicationController.show(app.id))
+      case None => NotFound
+    }
+  }
+
+  def show(id: ApplicationId) = Action.async {
     val t = for {
-      af <- OptionT(applicationForms.byId(id))
-      a <- OptionT(applicationForms.overview(id))
+      a <- OptionT(applications.overview(id))
+      af <- OptionT(applicationForms.byId(a.applicationFormId))
     } yield (af, a)
 
     t.value.map {
@@ -29,21 +36,22 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     }
   }
 
-  def showSectionForm(id: ApplicationFormId, sectionNumber: Int) = Action.async {
+  def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async {
     if (sectionNumber == 1) applications.getSection(id, sectionNumber).flatMap { section => title(id, section) }
     else Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
   }
 
-  def title(id: ApplicationFormId, section: Option[ApplicationSection]) = {
+  def title(id: ApplicationId, section: Option[ApplicationSection]) = {
     val rules = Map("title" -> Seq(WordCountRule(20), MandatoryRule))
 
     val ft = for {
-      af <- OptionT(applicationForms.byId(id))
+      a<- OptionT(applications.byId(id))
+      af <- OptionT(applicationForms.byId(a.applicationFormId))
       o <- OptionT(opportunities.byId(af.opportunityId))
-    } yield (af, o)
+    } yield (a, af, o)
 
     ft.value.map {
-      case Some((appForm, opp)) => Ok(views.html.titleForm(section, appForm, appForm.sections.find(_.sectionNumber == 1).get, opp, rules))
+      case Some((app, appForm, opp)) => Ok(views.html.titleForm(app, section, appForm, appForm.sections.find(_.sectionNumber == 1).get, opp, rules))
       case None => NotFound
     }
   }
@@ -55,7 +63,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     */
   def decodeButton(keys: Set[String]): Option[ButtonAction] = keys.flatMap(ButtonAction.unapply).headOption
 
-  def postSection(id: ApplicationFormId, sectionNumber: Int) = Action.async(parse.urlFormEncoded) { implicit request =>
+  def postSection(id: ApplicationId, sectionNumber: Int) = Action.async(parse.urlFormEncoded) { implicit request =>
     // Drop keys that start with '_' as these are "system" keys like the button name
     val jsonFormValues = formToJson(request.body.filterKeys(k => !k.startsWith("_")))
     val button: Option[ButtonAction] = decodeButton(request.body.keySet)
@@ -63,7 +71,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     takeAction(id, sectionNumber, button, jsonFormValues)
   }
 
-  def takeAction(id: ApplicationFormId, sectionNumber: Int, button: Option[ButtonAction], fieldValues: JsObject): Future[Result] = {
+  def takeAction(id: ApplicationId, sectionNumber: Int, button: Option[ButtonAction], fieldValues: JsObject): Future[Result] = {
     val result: Option[Future[Unit]] = button.map {
       case Complete => applications.saveSection(id, sectionNumber, fieldValues, Some(LocalDateTime.now()))
       case Save => applications.saveSection(id, sectionNumber, fieldValues)

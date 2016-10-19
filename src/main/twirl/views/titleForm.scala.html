@@ -1,4 +1,5 @@
 @(
+        app: Application,
         section: Option[ApplicationSection],
         applicationForm: ApplicationForm,
         formSection: ApplicationFormSection,
@@ -27,13 +28,13 @@
 
 @main(s"Event title") {
     <div class="grid-row">
-        <a href="@controllers.routes.ApplicationController.show(applicationForm.id)">&lt; Return to application overview</a>
+        <a href="@controllers.routes.ApplicationController.show(app.id)">&lt; Return to application overview</a>
         <p></p>
         <h2>@formatId(opportunity.id.id): @opportunity.title</h2>
 
         <h1>@formSection.title</h1>
 
-        <form method="POST" action="@controllers.routes.ApplicationController.postSection(applicationForm.id, formSection.sectionNumber)">
+        <form method="POST" action="@controllers.routes.ApplicationController.postSection(app.id, formSection.sectionNumber)">
             <fieldset>
                 <label for="title">What is your event called?</label>
                 <input type="text" title="title" name="title" value='@valueFor("title")'>

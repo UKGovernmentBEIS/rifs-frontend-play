@@ -11,7 +11,7 @@ trait ApplicationFormOps {
 
   def byOpportunityId(id: OpportunityId): Future[Option[ApplicationForm]]
 
-  def overview(id:ApplicationFormId):Future[Option[ApplicationOverview]]
+
 }
 
 
