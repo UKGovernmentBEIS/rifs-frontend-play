@@ -2,7 +2,6 @@ package services
 
 import com.google.inject.ImplementedBy
 import models._
-import org.joda.time.LocalDateTime
 import play.api.libs.json.JsObject
 
 import scala.concurrent.Future
@@ -16,7 +15,9 @@ trait ApplicationOps {
 
   def overview(id: ApplicationId): Future[Option[ApplicationOverview]]
 
-  def saveSection(id: ApplicationId, sectionNumber: Int, doc: JsObject, completedAt: Option[LocalDateTime] = None): Future[Unit]
+  def saveSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[Unit]
+
+  def completeSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[Unit]
 
   def getSection(id: ApplicationId, sectionNumber: Int): Future[Option[ApplicationSection]]
 }

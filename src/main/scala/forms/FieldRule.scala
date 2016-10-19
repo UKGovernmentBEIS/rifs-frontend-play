@@ -1,10 +1,7 @@
 package forms
 
-import cats.data.ValidatedNel
-import cats.syntax.validated._
-
 trait FieldRule {
-  def validate(value: String): ValidatedNel[String, String]
+  def validate(value: String): Seq[String]
 
   def helpText(value: String): Option[String]
 }
@@ -12,9 +9,9 @@ trait FieldRule {
 case class WordCountRule(maxWords: Int) extends FieldRule {
   def normalise(s: String): String = s.trim()
 
-  override def validate(value: String): ValidatedNel[String, String] = {
-    if (normalise(value).split("\\s+").length <= maxWords) normalise(value).valid
-    else "Word limit exceeded".invalidNel
+  override def validate(value: String): Seq[String] = {
+    if (normalise(value).split("\\s+").length <= maxWords) Seq()
+    else Seq("Word limit exceeded")
   }
 
   override def helpText(value: String): Option[String] = {
@@ -45,9 +42,9 @@ object WordCountRule {
 case object MandatoryRule extends FieldRule {
   def normalise(s: String): String = s.trim()
 
-  override def validate(value: String): ValidatedNel[String, String] = {
-    if (normalise(value) != "") normalise(value).valid
-    else "Must be supplied".invalidNel
+  override def validate(value: String): Seq[String] = {
+    if (normalise(value) != "") Seq()
+    else Seq("Must be supplied")
   }
 
   override def helpText(value: String): Option[String] = None

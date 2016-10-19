@@ -7,15 +7,15 @@ class WordCountRuleTest extends WordSpecLike with Matchers with OptionValues {
   val sut = WordCountRule(2)
   "WordCountRule.validate" should {
     "be valid for an empty string" in {
-      sut.validate("") shouldBe "".valid
+      sut.validate("") shouldBe Seq()
     }
 
     "normalise whitespace to an empty string" in {
-      sut.validate("  \t\n") shouldBe "".valid
+      sut.validate("  \t\n") shouldBe Seq()
     }
 
     "be invalid when word count is exceeded" in {
-      sut.validate("one two three").isInvalid shouldBe true
+      sut.validate("one two three").size shouldBe 1
     }
   }
 

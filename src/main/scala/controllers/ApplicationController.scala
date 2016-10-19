@@ -2,11 +2,10 @@ package controllers
 
 import javax.inject.Inject
 
-import cats.data.OptionT
+import cats.data.{NonEmptyList, OptionT}
 import cats.instances.future._
-import forms.{MandatoryRule, WordCountRule}
+import forms.{FieldRule, MandatoryRule, WordCountRule}
 import models.{ApplicationFormId, ApplicationId, ApplicationSection}
-import org.joda.time.LocalDateTime
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller, Result}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
@@ -41,17 +40,17 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     else Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
   }
 
-  def title(id: ApplicationId, section: Option[ApplicationSection]) = {
-    val rules = Map("title" -> Seq(WordCountRule(20), MandatoryRule))
+  val rules: Map[String, Seq[FieldRule]] = Map("title" -> Seq(WordCountRule(20), MandatoryRule))
 
+  def title(id: ApplicationId, section: Option[ApplicationSection]) = {
     val ft = for {
-      a<- OptionT(applications.byId(id))
+      a <- OptionT(applications.byId(id))
       af <- OptionT(applicationForms.byId(a.applicationFormId))
       o <- OptionT(opportunities.byId(af.opportunityId))
     } yield (a, af, o)
 
     ft.value.map {
-      case Some((app, appForm, opp)) => Ok(views.html.titleForm(app, section, appForm, appForm.sections.find(_.sectionNumber == 1).get, opp, rules))
+      case Some((app, appForm, opp)) => Ok(views.html.titleForm(app, section, appForm.sections.find(_.sectionNumber == 1).get, opp, rules))
       case None => NotFound
     }
   }
@@ -72,13 +71,31 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
   }
 
   def takeAction(id: ApplicationId, sectionNumber: Int, button: Option[ButtonAction], fieldValues: JsObject): Future[Result] = {
-    val result: Option[Future[Unit]] = button.map {
-      case Complete => applications.saveSection(id, sectionNumber, fieldValues, Some(LocalDateTime.now()))
-      case Save => applications.saveSection(id, sectionNumber, fieldValues)
-      case Preview => Future.successful(Unit)
-    }
+    button.map {
+      case Complete =>
+        val errs = validate(fieldValues, rules)
+        if (errs.keySet.isEmpty) {
+          applications.completeSection(id, sectionNumber, fieldValues).map { _ =>
+            Redirect(routes.ApplicationController.show(id))
+          }
+        } else {
+          applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
+            Redirect(routes.ApplicationController.showSectionForm(id, sectionNumber))
+          }
+        }
+      case Save =>
+        applications.saveSection(id, sectionNumber, fieldValues)
+        Future.successful(Redirect(routes.ApplicationController.show(id)))
+      case Preview => Future.successful(Redirect(routes.ApplicationController.show(id)))
+    }.getOrElse(Future.successful(BadRequest))
+  }
 
-    result.map(f => f.map(_ => Redirect(routes.ApplicationController.show(id))))
-      .getOrElse(Future.successful(BadRequest))
+  def validate(fieldValues: JsObject, rules: Map[String, Seq[FieldRule]]): Map[String, NonEmptyList[String]] = {
+    rules.map { case (fieldName, rs) =>
+      fieldName -> (fieldValues \ fieldName match {
+        case JsDefined(JsString(s)) => NonEmptyList.fromList(rs.flatMap(r => r.validate(s)).toList)
+        case _ => if (rs.contains(MandatoryRule)) NonEmptyList.fromList(MandatoryRule.validate("").toList) else None
+      })
+    }.collect { case (fieldName, Some(errs)) => fieldName -> errs }
   }
 }
