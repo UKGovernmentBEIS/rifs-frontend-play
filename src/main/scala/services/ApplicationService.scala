@@ -3,24 +3,50 @@ package services
 import com.google.inject.Inject
 import com.wellfactored.playbindings.ValueClassFormats
 import config.Config
-import models.{ApplicationFormId, ApplicationSection}
+import models._
+import org.joda.time.LocalDateTime
 import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionContext) extends ApplicationOps with RestService with ValueClassFormats {
+class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionContext)
+  extends ApplicationOps with JodaFormats with RestService with ValueClassFormats {
   implicit val appSectionReads = Json.reads[ApplicationSection]
+  implicit val appReads = Json.reads[Application]
+  implicit val appSecOvRead = Json.reads[ApplicationSectionOverview]
+  implicit val appOvRead = Json.reads[ApplicationOverview]
 
   val baseUrl = Config.config.business.baseUrl
 
-  override def saveSection(id: ApplicationFormId, sectionNumber: Int, doc: JsObject): Future[Unit] = {
+  override def byId(id: ApplicationId): Future[Option[Application]] = {
+    val url = s"$baseUrl/application/${id.id}"
+    getOpt[Application](url)
+  }
+
+  override def saveSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[Unit] = {
     val url = s"$baseUrl/application/${id.id}/section/$sectionNumber"
     post(url, doc)
   }
 
-  override def getSection(id: ApplicationFormId, sectionNumber: Int): Future[Option[ApplicationSection]] = {
+  override def completeSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[Unit] = {
+    val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/complete"
+    post(url, doc)
+  }
+
+  override def getSection(id: ApplicationId, sectionNumber: Int): Future[Option[ApplicationSection]] = {
     val url = s"$baseUrl/application/${id.id}/section/$sectionNumber"
     getOpt[ApplicationSection](url)
   }
+
+  override def getOrCreateForForm(applicationFormId: ApplicationFormId): Future[Option[Application]] = {
+    val url = s"$baseUrl/application_form/${applicationFormId.id}/application"
+    getOpt[Application](url)
+  }
+
+  override def overview(id: ApplicationId): Future[Option[ApplicationOverview]] = {
+    val url = s"$baseUrl/application/${id.id}/overview"
+    getOpt[ApplicationOverview](url)
+  }
+
 }

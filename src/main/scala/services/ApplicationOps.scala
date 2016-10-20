@@ -1,7 +1,7 @@
 package services
 
 import com.google.inject.ImplementedBy
-import models.{ApplicationFormId, ApplicationSection}
+import models._
 import play.api.libs.json.JsObject
 
 import scala.concurrent.Future
@@ -9,7 +9,15 @@ import scala.concurrent.Future
 @ImplementedBy(classOf[ApplicationService])
 trait ApplicationOps {
 
-  def saveSection(id: ApplicationFormId, sectionNumber: Int, doc: JsObject): Future[Unit]
+  def byId(id: ApplicationId): Future[Option[Application]]
 
-  def getSection(id: ApplicationFormId, sectionNumber: Int): Future[Option[ApplicationSection]]
+  def getOrCreateForForm(applicationFormId: ApplicationFormId): Future[Option[Application]]
+
+  def overview(id: ApplicationId): Future[Option[ApplicationOverview]]
+
+  def saveSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[Unit]
+
+  def completeSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[Unit]
+
+  def getSection(id: ApplicationId, sectionNumber: Int): Future[Option[ApplicationSection]]
 }

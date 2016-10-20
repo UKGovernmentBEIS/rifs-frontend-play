@@ -20,14 +20,14 @@
             @app.sections.sortBy(_.sectionNumber).map { s =>
                 <tr>
                     <td>
-                        @s.sectionNumber. <a href="@controllers.routes.ApplicationController.showSectionForm(app.id, s.sectionNumber)"> @s.title</a>
+                        @s.sectionNumber. <a href="@controllers.routes.ApplicationController.showSectionForm(overview.id, s.sectionNumber)"> @s.title</a>
                     </td>
                     <td>@overview.sections.find(_.sectionNumber == s.sectionNumber).map(os => os.status).getOrElse("Not started")</td>
                 </tr>
             }
             </tbody>
         </table>
-        <a href="@controllers.routes.OpportunityController.wip(controllers.routes.ApplicationController.show(app.id).url)" class="button"> Submit application to RIFS</a>
-        <a href="@controllers.routes.OpportunityController.wip(controllers.routes.ApplicationController.show(app.id).url)">Preview application</a>
+        <a href="@controllers.routes.OpportunityController.wip(controllers.routes.ApplicationController.show(overview.id).url)" class="button"> Submit application to RIFS</a>
+        <a href="@controllers.routes.OpportunityController.wip(controllers.routes.ApplicationController.show(overview.id).url)">Preview application</a>
     </div>
 }
