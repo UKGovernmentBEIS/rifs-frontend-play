@@ -34,7 +34,8 @@ libraryDependencies ++= Seq(
   "com.github.melrief" %% "pureconfig" % "0.1.6",
   "com.wellfactored" %% "play-bindings" % "1.1.0",
 
-  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test
+  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
+  "org.jsoup" % "jsoup" % "1.9.2" % Test
 )
 
 
