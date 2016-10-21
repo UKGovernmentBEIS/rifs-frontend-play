@@ -29,11 +29,11 @@ class WordCountRuleTest extends WordSpecLike with Matchers with OptionValues {
     }
 
     "return correct text for string of 1 word" in {
-      sut.helpText("foo").value shouldBe "1 word left"
+      sut.helpText("foo").value shouldBe "Words remaining: 1"
     }
 
     "return correct text for string of 2 words" in {
-      sut.helpText("foo bar ").value shouldBe "0 words left"
+      sut.helpText("foo bar ").value shouldBe "Words remaining: 0"
     }
 
     "return correct text for string of 3 words" in {

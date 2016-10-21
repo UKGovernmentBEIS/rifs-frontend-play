@@ -21,6 +21,7 @@ routesImport ++= Seq(
 
 buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion)
 buildInfoPackage := "rifs.frontend.buildinfo"
+buildInfoOptions += BuildInfoOption.ToJson
 
 PlayKeys.devSettings := Seq("play.server.http.port" -> "9000")
 javaOptions := Seq(
