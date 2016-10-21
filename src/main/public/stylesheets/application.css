@@ -1960,7 +1960,7 @@ a[rel="external"]:after, [rel="external"].link-style:after, [rel="external"].but
 }
 
 a[rel="external"]:after, [rel="external"].link-style:after, [rel="external"].button--link-style:after {
-    content: "    ";
+    content: "ï¿½ï¿½ï¿½ï¿½";
     background-position: right 6px
 }
 
@@ -1971,7 +1971,7 @@ a[rel="external"]:hover:after, [rel="external"].link-style:hover:after,
 
 @media (max-width: 640px) {
     a[rel="external"]:after, [rel="external"].link-style:after, [rel="external"].button--link-style:after {
-        content: "     ";
+        content: "ï¿½ï¿½ï¿½ï¿½ï¿½";
         background-position: right 3px
     }
 
@@ -1982,7 +1982,7 @@ a[rel="external"]:hover:after, [rel="external"].link-style:hover:after,
 }
 
 .external-link:after {
-    content: "        ";
+    content: "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
     background-position: right 0px
 }
 
@@ -5040,7 +5040,7 @@ table details {
 }
 
 .go:after {
-    content: " " "»" !important
+    content: "ï¿½" "ï¿½" !important
 }
 
 .caps {
@@ -5105,7 +5105,7 @@ table details {
 
 a[rel="external"].external-link-12:after, [rel="external"].external-link-12.link-style:after,
 [rel="external"].external-link-12.button--link-style:after {
-    content: "        ";
+    content: "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
     background-position: right 0px
 }
 
@@ -5116,7 +5116,7 @@ a[rel="external"].external-link-12:hover:after, [rel="external"].external-link-1
 
 a[rel="external"].external-link-12-no-hover:after, [rel="external"].external-link-12-no-hover.link-style:after,
 [rel="external"].external-link-12-no-hover.button--link-style:after {
-    content: "        ";
+    content: "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
     background-position: right 0px
 }
 
@@ -5127,7 +5127,7 @@ a[rel="external"].external-link-12-no-hover:hover:after, [rel="external"].extern
 
 a[rel="external"].external-link-13:after, [rel="external"].external-link-13.link-style:after,
 [rel="external"].external-link-13.button--link-style:after {
-    content: "     ";
+    content: "ï¿½ï¿½ï¿½ï¿½ï¿½";
     background-position: right 1px
 }
 
@@ -5138,7 +5138,7 @@ a[rel="external"].external-link-13:hover:after, [rel="external"].external-link-1
 
 a[rel="external"].external-link-13-no-hover:after, [rel="external"].external-link-13-no-hover.link-style:after,
 [rel="external"].external-link-13-no-hover.button--link-style:after {
-    content: "     ";
+    content: "ï¿½ï¿½ï¿½ï¿½ï¿½";
     background-position: right 1px
 }
 
@@ -5149,7 +5149,7 @@ a[rel="external"].external-link-13-no-hover:hover:after, [rel="external"].extern
 
 a[rel="external"].external-link-14:after, [rel="external"].external-link-14.link-style:after,
 [rel="external"].external-link-14.button--link-style:after {
-    content: "     ";
+    content: "ï¿½ï¿½ï¿½ï¿½ï¿½";
     background-position: right 1px
 }
 
@@ -5160,7 +5160,7 @@ a[rel="external"].external-link-14:hover:after, [rel="external"].external-link-1
 
 a[rel="external"].external-link-14-bold-no-hover:after, [rel="external"].external-link-14-bold-no-hover.link-style:after,
 [rel="external"].external-link-14-bold-no-hover.button--link-style:after {
-    content: "      ";
+    content: "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
     background-position: right 2px
 }
 
@@ -5172,7 +5172,7 @@ a[rel="external"].external-link-14-bold-no-hover:hover:after,
 
 a[rel="external"].external-link-16:after, [rel="external"].external-link-16.link-style:after,
 [rel="external"].external-link-16.button--link-style:after {
-    content: "     ";
+    content: "ï¿½ï¿½ï¿½ï¿½ï¿½";
     background-position: right 3px
 }
 
@@ -5183,7 +5183,7 @@ a[rel="external"].external-link-16:hover:after, [rel="external"].external-link-1
 
 a[rel="external"].external-link-16-bold-no-hover:after, [rel="external"].external-link-16-bold-no-hover.link-style:after,
 [rel="external"].external-link-16-bold-no-hover.button--link-style:after {
-    content: "      ";
+    content: "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
     background-position: right 3px
 }
 
@@ -5195,7 +5195,7 @@ a[rel="external"].external-link-16-bold-no-hover:hover:after,
 
 a[rel="external"].external-link-19:after, [rel="external"].external-link-19.link-style:after,
 [rel="external"].external-link-19.button--link-style:after {
-    content: "    ";
+    content: "ï¿½ï¿½ï¿½ï¿½";
     background-position: right 6px
 }
 
@@ -5206,7 +5206,7 @@ a[rel="external"].external-link-19:hover:after, [rel="external"].external-link-1
 
 a[rel="external"].external-link-19-bold-no-hover:after, [rel="external"].external-link-19-bold-no-hover.link-style:after,
 [rel="external"].external-link-19-bold-no-hover.button--link-style:after {
-    content: "      ";
+    content: "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
     background-position: right 6px
 }
 
@@ -9840,4 +9840,47 @@ table details {
     font-weight: 700
 }
 
+.button-closed {
+    background-color: #e5e3e2;
+    position: relative;
+    display: -moz-inline-stack;
+    display: inline-block;
+    padding: 0.3em 0.6em 0.2em 0.6em;
+    border: none;
+    border-radius: 0;
+    -webkit-appearance: none;
+    font-size: 1em;
+    line-height: 1.25;
+    text-decoration: none;
+    -webkit-font-smoothing: antialiased;
+    cursor: pointer;
+    color: #000000;
+    margin: 0 15px 15px 0;
+    padding: 0.52632em 0.78947em 0.26316em 0.78947em;
+    vertical-align: top
+}
 
+.button-closed a:link, a:visited{
+    color: #000000;
+    text-decoration: none
+}
+
+.previewlink {
+    background-color: #ffffff;
+    position: relative;
+    display: -moz-inline-stack;
+    display: inline-block;
+    padding: 0.3em 0.6em 0.2em 0.6em;
+    border: none;
+    border-radius: 0;
+    -webkit-appearance: none;
+    font-size: 1em;
+    line-height: 1.25;
+    text-decoration: underline;
+    -webkit-font-smoothing: antialiased;
+    cursor: pointer;
+    color: blue;
+    margin: 0 15px 15px 0;
+    padding: 0.52632em 0.78947em 0.26316em 0.78947em;
+    vertical-align: top
+}
