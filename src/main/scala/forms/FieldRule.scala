@@ -30,7 +30,7 @@ case class WordCountRule(maxWords: Int) extends FieldRule {
 object WordCountRule {
   def w(n: Int) = if (n == 1) "word" else "words"
 
-  def wordsLeft(wordsLeft: Int) = s"$wordsLeft ${w(wordsLeft)} left"
+  def wordsLeft(wordsLeft: Int) = s"Words remaining: $wordsLeft "
 
   def overLimitText(over: Int) = {
     s"$over ${w(over)} over limit"
