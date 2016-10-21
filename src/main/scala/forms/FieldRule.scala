@@ -44,7 +44,7 @@ case object MandatoryRule extends FieldRule {
 
   override def validate(value: String): Seq[String] = {
     if (normalise(value) != "") Seq()
-    else Seq("Must be supplied")
+    else Seq("Field cannot be empty")
   }
 
   override def helpText(value: String): Option[String] = None
