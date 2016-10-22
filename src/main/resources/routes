@@ -20,6 +20,5 @@ GET         /application/:id/section/:num/preview        controllers.Application
 
 GET         /wip                                         controllers.OpportunityController.wip(backUrl: String)
 
-
 # Health check
 GET         /ping                                        controllers.HealthCheckController.ping()
