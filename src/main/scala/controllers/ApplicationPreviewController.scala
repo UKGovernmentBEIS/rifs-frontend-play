@@ -29,7 +29,7 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
     } yield (a, af, o)
 
     ft.value.map {
-      case Some((app, appForm, opp)) => Ok(views.html.previewTitle(app, section, appForm.sections.find(_.sectionNumber == 1).get, opp))
+      case Some((app, appForm, opp)) => Ok(views.html.titlePreview(app, section, appForm.sections.find(_.sectionNumber == 1).get, opp))
       case None => NotFound
     }
   }
