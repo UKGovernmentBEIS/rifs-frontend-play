@@ -39,6 +39,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
 
   type FieldErrors = Map[String, NonEmptyList[String]]
   val noErrors: FieldErrors = Map()
+  val fields = Seq(TextField("What is your event called?", "title", rules.getOrElse("title", Seq())))
 
   def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
     if (sectionNumber == 1) applications.getSection(id, sectionNumber).flatMap { section =>
@@ -61,8 +62,6 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
       o <- OptionT(opportunities.byId(af.opportunityId))
     } yield (a, af, o)
 
-    val fields = Seq(TextField("What is your event called?", "title", rules.getOrElse("title", Seq())))
-
     ft.value.map {
       case Some((app, appForm, opp)) => Ok(views.html.sectionForm(app, section, appForm.sections.find(_.sectionNumber == 1).get, opp, fields, errs))
       case None => NotFound
@@ -81,7 +80,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     val jsonFormValues = formToJson(request.body.filterKeys(k => !k.startsWith("_")))
     val button: Option[ButtonAction] = decodeButton(request.body.keySet)
 
-    takeAction(id, sectionNumber, button, jsonFormValues)
+    takeAction(id, sectionNumber, button, JsObject(fields.flatMap(_.deRender(jsonFormValues))))
   }
 
   def takeAction(id: ApplicationId, sectionNumber: Int, button: Option[ButtonAction], fieldValues: JsObject): Future[Result] = {
