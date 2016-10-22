@@ -3,23 +3,23 @@
 # ~~~~
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                        controllers.Assets.at(path="/public", file)
+GET         /assets/*file                                controllers.Assets.at(path="/public", file)
 
-GET         /                                    controllers.StartPageController.startPage
-GET         /opportunities                       controllers.OpportunityController.showOpportunities
-GET         /opportunities/guidance              controllers.OpportunityController.showGuidancePage
-GET         /opportunity/:opportunityId          controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
+GET         /                                            controllers.StartPageController.startPage
+GET         /opportunities                               controllers.OpportunityController.showOpportunities
+GET         /opportunities/guidance                      controllers.OpportunityController.showGuidancePage
+GET         /opportunity/:opportunityId                  controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
 
-GET         /application_form/:id/apply          controllers.ApplicationController.showOrCreateForForm(id: ApplicationFormId)
+GET         /application_form/:id/apply                  controllers.ApplicationController.showOrCreateForForm(id: ApplicationFormId)
 
-GET         /application/:id                     controllers.ApplicationController.show(id: ApplicationId)
-GET         /application/:id/section/:num        controllers.ApplicationController.showSectionForm(id: ApplicationId, num:Int)
-POST        /application/:id/section/:num        controllers.ApplicationController.postSection(id: ApplicationId, num:Int)
+GET         /application/:id                             controllers.ApplicationController.show(id: ApplicationId)
+GET         /application/:id/section/:num                controllers.ApplicationController.showSectionForm(id: ApplicationId, num:Int)
+POST        /application/:id/section/:num                controllers.ApplicationController.postSection(id: ApplicationId, num:Int)
 
-GET         /previewapplication/:id/section/:num controllers.ApplicationPreviewController.previewSectionForm(id: ApplicationId, num:Int)
+GET         /application/:id/section/:num/preview        controllers.ApplicationPreviewController.previewSection(id: ApplicationId, num:Int)
 
-GET         /wip                                 controllers.OpportunityController.wip(backUrl: String)
+GET         /wip                                         controllers.OpportunityController.wip(backUrl: String)
 
 
 # Health check
-GET         /ping                                controllers.HealthCheckController.ping()
+GET         /ping                                        controllers.HealthCheckController.ping()

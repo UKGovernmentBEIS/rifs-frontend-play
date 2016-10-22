@@ -98,7 +98,10 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
       case Save =>
         applications.saveSection(id, sectionNumber, fieldValues)
         Future.successful(Redirect(routes.ApplicationController.show(id)))
-      case Preview => Future.successful(Redirect(routes.ApplicationController.show(id)))
+      case Preview =>
+        applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
+          Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber))
+        }
     }.getOrElse(Future.successful(BadRequest))
   }
 
