@@ -1,0 +1,12 @@
+@(field: forms.TextField, value: Option[String], errs: Option[cats.data.NonEmptyList[String]])
+
+<label for="@field.name">@field.label</label>
+@errs.map { es =>
+    <div>
+        @es.toList.map { e =>
+        <p>@e</p>
+    }
+    </div>
+}
+<input type="text" title="@field.name" name="@field.name" value='@value'>
+<div class="inline" id="title_help_text">@field.rules.flatMap(_.helpText(value.getOrElse("")))</div>

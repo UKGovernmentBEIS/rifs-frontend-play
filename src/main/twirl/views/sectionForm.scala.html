@@ -3,7 +3,7 @@
         section: Option[ApplicationSection],
         formSection: ApplicationFormSection,
         opportunity: Opportunity,
-        fieldRules: Map[String, Seq[forms.FieldRule]],
+        fields: Seq[forms.Field],
         errs: Map[String, cats.data.NonEmptyList[String]]
 )
 
@@ -22,11 +22,7 @@
     f"RIFS$id%05d"
 }
 
-@rulesFor(key: String) = @{
-    fieldRules.getOrElse(key, Seq())
-}
-
-@main(s"Event title") {
+@main(formSection.title) {
     <div class="grid-row">
         <a href="@controllers.routes.ApplicationController.show(app.id)">&lt; Return to application overview</a>
         <p></p>
@@ -36,17 +32,13 @@
 
         <form method="POST" action="@controllers.routes.ApplicationController.postSection(app.id, formSection.sectionNumber)">
             <fieldset>
-                <label for="title">What is your event called?</label>
-                @errs.get("title").map { es =>
-                    @es.toList.map { e =>
-                        <p>@e</p>
-                    }
+                @fields.map { f =>
+                    @f.renderFormInput(valueFor(f.name), errs.get(f.name))
                 }
-                <input type="text" title="title" name="title" value='@valueFor("title")'>
+
+                @section.flatMap(_.completedAtText).getOrElse(<input type="submit" name="_complete_button" class="button--link-style" value="Mark question as complete"/>)
+
             </fieldset>
-            @section.flatMap(_.completedAtText).getOrElse(<input type="submit" name="_complete_button" class="button--link-style" value="Mark question as complete"/>)
-            &nbsp&nbsp
-            <span class="inline" id="title_help_text">@rulesFor("title").flatMap(_.helpText(valueFor("title").getOrElse("")))</span>
             <div>
                 <input type="submit" name="_save_button" class="button--get-started" value="Save and continue">
                 <input type="submit" name="_preview_button" class="button--link-style" value="Preview this page"/>

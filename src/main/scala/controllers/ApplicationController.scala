@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import cats.data.{NonEmptyList, OptionT}
 import cats.instances.future._
-import forms.{FieldRule, MandatoryRule, WordCountRule}
+import forms.{FieldRule, MandatoryRule, TextField, WordCountRule}
 import models.{ApplicationFormId, ApplicationId, ApplicationSection}
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller, Result}
@@ -61,8 +61,10 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
       o <- OptionT(opportunities.byId(af.opportunityId))
     } yield (a, af, o)
 
+    val fields = Seq(TextField("What is your event called?", "title", rules.getOrElse("title", Seq())))
+
     ft.value.map {
-      case Some((app, appForm, opp)) => Ok(views.html.titleForm(app, section, appForm.sections.find(_.sectionNumber == 1).get, opp, rules, errs))
+      case Some((app, appForm, opp)) => Ok(views.html.sectionForm(app, section, appForm.sections.find(_.sectionNumber == 1).get, opp, fields, errs))
       case None => NotFound
     }
   }
