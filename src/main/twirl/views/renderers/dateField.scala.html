@@ -1,6 +1,6 @@
 @(field: forms.DateField)
 
-<label for="@field.name">@field.label</label>
+@field.question.map { q => <h4>@q</h4> }
 @field.errs.map { es =>
     <div>
         @es.toList.map { e =>
