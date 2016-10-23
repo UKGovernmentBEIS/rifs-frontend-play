@@ -40,22 +40,36 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
   type FieldErrors = Map[String, NonEmptyList[String]]
   val noErrors: FieldErrors = Map()
   val titleFormFields: Seq[Field] = Seq(TextField("What is your event called?", "title", rules.getOrElse("title", Seq()), None, None))
+  val dateFormFields: Seq[Field] = Seq(
+    DateField("When do you propose to hold the event?", "date", Seq(), None, None),
+    TextField("How long will it last?", "days", Seq(), None, None)
+  )
 
-  def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
-    if (sectionNumber == 1) applications.getSection(id, sectionNumber).flatMap { section =>
-      val doValidation = request.flash.get("doValidation").exists(_ => true)
-
-      val errs: FieldErrors = section.map { s =>
-        if (doValidation) validate(s.answers, rules) else noErrors
-      }.getOrElse(noErrors)
-
-      title(id, section, errs)
+  private def fieldsFor(sectionNum:Int):Option[Seq[Field]] = {
+    sectionNum match {
+      case 1 => Some(titleFormFields)
+      case 2 => Some(dateFormFields)
+      case _ => None
     }
-    else Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
   }
 
+  def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
+    fieldsFor(sectionNumber) match {
+      case Some(fields) =>
+        applications.getSection(id, sectionNumber).flatMap { section =>
+          val doValidation = request.flash.get("doValidation").exists(_ => true)
 
-  def title(id: ApplicationId, section: Option[ApplicationSection], errs: FieldErrors) = {
+          val errs: FieldErrors = section.map { s =>
+            if (doValidation) validate(s.answers, rules) else noErrors
+          }.getOrElse(noErrors)
+
+          renderSectionForm(id, sectionNumber, section, fields, errs)
+        }
+      case None => Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
+    }
+  }
+
+  def renderSectionForm(id: ApplicationId, sectionNumber:Int, section: Option[ApplicationSection], fields:Seq[Field], errs: FieldErrors) = {
     val ft = for {
       a <- OptionT(applications.byId(id))
       af <- OptionT(applicationForms.byId(a.applicationFormId))
@@ -64,8 +78,8 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
 
     ft.value.map {
       case Some((app, appForm, opp)) =>
-        val formSection: ApplicationFormSection = appForm.sections.find(_.sectionNumber == 1).get
-        val populatedFields = titleFormFields.map {
+        val formSection: ApplicationFormSection = appForm.sections.find(_.sectionNumber == sectionNumber).get
+        val populatedFields = fields.map {
           _.withValuesFrom(section.map(_.answers).getOrElse(JsObject(Seq())))
             .withErrorsFrom(errs)
         }
