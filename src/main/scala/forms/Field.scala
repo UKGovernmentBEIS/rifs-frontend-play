@@ -5,7 +5,7 @@ import play.api.libs.json._
 import play.twirl.api.Html
 
 trait Field {
-  def renderFormInput(value: Option[String], errs: Option[NonEmptyList[String]]): Html
+  def renderFormInput: Html
 
   def name: String
 
@@ -27,10 +27,22 @@ trait Field {
     case JsDefined(v) => Some(name -> v)
     case _ => None
   }
+
+  def withValuesFrom(values: JsObject): Field
+
+  def withErrorsFrom(errs: Map[String, NonEmptyList[String]]): Field
 }
 
-case class TextField(label: String, name: String, rules: Seq[FieldRule]) extends Field {
-  override def renderFormInput(value: Option[String], errs: Option[NonEmptyList[String]]): Html = {
-    views.html.renderers.textField(this, value, errs)
+case class TextField(label: String, name: String, rules: Seq[FieldRule], value: Option[String], errs: Option[NonEmptyList[String]]) extends Field {
+  override def withValuesFrom(values: JsObject): TextField = {
+    values \ name match {
+      case JsDefined(JsString(s)) => this.copy(value = Some(s))
+      case _ => this.copy(value = None)
+    }
   }
+
+  override def withErrorsFrom(errs: Map[String, NonEmptyList[String]]): Field = this.copy(errs = errs.get(name))
+
+
+  override def renderFormInput: Html = views.html.renderers.textField(this)
 }

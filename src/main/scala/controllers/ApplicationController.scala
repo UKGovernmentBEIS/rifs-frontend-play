@@ -4,8 +4,8 @@ import javax.inject.Inject
 
 import cats.data.{NonEmptyList, OptionT}
 import cats.instances.future._
-import forms.{FieldRule, MandatoryRule, TextField, WordCountRule}
-import models.{ApplicationFormId, ApplicationId, ApplicationSection}
+import forms._
+import models.{ApplicationFormId, ApplicationFormSection, ApplicationId, ApplicationSection}
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller, Result}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
@@ -39,7 +39,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
 
   type FieldErrors = Map[String, NonEmptyList[String]]
   val noErrors: FieldErrors = Map()
-  val fields = Seq(TextField("What is your event called?", "title", rules.getOrElse("title", Seq())))
+  val titleFormFields: Seq[Field] = Seq(TextField("What is your event called?", "title", rules.getOrElse("title", Seq()), None, None))
 
   def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
     if (sectionNumber == 1) applications.getSection(id, sectionNumber).flatMap { section =>
@@ -63,7 +63,14 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     } yield (a, af, o)
 
     ft.value.map {
-      case Some((app, appForm, opp)) => Ok(views.html.sectionForm(app, section, appForm.sections.find(_.sectionNumber == 1).get, opp, fields, errs))
+      case Some((app, appForm, opp)) =>
+        val formSection: ApplicationFormSection = appForm.sections.find(_.sectionNumber == 1).get
+        val populatedFields = titleFormFields.map {
+          _.withValuesFrom(section.map(_.answers).getOrElse(JsObject(Seq())))
+            .withErrorsFrom(errs)
+        }
+
+        Ok(views.html.sectionForm(app, section, formSection, opp, populatedFields))
       case None => NotFound
     }
   }
@@ -80,7 +87,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     val jsonFormValues = formToJson(request.body.filterKeys(k => !k.startsWith("_")))
     val button: Option[ButtonAction] = decodeButton(request.body.keySet)
 
-    takeAction(id, sectionNumber, button, JsObject(fields.flatMap(_.deRender(jsonFormValues))))
+    takeAction(id, sectionNumber, button, JsObject(titleFormFields.flatMap(_.deRender(jsonFormValues))))
   }
 
   def takeAction(id: ApplicationId, sectionNumber: Int, button: Option[ButtonAction], fieldValues: JsObject): Future[Result] = {

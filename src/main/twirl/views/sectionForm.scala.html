@@ -3,20 +3,8 @@
         section: Option[ApplicationSection],
         formSection: ApplicationFormSection,
         opportunity: Opportunity,
-        fields: Seq[forms.Field],
-        errs: Map[String, cats.data.NonEmptyList[String]]
+        fields: Seq[forms.Field]
 )
-
-@import play.api.libs.json.JsString
-
-@valueFor(key: String) = @{
-    section.flatMap {
-        _.answers.value.get(key).map {
-            case JsString(s) => s
-            case _ => ""
-        }
-    }
-}
 
 @formatId(id: Long) = @{
     f"RIFS$id%05d"
@@ -32,9 +20,7 @@
 
         <form method="POST" action="@controllers.routes.ApplicationController.postSection(app.id, formSection.sectionNumber)">
             <fieldset>
-                @fields.map { f =>
-                    @f.renderFormInput(valueFor(f.name), errs.get(f.name))
-                }
+                @fields.map(_.renderFormInput)
 
                 @section.flatMap(_.completedAtText).getOrElse(<input type="submit" name="_complete_button" class="button--link-style" value="Mark question as complete"/>)
 
