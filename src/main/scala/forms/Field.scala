@@ -31,18 +31,35 @@ trait Field {
   def withValuesFrom(values: JsObject): Field
 
   def withErrorsFrom(errs: Map[String, NonEmptyList[String]]): Field
+
+  protected def stringValue(o: JsObject, n: String): Option[String] = (o \ n).validate[JsString].asOpt.map(_.value)
+
+  protected def objectValue(o: JsObject, n: String): Option[JsObject] = (o \ n).validate[JsObject].asOpt
 }
 
 case class TextField(label: String, name: String, rules: Seq[FieldRule], value: Option[String], errs: Option[NonEmptyList[String]]) extends Field {
-  override def withValuesFrom(values: JsObject): TextField = {
-    values \ name match {
-      case JsDefined(JsString(s)) => this.copy(value = Some(s))
-      case _ => this.copy(value = None)
-    }
-  }
+  override def withValuesFrom(values: JsObject): TextField = this.copy(value = stringValue(values, name))
 
   override def withErrorsFrom(errs: Map[String, NonEmptyList[String]]): Field = this.copy(errs = errs.get(name))
 
-
   override def renderFormInput: Html = views.html.renderers.textField(this)
+}
+
+case class DateValues(day: String, month: String, year: String)
+
+case class DateField(label: String, name: String, rules: Seq[FieldRule], value: Option[DateValues], errs: Option[NonEmptyList[String]]) extends Field {
+  override def renderFormInput: Html = views.html.renderers.dateField(this)
+
+  override def withValuesFrom(values: JsObject): DateField = {
+    val value = objectValue(values, name).map { o =>
+      val day = stringValue(o, s"${name}__day").getOrElse("")
+      val month = stringValue(o, s"${name}__month").getOrElse("")
+      val year = stringValue(o, s"${name}__year").getOrElse("")
+      DateValues(day, month, year)
+    }
+    this.copy(value = value)
+  }
+
+  // TODO: Implement this
+  override def withErrorsFrom(errs: Map[String, NonEmptyList[String]]): DateField = this
 }
