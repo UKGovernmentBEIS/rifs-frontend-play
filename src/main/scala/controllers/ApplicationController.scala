@@ -44,7 +44,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
           val doValidation = request.flash.get("doValidation").exists(_ => true)
 
           val errs: FieldErrors = section.map { s =>
-            if (doValidation) validate(s.answers, titleFormRules) else noErrors
+            if (doValidation) validate(s.answers, rulesFor(sectionNumber)) else noErrors
           }.getOrElse(noErrors)
 
           renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, errs)
@@ -86,13 +86,16 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     val jsonFormValues = formToJson(request.body.filterKeys(k => !k.startsWith("_")))
     val button: Option[ButtonAction] = decodeButton(request.body.keySet)
     val answers: JsObject = fieldsFor(sectionNumber).map(fs => JsObject(fs.flatMap(_.derender(jsonFormValues)))).getOrElse(JsObject(Seq()))
-    takeAction(id, sectionNumber, button, answers)
+    val fieldValues = fieldsFor(sectionNumber).map(_.map(_.derender(jsonFormValues))).map(vs => JsObject(vs.flatten)).getOrElse(JsObject(Seq()))
+
+    takeAction(id, sectionNumber, button, fieldValues)
   }
 
   def takeAction(id: ApplicationId, sectionNumber: Int, button: Option[ButtonAction], fieldValues: JsObject): Future[Result] = {
     button.map {
       case Complete =>
-        val errs = validate(fieldValues, titleFormRules)
+        val rules = rulesFor(sectionNumber)
+        val errs = validate(fieldValues, rules)
         if (errs.keySet.isEmpty) {
           applications.completeSection(id, sectionNumber, fieldValues).map { _ =>
             Redirect(routes.ApplicationController.show(id))
@@ -113,7 +116,8 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
   def validate(fieldValues: JsObject, rules: Map[String, Seq[FieldRule]]): Map[String, NonEmptyList[String]] = {
     rules.map { case (fieldName, rs) =>
       fieldName -> (fieldValues \ fieldName match {
-        case JsDefined(js@JsString(s)) => NonEmptyList.fromList(rs.flatMap(r => r.validate(js)).toList)
+        case JsDefined(jv) =>
+          NonEmptyList.fromList(rs.flatMap(r => r.validate(jv)).toList)
         case _ => if (rs.contains(MandatoryRule)) NonEmptyList.fromList(MandatoryRule.validate(JsString("")).toList) else None
       })
     }.collect { case (fieldName, Some(errs)) => fieldName -> errs }

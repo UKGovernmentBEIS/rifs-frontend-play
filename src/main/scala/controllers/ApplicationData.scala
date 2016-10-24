@@ -5,6 +5,7 @@ import forms._
 
 object ApplicationData {
   val titleFormRules: Map[String, Seq[FieldRule]] = Map("title" -> Seq(WordCountRule(20), MandatoryRule))
+  val dateFormRules: Map[String, Seq[FieldRule]] = Map("date" -> Seq(DateRule), "days"-> Seq(MandatoryRule))
 
   type FieldErrors = Map[String, NonEmptyList[String]]
   val noErrors: FieldErrors = Map()
@@ -21,7 +22,15 @@ object ApplicationData {
     TextField(Some("Day(s)"), "days", Seq())
   )
 
-   def questionsFor(sectionNumber: Int): Map[String, String] = {
+  def rulesFor(sectionNumber: Int) :Map[String, Seq[FieldRule]] = {
+    sectionNumber match {
+      case 1 => titleFormRules
+      case 2 => dateFormRules
+      case _ => Map()
+    }
+  }
+
+  def questionsFor(sectionNumber: Int): Map[String, String] = {
     sectionNumber match {
       case 1 => titleFormQuestions
       case 2 => dateFormQuestions
@@ -29,7 +38,7 @@ object ApplicationData {
     }
   }
 
-   def fieldsFor(sectionNum: Int): Option[Seq[Field]] = {
+  def fieldsFor(sectionNum: Int): Option[Seq[Field]] = {
     sectionNum match {
       case 1 => Some(titleFormFields)
       case 2 => Some(dateFormFields)

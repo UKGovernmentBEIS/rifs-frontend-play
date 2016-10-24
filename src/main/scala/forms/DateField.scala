@@ -31,8 +31,7 @@ case class DateField(name: String, rules: Seq[FieldRule], value: Option[DateValu
     )))
   }
 
-  // TODO: Implement this
-  override def withErrorsFrom(errs: Map[String, NonEmptyList[String]]): DateField = this
+  override def withErrorsFrom(errs: Map[String, NonEmptyList[String]]): DateField = this.copy(errs = errs.get(name))
 
   override def withQuestionsFrom(questions: Map[String, String]): DateField = this.copy(question = questions.get(name))
 }

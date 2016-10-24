@@ -4,6 +4,7 @@ package forms
 import cats.data.ValidatedNel
 import cats.implicits._
 import org.joda.time.LocalDate
+import play.api.Logger
 import play.api.libs.json.{JsObject, JsString, JsValue}
 
 import scala.util.Try
@@ -12,10 +13,11 @@ object ParseInt {
   def unapply(s: String): Option[Int] = Try(s.toInt).toOption
 }
 
-object DateRule extends FieldRule {
+case object DateRule extends FieldRule {
   protected def stringValue(o: JsObject, n: String): Option[String] = (o \ n).validate[JsString].asOpt.map(_.value)
 
   override def validate(value: JsValue): Seq[String] = {
+    Logger.debug(s"validating $value")
     val o = value.validate[JsObject].asOpt.getOrElse(JsObject(Seq()))
 
     val result: ValidatedNel[String, Option[String]] = (validateText(o, "day") |@| validateText(o, "month") |@| validateText(o, "year")).map { case (d, m, y) =>
