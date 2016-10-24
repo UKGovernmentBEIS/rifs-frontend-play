@@ -5,7 +5,7 @@ import forms._
 
 object ApplicationData {
   val titleFormRules: Map[String, Seq[FieldRule]] = Map("title" -> Seq(WordCountRule(20), MandatoryRule))
-  val dateFormRules: Map[String, Seq[FieldRule]] = Map("date" -> Seq(DateRule), "days"-> Seq(MandatoryRule))
+  val dateFormRules: Map[String, Seq[FieldRule]] = Map("date" -> Seq(DateRule), "days"-> Seq(MandatoryRule, IntRule))
 
   type FieldErrors = Map[String, NonEmptyList[String]]
   val noErrors: FieldErrors = Map()

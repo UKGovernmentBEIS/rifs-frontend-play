@@ -57,3 +57,15 @@ case object MandatoryRule extends FieldRule {
 
   override def helpText(value: JsValue): Option[String] = None
 }
+
+case object IntRule extends FieldRule {
+  override def validate(value: JsValue): Seq[String] = {
+    value.validate[JsString].asOpt.map(_.value).getOrElse("") match {
+      case s if s.trim() == "" => Seq()  // if field is blank don't do validation - leave it to MandatoryRule
+      case ParseInt(i) => Seq()
+      case _ => Seq("Must be a whole number")
+    }
+  }
+
+  override def helpText(value: JsValue): Option[String] = None
+}
