@@ -448,7 +448,7 @@ table {
   text-transform: none;
   font-size: 18px;
   line-height: 1.2;
-  background-image: image-url("icon-pointer.png");
+  background-image: url("/assets/stylesheets/images/icon-pointer.png");
   background-repeat: no-repeat;
   background-position: 100% 50%;
   padding: 0.4375em 2.5625em 0.25em 1em; }
@@ -460,7 +460,7 @@ table {
   @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 20 / 10), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
     .button-start,
     .button-get-started {
-      background-image: image-url("icon-pointer-2x.png");
+      background-image: url("/assets/stylesheets/images/icon-pointer-2x.png");
       background-size: 30px 19px; } }
 
 main {
@@ -519,14 +519,14 @@ main {
       font-size: 24px;
       line-height: 1.25; } }
 
-.font-small {
+.font-small, input.button--link-style {
   font-family: "nta", Arial, sans-serif;
   font-weight: 400;
   text-transform: none;
   font-size: 16px;
   line-height: 1.25; }
   @media (min-width: 641px) {
-    .font-small {
+    .font-small, input.button--link-style {
       font-size: 19px;
       line-height: 1.31579; } }
 
@@ -911,7 +911,16 @@ hr {
 .float-right {
   float: right; }
 
+.rifs-form-buttons {
+  margin-top: 2em; }
+
 .expanded-list li {
   margin-bottom: 30px; }
+
+input.button--link-style {
+  background: none;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer; }
 
 /*# sourceMappingURL=application.css.map */
