@@ -1,0 +1,43 @@
+@(
+        app: Application,
+        section: Option[ApplicationSection],
+        formSection: ApplicationFormSection,
+        opportunity: Opportunity
+)
+
+    @import play.api.libs.json.JsString
+
+@valueFor(key: String) = @{
+    section.flatMap {
+        _.answers.value.get(key).map {
+            case JsString(s) => s
+            case _ => ""
+        }
+    }
+}
+
+@formatId(id: Long) = @{
+    f"RIFS$id%05d"
+}
+
+@main(s"Event title") {
+    <div class="grid-row">
+        <a href="@controllers.routes.ApplicationController.show(app.id)">&lt; Return to application overview</a>
+        <p></p>
+        <h2>@formatId(opportunity.id.id): @opportunity.title</h2>
+
+        <h1>@formSection.title</h1>
+
+        <div>
+            <p>@valueFor("title")</p>
+        </div>
+
+        <div>
+
+            <a class="link--button" href="@controllers.routes.ApplicationController.show(app.id)">Close</a>
+            &nbsp;&nbsp;
+            <a href="@controllers.routes.ApplicationController.showSectionForm(app.id, formSection.sectionNumber)">Edit this page</a>
+
+        </div>
+    </div>
+}
