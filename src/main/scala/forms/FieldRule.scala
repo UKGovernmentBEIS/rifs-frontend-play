@@ -1,25 +1,31 @@
 package forms
 
-trait FieldRule {
-  def validate(value: String): Seq[String]
+import play.api.libs.json.{JsString, JsValue}
 
-  def helpText(value: String): Option[String]
+trait FieldRule {
+  def validate(value: JsValue): Seq[String]
+
+  def helpText(value: JsValue): Option[String]
 }
 
 case class WordCountRule(maxWords: Int) extends FieldRule {
   def normalise(s: String): String = s.trim()
 
-  override def validate(value: String): Seq[String] = {
-    if (normalise(value).split("\\s+").length <= maxWords) Seq()
+  override def validate(value: JsValue): Seq[String] = {
+    val s = value.validate[JsString].asOpt.map(_.value).getOrElse("")
+
+    if (normalise(s).split("\\s+").length <= maxWords) Seq()
     else Seq("Word limit exceeded")
   }
 
-  override def helpText(value: String): Option[String] = {
-    val wordCount = normalise(value).split("\\s+").length
+  override def helpText(value: JsValue): Option[String] = {
+    val s = value.validate[JsString].asOpt.map(_.value).getOrElse("")
+
+    val wordCount = normalise(s).split("\\s+").length
 
     import WordCountRule._
     val text =
-      if (normalise(value) == "") noWordsText(maxWords)
+      if (normalise(s) == "") noWordsText(maxWords)
       else if (wordCount > maxWords) overLimitText(wordCount - maxWords)
       else wordsLeft(maxWords - wordCount)
 
@@ -42,10 +48,12 @@ object WordCountRule {
 case object MandatoryRule extends FieldRule {
   def normalise(s: String): String = s.trim()
 
-  override def validate(value: String): Seq[String] = {
-    if (normalise(value) != "") Seq()
+  override def validate(value: JsValue): Seq[String] = {
+    val s = value.validate[JsString].asOpt.map(_.value).getOrElse("")
+
+    if (normalise(s) != "") Seq()
     else Seq("Field cannot be empty")
   }
 
-  override def helpText(value: String): Option[String] = None
+  override def helpText(value: JsValue): Option[String] = None
 }

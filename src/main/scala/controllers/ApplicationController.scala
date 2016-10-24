@@ -113,8 +113,8 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
   def validate(fieldValues: JsObject, rules: Map[String, Seq[FieldRule]]): Map[String, NonEmptyList[String]] = {
     rules.map { case (fieldName, rs) =>
       fieldName -> (fieldValues \ fieldName match {
-        case JsDefined(JsString(s)) => NonEmptyList.fromList(rs.flatMap(r => r.validate(s)).toList)
-        case _ => if (rs.contains(MandatoryRule)) NonEmptyList.fromList(MandatoryRule.validate("").toList) else None
+        case JsDefined(js@JsString(s)) => NonEmptyList.fromList(rs.flatMap(r => r.validate(js)).toList)
+        case _ => if (rs.contains(MandatoryRule)) NonEmptyList.fromList(MandatoryRule.validate(JsString("")).toList) else None
       })
     }.collect { case (fieldName, Some(errs)) => fieldName -> errs }
   }

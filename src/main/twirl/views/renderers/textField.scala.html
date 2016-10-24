@@ -1,5 +1,5 @@
 @(field: forms.TextField)
-
+@import play.api.libs.json.JsString
 
 @field.question.map { q => <h4>@q</h4> }
 @field.errs.map { es =>
@@ -11,4 +11,4 @@
 }
 <label for="@field.name">@field.label</label>
 <input type="text" title="@field.name" name="@field.name" value='@field.value'>
-<div class="inline" id="title_help_text">@field.rules.flatMap(_.helpText(field.value.getOrElse("")))</div>
+<div class="inline" id="title_help_text">@field.rules.flatMap(_.helpText(JsString(field.value.getOrElse(""))))</div>
