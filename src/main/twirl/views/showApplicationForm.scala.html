@@ -1,33 +1,70 @@
 @import models._
 
-@(app: ApplicationForm, overview:ApplicationOverview)
+@(app: ApplicationForm, overview:ApplicationOverview, opportunity:Opportunity)
+
+@formatId(id: Long) = @{
+f"RIFS$id%05d"
+}
 
 @main(s"Overview") {
-    <div>
-        <h1>Application Overview</h1>
-        <h2>Complete all application sections before submitting to RIFS.</h2>
-        <a href="@controllers.routes.OpportunityController.showOpportunity(app.opportunityId, None)">View opportunity</a>
+    <!-- Show Back Nav and who is logged in -->
+    <div id="global-header-status" class="contain-floats">
+        <div class="float-right">
+            <span>Experienced Eric</span>
+        </div>
     </div>
-    <div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Event details</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-            @app.sections.sortBy(_.sectionNumber).map { s =>
-                <tr>
-                    <td>
-                        @s.sectionNumber. <a href="@controllers.routes.ApplicationController.showSectionForm(overview.id, s.sectionNumber)"> @s.title</a>
-                    </td>
-                    <td>@overview.sections.find(_.sectionNumber == s.sectionNumber).map(os => os.status).getOrElse("Not started")</td>
-                </tr>
-            }
-            </tbody>
-        </table>
-        <a href="@controllers.routes.OpportunityController.wip(controllers.routes.ApplicationController.show(overview.id).url)" class="button"> Submit application to RIFS</a>
-        <a href="@controllers.routes.OpportunityController.wip(controllers.routes.ApplicationController.show(overview.id).url)">Preview application</a>
+
+    <!-- main content -->
+    <div class="gidrow">
+        <div class="column-two-thirds">
+            <div>
+                <div>@formatId(opportunity.id.id): @opportunity.title</div>
+                <h1>Application overview</h1>
+                <p>Complete all application sections before submitting to RIFS.</p>
+            </div>
+            <div>
+                <table>
+                    <thead>
+                    <tr>
+                        <th scope="col">Event details</th>
+                        <th scope="col" >Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @app.sections.sortBy(_.sectionNumber).map { s =>
+                    <tr>
+                        <td>
+                            @s.sectionNumber. <a href="@controllers.routes.ApplicationController.showSectionForm(overview.id, s.sectionNumber)"> @s.title</a>
+                        </td>
+                        <td>@overview.sections.find(_.sectionNumber == s.sectionNumber).map(os => os.status).getOrElse("Not started")</td>
+                    </tr>
+                    }
+                    </tbody>
+                </table>
+                <p class="rifs-form-buttons">
+                    <a href="@controllers.routes.OpportunityController.wip(controllers.routes.ApplicationController.show(overview.id).url)" class="button"> Submit application to RIFS</a>
+                    <a href="@controllers.routes.OpportunityController.wip(controllers.routes.ApplicationController.show(overview.id).url)">Preview application</a>
+                </p>
+            </div>
+        </div>
+        <div class="column-third">
+            <hr class="hr-blue">
+            <h3 class="bold-small">Supporting information</h3>
+            <ul class="list">
+                <li>
+                    <a href="@controllers.routes.OpportunityController.showGuidancePage()">Guidance on seminars</a>
+                </li>
+                <li>
+                    <a href="@controllers.routes.OpportunityController.showOpportunity(app.opportunityId, None)">View opportunity details</a>
+                </li>
+            </ul>
+            <div class="rifs-step-panel">
+                <p class="rifs-step-content">
+                    <span class="bold-xlarge"> 0/6 </span>
+                    <br>
+                    Sections complete
+                </p>
+            </div>
+        </div>
     </div>
 }
