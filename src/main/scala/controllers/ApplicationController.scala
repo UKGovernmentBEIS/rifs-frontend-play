@@ -27,10 +27,11 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     val t = for {
       a <- OptionT(applications.overview(id))
       af <- OptionT(applicationForms.byId(a.applicationFormId))
-    } yield (af, a)
+      opp <- OptionT(opportunities.byId(af.opportunityId))
+    } yield (af, a, opp)
 
     t.value.map {
-      case Some((form, overview)) => Ok(views.html.showApplicationForm(form, overview))
+      case Some((form, overview, opp)) => Ok(views.html.showApplicationForm(form, overview, opp))
       case None => NotFound
     }
   }
