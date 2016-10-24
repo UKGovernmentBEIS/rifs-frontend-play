@@ -30,7 +30,7 @@
                 <fieldset>
                     @fields.map(_.renderFormInput)
 
-                    @section.flatMap(_.completedAtText).getOrElse(<input type="submit" name="_complete_button" class="button--link-style" value="Mark question as complete"/>)
+                    @section.flatMap(_.completedAtText).getOrElse(<input type="checkbox" name="_complete_checkbox">Mark as complete</input>)
 
                 </fieldset>
                 <div>
