@@ -58,10 +58,12 @@ case object MandatoryRule extends FieldRule {
   override def helpText(value: JsValue): Option[String] = None
 }
 
-case object IntRule extends FieldRule {
+case class IntRule(minValue: Int = Int.MinValue, maxValue: Int = Int.MaxValue) extends FieldRule {
   override def validate(value: JsValue): Seq[String] = {
     value.validate[JsString].asOpt.map(_.value).getOrElse("") match {
-      case s if s.trim() == "" => Seq()  // if field is blank don't do validation - leave it to MandatoryRule
+      case s if s.trim() == "" => Seq() // if field is blank don't do validation - leave it to MandatoryRule
+      case ParseInt(i) if i < minValue => Seq(s"Minimum value is $minValue")
+      case ParseInt(i) if i > maxValue => Seq(s"Maximum value is $maxValue")
       case ParseInt(i) => Seq()
       case _ => Seq("Must be a whole number")
     }

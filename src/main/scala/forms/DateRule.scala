@@ -13,7 +13,7 @@ object ParseInt {
   def unapply(s: String): Option[Int] = Try(s.toInt).toOption
 }
 
-case object DateRule extends FieldRule {
+case class DateRule(allowPast: Boolean = true) extends FieldRule {
   protected def stringValue(o: JsObject, n: String): Option[String] = (o \ n).validate[JsString].asOpt.map(_.value)
 
   override def validate(value: JsValue): Seq[String] = {
@@ -22,6 +22,7 @@ case object DateRule extends FieldRule {
 
     val result: ValidatedNel[String, Option[String]] = (validateText(o, "day") |@| validateText(o, "month") |@| validateText(o, "year")).map { case (d, m, y) =>
       Try(new LocalDate(y, m, d)).toOption match {
+        case Some(ld) if !allowPast && ld.isBefore(LocalDate.now()) => Some("Must be today or later")
         case Some(ld) => None
         case None => Some("Must provide a valid date")
       }
