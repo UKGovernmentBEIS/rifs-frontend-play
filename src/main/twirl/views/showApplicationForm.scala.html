@@ -29,8 +29,8 @@ f"RIFS$id%05d"
                 <table>
                     <thead>
                     <tr>
-                        <th>Event details</th>
-                        <th>Status</th>
+                        <th scope="col">Event details</th>
+                        <th scope="col" >Status</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -44,7 +44,7 @@ f"RIFS$id%05d"
                     }
                     </tbody>
                 </table>
-                <p>
+                <p class="rifs-form-buttons">
                     <a href="@controllers.routes.OpportunityController.wip(controllers.routes.ApplicationController.show(overview.id).url)" class="button"> Submit application to RIFS</a>
                     <a href="@controllers.routes.OpportunityController.wip(controllers.routes.ApplicationController.show(overview.id).url)">Preview application</a>
                 </p>
