@@ -1,33 +1,34 @@
 @(
-        app: Application,
-        section: Option[ApplicationSection],
-        formSection: ApplicationFormSection,
-        opportunity: Opportunity,
-        fieldRules: Map[String, Seq[forms.FieldRule]],
-        errs: Map[String, cats.data.NonEmptyList[String]]
+app: Application,
+section: Option[ApplicationSection],
+formSection: ApplicationFormSection,
+opportunity: Opportunity,
+fieldRules: Map[String, Seq[forms.FieldRule]],
+errs: Map[String, cats.data.NonEmptyList[String]]
 )
 
 @import play.api.libs.json.JsString
 
 @valueFor(key: String) = @{
-    section.flatMap {
-        _.answers.value.get(key).map {
-            case JsString(s) => s
-            case _ => ""
-        }
-    }
+section.flatMap {
+_.answers.value.get(key).map {
+case JsString(s) => s
+case _ => ""
+}
+}
 }
 
 @formatId(id: Long) = @{
-    f"RIFS$id%05d"
+f"RIFS$id%05d"
 }
 
 @rulesFor(key: String) = @{
-    fieldRules.getOrElse(key, Seq())
+fieldRules.getOrElse(key, Seq())
 }
 
 @main(s"Event title") {
-    <div class="grid-row">
+<div class="grid-row">
+    <div class="column-two-thirds">
         <a href="@controllers.routes.ApplicationController.show(app.id)">&lt; Return to application overview</a>
         <p></p>
         <h2>@formatId(opportunity.id.id): @opportunity.title</h2>
@@ -38,9 +39,9 @@
             <fieldset>
                 <label for="title">What is your event called?</label>
                 @errs.get("title").map { es =>
-                    @es.toList.map { e =>
-                        <p>@e</p>
-                    }
+                @es.toList.map { e =>
+                <p>@e</p>
+                }
                 }
                 <input type="text" title="title" name="title" value='@valueFor("title")'>
             </fieldset>
@@ -53,4 +54,25 @@
             </div>
         </form>
     </div>
+
+    <div class="column-third">
+        <hr class="hr-blue">
+        <h3 class="bold-small">Supporting information</h3>
+        <ul class="list">
+            <li>
+                <a href="@controllers.routes.OpportunityController.showGuidancePage()">Guidance on seminars</a>
+            </li>
+            <li>
+                <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, None)">View opportunity details</a>
+            </li>
+        </ul>
+        <div class="rifs-step-panel">
+            <p class="rifs-step-content">
+                <span class="bold-xlarge"> 0/6 </span>
+                <br>
+                Sections complete
+            </p>
+        </div>
+    </div>
+</div>
 }
