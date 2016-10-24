@@ -1,6 +1,10 @@
 @import models._
 
-@(app: ApplicationForm, overview:ApplicationOverview)
+@(app: ApplicationForm, overview:ApplicationOverview, opportunity:Opportunity)
+
+@formatId(id: Long) = @{
+f"RIFS$id%05d"
+}
 
 @main(s"Overview") {
     <!-- Show Back Nav and who is logged in -->
@@ -17,6 +21,7 @@
     <div class="gidrow">
         <div class="column-two-thirds">
             <div>
+                <div>@formatId(opportunity.id.id): @opportunity.title</div>
                 <h1>Application overview</h1>
                 <p>Complete all application sections before submitting to RIFS.</p>
                 <p><a href="@controllers.routes.OpportunityController.showOpportunity(app.opportunityId, None)">View opportunity</a><p>
@@ -51,10 +56,10 @@
             <h3 class="bold-small">Supporting information</h3>
             <ul class="list">
                 <li>
-                    <a href="#abc">Guidance on seminars</a>
+                    <a href="@controllers.routes.OpportunityController.showGuidancePage()">Guidance on seminars</a>
                 </li>
                 <li>
-                    <a href="#def">View opportunity details</a>
+                    <a href="@controllers.routes.OpportunityController.showOpportunity(app.opportunityId, None)">View opportunity details</a>
                 </li>
             </ul>
             <div class="rifs-step-panel">
