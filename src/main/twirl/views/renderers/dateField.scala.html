@@ -1,0 +1,21 @@
+@(field: forms.DateField)
+
+@field.question.map { q => <h4>@q</h4> }
+@field.errs.map { es =>
+    <div>
+        @es.toList.map { e =>
+            <p>@e</p>
+        }
+    </div>
+}
+<div class="inline">
+    <label for="@(field.name)__day">Day</label>
+    <input type="text" title="@(field.name)__day" name="@(field.name)__day" value='@field.value.map(_.day)'>
+    <label for="@(field.name)__month">Month</label>
+    <input type="text" title="@(field.name)__month" name="@(field.name)__month" value='@field.value.map(_.month)'>
+    <label for="@(field.name)__year">Year</label>
+    <input type="text" title="@(field.name)__year" name="@(field.name)__year" value='@field.value.map(_.year)'>
+</div>
+
+<div class="inline" id="title_help_text">For example 31 3 2017</div>
+

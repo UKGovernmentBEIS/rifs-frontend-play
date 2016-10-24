@@ -1,0 +1,57 @@
+@(
+        app: Application,
+        section: Option[ApplicationSection],
+        formSection: ApplicationFormSection,
+        opportunity: Opportunity,
+        fields: Seq[forms.Field]
+)
+
+@formatId(id: Long) = @{
+    f"RIFS$id%05d"
+}
+
+@main(formSection.title) {
+    <div class="grid-row">
+        <div class="column-two-thirds">
+            <p>
+                <a href="@controllers.routes.ApplicationController.show(app.id)">&lt; Return to application overview</a>
+            </p>
+            <h2>@formatId(opportunity.id.id): @opportunity.title</h2>
+
+            <h1>@formSection.title</h1>
+
+            <form method="POST" action="@controllers.routes.ApplicationController.postSection(app.id, formSection.sectionNumber)">
+                <fieldset>
+                    @fields.map(_.renderFormInput)
+
+                    @section.flatMap(_.completedAtText).getOrElse(<input type="submit" name="_complete_button" class="button--link-style" value="Mark question as complete"/>)
+
+                </fieldset>
+                <div>
+                    <input type="submit" name="_save_button" class="button button--start" value="Save and continue">
+                    <input type="submit" name="_preview_button" class="button--link-style" value="Preview this page"/>
+                </div>
+            </form>
+        </div>
+        <div class="column-third">
+            <hr class="hr-blue">
+            <h3 class="bold-small">Supporting information</h3>
+            <ul class="list">
+                <li>
+                    <a href="@controllers.routes.OpportunityController.showGuidancePage(opportunity.id)">Guidance on seminars</a>
+                </li>
+                <li>
+                    <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, None)">
+                        View opportunity details</a>
+                </li>
+            </ul>
+            <div class="rifs-step-panel">
+                <p class="rifs-step-content">
+                    <span class="bold-xlarge"> 0/6 </span>
+                    <br>
+                    Sections complete
+                </p>
+            </div>
+        </div>
+    </div>
+}

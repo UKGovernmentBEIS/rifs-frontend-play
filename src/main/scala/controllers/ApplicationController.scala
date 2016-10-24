@@ -4,8 +4,8 @@ import javax.inject.Inject
 
 import cats.data.{NonEmptyList, OptionT}
 import cats.instances.future._
-import forms.{FieldRule, MandatoryRule, WordCountRule}
-import models.{ApplicationFormId, ApplicationId, ApplicationSection}
+import forms._
+import models.{ApplicationFormId, ApplicationFormSection, ApplicationId, ApplicationSection}
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller, Result}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
@@ -36,26 +36,25 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     }
   }
 
-  val rules: Map[String, Seq[FieldRule]] = Map("title" -> Seq(WordCountRule(20), MandatoryRule))
-
-  type FieldErrors = Map[String, NonEmptyList[String]]
-  val noErrors: FieldErrors = Map()
+  import ApplicationData._
 
   def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
-    if (sectionNumber == 1) applications.getSection(id, sectionNumber).flatMap { section =>
-      val doValidation = request.flash.get("doValidation").exists(_ => true)
+    fieldsFor(sectionNumber) match {
+      case Some(fields) =>
+        applications.getSection(id, sectionNumber).flatMap { section =>
+          val doValidation = request.flash.get("doValidation").exists(_ => true)
 
-      val errs: FieldErrors = section.map { s =>
-        if (doValidation) validate(s.answers, rules) else noErrors
-      }.getOrElse(noErrors)
+          val errs: FieldErrors = section.map { s =>
+            if (doValidation) validate(s.answers, rulesFor(sectionNumber)) else noErrors
+          }.getOrElse(noErrors)
 
-      title(id, section, errs)
+          renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, errs)
+        }
+      case None => Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
     }
-    else Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
   }
 
-
-  def title(id: ApplicationId, section: Option[ApplicationSection], errs: FieldErrors) = {
+  def renderSectionForm(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], questions: Map[String, String], fields: Seq[Field], errs: FieldErrors) = {
     val ft = for {
       a <- OptionT(applications.byId(id))
       af <- OptionT(applicationForms.byId(a.applicationFormId))
@@ -63,7 +62,15 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     } yield (a, af, o)
 
     ft.value.map {
-      case Some((app, appForm, opp)) => Ok(views.html.titleForm(app, section, appForm.sections.find(_.sectionNumber == 1).get, opp, rules, errs))
+      case Some((app, appForm, opp)) =>
+        val formSection: ApplicationFormSection = appForm.sections.find(_.sectionNumber == sectionNumber).get
+        val populatedFields = fields.map {
+          _.withValuesFrom(section.map(_.answers).getOrElse(JsObject(Seq())))
+            .withErrorsFrom(errs)
+            .withQuestionsFrom(questions)
+        }
+
+        Ok(views.html.sectionForm(app, section, formSection, opp, populatedFields))
       case None => NotFound
     }
   }
@@ -79,13 +86,16 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     // Drop keys that start with '_' as these are "system" keys like the button name
     val jsonFormValues = formToJson(request.body.filterKeys(k => !k.startsWith("_")))
     val button: Option[ButtonAction] = decodeButton(request.body.keySet)
+    val answers: JsObject = fieldsFor(sectionNumber).map(fs => JsObject(fs.flatMap(_.derender(jsonFormValues)))).getOrElse(JsObject(Seq()))
+    val fieldValues = fieldsFor(sectionNumber).map(_.map(_.derender(jsonFormValues))).map(vs => JsObject(vs.flatten)).getOrElse(JsObject(Seq()))
 
-    takeAction(id, sectionNumber, button, jsonFormValues)
+    takeAction(id, sectionNumber, button, fieldValues)
   }
 
   def takeAction(id: ApplicationId, sectionNumber: Int, button: Option[ButtonAction], fieldValues: JsObject): Future[Result] = {
     button.map {
       case Complete =>
+        val rules = rulesFor(sectionNumber)
         val errs = validate(fieldValues, rules)
         if (errs.keySet.isEmpty) {
           applications.completeSection(id, sectionNumber, fieldValues).map { _ =>
@@ -97,8 +107,9 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
           }
         }
       case Save =>
-        applications.saveSection(id, sectionNumber, fieldValues)
-        Future.successful(Redirect(routes.ApplicationController.show(id)))
+        applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
+          Redirect(routes.ApplicationController.show(id))
+        }
       case Preview =>
         applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
           Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber))
@@ -109,8 +120,9 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
   def validate(fieldValues: JsObject, rules: Map[String, Seq[FieldRule]]): Map[String, NonEmptyList[String]] = {
     rules.map { case (fieldName, rs) =>
       fieldName -> (fieldValues \ fieldName match {
-        case JsDefined(JsString(s)) => NonEmptyList.fromList(rs.flatMap(r => r.validate(s)).toList)
-        case _ => if (rs.contains(MandatoryRule)) NonEmptyList.fromList(MandatoryRule.validate("").toList) else None
+        case JsDefined(jv) =>
+          NonEmptyList.fromList(rs.flatMap(r => r.validate(jv)).toList)
+        case _ => if (rs.contains(MandatoryRule)) NonEmptyList.fromList(MandatoryRule.validate(JsString("")).toList) else None
       })
     }.collect { case (fieldName, Some(errs)) => fieldName -> errs }
   }
