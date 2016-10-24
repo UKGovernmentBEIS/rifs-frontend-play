@@ -46,7 +46,7 @@
             </fieldset>
             @section.flatMap(_.completedAtText).getOrElse(<input type="submit" name="_complete_button" class="button--link-style" value="Mark question as complete"/>)
             &nbsp&nbsp
-            <div id="title_help_text">@rulesFor("title").flatMap(_.helpText(valueFor("title").getOrElse("")))</div>
+            <span class="inline" id="title_help_text">@rulesFor("title").flatMap(_.helpText(valueFor("title").getOrElse("")))</span>
             <div>
                 <input type="submit" name="_save_button" class="button--get-started" value="Save and continue">
                 <input type="submit" name="_preview_button" class="previewlink" value="Preview this page">

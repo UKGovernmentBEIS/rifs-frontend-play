@@ -17,11 +17,11 @@ class TitleFormSpec extends WordSpecLike with Matchers with OptionValues {
       Option(soup.getElementById("title_help_text")).value.text() shouldBe "20 words maximum"
     }
 
-    "show '10 words left' as help text when a 10-word value is supplied" in {
+    "show 'Words remaining: 10' as help text when a 10-word value is supplied" in {
       val html = generatePage(Some(JsObject(Seq("title" -> JsString("one two three four five six seven eight nine ten")))))
 
       val soup = Jsoup.parse(html.toString())
-      Option(soup.getElementById("title_help_text")).value.text() shouldBe "10 words left"
+      Option(soup.getElementById("title_help_text")).value.text() shouldBe "Words remaining: 10"
     }
 
     "show '2 words over limit' as help text when a 22-word value is supplied" in {
