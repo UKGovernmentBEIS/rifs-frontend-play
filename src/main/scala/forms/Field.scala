@@ -7,6 +7,8 @@ import play.twirl.api.Html
 trait Field {
   def renderFormInput: Html
 
+  def renderPreview: Html
+
   def name: String
 
   def rules: Seq[FieldRule]

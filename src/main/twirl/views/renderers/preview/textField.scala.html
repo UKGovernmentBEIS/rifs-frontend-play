@@ -1,0 +1,7 @@
+@(field: forms.TextField)
+
+@field.question.map { q => <h4>@q</h4> }
+
+<div>
+    <p>@field.value</p>
+</div>
