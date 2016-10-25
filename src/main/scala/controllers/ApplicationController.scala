@@ -6,7 +6,6 @@ import cats.data.{NonEmptyList, OptionT}
 import cats.instances.future._
 import forms._
 import models.{ApplicationFormId, ApplicationFormSection, ApplicationId, ApplicationSection}
-import play.api.Logger
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller, Result}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
@@ -48,7 +47,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
 
           val errs: FieldErrors = section.map { s =>
             if (doValidation) validate(s.answers, rulesFor(sectionNumber))
-            else if (doPreviewValidation) validatePreview(s.answers, rulesFor(sectionNumber))
+            else if (doPreviewValidation) validate(s.answers, selectPreviewRules(rulesFor(sectionNumber)))
             else noErrors
           }.getOrElse(noErrors)
 
@@ -116,8 +115,8 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
         }
       case Preview =>
         applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
-          val rules = rulesFor(sectionNumber)
-          val errs = validatePreview(fieldValues, rules)
+          val rules = selectPreviewRules(rulesFor(sectionNumber))
+          val errs = validate(fieldValues, rules)
           if (errs.keySet.isEmpty) {
             Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber))
           } else {
@@ -127,18 +126,8 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     }.getOrElse(Future.successful(BadRequest))
   }
 
-
-  def validatePreview(fieldValues: JsObject, rules: Map[String, Seq[FieldRule]]): Map[String, NonEmptyList[String]] = {
-    rules.map { case (fieldName, rs) =>
-      fieldName -> (fieldValues \ fieldName match {
-        case JsDefined(jv) =>
-          val previewRules = rs.filter(_.validateOnPreview)
-          Logger.debug(previewRules.toString())
-          Logger.debug(jv.toString())
-          NonEmptyList.fromList(previewRules.flatMap(r => r.validate(jv)).toList)
-        case _ => if (rs.exists(_.isInstanceOf[MandatoryRule])) NonEmptyList.fromList(MandatoryRule().validate(JsString("")).toList) else None
-      })
-    }.collect { case (fieldName, Some(errs)) => fieldName -> errs }
+  def selectPreviewRules(rules: Map[String, Seq[FieldRule]]): Map[String, Seq[FieldRule]] = {
+    rules.map { case (n, rs) => n -> rs.filter(_.validateOnPreview) }
   }
 
   def validate(fieldValues: JsObject, rules: Map[String, Seq[FieldRule]]): Map[String, NonEmptyList[String]] = {
