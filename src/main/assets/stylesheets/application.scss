@@ -16,10 +16,7 @@ $path: "/assets/stylesheets/images/";
 @import "typography";                             // Core bold and heading mixins, also external links
 @import "shims";                                  // Inline block mixin, clearfix placeholder
 
-// @import 'grid_layout';
-// @import 'typography';
-// @import 'colours';
-// @import 'shims';
+// Extras
 @import 'helpers'; // needed for tables.
 @import 'design-patterns/alpha-beta';
 @import 'design-patterns/buttons';
