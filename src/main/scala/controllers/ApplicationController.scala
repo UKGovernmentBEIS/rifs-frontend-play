@@ -5,7 +5,7 @@ import javax.inject.Inject
 import cats.data.{NonEmptyList, OptionT}
 import cats.instances.future._
 import forms._
-import models.{ApplicationFormId, ApplicationFormSection, ApplicationId, ApplicationSection}
+import models._
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller, Result}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
@@ -43,18 +43,23 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
       case Some(fields) =>
         applications.getSection(id, sectionNumber).flatMap { section =>
           val doValidation = request.flash.get("doValidation").exists(_ => true)
+          val doPreviewValidation = request.flash.get("doPreviewValidation").exists(_ => true)
 
           val errs: FieldErrors = section.map { s =>
-            if (doValidation) validate(s.answers, rulesFor(sectionNumber)) else noErrors
+            if (doValidation) validate(s.answers, rulesFor(sectionNumber))
+            else if (doPreviewValidation) validate(s.answers, selectPreviewRules(rulesFor(sectionNumber)))
+            else noErrors
           }.getOrElse(noErrors)
 
           renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, errs)
         }
+
+      // Temporary hack to display the WIP page for sections that we haven't yet coded up
       case None => Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
     }
   }
 
-  def renderSectionForm(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], questions: Map[String, String], fields: Seq[Field], errs: FieldErrors) = {
+  def renderSectionForm(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], questions: Map[String, Question], fields: Seq[Field], errs: FieldErrors) = {
     val ft = for {
       a <- OptionT(applications.byId(id))
       af <- OptionT(applicationForms.byId(a.applicationFormId))
@@ -112,17 +117,26 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
         }
       case Preview =>
         applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
-          Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber))
+          val rules = selectPreviewRules(rulesFor(sectionNumber))
+          val errs = validate(fieldValues, rules)
+          if (errs.keySet.isEmpty) {
+            Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber))
+          } else {
+            Redirect(routes.ApplicationController.showSectionForm(id, sectionNumber)).flashing(("doPreviewValidation", "true"))
+          }
         }
     }.getOrElse(Future.successful(BadRequest))
+  }
+
+  def selectPreviewRules(rules: Map[String, Seq[FieldRule]]): Map[String, Seq[FieldRule]] = {
+    rules.map { case (n, rs) => n -> rs.filter(_.validateOnPreview) }
   }
 
   def validate(fieldValues: JsObject, rules: Map[String, Seq[FieldRule]]): Map[String, NonEmptyList[String]] = {
     rules.map { case (fieldName, rs) =>
       fieldName -> (fieldValues \ fieldName match {
-        case JsDefined(jv) =>
-          NonEmptyList.fromList(rs.flatMap(r => r.validate(jv)).toList)
-        case _ => if (rs.contains(MandatoryRule)) NonEmptyList.fromList(MandatoryRule.validate(JsString("")).toList) else None
+        case JsDefined(jv) => NonEmptyList.fromList(rs.flatMap(r => r.validate(jv)).toList)
+        case _ => if (rs.exists(_.isInstanceOf[MandatoryRule])) NonEmptyList.fromList(MandatoryRule().validate(JsString("")).toList) else None
       })
     }.collect { case (fieldName, Some(errs)) => fieldName -> errs }
   }
