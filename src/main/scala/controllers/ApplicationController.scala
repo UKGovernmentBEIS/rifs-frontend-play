@@ -53,6 +53,8 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
 
           renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, errs)
         }
+
+      // Temporary hack to display the WIP page for sections that we haven't yet coded up
       case None => Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
     }
   }
