@@ -696,7 +696,7 @@ main {
       margin-top: 1.875em;
       margin-bottom: 0.83333em; } }
 
-.heading-small {
+.heading-small, .table-style-heading-small {
   font-family: "nta", Arial, sans-serif;
   font-weight: 700;
   text-transform: none;
@@ -705,11 +705,11 @@ main {
   margin-top: 0.625em;
   margin-bottom: 0.3125em; }
   @media (min-width: 641px) {
-    .heading-small {
+    .heading-small, .table-style-heading-small {
       font-size: 19px;
       line-height: 1.31579; } }
   @media (min-width: 641px) {
-    .heading-small {
+    .heading-small, .table-style-heading-small {
       margin-top: 1.05263em; } }
 
 p {
@@ -914,8 +914,24 @@ hr {
 .rifs-form-buttons {
   margin-top: 2em; }
 
+.table-style-heading-small {
+  margin-bottom: 0; }
+
 .expanded-list li {
   margin-bottom: 30px; }
+
+.hr-bold {
+  border: none;
+  height: 2px;
+  border-width: 1px;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  /*
+   Set the HR colour
+   */
+  color: #0b0c0c;
+  /* old IE */
+  background-color: #0b0c0c; }
 
 input.button--link-style {
   background: none;

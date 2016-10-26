@@ -4,10 +4,10 @@ import cats.data.NonEmptyList
 import forms._
 
 object ApplicationData {
-  val titleFormRules: Map[String, Seq[FieldRule]] = Map("title" -> Seq(WordCountRule(20), MandatoryRule))
+  val titleFormRules: Map[String, Seq[FieldRule]] = Map("title" -> Seq(WordCountRule(20), MandatoryRule()))
   val dateFormRules: Map[String, Seq[FieldRule]] = Map(
     "date" -> Seq(DateRule(allowPast = false)),
-    "days"-> Seq(MandatoryRule, IntRule(1,9)))
+    "days" -> Seq(MandatoryRule(), IntRule(1, 9)))
 
   type FieldErrors = Map[String, NonEmptyList[String]]
   val noErrors: FieldErrors = Map()
@@ -24,7 +24,7 @@ object ApplicationData {
     TextField(Some("Day(s)"), "days", Seq())
   )
 
-  def rulesFor(sectionNumber: Int) :Map[String, Seq[FieldRule]] = {
+  def rulesFor(sectionNumber: Int): Map[String, Seq[FieldRule]] = {
     sectionNumber match {
       case 1 => titleFormRules
       case 2 => dateFormRules

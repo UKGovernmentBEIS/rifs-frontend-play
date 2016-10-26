@@ -13,7 +13,7 @@ object ParseInt {
   def unapply(s: String): Option[Int] = Try(s.toInt).toOption
 }
 
-case class DateRule(allowPast: Boolean = true) extends FieldRule {
+case class DateRule(allowPast: Boolean = true, validateOnPreview: Boolean = true) extends FieldRule {
   protected def stringValue(o: JsObject, n: String): Option[String] = (o \ n).validate[JsString].asOpt.map(_.value)
 
   override def validate(value: JsValue): Seq[String] = {
