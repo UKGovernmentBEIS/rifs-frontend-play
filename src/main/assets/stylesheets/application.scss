@@ -1,0 +1,119 @@
+// Path to assets for use with the file-url function
+// in the govuk frontend toolkit's url-helpers partial
+$path: "/assets/stylesheets/images/";
+
+// Base GDS Toolkit
+// Settings (variables)
+@import "colours";                                // Colour variables
+@import "font_stack";                             // Font family variables
+@import "measurements";                           // Widths and gutter variables
+
+
+// Mixins
+@import "conditionals";                           // Media query mixin
+@import "device-pixels";                          // Retina image mixin
+@import "grid_layout";                            // Basic grid layout mixin
+@import "typography";                             // Core bold and heading mixins, also external links
+@import "shims";                                  // Inline block mixin, clearfix placeholder
+
+// Extras
+@import 'helpers'; // needed for tables.
+@import 'design-patterns/alpha-beta';
+@import 'design-patterns/buttons';
+@import "url-helpers";
+
+// From https://github.com/alphagov/govuk_elements
+// @import '../../vendor/govuk_elements/public/sass/_govuk-elements.scss';
+@import 'elements/forms';
+@import 'elements/lists';
+@import 'elements/tables';
+@import 'elements/layout';
+@import 'elements/buttons';
+@import 'elements/elements-typography';
+
+
+// Global template elements
+#global-header-status {
+  @extend %contain-floats;
+}
+
+// Page widgets
+.rifs-step-panel {
+  background-color: lighten($turquoise , 50%);
+  text-align: center;
+  padding: 1.5em;
+  // Vertically align the child content
+  display: table;
+}
+
+.rifs-step-content {
+  // vertically align the content in the div.
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.hr-blue {
+    height: 10px;
+    background-color: #005ea5;
+    margin-top: 15px;
+    margin-bottom: 1em;
+}
+
+.phase-banner  {
+  @include phase-banner(alpha);
+}
+
+.alpha-tag {
+  @include phase-tag(alpha);
+}
+
+// General
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+.rifs-form-buttons {
+  margin-top: 2em;
+}
+
+// Typography
+.expanded-list {
+  @extend .list;
+}
+
+.table-style-heading-small {
+  // Small bold heading with a line underneath (See: showOpportunities.scala.hmtl)
+  @extend .heading-small;
+  margin-bottom: 0;
+}
+
+.expanded-list li {
+  margin-bottom: 30px;
+}
+
+.hr-bold {
+  border: none;
+  height: 2px;
+  border-width: 1px;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  /*
+   Set the HR colour
+   */
+   color: $black; /* old IE */
+   background-color: $black;
+}
+
+// Buttons
+
+input.button--link-style {
+  background: none;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+  @extend .font-small;
+}
