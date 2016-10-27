@@ -9,6 +9,7 @@ class ControllerUtilsTest extends WordSpecLike with Matchers with OptionValues{
   val sut = new ControllerUtils {}
 
   "formToJson" should {
+
     "convert a field with a single value to a JsString" in {
       val input : Map[String, Seq[String]] = Map("foo" -> ArrayBuffer("bar"))
 
@@ -24,5 +25,6 @@ class ControllerUtilsTest extends WordSpecLike with Matchers with OptionValues{
 
       o.value.get("foo").value shouldBe JsArray(Seq(JsString("bar"), JsString("baz")))
     }
+
   }
 }

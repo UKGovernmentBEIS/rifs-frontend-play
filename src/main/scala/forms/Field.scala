@@ -1,6 +1,7 @@
 package forms
 
 import cats.data.NonEmptyList
+import models.Question
 import play.api.libs.json._
 import play.twirl.api.Html
 
@@ -34,7 +35,7 @@ trait Field {
 
   def withErrorsFrom(errs: Map[String, NonEmptyList[String]]): Field
 
-  def withQuestionsFrom(questions: Map[String, String]): Field
+  def withQuestionsFrom(questions: Map[String, Question]): Field
 
   protected def stringValue(o: JsObject, n: String): Option[String] = (o \ n).validate[JsString].asOpt.map(_.value)
 

@@ -1,7 +1,8 @@
 @(field: forms.TextField)
     @import play.api.libs.json.JsString
 
-@field.question.map { q => <h4>@q</h4> }
+@field.question.map { q => <h4>@q.text</h4> }
+                           
 @field.errs.map { es =>
     <div>
         @es.toList.map { e =>
