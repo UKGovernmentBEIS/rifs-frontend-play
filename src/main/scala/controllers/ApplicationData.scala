@@ -37,7 +37,7 @@ object ApplicationData {
   val topicAndSpeakerHelp = "Possible topics for discussion include intellectual asset management, licensing and collaborative R&D." +
     "<br/>Speakers might include internal or external business development professionals and others such as patent lawyers/agents and KTP advisors." +
     "<br/>Whenever possible, a member of our Swindon office staff will be available to participate in the seminar free of charge."
-  val topicAndSpeakerDescVal = "List the subjects and speakers you are planning for the event. It doesn’t matter if they are not confirmed at this stage."
+  val topicAndSpeakerDescVal = "List the subjects and speakers you are planning for the event. It doesn't matter if they are not confirmed at this stage."
   val topicAndSpeakerQuestions = Map("topicAndSpeaker" -> Question("What topics do you intend to cover?", Some(topicAndSpeakerDescVal), Some(topicAndSpeakerHelp)))
   val topicAndSpeakerRules: Map[String, Seq[FieldRule]] = Map("topicAndSpeaker" -> Seq(WordCountRule(500), MandatoryRule()))
   val topicAndSpeakerFields: Seq[Field] = Seq(TextAreaField(None, "topicAndSpeaker", topicAndSpeakerRules.getOrElse("topicAndSpeaker", Seq())))
