@@ -40,6 +40,7 @@ $path: "/assets/stylesheets/images/";
 // Global template elements
 #global-header-status {
   @extend %contain-floats;
+  padding: 0 15px;
 }
 
 // Page widgets
