@@ -43,9 +43,9 @@ object ApplicationData {
   val topicAndSpeakerFields: Seq[Field] = Seq(TextAreaField(None, "topicAndSpeaker", topicAndSpeakerRules.getOrElse("topicAndSpeaker", Seq())))
 
   val eventAudienceHelp = "If possible, examine the audience make-up from previous similar events. Who came to them and who is likely to come to your event?" +
-    "<br/>It's a good idea to invite people from relevant faculties, colleges or departments, and business development offices."
+    "It's a good idea to invite people from relevant faculties, colleges or departments, and business development offices."
   val eventAudienceDescVal = "There may be one or more target audiences. How many people do you expect to attend? What sectors (for example, academic, industrial, legal) will they represent?"
-  val eventAudienceQuestions = Map("eventAudience" -> Question("What topics do you intend to cover?", Some(eventAudienceDescVal), Some(eventAudienceHelp)))
+  val eventAudienceQuestions = Map("eventAudience" -> Question("Who is the event's target audience?", Some(eventAudienceDescVal), Some(eventAudienceHelp)))
   val eventAudienceRules: Map[String, Seq[FieldRule]] = Map("eventAudience" -> Seq(WordCountRule(500), MandatoryRule()))
   val eventAudienceFields: Seq[Field] = Seq(TextAreaField(None, "eventAudience", eventAudienceRules.getOrElse("eventAudience", Seq())))
 
