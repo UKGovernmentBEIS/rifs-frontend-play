@@ -126,7 +126,8 @@
 
   <div id="global-app-error" class="app-error hidden"></div>
 
-  <script src="@routes.Assets.at("javascripts/govuk-template.js")"></script>
+  <script src='@routes.Assets.at("javascripts/govuk-template.js")'></script>
+  <script src='@routes.Assets.at("javascripts/govuk/details.polyfill.js")'></script>
 
   <script>
           if (typeof window.GOVUK === 'undefined') document.body.className = document.body.className.replace('js-enabled',
