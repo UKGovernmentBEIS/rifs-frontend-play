@@ -47,7 +47,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
           val doPreviewValidation = request.flash.get("doPreviewValidation").exists(_ => true)
 
           val errs: FieldErrors = section.map { s =>
-            if (doValidation) validate(s.answers, rulesFor(sectionNumber))
+            if (doValidation) check(s.answers, checksFor(sectionNumber))
             else if (doPreviewValidation) validate(s.answers, selectPreviewRules(rulesFor(sectionNumber)))
             else noErrors
           }.getOrElse(noErrors)
@@ -134,6 +134,17 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
 
   def selectPreviewRules(rules: Map[String, Seq[FieldRule]]): Map[String, Seq[FieldRule]] = {
     rules.map { case (n, rs) => n -> rs.filter(_.validateOnPreview) }
+  }
+
+  def check(fieldValues: JsObject, checks: Map[String, FieldCheck]): Map[String, NonEmptyList[String]] = {
+    val errs = checks.map { case (fieldName, rs) =>
+      fieldName -> (fieldValues \ fieldName match {
+        case JsDefined(jv) => NonEmptyList.fromList(rs(jv))
+        case _ => NonEmptyList.fromList(rs(JsNull))
+      })
+    }.collect { case (fieldName, Some(errs)) => fieldName -> errs }
+    Logger.debug(errs.toString)
+    errs
   }
 
   def validate(fieldValues: JsObject, rules: Map[String, Seq[FieldRule]]): Map[String, NonEmptyList[String]] = {

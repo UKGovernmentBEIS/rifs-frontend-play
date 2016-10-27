@@ -10,9 +10,9 @@ object ApplicationData {
   type FieldErrors = Map[String, NonEmptyList[String]]
   val noErrors: FieldErrors = Map()
 
-  type FieldCheck = JsValue => List[String] {}
+  type FieldCheck = JsValue => List[String]
 
-  implicit def fromValidator[T: Reads](v: FieldValidator[T, _]): FieldCheck = { jv =>
+  def fromValidator[T: Reads](v: FieldValidator[T, _]): FieldCheck = { jv =>
     jv.validate[T].map { x =>
       v.validate(x).fold(_.toList, _ => List())
     } match {
@@ -21,19 +21,30 @@ object ApplicationData {
     }
   }
 
+  def decodeString(jv: JsValue): Option[String] = {
+    jv match {
+      case JsString(s) => Some(s)
+      case _ => None
+    }
+  }
+
   val titleValidator: FieldValidator[Option[String], String] = MandatoryValidator.andThen(WordCountValidator(20))
 
-  val titleCheck: FieldCheck = fromValidator(titleValidator)
+  val titleCheck: FieldCheck = (jv) => titleValidator.validate(decodeString(jv)).fold(_.toList, _ => List())
 
   val titleFormChecks: Map[String, FieldCheck] = Map("title" -> titleCheck)
 
   implicit val dvReads = Json.reads[DateValues]
+  implicit val dwdReads = Json.reads[DateWithDaysValues]
+  val daysCheck: FieldCheck = (jv) => MandatoryValidator.andThen(IntValidator(1, 9)).validate(decodeString(jv)).fold(_.toList, _ => List())
+
   val dateFormChecks: Map[String, FieldCheck] = Map {
-    "date" -> DateFieldValidator(false)
-    "days" -> fromValidator(IntValidator())
+    "provisionalDate" -> fromValidator(DateWithDaysValidator(allowPast = false, 1, 9))
   }
 
+
   val titleFormRules: Map[String, Seq[FieldRule]] = Map("title" -> Seq(WordCountRule(20), MandatoryRule()))
+
   val dateFormRules: Map[String, Seq[FieldRule]] = Map(
     "date" -> Seq(DateRule(allowPast = false)),
     "days" -> Seq(MandatoryRule(), IntRule(1, 9)))
