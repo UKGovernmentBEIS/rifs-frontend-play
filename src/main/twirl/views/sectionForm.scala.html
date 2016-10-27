@@ -1,10 +1,12 @@
 @(
         app: Application,
+        overview: ApplicationOverview,
         section: Option[ApplicationSection],
         formSection: ApplicationFormSection,
         opportunity: Opportunity,
         fields: Seq[forms.Field]
 )
+@import partials._
 
 @formatId(id: Long) = @{
     f"RIFS$id%05d"
@@ -40,24 +42,7 @@
             </form>
         </div>
         <div class="column-third">
-            <hr class="hr-blue">
-            <h3 class="bold-small">Supporting information</h3>
-            <ul class="list">
-                <li>
-                    <a href="@controllers.routes.OpportunityController.showGuidancePage(opportunity.id)">Guidance on seminars</a>
-                </li>
-                <li>
-                    <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, None)">
-                        View opportunity details</a>
-                </li>
-            </ul>
-            <div class="rifs-step-panel">
-                <p class="rifs-step-content">
-                    <span class="bold-xlarge"> 0/6 </span>
-                    <br>
-                    Sections complete
-                </p>
-            </div>
+            @sidebar(overview, opportunity)
         </div>
     </div>
 }

@@ -1,4 +1,5 @@
 @import models._
+@import partials._
 
 @(app: ApplicationForm, overview:ApplicationOverview, opportunity:Opportunity)
 
@@ -22,7 +23,7 @@ f"RIFS$id%05d"
                 <p>Complete all application sections before submitting to RIFS.</p>
             </div>
             <div>
-                <table>
+                <table class="spacious">
                     <thead>
                     <tr>
                         <th scope="col">Event details</th>
@@ -35,35 +36,21 @@ f"RIFS$id%05d"
                         <td>
                             @s.sectionNumber. <a href="@controllers.routes.ApplicationController.showSectionForm(overview.id, s.sectionNumber)"> @s.title</a>
                         </td>
-                        <td>@overview.sections.find(_.sectionNumber == s.sectionNumber).map(os => os.status).getOrElse("Not started")</td>
+                        <td>
+                            @statusText(overview, s.sectionNumber)
+                        </td>
                     </tr>
                     }
                     </tbody>
                 </table>
                 <p class="rifs-form-buttons">
                     <a href="@controllers.routes.OpportunityController.wip(controllers.routes.ApplicationController.show(overview.id).url)" class="button"> Submit application to RIFS</a>
-                    <a href="@controllers.routes.OpportunityController.wip(controllers.routes.ApplicationController.show(overview.id).url)">Preview application</a>
+                    <a href="@controllers.routes.OpportunityController.wip(controllers.routes.ApplicationController.show(overview.id).url)" class="flat">Preview application</a>
                 </p>
             </div>
         </div>
         <div class="column-third">
-            <hr class="hr-blue">
-            <h3 class="bold-small">Supporting information</h3>
-            <ul class="list">
-                <li>
-                    <a href="@controllers.routes.OpportunityController.showGuidancePage(opportunity.id)">Guidance on seminars</a>
-                </li>
-                <li>
-                    <a href="@controllers.routes.OpportunityController.showOpportunity(app.opportunityId, None)">View opportunity details</a>
-                </li>
-            </ul>
-            <div class="rifs-step-panel">
-                <p class="rifs-step-content">
-                    <span class="bold-xlarge"> 0/6 </span>
-                    <br>
-                    Sections complete
-                </p>
-            </div>
+            @sidebar(overview, opportunity)
         </div>
     </div>
 }

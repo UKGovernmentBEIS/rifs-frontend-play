@@ -10,8 +10,8 @@
             <h2 class="table-style-heading-small">Opportunity title</h2>
             <hr class="hr-bold"/>
             <ul class="expanded-list">
-                @os.map { o =>
-                    <li><a href="/opportunity/@o.id.id">@o.title</a></li>
+                @for((o,i) <- os.zipWithIndex) {
+                    <li>@{i+1}. <a href="/opportunity/@o.id.id">@o.title</a></li>
                 }
             </ul>
             <hr/>
