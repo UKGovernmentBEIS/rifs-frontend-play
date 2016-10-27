@@ -4,7 +4,9 @@ import javax.inject.Inject
 
 import cats.data.OptionT
 import cats.instances.future._
+import forms.Field
 import models.{ApplicationId, ApplicationSection}
+import play.api.libs.json.JsObject
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
 
@@ -14,14 +16,20 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
   extends Controller
     with ControllerUtils {
 
+  import ApplicationData._
+
   def previewSection(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
-    if (sectionNumber == 1) applications.getSection(id, sectionNumber).flatMap { section =>
-      previewTitle(id, section)
+    fieldsFor(sectionNumber) match {
+      case Some(fields) => applications.getSection(id, sectionNumber).flatMap { section =>
+        val populatedFields = fields.map { f => f.withValuesFrom(section.map(_.answers).getOrElse(JsObject(Seq()))) }
+
+        renderSectionPreview(id, sectionNumber, section, populatedFields)
+      }
+      case None => Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
     }
-    else Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
   }
 
-  def previewTitle(id: ApplicationId, section: Option[ApplicationSection]) = {
+  def renderSectionPreview(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], fields: Seq[Field]) = {
     val ft = for {
       a <- OptionT(applications.byId(id))
       af <- OptionT(applicationForms.byId(a.applicationFormId))
@@ -29,7 +37,8 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
     } yield (a, af, o)
 
     ft.value.map {
-      case Some((app, appForm, opp)) => Ok(views.html.titlePreview(app, section, appForm.sections.find(_.sectionNumber == 1).get, opp))
+      case Some((app, appForm, opp)) =>
+        Ok(views.html.sectionPreview(app, section, appForm.sections.find(_.sectionNumber == sectionNumber).get, opp, fields))
       case None => NotFound
     }
   }

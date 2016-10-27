@@ -2,16 +2,20 @@
 
 @main("Opportunity list") {
     <div>
-        <h1>Open opportunities</h1>
+        <h1 class="heading-xlarge">Open opportunities</h1>
 
-        <h2>Links to all open opportunities in RIFS</h2>
+        <p class="lede">Links to all open opportunities in RIFS</p>
 
         <div>
-            <ul>
+            <h2 class="table-style-heading-small">Opportunity title</h2>
+            <hr class="hr-bold"/>
+            <ul class="expanded-list">
                 @os.map { o =>
                     <li><a href="/opportunity/@o.id.id">@o.title</a></li>
                 }
             </ul>
+            <hr/>
         </div>
+
     </div>
 }

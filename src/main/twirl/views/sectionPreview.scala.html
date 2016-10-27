@@ -2,19 +2,9 @@
         app: Application,
         section: Option[ApplicationSection],
         formSection: ApplicationFormSection,
-        opportunity: Opportunity
+        opportunity: Opportunity,
+        fields: Seq[forms.Field]
 )
-
-    @import play.api.libs.json.JsString
-
-@valueFor(key: String) = @{
-    section.flatMap {
-        _.answers.value.get(key).map {
-            case JsString(s) => s
-            case _ => ""
-        }
-    }
-}
 
 @formatId(id: Long) = @{
     f"RIFS$id%05d"
@@ -28,9 +18,7 @@
 
         <h1>@formSection.title</h1>
 
-        <div>
-            <p>@valueFor("title")</p>
-        </div>
+        @fields.map(_.renderPreview)
 
         <div>
 

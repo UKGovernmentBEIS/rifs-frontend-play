@@ -3,12 +3,14 @@ package forms
 import play.api.libs.json.{JsString, JsValue}
 
 trait FieldRule {
+  def validateOnPreview: Boolean
+
   def validate(value: JsValue): Seq[String]
 
   def helpText(value: JsValue): Option[String]
 }
 
-case class WordCountRule(maxWords: Int) extends FieldRule {
+case class WordCountRule(maxWords: Int, validateOnPreview: Boolean = false) extends FieldRule {
   def normalise(s: String): String = s.trim()
 
   override def validate(value: JsValue): Seq[String] = {
@@ -45,7 +47,7 @@ object WordCountRule {
   def noWordsText(max: Int) = s"$max ${w(max)} maximum"
 }
 
-case object MandatoryRule extends FieldRule {
+case class MandatoryRule(validateOnPreview: Boolean = true) extends FieldRule {
   def normalise(s: String): String = s.trim()
 
   override def validate(value: JsValue): Seq[String] = {
@@ -58,7 +60,7 @@ case object MandatoryRule extends FieldRule {
   override def helpText(value: JsValue): Option[String] = None
 }
 
-case class IntRule(minValue: Int = Int.MinValue, maxValue: Int = Int.MaxValue) extends FieldRule {
+case class IntRule(minValue: Int = Int.MinValue, maxValue: Int = Int.MaxValue, validateOnPreview: Boolean = true) extends FieldRule {
   override def validate(value: JsValue): Seq[String] = {
     value.validate[JsString].asOpt.map(_.value).getOrElse("") match {
       case s if s.trim() == "" => Seq() // if field is blank don't do validation - leave it to MandatoryRule

@@ -1,0 +1,12 @@
+@(field: forms.DateField)
+
+@field.question.map { q => <h4>@q</h4> }
+
+<div>
+    <h3>Start Date</h3>
+    @field.value.map { v =>
+        @v.day @v.month @v.year
+    }
+</div>
+
+
