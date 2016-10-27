@@ -2,23 +2,36 @@ package controllers
 
 import cats.data.NonEmptyList
 import forms._
-import forms.validation.{FieldValidator, MandatoryValidator, WordCountValidator}
+import forms.validation._
+import play.api.libs.json._
 
 object ApplicationData {
-
 
   type FieldErrors = Map[String, NonEmptyList[String]]
   val noErrors: FieldErrors = Map()
 
-  type FieldCheck = Option[String] => List[String]
+  type FieldCheck = JsValue => List[String] {}
 
-  def fromValidator(v: FieldValidator[Option[String], _]): FieldCheck = os => v.validate(os).fold(_.toList, _ => List())
+  implicit def fromValidator[T: Reads](v: FieldValidator[T, _]): FieldCheck = { jv =>
+    jv.validate[T].map { x =>
+      v.validate(x).fold(_.toList, _ => List())
+    } match {
+      case JsSuccess(msgs, path) => msgs
+      case JsError(errs) => List("Could not decode form values!")
+    }
+  }
 
   val titleValidator: FieldValidator[Option[String], String] = MandatoryValidator.andThen(WordCountValidator(20))
 
   val titleCheck: FieldCheck = fromValidator(titleValidator)
 
-  val titleFormValidations : Map[String, FieldCheck] = Map("title" -> titleCheck)
+  val titleFormChecks: Map[String, FieldCheck] = Map("title" -> titleCheck)
+
+  implicit val dvReads = Json.reads[DateValues]
+  val dateFormChecks: Map[String, FieldCheck] = Map {
+    "date" -> DateFieldValidator(false)
+    "days" -> fromValidator(IntValidator())
+  }
 
   val titleFormRules: Map[String, Seq[FieldRule]] = Map("title" -> Seq(WordCountRule(20), MandatoryRule()))
   val dateFormRules: Map[String, Seq[FieldRule]] = Map(
@@ -29,6 +42,14 @@ object ApplicationData {
     sectionNumber match {
       case 1 => titleFormRules
       case 2 => dateFormRules
+      case _ => Map()
+    }
+  }
+
+  def checksFor(sectionNumber: Int): Map[String, FieldCheck] = {
+    sectionNumber match {
+      case 1 => titleFormChecks
+      case 2 => dateFormChecks
       case _ => Map()
     }
   }

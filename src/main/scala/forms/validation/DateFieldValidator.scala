@@ -7,7 +7,7 @@ import org.joda.time.LocalDate
 
 import scala.util.Try
 
-class DateFieldValidator(allowPast: Boolean) extends FieldValidator[DateValues, LocalDate] {
+case class DateFieldValidator(allowPast: Boolean) extends FieldValidator[DateValues, LocalDate] {
 
   override def normalise(vs: DateValues): DateValues = vs.copy(
     day = vs.day.map(_.trim()),
