@@ -29,6 +29,7 @@ class TopicsAndSpeakersFormSpec extends WordSpecLike with Matchers with OptionVa
     sectionForm(
       Application(ApplicationId(1), ApplicationFormId(1)),
       section,
+      ApplicationForm(ApplicationFormId(1), OpportunityId(1), Seq(ApplicationFormSection(4, "Topics And Speakers"))),
       ApplicationFormSection(4, "Topics And Speakers"),
       Opportunity(OpportunityId(1), "Research priorities in health care", "", None, OpportunityValue(0, ""), Seq()),
       Seq(TextAreaField(Some("label"), "topicAndSpeakerRules", Seq(WordCountRule(500)), None, None, Option(Question("What topics do you intend to cover?", Option(""), Option("Help Text")))).withValuesFrom(values.getOrElse(JsObject(Seq()))))

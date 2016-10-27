@@ -29,6 +29,7 @@ class EventObjectivesFormSpec extends WordSpecLike with Matchers with OptionValu
     sectionForm(
       Application(ApplicationId(1), ApplicationFormId(1)),
       section,
+      ApplicationForm(ApplicationFormId(1), OpportunityId(1), Seq(ApplicationFormSection(3, "Event Objectives"))),
       ApplicationFormSection(3, "Event Objectives"),
       Opportunity(OpportunityId(1), "Research priorities in health care", "", None, OpportunityValue(0, ""), Seq()),
       Seq(TextAreaField(Some("label"), "eventObjectives", Seq(WordCountRule(500)), None, None, Option(Question("What are the objectives of the event?", Option(""), Option("Help Text")))).withValuesFrom(values.getOrElse(JsObject(Seq()))))
