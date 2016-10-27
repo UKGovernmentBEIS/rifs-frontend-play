@@ -32,6 +32,9 @@ $path: "/assets/stylesheets/images/";
 @import 'elements/buttons';
 @import 'elements/elements-typography';
 @import 'elements/breadcrumbs';
+@import 'elements/panels';
+@import 'elements/details';
+@import 'elements/shame';
 
 
 // Global template elements
@@ -157,11 +160,20 @@ label {
     display:block;
     font-weight:bold;
 }
-input.text-field {
+details {
+    margin-bottom: 1.5em;
+}
+
+input.text-field, textarea.form-control {
     width:100%;
     padding: 6px;
     display:block;
 }
+
+textarea.form-control {
+    height: 10em;
+}
+
 
 input.text-field.number {
     width:3em;
