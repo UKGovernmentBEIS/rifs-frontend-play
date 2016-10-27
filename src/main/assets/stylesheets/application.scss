@@ -30,6 +30,7 @@ $path: "/assets/stylesheets/images/";
 @import 'elements/layout';
 @import 'elements/buttons';
 @import 'elements/elements-typography';
+@import 'elements/panels';
 
 
 // Global template elements
@@ -39,7 +40,7 @@ $path: "/assets/stylesheets/images/";
 
 // Page widgets
 .rifs-step-panel {
-  background-color: lighten($turquoise , 50%);
+  background-color: lighten($turquoise, 50%);
   text-align: center;
   padding: 1.5em;
   // Vertically align the child content
@@ -76,19 +77,35 @@ $path: "/assets/stylesheets/images/";
   float: right;
 }
 
+.contain-floats {
+  @extend %contain-floats;
+}
+
 .rifs-form-buttons {
   margin-top: 2em;
+}
+
+.page-navigation-next {
+  text-align: right;
+  @extend .font-medium;
+  display: block;
+  text-decoration: none;
+}
+
+.page-navigation-description {
+  @extend .font-small;
+}
+
+
+// Notces, Panels etc.
+aside.notice div dl dd {
+  margin: 0;
+  padding: 0;
 }
 
 // Typography
 .expanded-list {
   @extend .list;
-}
-
-.table-style-heading-small {
-  // Small bold heading with a line underneath (See: showOpportunities.scala.hmtl)
-  @extend .heading-small;
-  margin-bottom: 0;
 }
 
 .expanded-list li {
@@ -109,11 +126,36 @@ $path: "/assets/stylesheets/images/";
 }
 
 // Buttons
-
 input.button--link-style {
   background: none;
   border: none;
   text-decoration: underline;
   cursor: pointer;
   @extend .font-small;
+}
+
+
+
+// Navigation Elements
+
+aside .page-navigation ol {
+  padding: 0.25em 0.25em 0.25em 0;
+  float: left;
+  @media screen and (max-width: 820px) {
+    float: none;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+  width: 49%;
+  list-style-type: none;
+}
+
+aside nav ol li {
+  margin-bottom: 0.5em;
+}
+
+.part-number {
+  display: inline-block;
+  width: 1.25em;
 }

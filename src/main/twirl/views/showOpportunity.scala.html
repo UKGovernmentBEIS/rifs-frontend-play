@@ -1,10 +1,10 @@
 @(applicationId: ApplicationFormId, opportunity: Opportunity, sectionNumber: Int)
 
 @sectionLink(title: String, sectionNum: Int) = @{
-    if(sectionNum == sectionNumber) s"$sectionNum. $title"
+    if(sectionNum == sectionNumber) s"""<span class="part-number">$sectionNum.</span> $title"""
     else {
         val link = controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(sectionNum))
-        s"""$sectionNum. <a href="$link">$title</a>"""
+        s"""<span class="part-number">$sectionNum.</span> <a href="$link">$title</a>"""
     }
 }
 
@@ -29,65 +29,126 @@
 }
 
 @main(s"Opportunity ${opportunity.id.id}") {
-    <div class="grid-row">
-        <a href="@controllers.routes.OpportunityController.showOpportunities()">&lt; Return to opportunity list</a>
-        <p></p>
-        <h1>@opportunity.title</h1>
+<div class="grid-row">
 
+    <div class="column-full">
+        <p>
+            <a href="@controllers.routes.OpportunityController.showOpportunities()">&lt; Return to opportunity list</a>
+        </p>
+    </div>
+
+    <div class="column-two-thirds">
         <header class="page-header">
-            <table>
-                <tbody>
-                @titleCols.map { case (col1, col2) =>
-                <tr>
-                    <td>@Html(sectionLink(col1._1, col1._2))</td>
-                    <td>@col2.map { t => @Html(sectionLink(t._1, t._2)) }.getOrElse("")
-                </td>
-                </tr>
-                }
-                </tbody>
-            </table>
+            <h1 class="heading-xlarge">@opportunity.title</h1>
         </header>
 
+        <aside>
+            <nav role="navigation" class="contain-floats page-navigation">
+                <ol>
+                    @titleCols.map { case (col1, col2) =>
+                        <li>
+                            @Html(sectionLink(col1._1, col1._2))
+                        </li>
+                    }
+                </ol>
+                <ol>
+                    @titleCols.map { case (col1, col2) =>
+                        <li>
+                            @col2.map { t => @Html(sectionLink(t._1, t._2)) }.getOrElse("")
+                        </li>
+                    }
+                </ol>
+            </nav>
+        </aside>
+
+
         <div>
-            <h2>Apply for funding</h2>
-            <a href="@controllers.routes.ApplicationController.showOrCreateForForm(applicationId)">Make an application</a>
-            <p></p>
-            <a href="@controllers.routes.OpportunityController.showGuidancePage(opportunity.id)">Guidance on seminars</a>
-            <p></p>
+            <h2 class="heading-large">Apply for funding</h2>
+
+            <p>
+                <a href="@controllers.routes.ApplicationController.showOrCreateForForm(applicationId)">Make an
+                    application</a>
+            </p>
+
+            <p>
+                <a href="@controllers.routes.OpportunityController.showGuidancePage(opportunity.id)">Guidance on
+                    seminars</a>
+            </p>
         </div>
 
         @currentSection.map { s =>
-            <article>
-                <h1>@s.sectionNumber. @s.title</h1>
-                @if(sectionNumber == 1) {
-                    <div>
-                        <h3>Start date</h3>
-                        @opportunity.startDate
-                        <h3>Days duration</h3>
-                        @opportunity.duration.map(d => s"${d.duration} ${d.units}").getOrElse("Open indefinitely")
-                        <h3>Opportunity value</h3>
-                            &pound; @opportunity.value.amount @opportunity.value.unit
-                    </div>
-                    <p></p>
-                }
-                @s.paragraphs.map { p =>
-                    <p>@p</p>
-                }
-            </article>
-            <footer>
+
+            @if(sectionNumber == 1) {
+
+        <div class="panel panel-border-narrow">
+            <aside role="complementary" class="notice">
+                <div class="column-half">
+                    <dl>
+                        <dt class="heading-small">Deadline</dt>
+                        <dd>Apply any time</dd>
+                    </dl>
+                </div>
+
+                <div class="column-half">
+                    <dl>
+                        <dt class="heading-small">Value</dt>
+                        <dd>&pound;@opportunity.value.amount @opportunity.value.unit</dd>
+                    </dl>
+                </div>
+            </aside>
+        </div>
+
+            }
+        <article>
+            <h2 class="heading-large">@s.sectionNumber. @s.title</h2>
+            @s.paragraphs.map { p =>
+                <p class="text">@p</p>
+            }
+        </article>
+
+        <footer class="contain-floats">
+            <nav role="navigation">
                 @prevSection.map { s =>
-                    <div>Previous page<br>
+                <div class="float-left">
+                    <p>Previous page<br>
                         <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(s.sectionNumber))">
-                        @s.title
-                        </a></div>
+                            @s.title
+                        </a>
+                    </p>
+                </div>
                 }
                 @nextSection.map { s =>
-                    <div>Next page<br>
-                        <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(s.sectionNumber))">
-                        @s.title
-                        </a></div>
+                <div class="float-right">
+                    <p>
+                        <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(s.sectionNumber))"
+                           title="Navigate to the next page."
+                           rel="next">
+                            <span class="page-navigation-next">Next page</span>
+                            <span class="page-navigation-description">@s.title</span>
+                        </a>
+                    </p>
+                </div>
                 }
-            </footer>
-        }
+            </nav>
+        </footer>
+
     </div>
+
+
+    <div class="column-third">
+        <aside role="complementary">
+            <hr class="hr-blue">
+            <h3 class="bold-small">Supporting information</h3>
+            <ul class="list">
+                <li>
+                    <a href="@controllers.routes.OpportunityController.showGuidancePage(opportunity.id)">Guidance on
+                        seminars</a>
+                </li>
+            </ul>
+        </aside>
+    </div>
+
+</div>
+        }
+
 }
