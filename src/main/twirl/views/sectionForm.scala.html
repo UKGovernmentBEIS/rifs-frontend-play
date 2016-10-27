@@ -1,6 +1,7 @@
 @(
         app: Application,
         overview: ApplicationOverview,
+        appForm: ApplicationForm,
         section: Option[ApplicationSection],
         formSection: ApplicationFormSection,
         opportunity: Opportunity,
@@ -45,7 +46,7 @@
             </form>
         </div>
         <div class="column-third">
-            @sidebar(overview, opportunity)
+            @sidebar(overview, opportunity, appForm)
         </div>
     </div>
 }

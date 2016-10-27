@@ -76,7 +76,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
             .withQuestionsFrom(questions)
         }
 
-        Ok(views.html.sectionForm(app, overview, section, formSection, opp, populatedFields))
+        Ok(views.html.sectionForm(app, overview, appForm, section, formSection, opp, populatedFields))
       case None => NotFound
     }
   }

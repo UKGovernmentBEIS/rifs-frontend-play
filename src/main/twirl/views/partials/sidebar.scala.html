@@ -1,4 +1,4 @@
-@(overview: ApplicationOverview, opportunity:Opportunity)
+@(overview: ApplicationOverview, opportunity:Opportunity, form: ApplicationForm)
 <hr class="hr-blue">
 <h3 class="heading-medium no-top-margin">Support</h3>
 <ul class="list spacious">
@@ -11,7 +11,7 @@
 </ul>
 <div class="rifs-step-panel">
     <p class="rifs-step-content">
-        <span class="bold-xlarge"> @overview.sections.filter(_.status =="Completed").length/@overview.sections.length </span>
+        <span class="bold-xlarge"> @overview.sections.filter(_.status =="Completed").length/@form.sections.length </span>
         <br>
         Sections complete
     </p>
