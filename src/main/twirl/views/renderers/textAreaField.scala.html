@@ -2,9 +2,9 @@
     @import play.api.libs.json.JsString
 
 @field.question.map { q => <h4>@q.text</h4>
-                           <div>@q.longDescription</div>
+                           <p>@q.longDescription</p>
                            <details>
-                               <summary>Help</summary>
+                               <summary>Help with this section </summary>
                                @q.helpText
                            </details>
                            }
