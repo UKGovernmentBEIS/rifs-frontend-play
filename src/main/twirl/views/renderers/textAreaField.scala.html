@@ -19,4 +19,4 @@
     <label for="@field.name">@field.label</label>
     <textarea id="@field.name" class="form-control" title="@field.name" name="@field.name">@field.value</textarea>
 </div>
-<div class="inline" id="title_help_text" class="right-align">@field.rules.flatMap(_.helpText(JsString(field.value.getOrElse(""))))</div>
+<div class="inline right-align" id="title_help_text">@field.rules.flatMap(_.helpText(JsString(field.value.getOrElse(""))))</div>
