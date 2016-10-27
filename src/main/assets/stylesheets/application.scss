@@ -17,9 +17,9 @@ $path: "/assets/stylesheets/images/";
 @import "shims";                                  // Inline block mixin, clearfix placeholder
 
 // Extras
-@import 'helpers'; // needed for tables.
-@import 'design-patterns/alpha-beta';
-@import 'design-patterns/buttons';
+@import "helpers"; // needed for tables.
+@import "design-patterns/alpha-beta";
+@import "design-patterns/buttons";
 @import "url-helpers";
 
 // From https://github.com/alphagov/govuk_elements
