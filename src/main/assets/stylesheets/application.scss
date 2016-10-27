@@ -78,6 +78,11 @@ $path: "/assets/stylesheets/images/";
   float: right;
 }
 
+.no-top-margin {
+    margin-top:0;
+}
+
+
 .rifs-form-buttons {
   margin-top: 2em;
 }
@@ -193,6 +198,21 @@ input.text-field.number {
     margin: 0 0 1.5em;
 }
 
+// Preview
+.text-preview {
+    font-size: 1.2em;
+    margin: 2em 0;
+    font-weight: bold;
+}
+
+.duration-preview {
+    @extend %contain-floats;
+}
+.duration-preview>div {
+    float:left;
+    margin-right: 4em;
+
+}
 // Buttons
 
 input.button--link-style {
@@ -204,6 +224,13 @@ input.button--link-style {
   color: $link-colour;
   @extend .font-small;
 }
+
+a.button.secondary, input.secondary {
+  background-color: #ccc;
+  color:black;
+}
+
+
 
 /* GOV.UK overrides */
 hr {

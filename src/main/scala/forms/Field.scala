@@ -25,9 +25,9 @@ trait Field {
     * @return either a mapping of the field name to a value (as a Some) or None if a value
     *         could not be de-rendered
     */
-  def derender(fieldValues: JsObject): Option[(String, JsValue)] = fieldValues \ name match {
-    case JsDefined(v) => Some(name -> v)
-    case _ => None
+  def derender(fieldValues: JsObject): Seq[(String, JsValue)] = fieldValues \ name match {
+    case JsDefined(v) => Seq(name -> v)
+    case _ => Seq()
   }
 
   def withValuesFrom(values: JsObject): Field

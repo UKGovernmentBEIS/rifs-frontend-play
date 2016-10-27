@@ -12,20 +12,23 @@
 
 @main(s"Event title") {
     <div class="grid-row">
-        <a href="@controllers.routes.ApplicationController.show(app.id)">&lt; Return to application overview</a>
-        <p></p>
-        <h2>@formatId(opportunity.id.id): @opportunity.title</h2>
+        <div class="column-two-thirds">
+            <div class="breadcrumbs">
+                <ol style="margin: 0;padding:0;">
+                    <li><a href="@controllers.routes.ApplicationController.show(app.id)">&lt; Return to application overview</a></li>
+                </ol>
+            </div>
+            <h1 class="heading-xlarge">
+                <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
+                @formSection.title
+            </h1>
 
-        <h1>@formSection.title</h1>
+            @fields.map(_.renderPreview)
 
-        @fields.map(_.renderPreview)
-
-        <div>
-
-            <a class="link--button" href="@controllers.routes.ApplicationController.show(app.id)">Close</a>
-            &nbsp;&nbsp;
-            <a href="@controllers.routes.ApplicationController.showSectionForm(app.id, formSection.sectionNumber)">Edit this page</a>
-
+            <div class="rifs-form-buttons">
+                <a class="button secondary" href="@controllers.routes.ApplicationController.show(app.id)">Close</a>
+                <a class="flat" href="@controllers.routes.ApplicationController.showSectionForm(app.id, formSection.sectionNumber)">Edit this page</a>
+            </div>
         </div>
     </div>
 }

@@ -20,8 +20,9 @@ object ApplicationData {
   )
 
   val dateFormFields: Seq[Field] = Seq(
-    DateField("date", Seq()),
-    TextField(Some("Day(s)"), "days", true, Seq())
+    DurationField("duration",
+      DateField("date", Seq()),
+      TextField(Some("Day(s)"), "days", true, Seq()))
   )
 
   def rulesFor(sectionNumber: Int): Map[String, Seq[FieldRule]] = {
