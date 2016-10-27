@@ -1,7 +1,7 @@
 @(field: forms.TextField)
     @import play.api.libs.json.JsString
 
-@field.question.map { q => <h4>@q</h4> }
+@field.question.map { q => <p class="question">@q</p> }
 @field.errs.map { es =>
     <div>
         @es.toList.map { e =>
@@ -11,6 +11,6 @@
 }
 <div>
     <label for="@field.name">@field.label</label>
-    <input type="text" id="@field.name" class="form-control" title="@field.name" name="@field.name" value='@field.value'>
+    <input type="text" id="@field.name" class='form-control text-field @{if(field.isNumeric) "number"}' title="@field.name" name="@field.name" value='@field.value'>
 </div>
-<div class="inline" id="title_help_text">@field.rules.flatMap(_.helpText(JsString(field.value.getOrElse(""))))</div>
+<div class="inline right-align" id="title_help_text">@field.rules.flatMap(_.helpText(JsString(field.value.getOrElse(""))))</div>

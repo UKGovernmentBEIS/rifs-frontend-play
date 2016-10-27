@@ -17,9 +17,17 @@ f"RIFS$id%05d"
     <!-- main content -->
     <div class="gidrow">
         <div class="column-two-thirds">
+            <div class="breadcrumbs">
+                <ol style="margin: 0;padding:0;">
+                    <li><a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, None)">&lt; Back</a></li>
+                </ol>
+            </div>
             <div>
-                <div>@formatId(opportunity.id.id): @opportunity.title</div>
-                <h1>Application overview</h1>
+                <div></div>
+                <h1 class="heading-xlarge">
+                    <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
+                    Application overview
+                </h1>
                 <p>Complete all application sections before submitting to RIFS.</p>
             </div>
             <div>
@@ -27,7 +35,7 @@ f"RIFS$id%05d"
                     <thead>
                     <tr>
                         <th scope="col">Event details</th>
-                        <th scope="col" >Status</th>
+                        <th scope="col status-column">Status</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -36,7 +44,7 @@ f"RIFS$id%05d"
                         <td>
                             @s.sectionNumber. <a href="@controllers.routes.ApplicationController.showSectionForm(overview.id, s.sectionNumber)"> @s.title</a>
                         </td>
-                        <td>
+                        <td class="status-column">
                             @statusText(overview, s.sectionNumber)
                         </td>
                     </tr>

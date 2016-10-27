@@ -20,6 +20,7 @@ $path: "/assets/stylesheets/images/";
 @import 'helpers'; // needed for tables.
 @import 'design-patterns/alpha-beta';
 @import 'design-patterns/buttons';
+@import 'design-patterns/breadcrumbs';
 @import "url-helpers";
 
 // From https://github.com/alphagov/govuk_elements
@@ -30,6 +31,7 @@ $path: "/assets/stylesheets/images/";
 @import 'elements/layout';
 @import 'elements/buttons';
 @import 'elements/elements-typography';
+@import 'elements/breadcrumbs';
 
 
 // Global template elements
@@ -80,11 +82,11 @@ $path: "/assets/stylesheets/images/";
   margin-top: 2em;
 }
 
-.rifs-form-buttons a {
+.rifs-form-buttons a, .rifs-form-buttons input{
   margin-right:1.5em
 }
 
-.rifs-form-buttons a.flat {
+.rifs-form-buttons a.flat, .rifs-form-buttons .button--link-style {
   line-height: 2.2;
 }
 
@@ -123,7 +125,7 @@ $path: "/assets/stylesheets/images/";
 .greentick {
     color: rgb(1,130,67);
     font-size: 1.5em;
-    margin: 0px 15px;
+    padding: 0 0 0 15px;
     line-height: 0.5;
 }
 
@@ -132,12 +134,63 @@ table.spacious td {
     padding-bottom:15px;
 }
 
-ul.spacious {
-    line-height: 2;
+.status-column {
+    width: 30%;
+    min-width: 8em;
+}
+
+ul.spacious li {
+    margin: 0.9em 0;
 }
 
 table.spacious th {
     border-bottom: solid 2px $black;
+}
+
+// Form elements
+label {
+    display:block;
+    font-weight:bold;
+}
+input.text-field {
+    width:100%;
+    padding: 6px;
+    display:block;
+}
+
+input.text-field.number {
+    width:3em;
+    text-align:right;
+}
+
+#title_help_text {
+    margin-bottom:2.5em;
+}
+#title_help_text.right-align {
+    text-align:right;
+}
+
+.date-selector {
+    @extend %contain-floats;
+    margin-bottom:0.5em;
+}
+.date-selector>div {
+    float:left;
+    margin-right:1.5em;
+}
+.date-selector input {
+    display:block;
+    width: 3em;
+    text-align:right;
+    padding:6px;
+}
+
+.date-selector input.year {
+    width: 4em;
+}
+
+.question {
+    margin: 0 0 1.5em;
 }
 
 // Buttons
@@ -147,6 +200,8 @@ input.button--link-style {
   border: none;
   text-decoration: underline;
   cursor: pointer;
+  padding: 0;
+  color: $link-colour;
   @extend .font-small;
 }
 

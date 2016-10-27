@@ -11,7 +11,7 @@ object ApplicationData {
 
   type FieldErrors = Map[String, NonEmptyList[String]]
   val noErrors: FieldErrors = Map()
-  val titleFormFields: Seq[Field] = Seq(TextField(None, "title", titleFormRules.getOrElse("title", Seq())))
+  val titleFormFields: Seq[Field] = Seq(TextField(None, "title", false, titleFormRules.getOrElse("title", Seq())))
   val titleFormQuestions = Map("title" -> "What is your event called?")
 
   val dateFormQuestions = Map(
@@ -21,7 +21,7 @@ object ApplicationData {
 
   val dateFormFields: Seq[Field] = Seq(
     DateField("date", Seq()),
-    TextField(Some("Day(s)"), "days", Seq())
+    TextField(Some("Day(s)"), "days", true, Seq())
   )
 
   def rulesFor(sectionNumber: Int): Map[String, Seq[FieldRule]] = {

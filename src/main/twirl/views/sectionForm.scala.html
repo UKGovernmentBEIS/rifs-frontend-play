@@ -21,12 +21,15 @@
 
     <div class="grid-row">
         <div class="column-two-thirds">
-            <p>
-                <a href="@controllers.routes.ApplicationController.show(app.id)">&lt; Return to application overview</a>
-            </p>
-            <h2>@formatId(opportunity.id.id): @opportunity.title</h2>
-
-            <h1>@formSection.title</h1>
+            <div class="breadcrumbs">
+                <ol style="margin: 0;padding:0;">
+                    <li><a href="@controllers.routes.ApplicationController.show(app.id)">&lt; Return to application overview</a></li>
+                </ol>
+            </div>
+            <h1 class="heading-xlarge">
+                <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
+                @formSection.title
+            </h1>
 
             <form method="POST" action="@controllers.routes.ApplicationController.postSection(app.id, formSection.sectionNumber)">
                 <fieldset>
@@ -35,7 +38,7 @@
                     @section.flatMap(_.completedAtText).getOrElse(<input type="submit" name="_complete_button" class="button--link-style" value="Mark question as complete"/>)
 
                 </fieldset>
-                <div>
+                <div class="rifs-form-buttons">
                     <input type="submit" name="_save_button" class="button button--start" value="Save and continue">
                     <input type="submit" name="_preview_button" class="button--link-style" value="Preview this page"/>
                 </div>
