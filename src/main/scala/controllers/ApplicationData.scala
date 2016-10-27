@@ -12,7 +12,7 @@ object ApplicationData {
 
   type FieldErrors = Map[String, NonEmptyList[String]]
   val noErrors: FieldErrors = Map()
-  val titleFormFields: Seq[Field] = Seq(TextField(None, "title", titleFormRules.getOrElse("title", Seq())))
+  val titleFormFields: Seq[Field] = Seq(TextField(None, "title", false, titleFormRules.getOrElse("title", Seq())))
   val titleFormQuestions = Map("title" -> Question("What is your event called?"))
 
   val dateFormQuestions = Map(

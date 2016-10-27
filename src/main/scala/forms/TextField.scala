@@ -5,7 +5,7 @@ import models.Question
 import play.api.libs.json.JsObject
 import play.twirl.api.Html
 
-case class TextField(label: Option[String], name: String, rules: Seq[FieldRule], value: Option[String] = None, errs: Option[NonEmptyList[String]] = None, question: Option[Question] = None) extends Field {
+case class TextField(label: Option[String], name: String, isNumeric: Boolean, rules: Seq[FieldRule], value: Option[String] = None, errs: Option[NonEmptyList[String]] = None, question: Option[Question] = None) extends Field {
   override def renderFormInput: Html = views.html.renderers.textField(this)
 
   override def renderPreview: Html = views.html.renderers.preview.textField(this)

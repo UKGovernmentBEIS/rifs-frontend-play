@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat
 import java.util.GregorianCalendar
 
 import cats.data.NonEmptyList
+import models.Question
 import play.api.libs.json.{JsObject, JsString, JsValue}
 import play.twirl.api.Html
 
@@ -34,7 +35,7 @@ case class DurationField(name: String, startDate: DateField, duration: TextField
     this.copy(startDate = startDate.withErrorsFrom(errs), duration = duration.withErrorsFrom(errs))
   }
 
-  override def withQuestionsFrom(questions: Map[String, String]): Field = this.copy(
+  override def withQuestionsFrom(questions: Map[String, Question]): Field = this.copy(
     startDate = startDate.withQuestionsFrom(questions), duration = duration.withQuestionsFrom(questions)
   )
 }
