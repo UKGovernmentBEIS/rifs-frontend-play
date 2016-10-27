@@ -1,0 +1,13 @@
+@(field: forms.DateWithDaysField)
+
+<div class="inline">
+    <h3>Start Date</h3>
+    @field.dateField.value.map { v =>
+        @v.day @v.month @v.year
+    }
+
+    <h3>Duration in days</h3>
+    @field.daysField.value
+</div>
+
+

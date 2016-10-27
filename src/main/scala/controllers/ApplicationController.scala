@@ -6,6 +6,7 @@ import cats.data.{NonEmptyList, OptionT}
 import cats.instances.future._
 import forms._
 import models.{ApplicationFormId, ApplicationFormSection, ApplicationId, ApplicationSection}
+import play.api.Logger
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller, Result}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
@@ -88,8 +89,10 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
   def decodeButton(keys: Set[String]): Option[ButtonAction] = keys.flatMap(ButtonAction.unapply).headOption
 
   def postSection(id: ApplicationId, sectionNumber: Int) = Action.async(parse.urlFormEncoded) { implicit request =>
+    Logger.debug(request.body.toString())
     // Drop keys that start with '_' as these are "system" keys like the button name
     val jsonFormValues = formToJson(request.body.filterKeys(k => !k.startsWith("_")))
+    Logger.debug(jsonFormValues.toString())
     val button: Option[ButtonAction] = decodeButton(request.body.keySet)
     val answers: JsObject = fieldsFor(sectionNumber).map(fs => JsObject(fs.flatMap(_.derender(jsonFormValues)))).getOrElse(JsObject(Seq()))
     val fieldValues = fieldsFor(sectionNumber).map(_.map(_.derender(jsonFormValues))).map(vs => JsObject(vs.flatten)).getOrElse(JsObject(Seq()))
@@ -98,6 +101,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
   }
 
   def takeAction(id: ApplicationId, sectionNumber: Int, button: Option[ButtonAction], fieldValues: JsObject): Future[Result] = {
+    Logger.debug(fieldValues.toString())
     button.map {
       case Complete =>
         val rules = rulesFor(sectionNumber)
