@@ -1,0 +1,30 @@
+@(field: forms.TextAreaField)
+    @import play.api.libs.json.JsString
+
+<<<<<<< HEAD
+@field.question.map { q => <p class="question">@q.text</p>
+                           <p>@q.longDescription</p>
+                           <details>
+                               <summary role="button"><span class="summary">Help with this section</span></summary>
+                               <div class="panel panel-border-narrow">@q.helpText.map(Html(_))</div>
+=======
+@field.question.map { q => <h4>@q.text</h4>
+                           <p>@q.longDescription</p>
+                           <details>
+                               <summary>Help with this section </summary>
+                               @q.helpText
+>>>>>>> refs/remotes/origin/master
+                           </details>
+                           }
+@field.errs.map { es =>
+    <div>
+        @es.toList.map { e =>
+            <p>@e</p>
+        }
+    </div>
+}
+<div>
+    <label for="@field.name">@field.label</label>
+    <textarea id="@field.name" class="form-control" title="@field.name" name="@field.name">@field.value</textarea>
+</div>
+<div class="inline" id="title_help_text" class="right-align">@field.rules.flatMap(_.helpText(JsString(field.value.getOrElse(""))))</div>
