@@ -5,7 +5,7 @@ import javax.inject.Inject
 import cats.data.{NonEmptyList, OptionT}
 import cats.instances.future._
 import forms._
-import models.{ApplicationFormId, ApplicationFormSection, ApplicationId, ApplicationSection}
+import models._
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller, Result}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
@@ -59,7 +59,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     }
   }
 
-  def renderSectionForm(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], questions: Map[String, String], fields: Seq[Field], errs: FieldErrors) = {
+  def renderSectionForm(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], questions: Map[String, Question], fields: Seq[Field], errs: FieldErrors) = {
     val ft = for {
       a <- OptionT(applications.byId(id))
       af <- OptionT(applicationForms.byId(a.applicationFormId))
