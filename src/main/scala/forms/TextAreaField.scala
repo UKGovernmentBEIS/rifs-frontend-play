@@ -9,11 +9,11 @@ case class TextAreaField(label: Option[String], name: String, rules: Seq[FieldRu
 
   override def renderPreview: Html = views.html.renderers.preview.textAreaField(this)
 
+  override def renderFormInput: Html = views.html.renderers.textAreaField(this)
+
   override def withValuesFrom(values: JsObject): TextAreaField = this.copy(value = stringValue(values, name))
 
-  override def withErrorsFrom(errs: Map[String, NonEmptyList[String]]): Field = this.copy(errs = errs.get(name))
-
-  override def renderFormInput: Html = views.html.renderers.textAreaField(this)
+  override def withErrorsFrom(errs: Map[String, NonEmptyList[String]]): TextAreaField = this.copy(errs = errs.get(name))
 
   override def withQuestionsFrom(questions: Map[String, Question]): TextAreaField = this.copy(question = questions.get(name))
 }

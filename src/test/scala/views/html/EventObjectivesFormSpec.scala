@@ -1,13 +1,13 @@
 package views.html
 
-import forms.{TextAreaField, TextField, WordCountRule}
+import forms.{TextAreaField, WordCountRule}
 import models._
 import org.jsoup.Jsoup
 import org.scalatest.{Matchers, OptionValues, WordSpecLike}
-import play.api.libs.json.{JsObject, JsString}
+import play.api.libs.json.JsObject
 import play.twirl.api.Html
 
-class EvetObjectivesFormSpec extends WordSpecLike with Matchers with OptionValues {
+class EventObjectivesFormSpec extends WordSpecLike with Matchers with OptionValues {
 
   "sectionForm" should {
 
@@ -31,7 +31,7 @@ class EvetObjectivesFormSpec extends WordSpecLike with Matchers with OptionValue
       section,
       ApplicationFormSection(3, "Event Objectives"),
       Opportunity(OpportunityId(1), "Research priorities in health care", "", None, OpportunityValue(0, ""), Seq()),
-      Seq(TextAreaField(Some("label"), "eventObjectives", Seq(WordCountRule(500)), None, None, Option(Question("What are the objectives of the event?", Option(""), Option("Help Text"))) ).withValuesFrom(values.getOrElse(JsObject(Seq()))))
-      )
+      Seq(TextAreaField(Some("label"), "eventObjectives", Seq(WordCountRule(500)), None, None, Option(Question("What are the objectives of the event?", Option(""), Option("Help Text")))).withValuesFrom(values.getOrElse(JsObject(Seq()))))
+    )
   }
 }
