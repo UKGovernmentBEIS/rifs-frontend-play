@@ -1,18 +1,15 @@
 package forms
 
-import cats.data.NonEmptyList
 import forms.validation.FieldError
 import play.api.libs.json._
 import play.twirl.api.Html
 
 trait Field {
-  def renderFormInput: Html
+  def renderFormInput(questions: Map[String, String], answers: Map[String, String], errs: Seq[FieldError]): Html
 
-  def renderPreview: Html
+  def renderPreview(answers: Map[String, String]): Html
 
   def name: String
-
-  def rules: Seq[FieldRule]
 
   /**
     * Provide a hook by which the renderer can look at the fields from the html form and
@@ -30,12 +27,6 @@ trait Field {
     case JsDefined(v) => Some(name -> v)
     case _ => None
   }
-
-  def withValuesFrom(values: JsObject): Field
-
-  def withErrorsFrom(errs: Map[String, NonEmptyList[FieldError]]): Field
-
-  def withQuestionsFrom(questions: Map[String, String]): Field
 
   protected def stringValue(o: JsObject, n: String): Option[String] = (o \ n).validate[JsString].asOpt.map(_.value)
 

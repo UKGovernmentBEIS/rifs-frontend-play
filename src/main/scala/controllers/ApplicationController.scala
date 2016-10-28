@@ -2,10 +2,9 @@ package controllers
 
 import javax.inject.Inject
 
-import cats.data.{NonEmptyList, OptionT}
+import cats.data.OptionT
 import cats.instances.future._
 import forms._
-import forms.validation.FieldError
 import models.{ApplicationFormId, ApplicationFormSection, ApplicationId, ApplicationSection}
 import play.api.Logger
 import play.api.libs.json._
@@ -71,16 +70,14 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     ft.value.map {
       case Some((app, appForm, opp)) =>
         val formSection: ApplicationFormSection = appForm.sections.find(_.sectionNumber == sectionNumber).get
-        val populatedFields = fields.map {
-          _.withValuesFrom(section.map(_.answers).getOrElse(JsObject(Seq())))
-            .withErrorsFrom(errs)
-            .withQuestionsFrom(questions)
-        }
 
-        Ok(views.html.sectionForm(app, section, formSection, opp, populatedFields))
+        val answers = section.map { s => JsonHelpers.flatten("", s.answers) }.getOrElse(Map[String, String]())
+
+        Ok(views.html.sectionForm(app, section, formSection, opp, fields, questions, answers, errs))
       case None => NotFound
     }
   }
+
 
   /**
     * Note if more than one button action name is present in the keys then it is indeterminate as to
@@ -107,7 +104,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
       case Complete =>
         val rules = rulesFor(sectionNumber)
         val errs = check(fieldValues, checksFor(sectionNumber))
-        if (errs.keySet.isEmpty) {
+        if (errs.isEmpty) {
           applications.completeSection(id, sectionNumber, fieldValues).map { _ =>
             Redirect(routes.ApplicationController.show(id))
           }
@@ -124,7 +121,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
         applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
           val rules = selectPreviewRules(rulesFor(sectionNumber))
           val errs = check(fieldValues, previewChecksFor(sectionNumber))
-          if (errs.keySet.isEmpty) {
+          if (errs.isEmpty) {
             Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber))
           } else {
             Redirect(routes.ApplicationController.showSectionForm(id, sectionNumber)).flashing(("doPreviewValidation", "true"))
@@ -137,13 +134,14 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     rules.map { case (n, rs) => n -> rs.filter(_.validateOnPreview) }
   }
 
-  def check(fieldValues: JsObject, checks: Map[String, FieldCheck]): Map[String, NonEmptyList[FieldError]] = {
-    val errs = checks.map { case (fieldName, check) =>
-      fieldName -> (fieldValues \ fieldName match {
-        case JsDefined(jv) => NonEmptyList.fromList(check(fieldName, jv))
-        case _ => NonEmptyList.fromList(check(fieldName, JsNull))
-      })
-    }.collect { case (fieldName, Some(es)) => fieldName -> es }
+  def check(fieldValues: JsObject, checks: Map[String, FieldCheck]): FieldErrors = {
+    val errs = checks.toList.flatMap {
+      case (fieldName, check) =>
+        fieldValues \ fieldName match {
+          case JsDefined(jv) => check(fieldName, jv)
+          case _ => check(fieldName, JsNull)
+        }
+    }
     Logger.debug(errs.toString)
     errs
   }

@@ -1,11 +1,9 @@
-@(field: forms.DateField)
+@(field: forms.DateField, questions: Map[String, String], answers: Map[String, String], errs: Seq[forms.validation.FieldError])
 
-@field.question.map { q => <h4>@q</h4> }
-@field.errs.map { es =>
+@questions.get(field.name).map { q => <h4>@q</h4> }
+@errs.filter(_.path == field.name).map { e =>
     <div>
-        @es.toList.map { e =>
-            <p>@e</p>
-        }
+        <p>@e</p>
     </div>
 }
 <div class="inline">

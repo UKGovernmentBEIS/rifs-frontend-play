@@ -1,8 +1,6 @@
-@(field: forms.TextField)
-
-@field.question.map { q => <h4>@q</h4> }
+@(field: forms.TextField, answers: Map[String, String])
 
 <div>
     <h3>@field.label</h3>
-    <p>@field.value</p>
+    <p>@answers.get(field.name)</p>
 </div>

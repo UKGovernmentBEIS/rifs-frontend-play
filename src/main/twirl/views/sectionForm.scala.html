@@ -3,7 +3,10 @@
         section: Option[ApplicationSection],
         formSection: ApplicationFormSection,
         opportunity: Opportunity,
-        fields: Seq[forms.Field]
+        fields: Seq[forms.Field],
+        questions: Map[String, String],
+        answers: Map[String, String],
+        errs: List[forms.validation.FieldError]
 )
 
 @formatId(id: Long) = @{
@@ -28,7 +31,7 @@
 
             <form method="POST" action="@controllers.routes.ApplicationController.postSection(app.id, formSection.sectionNumber)">
                 <fieldset>
-                    @fields.map(_.renderFormInput)
+                    @fields.map(_.renderFormInput(questions, answers, errs))
 
                     @section.flatMap(_.completedAtText).getOrElse(<input type="submit" name="_complete_button" class="button--link-style" value="Mark question as complete"/>)
 
@@ -44,7 +47,8 @@
             <h3 class="bold-small">Supporting information</h3>
             <ul class="list">
                 <li>
-                    <a href="@controllers.routes.OpportunityController.showGuidancePage(opportunity.id)">Guidance on seminars</a>
+                    <a href="@controllers.routes.OpportunityController.showGuidancePage(opportunity.id)">
+                        Guidance on seminars</a>
                 </li>
                 <li>
                     <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, None)">

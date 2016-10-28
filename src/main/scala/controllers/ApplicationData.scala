@@ -7,8 +7,8 @@ import play.api.libs.json._
 
 object ApplicationData {
 
-  type FieldErrors = Map[String, NonEmptyList[FieldError]]
-  val noErrors: FieldErrors = Map()
+  type FieldErrors = List[FieldError]
+  val noErrors: FieldErrors = List()
 
   type FieldCheck = (String, JsValue) => List[FieldError]
 
@@ -87,7 +87,7 @@ object ApplicationData {
     }
   }
 
-  val titleFormFields: Seq[Field] = Seq(TextField(None, "title", titleFormRules.getOrElse("title", Seq())))
+  val titleFormFields: Seq[Field] = Seq(TextField(None, "title"))
   val dateFormFields: Seq[Field] = Seq(DateWithDaysField("provisionalDate", DateField("date"), TextField(None, "days")))
 
   def fieldsFor(sectionNum: Int): Option[Seq[Field]] = {

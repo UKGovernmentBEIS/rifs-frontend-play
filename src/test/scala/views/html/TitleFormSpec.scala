@@ -1,6 +1,6 @@
 package views.html
 
-import forms.{TextField, WordCountRule}
+import forms.TextField
 import models._
 import org.jsoup.Jsoup
 import org.scalatest.{Matchers, OptionValues, WordSpecLike}
@@ -41,7 +41,10 @@ class TitleFormSpec extends WordSpecLike with Matchers with OptionValues {
       section,
       ApplicationFormSection(1, "Event Title"),
       Opportunity(OpportunityId(1), "Research priorities in health care", "", None, OpportunityValue(0, ""), Seq()),
-      Seq(TextField(Some("label"), "title", Seq(WordCountRule(20)), None, None).withValuesFrom(values.getOrElse(JsObject(Seq()))))
+      Seq(TextField(Some("label"), "title")),
+      Map(),
+      Map(),
+      List()
     )
   }
 }
