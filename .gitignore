@@ -8,3 +8,4 @@ target
 /RUNNING_PID
 project/project/
 .DS_Store
+*.bak
