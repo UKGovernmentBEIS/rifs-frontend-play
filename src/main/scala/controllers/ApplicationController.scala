@@ -85,7 +85,10 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     * which one will be returned. This shouldn't occur if the form is properly submitted from a
     * browser, though.
     */
-  def decodeButton(keys: Set[String]): Option[ButtonAction] = keys.flatMap(ButtonAction.unapply).headOption
+  def decodeButton(keys: Set[String]): Option[ButtonAction] = keys.flatMap(ButtonAction.unapply).headOption.map {
+    case Save => if (keys.contains("_complete_checkbox")) Complete else Save
+    case b => b
+  }
 
   def postSection(id: ApplicationId, sectionNumber: Int) = Action.async(parse.urlFormEncoded) { implicit request =>
     // Drop keys that start with '_' as these are "system" keys like the button name
