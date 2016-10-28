@@ -64,21 +64,6 @@
             </nav>
         </aside>
 
-
-        <div>
-            <h2 class="heading-large">Apply for funding</h2>
-
-            <p>
-                <a href="@controllers.routes.ApplicationController.showOrCreateForForm(applicationId)">Make an
-                    application</a>
-            </p>
-
-            <p>
-                <a href="@controllers.routes.OpportunityController.showGuidancePage(opportunity.id)">Guidance on
-                    seminars</a>
-            </p>
-        </div>
-
         @currentSection.map { s =>
 
             @if(sectionNumber == 1) {
@@ -145,10 +130,16 @@
             <hr class="hr-blue">
             <h3 class="heading-medium">Support</h3>
             <ul class="list spacious">
+
                 <li>
                     <a href="@controllers.routes.OpportunityController.showGuidancePage(opportunity.id)">Guidance on
                         seminars</a>
                 </li>
+                <li>
+                    <a href="@controllers.routes.ApplicationController.showOrCreateForForm(applicationId)">Make an
+                        application</a>
+                </li>
+
             </ul>
         </aside>
     </div>
