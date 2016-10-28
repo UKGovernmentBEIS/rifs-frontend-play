@@ -31,20 +31,22 @@
 
 @main(s"Opportunity ${opportunity.id.id}") {
 <div class="grid-row">
-
-    <div class="column-full">
-        <p>
-            <a href="@controllers.routes.OpportunityController.showOpportunities()">&lt; Return to opportunity list</a>
-        </p>
-    </div>
-
     <div class="column-two-thirds">
+
+        <div class="breadcrumbs">
+            <ol>
+                <li><a href="@controllers.routes.OpportunityController.showOpportunities()">&lt; Return to opportunity
+                    list</a></li>
+            </ol>
+        </div>
+
+
         <header class="page-header">
             <h1 class="heading-xlarge">@opportunity.title</h1>
         </header>
 
         <aside>
-            <nav role="navigation" class="contain-floats page-navigation">
+            <nav role="navigation" class="contain-floats page-navigation" aria-label="Navigation">
                 <ol>
                     @titleCols.map { case (col1, col2) =>
                         <li>
