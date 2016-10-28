@@ -8,10 +8,14 @@ trait FieldRule {
   def validate(value: JsValue): Seq[String]
 
   def helpText(value: JsValue): Option[String]
+
+  def configAsJson: Option[String] = None
 }
 
 case class WordCountRule(maxWords: Int, validateOnPreview: Boolean = false) extends FieldRule {
   def normalise(s: String): String = s.trim()
+
+  override def configAsJson = Some(s"""{\"maxWords\": $maxWords}""")
 
   override def validate(value: JsValue): Seq[String] = {
     val s = value.validate[JsString].asOpt.map(_.value).getOrElse("")
