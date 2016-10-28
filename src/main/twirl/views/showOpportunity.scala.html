@@ -1,10 +1,11 @@
 @(applicationId: ApplicationFormId, opportunity: Opportunity, sectionNumber: Int)
 
-@sectionLink(title: String, sectionNum: Int) = @{
-    if(sectionNum == sectionNumber) s"""<span class="part-number">$sectionNum.</span> $title"""
-    else {
-        val link = controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(sectionNum))
-        s"""<span class="part-number">$sectionNum.</span> <a href="$link">$title</a>"""
+@sectionLink(title: String, sectionNum: Int) = {
+    <span class="part-number">@sectionNum.</span>
+    @if(sectionNum == sectionNumber) {
+        @title
+    } else {
+        <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(sectionNum))">@title</a>
     }
 }
 
@@ -47,14 +48,14 @@
                 <ol>
                     @titleCols.map { case (col1, col2) =>
                         <li>
-                            @Html(sectionLink(col1._1, col1._2))
+                            @sectionLink(col1._1, col1._2)
                         </li>
                     }
                 </ol>
                 <ol>
                     @titleCols.map { case (col1, col2) =>
                         <li>
-                            @col2.map { t => @Html(sectionLink(t._1, t._2)) }.getOrElse("")
+                            @col2.map { t => @sectionLink(t._1, t._2) }.getOrElse("")
                         </li>
                     }
                 </ol>
