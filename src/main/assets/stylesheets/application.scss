@@ -38,9 +38,13 @@ $path: "/assets/stylesheets/images/";
 @import 'elements/shame';
 @import 'elements/panels';
 
+// Taken from alphagov/static
+// https://github.com/alphagov/static/blob/master/app/assets/stylesheets/govuk-component/_previous-and-next-navigation.scss
+@import 'static/previous-and-next-navigation';
 
 // Rifs imports
-@import 'rifs/pagination'; // page to page navigation
+@import 'rifs/pagination';
+
 
 // Global template elements
 #global-header-status {
