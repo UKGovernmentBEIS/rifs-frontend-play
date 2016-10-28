@@ -28,8 +28,9 @@ class EventAudienceFormSpec extends WordSpecLike with Matchers with OptionValues
 
     sectionForm(
       Application(ApplicationId(1), ApplicationFormId(1)),
-      section,
+      ApplicationOverview(ApplicationId(1), ApplicationFormId(1), Seq()),
       ApplicationForm(ApplicationFormId(1), OpportunityId(1), Seq(ApplicationFormSection(5, "Event Audience"))),
+      section,
       ApplicationFormSection(5, "Event Audience"),
       Opportunity(OpportunityId(1), "Research priorities in health care", "", None, OpportunityValue(0, ""), Seq()),
       Seq(TextAreaField(Some("label"), "eventAudience", Seq(WordCountRule(500)), None, None, Option(Question("Who is the event's target audience?", Option(""), Option("Help Text")))).withValuesFrom(values.getOrElse(JsObject(Seq()))))

@@ -39,8 +39,8 @@ class TitleFormSpec extends WordSpecLike with Matchers with OptionValues {
     sectionForm(
       Application(ApplicationId(1), ApplicationFormId(1)),
       ApplicationOverview(ApplicationId(1), ApplicationFormId(1), Seq()),
-      section,
       ApplicationForm(ApplicationFormId(1), OpportunityId(1), Seq(ApplicationFormSection(1, "Event Title"))),
+      section,
       ApplicationFormSection(1, "Event Title"),
       Opportunity(OpportunityId(1), "Research priorities in health care", "", None, OpportunityValue(0, ""), Seq()),
       Seq(TextField(Some("label"), "title", false, Seq(WordCountRule(20)), None, None).withValuesFrom(values.getOrElse(JsObject(Seq()))))
