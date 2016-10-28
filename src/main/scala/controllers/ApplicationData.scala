@@ -7,17 +7,17 @@ import play.api.libs.json._
 
 object ApplicationData {
 
-  type FieldErrors = Map[String, NonEmptyList[String]]
+  type FieldErrors = Map[String, NonEmptyList[FieldError]]
   val noErrors: FieldErrors = Map()
 
-  type FieldCheck = JsValue => List[String]
+  type FieldCheck = (String, JsValue) => List[FieldError]
 
-  def fromValidator[T: Reads](v: FieldValidator[T, _]): FieldCheck = { jv =>
+  def fromValidator[T: Reads](v: FieldValidator[T, _]): FieldCheck = { (path, jv) =>
     jv.validate[T].map { x =>
-      v.validate(x).fold(_.toList, _ => List())
+      v.validate(path, x).fold(_.toList, _ => List())
     } match {
-      case JsSuccess(msgs, path) => msgs
-      case JsError(errs) => List("Could not decode form values!")
+      case JsSuccess(msgs, _) => msgs
+      case JsError(errs) => List(FieldError(path, "Could not decode form values!"))
     }
   }
 
@@ -30,13 +30,13 @@ object ApplicationData {
 
   val titleValidator: FieldValidator[Option[String], String] = MandatoryValidator.andThen(WordCountValidator(20))
 
-  val titleCheck: FieldCheck = (jv) => titleValidator.validate(decodeString(jv)).fold(_.toList, _ => List())
+  val titleCheck: FieldCheck = (path, jv) => titleValidator.validate(path, decodeString(jv)).fold(_.toList, _ => List())
 
   val titleFormChecks: Map[String, FieldCheck] = Map("title" -> titleCheck)
 
   implicit val dvReads = Json.reads[DateValues]
   implicit val dwdReads = Json.reads[DateWithDaysValues]
-  val daysCheck: FieldCheck = (jv) => MandatoryValidator.andThen(IntValidator(1, 9)).validate(decodeString(jv)).fold(_.toList, _ => List())
+  val daysCheck: FieldCheck = (path, jv) => MandatoryValidator.andThen(IntValidator(1, 9)).validate(path, decodeString(jv)).fold(_.toList, _ => List())
 
   val dateFormChecks: Map[String, FieldCheck] = Map {
     "provisionalDate" -> fromValidator(DateWithDaysValidator(allowPast = false, 1, 9))
@@ -58,6 +58,14 @@ object ApplicationData {
   }
 
   def checksFor(sectionNumber: Int): Map[String, FieldCheck] = {
+    sectionNumber match {
+      case 1 => titleFormChecks
+      case 2 => dateFormChecks
+      case _ => Map()
+    }
+  }
+
+  def previewChecksFor(sectionNumber: Int): Map[String, FieldCheck] = {
     sectionNumber match {
       case 1 => titleFormChecks
       case 2 => dateFormChecks

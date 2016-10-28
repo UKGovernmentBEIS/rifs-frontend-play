@@ -15,18 +15,18 @@ case class DateFieldValidator(allowPast: Boolean) extends FieldValidator[DateVal
     year = vs.year.map(_.trim())
   )
 
-  def mandatoryInt(s: Option[String]): ValidatedNel[String, Int] = MandatoryValidator.validate(s).andThen(IntValidator().validate(_))
+  def mandatoryInt(path:String, s: Option[String]): ValidatedNel[FieldError, Int] = MandatoryValidator.validate(path, s).andThen(IntValidator().validate(path, _))
 
-  def validateDate(d: Int, m: Int, y: Int): ValidatedNel[String, LocalDate] =
+  def validateDate(path:String, d: Int, m: Int, y: Int): ValidatedNel[FieldError, LocalDate] =
     Try(new LocalDate(y, m, d)).toOption match {
-      case Some(ld) if !allowPast && ld.isBefore(LocalDate.now()) => "Must be today or later".invalidNel
+      case Some(ld) if !allowPast && ld.isBefore(LocalDate.now()) => FieldError(path, "Must be today or later").invalidNel
       case Some(ld) => ld.valid
-      case None => "Must provide a valid date".invalidNel
+      case None => FieldError(path, "Must provide a valid date").invalidNel
     }
 
-  override def validate(vs: DateValues): ValidatedNel[String, LocalDate] =
-    (mandatoryInt(vs.day) |@| mandatoryInt(vs.month) |@| mandatoryInt(vs.year))
+  override def validate(path:String, vs: DateValues): ValidatedNel[FieldError, LocalDate] =
+    (mandatoryInt(s"$path.day", vs.day) |@| mandatoryInt(s"$path.month", vs.month) |@| mandatoryInt(s"$path.year", vs.year))
       .map { case (d, m, y) => (d, m, y) }
-      .andThen { case (d, m, y) => validateDate(d, m, y) }
+      .andThen { case (d, m, y) => validateDate(path, d, m, y) }
 
 }

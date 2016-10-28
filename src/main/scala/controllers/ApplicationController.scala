@@ -5,6 +5,7 @@ import javax.inject.Inject
 import cats.data.{NonEmptyList, OptionT}
 import cats.instances.future._
 import forms._
+import forms.validation.FieldError
 import models.{ApplicationFormId, ApplicationFormSection, ApplicationId, ApplicationSection}
 import play.api.Logger
 import play.api.libs.json._
@@ -48,7 +49,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
 
           val errs: FieldErrors = section.map { s =>
             if (doValidation) check(s.answers, checksFor(sectionNumber))
-            else if (doPreviewValidation) validate(s.answers, selectPreviewRules(rulesFor(sectionNumber)))
+            else if (doPreviewValidation) check(s.answers, previewChecksFor(sectionNumber))
             else noErrors
           }.getOrElse(noErrors)
 
@@ -105,7 +106,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     button.map {
       case Complete =>
         val rules = rulesFor(sectionNumber)
-        val errs = validate(fieldValues, rules)
+        val errs = check(fieldValues, checksFor(sectionNumber))
         if (errs.keySet.isEmpty) {
           applications.completeSection(id, sectionNumber, fieldValues).map { _ =>
             Redirect(routes.ApplicationController.show(id))
@@ -122,7 +123,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
       case Preview =>
         applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
           val rules = selectPreviewRules(rulesFor(sectionNumber))
-          val errs = validate(fieldValues, rules)
+          val errs = check(fieldValues, previewChecksFor(sectionNumber))
           if (errs.keySet.isEmpty) {
             Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber))
           } else {
@@ -136,23 +137,15 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     rules.map { case (n, rs) => n -> rs.filter(_.validateOnPreview) }
   }
 
-  def check(fieldValues: JsObject, checks: Map[String, FieldCheck]): Map[String, NonEmptyList[String]] = {
-    val errs = checks.map { case (fieldName, rs) =>
+  def check(fieldValues: JsObject, checks: Map[String, FieldCheck]): Map[String, NonEmptyList[FieldError]] = {
+    val errs = checks.map { case (fieldName, check) =>
       fieldName -> (fieldValues \ fieldName match {
-        case JsDefined(jv) => NonEmptyList.fromList(rs(jv))
-        case _ => NonEmptyList.fromList(rs(JsNull))
+        case JsDefined(jv) => NonEmptyList.fromList(check(fieldName, jv))
+        case _ => NonEmptyList.fromList(check(fieldName, JsNull))
       })
-    }.collect { case (fieldName, Some(errs)) => fieldName -> errs }
+    }.collect { case (fieldName, Some(es)) => fieldName -> es }
     Logger.debug(errs.toString)
     errs
   }
 
-  def validate(fieldValues: JsObject, rules: Map[String, Seq[FieldRule]]): Map[String, NonEmptyList[String]] = {
-    rules.map { case (fieldName, rs) =>
-      fieldName -> (fieldValues \ fieldName match {
-        case JsDefined(jv) => NonEmptyList.fromList(rs.flatMap(r => r.validate(jv)).toList)
-        case _ => if (rs.exists(_.isInstanceOf[MandatoryRule])) NonEmptyList.fromList(MandatoryRule().validate(JsString("")).toList) else None
-      })
-    }.collect { case (fieldName, Some(errs)) => fieldName -> errs }
-  }
 }

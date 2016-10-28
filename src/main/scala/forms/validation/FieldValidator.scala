@@ -2,6 +2,8 @@ package forms.validation
 
 import cats.data.ValidatedNel
 
+case class FieldError(path: String, err: String)
+
 trait FieldValidator[A, B] {
   outer =>
 
@@ -10,12 +12,12 @@ trait FieldValidator[A, B] {
     */
   def normalise(a: A): A = a
 
-  def validate(a: A): ValidatedNel[String, B]
+  def validate(path: String, a: A): ValidatedNel[FieldError, B]
 
   def hintText(a: A): Option[String] = None
 
   def andThen[C](v2: FieldValidator[B, C]): FieldValidator[A, C] = new FieldValidator[A, C] {
-    override def validate(a: A): ValidatedNel[String, C] = outer.validate(a).andThen(v2.validate)
+    override def validate(path: String, a: A): ValidatedNel[FieldError, C] = outer.validate(path, a).andThen(v2.validate(path, _))
   }
 
 }

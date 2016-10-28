@@ -12,12 +12,12 @@ object ParseInt {
 case class IntValidator(minValue: Int = Int.MinValue, maxValue: Int = Int.MaxValue) extends FieldValidator[String, Int] {
   override def normalise(s: String): String = s.trim()
 
-  override def validate(s: String): ValidatedNel[String, Int] = {
+  override def validate(path:String, s: String): ValidatedNel[FieldError, Int] = {
     normalise(s) match {
-      case ParseInt(i) if i < minValue => s"Minimum value is $minValue".invalidNel
-      case ParseInt(i) if i > maxValue => s"Maximum value is $maxValue".invalidNel
+      case ParseInt(i) if i < minValue => FieldError(path, s"Minimum value is $minValue").invalidNel
+      case ParseInt(i) if i > maxValue => FieldError(path, s"Maximum value is $maxValue").invalidNel
       case ParseInt(i) => i.validNel
-      case _ => "Must be a whole number".invalidNel
+      case _ => FieldError(path, "Must be a whole number").invalidNel
     }
   }
 }

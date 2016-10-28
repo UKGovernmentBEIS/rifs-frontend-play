@@ -1,6 +1,7 @@
 package forms
 
 import cats.data.NonEmptyList
+import forms.validation.FieldError
 import play.api.Logger
 import play.api.libs.json.{JsObject, JsValue}
 import play.twirl.api.Html
@@ -24,7 +25,7 @@ case class DateWithDaysField(name: String, dateField: DateField, daysField: Text
     }.getOrElse(this)
   }
 
-  override def withErrorsFrom(errs: Map[String, NonEmptyList[String]]): DateWithDaysField =
+  override def withErrorsFrom(errs: Map[String, NonEmptyList[FieldError]]): DateWithDaysField =
     copy(dateField = dateField.withErrorsFrom(errs), daysField = daysField.withErrorsFrom(errs))
 
   override def withQuestionsFrom(questions: Map[String, String]): DateWithDaysField =
