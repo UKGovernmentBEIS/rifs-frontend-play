@@ -106,10 +106,11 @@
             }
         </article>
 
-        <footer class="grid-row">
+        <footer class="contain-floats">
             <nav role="navigation" class="page-navigation">
                 @prevSection.map { s =>
-                <div class="column-half previous">
+                <div class="float-left previous">
+
                     <span class="arrow-button"></span>
                     <span class="link">
                         <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(s.sectionNumber))"
@@ -118,11 +119,13 @@
                             <span class="page-navigation-previous">Previous page</span>
                             <span class="page-navigation-description">@s.title</span>
                         </a>
+
                     </span>
                 </div>
                 }
+
                 @nextSection.map { s =>
-                <div class="column-half next">
+                <div class="float-right next">
                     <span class="arrow-button"></span>
                     <span class="link">
                         <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(s.sectionNumber))"
@@ -137,7 +140,6 @@
             </nav>
         </footer>
     </div>
-
 
     <div class="column-third">
         <aside role="complementary">

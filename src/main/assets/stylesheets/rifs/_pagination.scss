@@ -1,5 +1,9 @@
 // Page to page navigation controls: Next Page, Previous Page.
 
+nav.page-navigation div {
+    width: 49%;
+}
+
 .page-navigation-next {
   text-align: right;
   display: block;
