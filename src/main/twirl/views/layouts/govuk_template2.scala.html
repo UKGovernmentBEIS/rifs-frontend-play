@@ -67,13 +67,22 @@
 
     </div>
 
-    <header role="banner" id="global-header" class="">
+    <header role="banner" id="global-header" class="with-proposition">
       <div class="header-wrapper">
         <div class="header-global">
-          <div class="">
+          <div class="header-logo">
             <a href="/" title="" id="logo" class="content">
-              &lt;logo&gt;  Research and Innovation Funding Service
+              &#x1f393; RIFS
             </a>
+          </div>
+        </div>
+        <div class="header-proposition">
+          <div class="content">
+            <nav id="proposition-menu">
+              <a href="/" title="" id="proposition-name">
+                Research and Innovation Funding Service
+              </a>
+            </nav>
           </div>
         </div>
       </div>
@@ -117,7 +126,8 @@
 
   <div id="global-app-error" class="app-error hidden"></div>
 
-  <script src="@routes.Assets.at("javascripts/govuk-template.js")"></script>
+  <script src='@routes.Assets.at("javascripts/govuk-template.js")'></script>
+  <script src='@routes.Assets.at("javascripts/govuk/details.polyfill.js")'></script>
 
   <script>
           if (typeof window.GOVUK === 'undefined') document.body.className = document.body.className.replace('js-enabled',

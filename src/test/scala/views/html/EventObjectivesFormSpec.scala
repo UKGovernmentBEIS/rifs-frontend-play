@@ -19,7 +19,7 @@ class EventObjectivesFormSpec extends WordSpecLike with Matchers with OptionValu
     "Event Objective Help text" in {
       val html: Html = generatePage(None)
       val soup = Jsoup.parse(html.toString())
-      Option(soup.getElementsByTag("h4")).value.text() shouldBe "What are the objectives of the event?"
+      Option(soup.select("p.question")).value.text() shouldBe "What are the objectives of the event?"
     }
   }
 
@@ -28,6 +28,8 @@ class EventObjectivesFormSpec extends WordSpecLike with Matchers with OptionValu
 
     sectionForm(
       Application(ApplicationId(1), ApplicationFormId(1)),
+      ApplicationOverview(ApplicationId(1), ApplicationFormId(1), Seq()),
+      ApplicationForm(ApplicationFormId(1), OpportunityId(1), Seq(ApplicationFormSection(3, "Event Objectives"))),
       section,
       ApplicationFormSection(3, "Event Objectives"),
       Opportunity(OpportunityId(1), "Research priorities in health care", "", None, OpportunityValue(0, ""), Seq()),

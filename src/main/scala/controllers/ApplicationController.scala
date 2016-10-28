@@ -64,10 +64,11 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
       a <- OptionT(applications.byId(id))
       af <- OptionT(applicationForms.byId(a.applicationFormId))
       o <- OptionT(opportunities.byId(af.opportunityId))
-    } yield (a, af, o)
+      ov <- OptionT(applications.overview(id))
+    } yield (a, af, o, ov)
 
     ft.value.map {
-      case Some((app, appForm, opp)) =>
+      case Some((app, appForm, opp, overview)) =>
         val formSection: ApplicationFormSection = appForm.sections.find(_.sectionNumber == sectionNumber).get
         val populatedFields = fields.map {
           _.withValuesFrom(section.map(_.answers).getOrElse(JsObject(Seq())))
@@ -75,7 +76,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
             .withQuestionsFrom(questions)
         }
 
-        Ok(views.html.sectionForm(app, section, formSection, opp, populatedFields))
+        Ok(views.html.sectionForm(app, overview, appForm, section, formSection, opp, populatedFields))
       case None => NotFound
     }
   }

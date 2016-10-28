@@ -26,8 +26,8 @@ case class DateField(name: String, rules: Seq[FieldRule], value: Option[DateValu
   val monthName = s"${name}__month"
   val yearName = s"${name}__year"
 
-  override def derender(fieldValues: JsObject): Option[(String, JsValue)] = {
-    Some("date" -> JsObject(Seq(
+  override def derender(fieldValues: JsObject): Seq[(String, JsValue)] = {
+    Seq("date" -> JsObject(Seq(
       "day" -> (fieldValues \ dayName).validate[JsString].asOpt.getOrElse(JsString("")),
       "month" -> (fieldValues \ monthName).validate[JsString].asOpt.getOrElse(JsString("")),
       "year" -> (fieldValues \ yearName).validate[JsString].asOpt.getOrElse(JsString(""))
