@@ -1,7 +1,6 @@
 package forms
 
 import forms.validation.FieldError
-import play.api.libs.json.{JsObject, JsValue}
 import play.twirl.api.Html
 
 case class DateWithDaysField(name: String, dateField: DateField, daysField: TextField) extends Field {
@@ -9,9 +8,4 @@ case class DateWithDaysField(name: String, dateField: DateField, daysField: Text
     views.html.renderers.dateWithDaysField(this,questions, answers, errs)
 
   override def renderPreview(answers: Map[String, String]): Html = views.html.renderers.preview.dateWithDaysField(this, answers)
-
-  override def derender(fieldValues: JsObject): Option[(String, JsValue)] = {
-    val subValues = Seq(dateField, daysField).flatMap(_.derender(fieldValues))
-    Some(name -> JsObject(subValues))
-  }
 }

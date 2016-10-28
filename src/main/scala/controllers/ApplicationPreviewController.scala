@@ -12,8 +12,7 @@ import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
 import scala.concurrent.{ExecutionContext, Future}
 
 class ApplicationPreviewController @Inject()(applications: ApplicationOps, applicationForms: ApplicationFormOps, opportunities: OpportunityOps)(implicit ec: ExecutionContext)
-  extends Controller
-    with ControllerUtils {
+  extends Controller {
 
   import ApplicationData._
 

@@ -1,6 +1,5 @@
 package controllers
 
-import cats.data.NonEmptyList
 import forms._
 import forms.validation._
 import play.api.libs.json._
@@ -42,21 +41,6 @@ object ApplicationData {
     "provisionalDate" -> fromValidator(DateWithDaysValidator(allowPast = false, 1, 9))
   }
 
-
-  val titleFormRules: Map[String, Seq[FieldRule]] = Map("title" -> Seq(WordCountRule(20), MandatoryRule()))
-
-  val dateFormRules: Map[String, Seq[FieldRule]] = Map(
-    "date" -> Seq(DateRule(allowPast = false)),
-    "days" -> Seq(MandatoryRule(), IntRule(1, 9)))
-
-  def rulesFor(sectionNumber: Int): Map[String, Seq[FieldRule]] = {
-    sectionNumber match {
-      case 1 => titleFormRules
-      case 2 => dateFormRules
-      case _ => Map()
-    }
-  }
-
   def checksFor(sectionNumber: Int): Map[String, FieldCheck] = {
     sectionNumber match {
       case 1 => titleFormChecks
@@ -75,8 +59,8 @@ object ApplicationData {
 
   val titleFormQuestions = Map("title" -> "What is your event called?")
   val dateFormQuestions = Map(
-    "days" -> "How long will it last?",
-    "date" -> "When do you propose to hold the event?"
+    "provisionalDate.days" -> "How long will it last?",
+    "provisionalDate.date" -> "When do you propose to hold the event?"
   )
 
   def questionsFor(sectionNumber: Int): Map[String, String] = {
@@ -88,7 +72,7 @@ object ApplicationData {
   }
 
   val titleFormFields: Seq[Field] = Seq(TextField(None, "title"))
-  val dateFormFields: Seq[Field] = Seq(DateWithDaysField("provisionalDate", DateField("date"), TextField(None, "days")))
+  val dateFormFields: Seq[Field] = Seq(DateWithDaysField("provisionalDate", DateField("provisionalDate.date"), TextField(None, "provisionalDate.days")))
 
   def fieldsFor(sectionNum: Int): Option[Seq[Field]] = {
     sectionNum match {

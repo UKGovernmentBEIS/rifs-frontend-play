@@ -11,7 +11,7 @@ case class WordCountValidator(maxWords: Int) extends FieldValidator[String, Stri
 
   override def validate(path: String, s: String): ValidatedNel[FieldError, String] = {
     normalise(s) match {
-      case n if n.split("\\s+").length <= maxWords => FieldError(path, "Word limit exceeded").invalidNel
+      case n if n.split("\\s+").length > maxWords => FieldError(path, "Word limit exceeded").invalidNel
       case n => n.validNel
     }
   }

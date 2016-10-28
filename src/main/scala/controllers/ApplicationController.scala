@@ -14,8 +14,7 @@ import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
 import scala.concurrent.{ExecutionContext, Future}
 
 class ApplicationController @Inject()(applications: ApplicationOps, applicationForms: ApplicationFormOps, opportunities: OpportunityOps)(implicit ec: ExecutionContext)
-  extends Controller
-    with ControllerUtils {
+  extends Controller {
 
   def showOrCreateForForm(id: ApplicationFormId) = Action.async {
     applications.getOrCreateForForm(id).map {
@@ -79,6 +78,8 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
   }
 
 
+  import JsonHelpers._
+
   /**
     * Note if more than one button action name is present in the keys then it is indeterminate as to
     * which one will be returned. This shouldn't occur if the form is properly submitted from a
@@ -90,19 +91,14 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     Logger.debug(request.body.toString())
     // Drop keys that start with '_' as these are "system" keys like the button name
     val jsonFormValues = formToJson(request.body.filterKeys(k => !k.startsWith("_")))
-    Logger.debug(jsonFormValues.toString())
     val button: Option[ButtonAction] = decodeButton(request.body.keySet)
-    val answers: JsObject = fieldsFor(sectionNumber).map(fs => JsObject(fs.flatMap(_.derender(jsonFormValues)))).getOrElse(JsObject(Seq()))
-    val fieldValues = fieldsFor(sectionNumber).map(_.map(_.derender(jsonFormValues))).map(vs => JsObject(vs.flatten)).getOrElse(JsObject(Seq()))
 
-    takeAction(id, sectionNumber, button, fieldValues)
+    takeAction(id, sectionNumber, button, jsonFormValues)
   }
 
   def takeAction(id: ApplicationId, sectionNumber: Int, button: Option[ButtonAction], fieldValues: JsObject): Future[Result] = {
-    Logger.debug(fieldValues.toString())
     button.map {
       case Complete =>
-        val rules = rulesFor(sectionNumber)
         val errs = check(fieldValues, checksFor(sectionNumber))
         if (errs.isEmpty) {
           applications.completeSection(id, sectionNumber, fieldValues).map { _ =>
@@ -119,7 +115,6 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
         }
       case Preview =>
         applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
-          val rules = selectPreviewRules(rulesFor(sectionNumber))
           val errs = check(fieldValues, previewChecksFor(sectionNumber))
           if (errs.isEmpty) {
             Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber))

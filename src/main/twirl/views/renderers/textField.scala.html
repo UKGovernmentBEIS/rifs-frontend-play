@@ -3,7 +3,7 @@
 @questions.get(field.name).map { q => <h4>@q</h4> }
 @errs.filter(_.path == field.name).map { e =>
     <div>
-        <p>@e</p>
+        <p>@e.err</p>
     </div>
 }
 <div>

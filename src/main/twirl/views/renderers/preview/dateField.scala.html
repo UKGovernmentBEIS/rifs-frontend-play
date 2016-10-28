@@ -1,7 +1,5 @@
 @(field: forms.DateField, answers: Map[String, String])
 
-@field.question.map { q => <h4>@q</h4> }
-
 <div>
     <h3>Start Date</h3>
     @answers.get(s"${field.name}.day") @answers.get(s"${field.name}.month") @answers.get(s"${field.name}.year")

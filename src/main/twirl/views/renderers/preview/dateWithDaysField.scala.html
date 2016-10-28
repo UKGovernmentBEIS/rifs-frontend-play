@@ -2,13 +2,10 @@
 
 <div class="inline">
     <h3>Start Date</h3>
-    @answers.get(s"${field.dateField.name}.date.day") @answers.get(s"${field.dateField.name}.date.month") @answers.get(s"${field.dateField.name}.date.year")
-    @field.dateField.value.map { v =>
-        @v.day @v.month @v.year
-    }
+    @answers.get(s"${field.name}.date.day") @answers.get(s"${field.name}.date.month") @answers.get(s"${field.name}.date.year")
 
     <h3>Duration in days</h3>
-    @answers.get(s"${field.daysField.name}.days")
+    @answers.get(s"${field.name}.days")
 </div>
 
 
