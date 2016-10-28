@@ -11,9 +11,12 @@ import play.twirl.api.Html
 case class DurationField(name: String, startDate: DateField, duration: TextField) extends Field {
 
   override def errs: Option[NonEmptyList[String]] = {
-    if (startDate.errs.isEmpty) return duration.errs
-    if (duration.errs.isEmpty) return startDate.errs
-    return Some(startDate.errs.get++duration.errs.get.toList)
+    (startDate.errs, duration.errs) match {
+      case (Some(e1), Some(e2)) => Some(e1++e2.toList)
+      case (None, Some(e2)) => Some(e2)
+      case (Some(e1), None) => Some(e1)
+      case _ => None
+    }
   }
 
   def formattedStartTime: Option[String] = startDate.value.map(x => new SimpleDateFormat("dd MMMM yyyy").format(new GregorianCalendar(Integer.parseInt(x.year), Integer.parseInt(x.month) -1, Integer.parseInt(x.day)).getTime()))
