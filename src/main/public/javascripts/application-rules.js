@@ -4,7 +4,7 @@
         var helper = helpers[i];
         var input = document.getElementById(helper.getAttribute('data-for')),
             rule = getRule(helper.getAttribute('data-rule')),
-            config = JSON.parse(helper.getAttribute('data-ruleconfig'));
+            config = JSON.parse(helper.getAttribute('data-ruleconfig') || "{}");
 
         if (!input || !rule) continue;
 
@@ -12,10 +12,10 @@
     }
 
     function makeCallback(input, helper, rule, config) {
-            return function() {
-                var output = rule(input.value, config);
-                helper.innerHTML = output;
-            }
+        return function() {
+            var output = rule(input.value, config);
+            helper.innerHTML = output;
+        }
     }
 
     function getRule(ruleName) {
