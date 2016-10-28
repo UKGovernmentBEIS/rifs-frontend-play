@@ -1,27 +1,28 @@
 // Path to assets for use with the file-url function
 // in the govuk frontend toolkit's url-helpers partial
-$path: "/assets/stylesheets/images/";
+$path: '/assets/stylesheets/images/';
+$medium-grey: #ccc;
 
 // Base GDS Toolkit
 // Settings (variables)
-@import "colours";                                // Colour variables
-@import "font_stack";                             // Font family variables
-@import "measurements";                           // Widths and gutter variables
+@import 'colours';                                // Colour variables
+@import 'font_stack';                             // Font family variables
+@import 'measurements';                           // Widths and gutter variables
 
 
 // Mixins
-@import "conditionals";                           // Media query mixin
-@import "device-pixels";                          // Retina image mixin
-@import "grid_layout";                            // Basic grid layout mixin
-@import "typography";                             // Core bold and heading mixins, also external links
-@import "shims";                                  // Inline block mixin, clearfix placeholder
+@import 'conditionals';                           // Media query mixin
+@import 'device-pixels';                          // Retina image mixin
+@import 'grid_layout';                            // Basic grid layout mixin
+@import 'typography';                             // Core bold and heading mixins, also external links
+@import 'shims';                                  // Inline block mixin, clearfix placeholder
 
 // Extras
 @import 'helpers'; // needed for tables.
 @import 'design-patterns/alpha-beta';
 @import 'design-patterns/buttons';
 @import 'design-patterns/breadcrumbs';
-@import "url-helpers";
+@import 'url-helpers';
 
 // From https://github.com/alphagov/govuk_elements
 // @import '../../vendor/govuk_elements/public/sass/_govuk-elements.scss';
@@ -54,10 +55,10 @@ $path: "/assets/stylesheets/images/";
 // Page widgets
 .rifs-step-panel {
   background-color: lighten($turquoise, 50%);
-  text-align: center;
-  padding: 1.5em;
   // Vertically align the child content
   display: table;
+  padding: 1.5em;
+  text-align: center;
 }
 
 .rifs-step-content {
@@ -67,13 +68,13 @@ $path: "/assets/stylesheets/images/";
 }
 
 .hr-blue {
-    height: 10px;
-    background-color: #005ea5;
-    margin-top: 15px;
-    margin-bottom: 1em;
+  background-color: $mainstream-brand;
+  height: 10px;
+  margin-bottom: 1em;
+  margin-top: 15px;
 }
 
-.phase-banner  {
+.phase-banner {
   @include phase-banner(alpha);
 }
 
@@ -91,7 +92,7 @@ $path: "/assets/stylesheets/images/";
 }
 
 .no-top-margin {
-    margin-top:0;
+  margin-top: 0;
 }
 
 .contain-floats {
@@ -102,19 +103,15 @@ $path: "/assets/stylesheets/images/";
   margin-top: 2em;
 }
 
-.rifs-form-buttons a, .rifs-form-buttons input{
-  margin-right:1.5em
+.rifs-form-buttons a,
+.rifs-form-buttons input {
+  margin-right: 1.5em;
 }
 
-.rifs-form-buttons a.flat, .rifs-form-buttons .button--link-style {
+.rifs-form-buttons a.flat,
+.rifs-form-buttons .button--link-style {
   line-height: 2.2;
 }
-
-
-.rifs-form-buttons {
-  margin-top: 2em;
-}
-
 
 // Notices, Panels etc.
 aside.notice div dl dd {
@@ -125,6 +122,10 @@ aside.notice div dl dd {
 // Typography
 .expanded-list {
   @extend .list;
+
+  li {
+    margin-bottom: 20px;
+  }
 }
 
 .table-style-heading-small {
@@ -133,158 +134,157 @@ aside.notice div dl dd {
   margin-bottom: 0;
 }
 
-.expanded-list li {
-  margin-bottom: 20px;
-}
-
 .hr-bold {
-  border: none;
-  height: 2px;
+  background-color: $black;
+  border: 0;
   border-width: 1px;
-  margin-top: 1em;
+  color: $black; // old IE
+  height: 2px;
   margin-bottom: 1em;
-  /*
-   Set the HR colour
-   */
-   color: $black; /* old IE */
-   background-color: $black;
+  margin-top: 1em;
 }
 
 .bold {
-    font-weight:bold;
+  font-weight: bold;
 }
 
 .greentick {
-    color: rgb(1,130,67);
-    font-size: 1.5em;
-    padding: 0 0 0 15px;
-    line-height: 0.5;
+  color: rgb(1, 130, 67);
+  font-size: 1.5em;
+  line-height: .5;
+  padding: 0 0 0 15px;
 }
 
 table.spacious td {
-    padding-top:15px;
-    padding-bottom:15px;
+  padding-bottom: 15px;
+  padding-top: 15px;
 }
 
 .status-column {
-    width: 30%;
-    min-width: 8em;
+  min-width: 8em;
+  width: 30%;
 }
 
 ul.spacious li {
-    margin: 0.9em 0;
+  margin: .9em 0;
 }
 
 table.spacious th {
-    border-bottom: solid 2px $black;
+  border-bottom: solid 2px $black;
 }
 
 // Form elements
 .form-group {
-    margin-bottom:2.5em;
+  margin-bottom: 2.5em;
 }
 
 label {
-    display:block;
-    font-weight:bold;
-}
-details {
-    margin-bottom: 1.5em;
+  display: block;
+  font-weight: bold;
 }
 
-input.text-field, textarea.form-control {
-    width:100%;
-    padding: 6px;
-    display:block;
+details {
+  margin-bottom: 1.5em;
+}
+
+input.text-field,
+textarea.form-control {
+  display: block;
+  padding: 6px;
+  width: 100%;
 }
 
 textarea.form-control {
-    height: 10em;
+  height: 10em;
 }
 
 input.text-field.number {
-    width:3em;
-    text-align:right;
+  text-align: right;
+  width: 3em;
 }
 
 #title_help_text.right-align {
-    text-align:right;
+  text-align: right;
 }
 
 .date-selector {
-    @extend %contain-floats;
-    margin-bottom:0.5em;
-}
-.date-selector>div {
-    float:left;
-    margin-right:1.5em;
-}
-.date-selector input {
-    display:block;
+  @extend %contain-floats;
+  margin-bottom: .5em;
+
+  input {
+    display: block;
+    padding: 6px;
+    text-align: right;
     width: 3em;
-    text-align:right;
-    padding:6px;
+
+    .year {
+      width: 4em;
+    }
+  }
 }
 
-.date-selector input.year {
-    width: 4em;
+.date-selector>div {
+  float: left;
+  margin-right: 1.5em;
 }
 
 .question {
-    margin: 0 0 1.5em;
+  margin: 0 0 1.5em;
 }
 
 // Preview
 .text-preview {
-    font-size: 1.2em;
-    margin: 2em 0;
-    font-weight: bold;
+  font-size: 1.2em;
+  font-weight: bold;
+  margin: 2em 0;
 }
 
 .duration-preview {
-    @extend %contain-floats;
+  @extend %contain-floats;
 }
-.duration-preview>div {
-    float:left;
-    margin-right: 4em;
 
+.duration-preview>div {
+  float: left;
+  margin-right: 4em;
 }
 
 // Buttons
 
 input.button--link-style {
+  @extend .font-small;
   background: none;
-  border: none;
-  text-decoration: underline;
+  border: 0;
+  color: $link-colour;
   cursor: pointer;
   padding: 0;
-  color: $link-colour;
-  @extend .font-small;
+  text-decoration: underline;
 }
 
-a.button.secondary, input.secondary {
-  background-color: #ccc;
-  color:black;
+a.button.secondary,
+input.secondary {
+  background-color: $medium-grey;
+  color: $black;
 }
 
 
 
-/* GOV.UK overrides */
+// GOV.UK overrides
 hr {
-    margin-top: 20px;
-    margin-bottom: 20px;
+  margin-bottom: 20px;
+  margin-top: 20px;
 }
 
 #footer {
-    border-top: solid 10px #005ea5;
+  border-top: solid 10px $mainstream-brand;
 }
 
-.breadcrumbs ol, .breadcrumbs ul {
-    padding:0;
-    margin:0;
+.breadcrumbs ol,
+.breadcrumbs ul {
+  margin: 0;
+  padding: 0;
 }
 
 .error .form-control {
-    /* support for nested controls */
-    border: 4px solid #b10e1e;
+  // support for nested controls
+  border: 4px solid $error-colour;
 }
