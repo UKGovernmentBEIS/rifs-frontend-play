@@ -106,32 +106,36 @@
             }
         </article>
 
-        <footer class="contain-floats">
-            <nav role="navigation">
+        <footer class="grid-row">
+            <nav role="navigation" class="page-navigation">
                 @prevSection.map { s =>
-                <div class="float-left">
-                    <p>Previous page<br>
-                        <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(s.sectionNumber))">
-                            @s.title
+                <div class="column-half previous">
+                    <span class="arrow-button"></span>
+                    <span class="link">
+                        <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(s.sectionNumber))"
+                           title="Navigate to the previous page."
+                           rel="previous">
+                            <span class="page-navigation-previous">Previous page</span>
+                            <span class="page-navigation-description">@s.title</span>
                         </a>
-                    </p>
+                    </span>
                 </div>
                 }
                 @nextSection.map { s =>
-                <div class="float-right">
-                    <p>
+                <div class="column-half next">
+                    <span class="arrow-button"></span>
+                    <span class="link">
                         <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(s.sectionNumber))"
                            title="Navigate to the next page."
                            rel="next">
                             <span class="page-navigation-next">Next page</span>
                             <span class="page-navigation-description">@s.title</span>
                         </a>
-                    </p>
+                    </span>
                 </div>
                 }
             </nav>
         </footer>
-
     </div>
 
 

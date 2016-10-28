@@ -1,0 +1,50 @@
+// Page to page navigation controls: Next Page, Previous Page.
+
+.page-navigation-next {
+  text-align: right;
+  display: block;
+}
+
+.page-navigation-previous {
+  text-align: left;
+  @extend .page-navigation-next;
+}
+
+.page-navigation-description {
+  @extend .font-small;
+}
+
+.arrow-button {
+  width: 35px;
+  height: 45px;
+  display: inline-block;
+  padding: 2%;
+}
+
+nav.page-navigation div.next span.arrow-button {
+  content: " ";
+  @extend .arrow-button;
+  float: right;
+  background: url("/assets/stylesheets/images/arrow-sprite.png") no-repeat top right;
+}
+
+nav.page-navigation div.previous span.arrow-button {
+  content: " ";
+  @extend .arrow-button;
+  float: left;
+  background: url("/assets/stylesheets/images/arrow-sprite.png") no-repeat top left;
+  margin-left: -18px;
+}
+
+nav.page-navigation div.previous span.link {
+  display: block;
+}
+
+nav.page-navigation div.next span.link {
+  display: block;
+}
+
+nav.page-navigation div.next span.page-navigation-description {
+  text-align: right;
+  display: block;
+}

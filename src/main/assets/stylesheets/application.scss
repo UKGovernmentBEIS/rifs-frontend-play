@@ -33,6 +33,9 @@ $path: "/assets/stylesheets/images/";
 @import 'elements/panels';
 
 
+// Rifs imports
+@import 'rifs/pagination'; // page to page navigation
+
 // Global template elements
 #global-header-status {
   @extend %contain-floats;
@@ -85,19 +88,8 @@ $path: "/assets/stylesheets/images/";
   margin-top: 2em;
 }
 
-.page-navigation-next {
-  text-align: right;
-  @extend .font-medium;
-  display: block;
-  text-decoration: none;
-}
 
-.page-navigation-description {
-  @extend .font-small;
-}
-
-
-// Notces, Panels etc.
+// Notices, Panels etc.
 aside.notice div dl dd {
   margin: 0;
   padding: 0;
