@@ -17,9 +17,10 @@ $path: "/assets/stylesheets/images/";
 @import "shims";                                  // Inline block mixin, clearfix placeholder
 
 // Extras
-@import "helpers"; // needed for tables.
-@import "design-patterns/alpha-beta";
-@import "design-patterns/buttons";
+@import 'helpers'; // needed for tables.
+@import 'design-patterns/alpha-beta';
+@import 'design-patterns/buttons';
+@import 'design-patterns/breadcrumbs';
 @import "url-helpers";
 
 // From https://github.com/alphagov/govuk_elements
@@ -30,6 +31,10 @@ $path: "/assets/stylesheets/images/";
 @import 'elements/layout';
 @import 'elements/buttons';
 @import 'elements/elements-typography';
+@import 'elements/breadcrumbs';
+@import 'elements/panels';
+@import 'elements/details';
+@import 'elements/shame';
 @import 'elements/panels';
 
 
@@ -80,9 +85,26 @@ $path: "/assets/stylesheets/images/";
   float: right;
 }
 
+.no-top-margin {
+    margin-top:0;
+}
+
 .contain-floats {
   @extend %contain-floats;
 }
+
+.rifs-form-buttons {
+  margin-top: 2em;
+}
+
+.rifs-form-buttons a, .rifs-form-buttons input{
+  margin-right:1.5em
+}
+
+.rifs-form-buttons a.flat, .rifs-form-buttons .button--link-style {
+  line-height: 2.2;
+}
+
 
 .rifs-form-buttons {
   margin-top: 2em;
@@ -100,8 +122,14 @@ aside.notice div dl dd {
   @extend .list;
 }
 
+.table-style-heading-small {
+  // Small bold heading with a line underneath (See: showOpportunities.scala.hmtl)
+  @extend .heading-small;
+  margin-bottom: 0;
+}
+
 .expanded-list li {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .hr-bold {
@@ -117,15 +145,139 @@ aside.notice div dl dd {
    background-color: $black;
 }
 
+.bold {
+    font-weight:bold;
+}
+
+.greentick {
+    color: rgb(1,130,67);
+    font-size: 1.5em;
+    padding: 0 0 0 15px;
+    line-height: 0.5;
+}
+
+table.spacious td {
+    padding-top:15px;
+    padding-bottom:15px;
+}
+
+.status-column {
+    width: 30%;
+    min-width: 8em;
+}
+
+ul.spacious li {
+    margin: 0.9em 0;
+}
+
+table.spacious th {
+    border-bottom: solid 2px $black;
+}
+
+// Form elements
+label {
+    display:block;
+    font-weight:bold;
+}
+details {
+    margin-bottom: 1.5em;
+}
+
+input.text-field, textarea.form-control {
+    width:100%;
+    padding: 6px;
+    display:block;
+}
+
+textarea.form-control {
+    height: 10em;
+}
+
+
+input.text-field.number {
+    width:3em;
+    text-align:right;
+}
+
+#title_help_text {
+    margin-bottom:2.5em;
+}
+#title_help_text.right-align {
+    text-align:right;
+}
+
+.date-selector {
+    @extend %contain-floats;
+    margin-bottom:0.5em;
+}
+.date-selector>div {
+    float:left;
+    margin-right:1.5em;
+}
+.date-selector input {
+    display:block;
+    width: 3em;
+    text-align:right;
+    padding:6px;
+}
+
+.date-selector input.year {
+    width: 4em;
+}
+
+.question {
+    margin: 0 0 1.5em;
+}
+
+// Preview
+.text-preview {
+    font-size: 1.2em;
+    margin: 2em 0;
+    font-weight: bold;
+}
+
+.duration-preview {
+    @extend %contain-floats;
+}
+.duration-preview>div {
+    float:left;
+    margin-right: 4em;
+
+}
+
 // Buttons
+
 input.button--link-style {
   background: none;
   border: none;
   text-decoration: underline;
   cursor: pointer;
+  padding: 0;
+  color: $link-colour;
   @extend .font-small;
 }
 
+a.button.secondary, input.secondary {
+  background-color: #ccc;
+  color:black;
+}
+
+
+
+/* GOV.UK overrides */
+hr {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#footer {
+    border-top: solid 10px #005ea5;
+}
+
+.breadcrumbs ol, .breadcrumbs ul {
+    padding:0;
+    margin:0;
+}
 
 
 // Navigation Elements

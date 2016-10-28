@@ -6,16 +6,14 @@
 
         <p class="lede">Links to all open opportunities in RIFS</p>
 
-        <div>
-            <h2 class="table-style-heading-small">Opportunity title</h2>
-            <hr class="hr-bold"/>
-            <ul class="expanded-list">
-                @os.map { o =>
-                    <li><a href="/opportunity/@o.id.id">@o.title</a></li>
-                }
-            </ul>
-            <hr/>
-        </div>
+        <table class="spacious">
+            <tr>
+                <th>Opportunity title</th>
+            </tr>
+            @for((o,i) <- os.zipWithIndex) {
+                <tr><td>@{i+1}. <a href="/opportunity/@o.id.id">@o.title</a></td></tr>
+            }
+        </table>
 
     </div>
 }

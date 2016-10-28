@@ -1,0 +1,9 @@
+@(overview: ApplicationOverview, sectionNumber: Int)
+<span class="bold">
+    @overview.sections.find(_.sectionNumber == sectionNumber).map(os => os.status).getOrElse("Not started")
+</span>
+@if(overview.sections.find(_.sectionNumber == sectionNumber).map(os => os.status).getOrElse("Not started") == "Completed") {
+    <span class="greentick">
+        &#x2714;
+    </span>
+}

@@ -1,0 +1,19 @@
+@(field: forms.DurationField)
+
+<div class="duration-preview">
+    <div>
+        <h3 class="heading-medium no-top-margin">Start date</h3>
+        @field.formattedStartTime
+    </div>
+    <div>
+        <h3 class="heading-medium no-top-margin">Days duration</h3>
+        @field.duration.value
+    </div>
+    <div>
+        <h3 class="heading-medium no-top-margin">End date</h3>
+        @field.formattedEndTime
+    </div>
+</div>
+<div style="clear:both"></div>
+
+

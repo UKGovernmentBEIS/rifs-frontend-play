@@ -1,11 +1,11 @@
 @(field: forms.TextAreaField)
     @import play.api.libs.json.JsString
 
-@field.question.map { q => <h4>@q.text</h4>
-                           <div>@q.longDescription</div>
+@field.question.map { q => <p class="question">@q.text</p>
+                           <p>@q.longDescription</p>
                            <details>
-                               <summary>Help</summary>
-                               @q.helpText
+                               <summary role="button"><span class="summary">Help with this section</span></summary>
+                               <div class="panel panel-border-narrow">@for(line <- q.helpText.getOrElse("").split("\n")) {<p>@line</p>}</div>
                            </details>
                            }
 @field.errs.map { es =>
@@ -19,4 +19,4 @@
     <label for="@field.name">@field.label</label>
     <textarea id="@field.name" class="form-control" title="@field.name" name="@field.name">@field.value</textarea>
 </div>
-<div class="inline" id="title_help_text">@field.rules.flatMap(_.helpText(JsString(field.value.getOrElse(""))))</div>
+<div class="inline right-align" id="title_help_text">@field.rules.flatMap(_.helpText(JsString(field.value.getOrElse(""))))</div>
