@@ -10,6 +10,12 @@ import play.twirl.api.Html
 
 case class DurationField(name: String, startDate: DateField, duration: TextField) extends Field {
 
+  override def errs: Option[NonEmptyList[String]] = {
+    if (startDate.errs.isEmpty) return duration.errs
+    if (duration.errs.isEmpty) return startDate.errs
+    return Some(startDate.errs.get++duration.errs.get.toList)
+  }
+
   def formattedStartTime: Option[String] = startDate.value.map(x => new SimpleDateFormat("dd MMMM yyyy").format(new GregorianCalendar(Integer.parseInt(x.year), Integer.parseInt(x.month) -1, Integer.parseInt(x.day)).getTime()))
   def formattedEndTime: Option[String] = (for {
     sd <- startDate.value

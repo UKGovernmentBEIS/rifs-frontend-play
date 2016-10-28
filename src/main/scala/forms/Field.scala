@@ -14,6 +14,8 @@ trait Field {
 
   def rules: Seq[FieldRule]
 
+  def errs: Option[NonEmptyList[String]]
+
   /**
     * Provide a hook by which the renderer can look at the fields from the html form and
     * extract a value for the answer to the application question. Most of the time there is
