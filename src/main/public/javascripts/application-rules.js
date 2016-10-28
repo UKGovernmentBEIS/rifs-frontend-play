@@ -21,8 +21,9 @@
     function getRule(ruleName) {
         switch (ruleName) {
             case "WordCountRule": return function(value, config) {
-                if(!value) return "" + config.maxWords + " " + (config.maxWords == 1 ? "word" : "words") + " maximum"
-                var w = value.split(/\s+/).length;
+                var trimmed = value.replace(/^\s+|\s+$/gm,'');
+                if(!trimmed) return "" + config.maxWords + " " + (config.maxWords == 1 ? "word" : "words") + " maximum"
+                var w = trimmed.split(/\s+/).length;
                 if (w <= config.maxWords) return "Words remaining: " + (config.maxWords - w);
                 return "" + (w - config.maxWords) + " " + (w - config.maxWords == 1 ? "word" : "words") + " over limit"
             };
