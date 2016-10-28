@@ -103,12 +103,12 @@
 
             }
 
-    <article>
+        <article>
         <h2 class="heading-large">@s.sectionNumber. @s.title</h2>
         @s.paragraphs.map { p =>
-            <p class="text">@p</p>
+        <p class="text">@p</p>
         }
-    </article>
+        </article>
 
         <footer>
             <nav class="govuk-previous-and-next-navigation" role="navigation" aria-label="Pagination">
@@ -137,13 +137,14 @@
                 </ul>
             </nav>
         </footer>
+    </div>
 
 
     <div class="column-third">
         <aside role="complementary">
             <hr class="hr-blue">
-            <h3 class="bold-small">Support information</h3>
-            <ul class="list">
+            <h3 class="heading-medium">Support</h3>
+            <ul class="list spacious">
                 <li>
                     <a href="@controllers.routes.OpportunityController.showGuidancePage(opportunity.id)">Guidance on
                         seminars</a>
