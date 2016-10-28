@@ -18,5 +18,9 @@
 
     <label for="@field.name">@field.label</label>
     <textarea id="@field.name" class="form-control" title="@field.name" name="@field.name">@field.value</textarea>
-    <div class="inline right-align" id="title_help_text">@field.rules.flatMap(_.helpText(JsString(field.value.getOrElse(""))))</div>
+    <div class="inline right-align" id="title_help_text">
+        @for(rule <- field.rules) {
+        <span class="helptext" data-for="@field.name" data-rule="@rule.getClass.getSimpleName" data-ruleconfig='@rule.configAsJson'>@rule.helpText(JsString(field.value.getOrElse("")))</span>
+        }
+    </div>
 </div>
