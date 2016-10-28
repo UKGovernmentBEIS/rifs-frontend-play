@@ -26,6 +26,7 @@ $path: "/assets/stylesheets/images/";
 // From https://github.com/alphagov/govuk_elements
 // @import '../../vendor/govuk_elements/public/sass/_govuk-elements.scss';
 @import 'elements/forms';
+@import 'elements/forms/form-validation';
 @import 'elements/lists';
 @import 'elements/tables';
 @import 'elements/layout';
@@ -175,6 +176,10 @@ table.spacious th {
 }
 
 // Form elements
+.form-group {
+    margin-bottom:2.5em;
+}
+
 label {
     display:block;
     font-weight:bold;
@@ -193,15 +198,11 @@ textarea.form-control {
     height: 10em;
 }
 
-
 input.text-field.number {
     width:3em;
     text-align:right;
 }
 
-#title_help_text {
-    margin-bottom:2.5em;
-}
 #title_help_text.right-align {
     text-align:right;
 }
@@ -277,4 +278,9 @@ hr {
 .breadcrumbs ol, .breadcrumbs ul {
     padding:0;
     margin:0;
+}
+
+.error .form-control {
+    /* support for nested controls */
+    border: 4px solid #b10e1e;
 }

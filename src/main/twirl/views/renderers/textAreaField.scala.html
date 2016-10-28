@@ -8,15 +8,15 @@
                                <div class="panel panel-border-narrow">@for(line <- q.helpText.getOrElse("").split("\n")) {<p>@line</p>}</div>
                            </details>
                            }
-@field.errs.map { es =>
-    <div>
+
+<div class='form-group @{if (field.errs.size > 0) "error"}'>
+    @field.errs.map { es =>
         @es.toList.map { e =>
-            <p>@e</p>
+        <span class="error-message">@e</span>
         }
-    </div>
-}
-<div>
+    }
+
     <label for="@field.name">@field.label</label>
     <textarea id="@field.name" class="form-control" title="@field.name" name="@field.name">@field.value</textarea>
+    <div class="inline right-align" id="title_help_text">@field.rules.flatMap(_.helpText(JsString(field.value.getOrElse(""))))</div>
 </div>
-<div class="inline right-align" id="title_help_text">@field.rules.flatMap(_.helpText(JsString(field.value.getOrElse(""))))</div>

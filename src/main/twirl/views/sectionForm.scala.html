@@ -33,6 +33,18 @@
             </h1>
 
             <form method="POST" action="@controllers.routes.ApplicationController.postSection(app.id, formSection.sectionNumber)">
+                @if(fields.flatMap(_.errs).size > 0) {
+                    <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
+
+                        <h1 class="heading-medium error-summary-heading" id="error-summary-heading">
+                            The information you entered is not valid
+                        </h1>
+
+                        <p>
+                            Please correct the problems indicated below.
+                        </p>
+                    </div>
+                }
                 <fieldset>
                     @fields.map(_.renderFormInput)
 
