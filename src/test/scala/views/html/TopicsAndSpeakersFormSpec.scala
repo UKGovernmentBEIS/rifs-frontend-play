@@ -19,7 +19,7 @@ class TopicsAndSpeakersFormSpec extends WordSpecLike with Matchers with OptionVa
     "'Topics And Speakers' Help text" in {
       val html: Html = generatePage(None)
       val soup = Jsoup.parse(html.toString())
-      Option(soup.getElementsByTag("h4")).value.text() shouldBe "What topics do you intend to cover?"
+      Option(soup.getElementsByClass("question")).value.text() shouldBe "What topics do you intend to cover?"
     }
   }
 
