@@ -1,7 +1,6 @@
 package controllers
 
-import play.api.Logger
-import play.api.libs.json.{JsArray, JsObject, JsString, JsValue}
+import play.api.libs.json.{JsArray, JsObject, JsString}
 
 object JsonHelpers {
   def flatten(name: String, o: JsObject): Map[String, String] = {
@@ -25,12 +24,10 @@ object JsonHelpers {
     val os: List[JsObject] = form.toList.map {
       case (k :: Nil, s :: Nil) => JsObject(Seq(k -> JsString(s)))
       case (k :: Nil, ss) => JsObject(Seq(k -> JsArray(ss.map(JsString))))
-      case (k :: ks, ss) => JsObject(Seq(k->deflate(Map(ks -> ss))))
+      case (k :: ks, ss) => JsObject(Seq(k -> deflate(Map(ks -> ss))))
+      case _ => JsObject(Seq())
     }
 
-    val result = os.fold(JsObject(Seq()))(_.deepMerge(_))
-
-    Logger.debug(s"deflated $form to $result")
-    result
+    os.fold(JsObject(Seq()))(_.deepMerge(_))
   }
 }

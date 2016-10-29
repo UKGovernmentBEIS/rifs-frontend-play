@@ -1,7 +1,7 @@
 @(field: forms.DateField, questions: Map[String, String], answers: Map[String, String], errs: Seq[forms.validation.FieldError])
 
 @questions.get(field.name).map { q => <h4>@q</h4> }
-@errs.filter(_.path.startsWith(s"${field.name}.")).map { e =>
+@errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}.")).map { e =>
     <div>
         <p>@e.err</p>
     </div>
