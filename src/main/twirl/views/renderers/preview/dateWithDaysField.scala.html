@@ -1,11 +1,19 @@
-@(field: forms.DateWithDaysField, answers: Map[String, String])
+@(field: forms.DateWithDaysField, startDate: String, days: Int, endDate: String)
 
-<div class="inline">
-    <h3>Start Date</h3>
-    @answers.get(s"${field.name}.date.day") @answers.get(s"${field.name}.date.month") @answers.get(s"${field.name}.date.year")
-
-    <h3>Duration in days</h3>
-    @answers.get(s"${field.name}.days")
+<div class="duration-preview">
+    <div>
+        <h3 class="heading-medium no-top-margin">Start date</h3>
+        @startDate
+        </div>
+    <div>
+        <h3 class="heading-medium no-top-margin">Days duration</h3>
+        @days
+    </div>
+    <div>
+        <h3 class="heading-medium no-top-margin">End date</h3>
+        @endDate
+    </div>
 </div>
+<div style="clear: both"></div>
 
 

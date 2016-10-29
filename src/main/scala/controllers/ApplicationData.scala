@@ -16,21 +16,23 @@ object ApplicationData {
   implicit val dvReads = Json.reads[DateValues]
   implicit val dwdReads = Json.reads[DateWithDaysValues]
 
+  private val provisionalDateValidator: DateWithDaysValidator = DateWithDaysValidator(allowPast = false, 1, 9)
+
   def checksFor(sectionNumber: Int): Map[String, FieldCheck] = {
     sectionNumber match {
       case 1 => Map("title" -> mandatoryText(20))
-      case 2 => Map("provisionalDate" -> fromValidator(DateWithDaysValidator(allowPast = false, 1, 9)))
+      case 2 => Map("provisionalDate" -> fromValidator(provisionalDateValidator))
       case 3 => Map("eventObjectives" -> mandatoryText(500))
       case 4 => Map("topicAndSpeaker" -> mandatoryText(500))
       case 5 => Map("eventAudience" -> mandatoryText(500))
       case _ => Map()
     }
   }
-  
+
   def previewChecksFor(sectionNumber: Int): Map[String, FieldCheck] = {
     sectionNumber match {
       case 1 => Map("title" -> mandatoryCheck)
-      case 2 => Map("provisionalDate" -> fromValidator(DateWithDaysValidator(allowPast = false, 1, 9)))
+      case 2 => Map("provisionalDate" -> fromValidator(provisionalDateValidator))
       case 3 => Map("eventObjectives" -> mandatoryCheck)
       case 4 => Map("topicAndSpeaker" -> mandatoryCheck)
       case 5 => Map("eventAudience" -> mandatoryCheck)
@@ -77,7 +79,7 @@ object ApplicationData {
   }
 
   val titleFormFields: Seq[Field] = Seq(TextField(None, "title", false))
-  val dateFormFields: Seq[Field] = Seq(DateWithDaysField("provisionalDate", DateField("provisionalDate.date"), TextField(None, "provisionalDate.days", true)))
+  val dateFormFields: Seq[Field] = Seq(DateWithDaysField("provisionalDate", provisionalDateValidator))
 
 
   def fieldsFor(sectionNum: Int): Option[Seq[Field]] = {
