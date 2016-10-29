@@ -8,8 +8,8 @@ import play.twirl.api.Html
 
 case class DateWithDaysField(name: String, validator: DateWithDaysValidator) extends Field {
 
-  val dateField =  DateField(s"${name}.date")
-  val daysField =  TextField(None, s"${name}.days", isNumeric = true)
+  val dateField = DateField(s"${name}.date")
+  val daysField = TextField(None, s"${name}.days", isNumeric = true)
 
   val fmt = DateTimeFormat.forPattern("d MMMM yyyy")
 
@@ -24,7 +24,7 @@ case class DateWithDaysField(name: String, validator: DateWithDaysValidator) ext
 
     val vs = DateWithDaysValues(Some(DateValues(day, month, year)), answers.get(s"${daysField.name}"))
     validator.validate("", vs).map { dwd =>
-      val endDate = dwd.date.plusDays(dwd.days)
+      val endDate = dwd.date.plusDays(dwd.days - 1)
       views.html.renderers.preview.dateWithDaysField(this, fmt.print(dwd.date), dwd.days, fmt.print(endDate))
     }.leftMap { errs =>
       Logger.debug(errs.toString())
