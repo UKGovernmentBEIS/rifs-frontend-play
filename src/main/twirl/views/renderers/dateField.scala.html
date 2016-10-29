@@ -1,19 +1,31 @@
-@(field: forms.DateField, questions: Map[String, String], answers: Map[String, String], errs: Seq[forms.validation.FieldError])
+@(field: forms.DateField, questions: Map[String, Question], answers: Map[String, String], errs: Seq[forms.validation.FieldError])
 
-@questions.get(field.name).map { q => <h4>@q</h4> }
-@errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}.")).map { e =>
-    <div>
-        <p>@e.err</p>
-    </div>
+@errors = @{
+    errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}."))
 }
-<div class="inline">
-    <label for="@field.name).day">Day</label>
-    <input type="text" title="@(field.name).day" name="@(field.name).day" value='@answers.get(s"${field.name}.day")'>
-    <label for="@(field.name).month">Month</label>
-    <input type="text" title="@(field.name).month" name="@(field.name).month" value='@answers.get(s"${field.name}.month")'>
-    <label for="@(field.name).year">Year</label>
-    <input type="text" title="@(field.name).year" name="@(field.name).year" value='@answers.get(s"${field.name}.year")'>
-</div>
 
-<div class="inline" id="title_help_text">For example 31 3 2017</div>
+@errorClass = @{if(errors.nonEmpty) "error" else ""}
+
+<div class='form-group @errorClass'>
+    @questions.get(field.name).map { q => <p class="question">@q.text</p> }
+    @errors.map { e =>
+        <span class="error-message">@e.err</span>
+    }
+
+    <div class='date-selector'>
+        <div>
+            <label for="@(field.name).day">Day</label>
+            <input type="text" title="@(field.name).day" id="@(field.name).day" name="@(field.name).day" value='@answers.get(s"${field.name}.day")' class="form-control">
+        </div>
+        <div>
+            <label for="@(field.name).month">Month</label>
+            <input type="text" title="@(field.name).month" id="@(field.name).month" name="@(field.name).month" value='@answers.get(s"${field.name}.month")' class="form-control">
+        </div>
+        <div>
+            <label for="@(field.name).year">Year</label>
+            <input type="text" title="@(field.name).year" id="@(field.name).year" name="@(field.name).year" value='@answers.get(s"${field.name}.year")' class="form-control year">
+        </div>
+    </div>
+    <div class="hint-text" id="@(field.name)_hint_text">For example 31 3 2017</div>
+</div>
 

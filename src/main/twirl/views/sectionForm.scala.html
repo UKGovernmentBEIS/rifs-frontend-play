@@ -1,14 +1,17 @@
 @(
         app: Application,
+        overview: ApplicationOverview,
+        appForm: ApplicationForm,
         section: Option[ApplicationSection],
         formSection: ApplicationFormSection,
         opportunity: Opportunity,
         fields: Seq[forms.Field],
-        questions: Map[String, String],
+        questions: Map[String, Question],
         answers: Map[String, String],
         errs: List[forms.validation.FieldError],
         hints:List[forms.validation.FieldHint]
 )
+@import partials._
 
 @formatId(id: Long) = @{
     f"RIFS$id%05d"
@@ -23,46 +26,48 @@
 
     <div class="grid-row">
         <div class="column-two-thirds">
-            <p>
-                <a href="@controllers.routes.ApplicationController.show(app.id)">&lt; Return to application overview</a>
-            </p>
-            <h2>@formatId(opportunity.id.id): @opportunity.title</h2>
-
-            <h1>@formSection.title</h1>
+            <div class="breadcrumbs">
+                <ol>
+                    <li><a href="@controllers.routes.ApplicationController.show(app.id)">&lt; Return to application overview</a></li>
+                </ol>
+            </div>
+            <h1 class="heading-xlarge">
+                <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
+                @formSection.title
+            </h1>
 
             <form method="POST" action="@controllers.routes.ApplicationController.postSection(app.id, formSection.sectionNumber)">
+                @if(errs.nonEmpty) {
+                    <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
+
+                        <h1 class="heading-medium error-summary-heading" id="error-summary-heading">
+                            The information you entered is not valid
+                        </h1>
+
+                        <p>
+                            Please correct the problems indicated below.
+                        </p>
+                    </div>
+                }
                 <fieldset>
                     @fields.map(_.renderFormInput(questions, answers, errs, hints))
 
-                    @section.flatMap(_.completedAtText).getOrElse(<input type="submit" name="_complete_button" class="button--link-style" value="Mark question as complete"/>)
+                    @section.flatMap(_.completedAtText).getOrElse(
+                        <label for="complete-checkbox" class="form-checkbox">
+                            <input id="complete-checkbox" type="checkbox" name="_complete_checkbox" />
+                            Mark question as complete
+                        </label>
+                    )
 
                 </fieldset>
-                <div>
+                <div class="rifs-form-buttons">
                     <input type="submit" name="_save_button" class="button button--start" value="Save and continue">
                     <input type="submit" name="_preview_button" class="button--link-style" value="Preview this page"/>
                 </div>
             </form>
         </div>
         <div class="column-third">
-            <hr class="hr-blue">
-            <h3 class="bold-small">Supporting information</h3>
-            <ul class="list">
-                <li>
-                    <a href="@controllers.routes.OpportunityController.showGuidancePage(opportunity.id)">
-                        Guidance on seminars</a>
-                </li>
-                <li>
-                    <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, None)">
-                        View opportunity details</a>
-                </li>
-            </ul>
-            <div class="rifs-step-panel">
-                <p class="rifs-step-content">
-                    <span class="bold-xlarge"> 0/6 </span>
-                    <br>
-                    Sections complete
-                </p>
-            </div>
+            @sidebar(overview, opportunity, appForm)
         </div>
     </div>
 }

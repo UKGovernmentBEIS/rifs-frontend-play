@@ -5,7 +5,7 @@ import javax.inject.Inject
 import cats.data.OptionT
 import cats.instances.future._
 import forms._
-import models.{ApplicationFormId, ApplicationFormSection, ApplicationId, ApplicationSection}
+import models._
 import play.api.Logger
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller, Result}
@@ -62,20 +62,19 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     }
   }
 
-  def renderSectionForm(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], questions: Map[String, String], fields: Seq[Field], errs: FieldErrors, hints: FieldHints) = {
+  def renderSectionForm(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], questions: Map[String, Question], fields: Seq[Field], errs: FieldErrors, hints: FieldHints) = {
     val ft = for {
       a <- OptionT(applications.byId(id))
       af <- OptionT(applicationForms.byId(a.applicationFormId))
       o <- OptionT(opportunities.byId(af.opportunityId))
-    } yield (a, af, o)
+      ov <- OptionT(applications.overview(id))
+    } yield (a, af, o, ov)
 
     ft.value.map {
-      case Some((app, appForm, opp)) =>
+      case Some((app, appForm, opp, overview)) =>
         val formSection: ApplicationFormSection = appForm.sections.find(_.sectionNumber == sectionNumber).get
-
         val answers = section.map { s => JsonHelpers.flatten("", s.answers) }.getOrElse(Map[String, String]())
-
-        Ok(views.html.sectionForm(app, section, formSection, opp, fields, questions, answers, errs, hints))
+        Ok(views.html.sectionForm(app, overview, appForm, section, formSection, opp, fields, questions, answers, errs, hints))
       case None => NotFound
     }
   }
@@ -88,7 +87,10 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     * which one will be returned. This shouldn't occur if the form is properly submitted from a
     * browser, though.
     */
-  def decodeButton(keys: Set[String]): Option[ButtonAction] = keys.flatMap(ButtonAction.unapply).headOption
+  def decodeButton(keys: Set[String]): Option[ButtonAction] = keys.flatMap(ButtonAction.unapply).headOption.map {
+    case Save => if (keys.contains("_complete_checkbox")) Complete else Save
+    case b => b
+  }
 
   def postSection(id: ApplicationId, sectionNumber: Int) = Action.async(parse.urlFormEncoded) { implicit request =>
     Logger.debug(request.body.toString())

@@ -1,0 +1,6 @@
+@(field: forms.TextAreaField, answers: Map[String, String])
+
+<div>
+    <h3>@field.label</h3>
+    <p>@answers.get(field.name)</p>
+</div>

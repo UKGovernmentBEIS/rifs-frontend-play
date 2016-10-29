@@ -1,13 +1,23 @@
-@(field: forms.TextField, questions: Map[String, String], answers: Map[String, String], errs: Seq[forms.validation.FieldError], hints: Seq[forms.validation.FieldHint])
+@(field: forms.TextField,
+        questions: Map[String, Question],
+        answers: Map[String, String],
+        errs: Seq[forms.validation.FieldError],
+        hints: Seq[forms.validation.FieldHint])
 
-@questions.get(field.name).map { q => <h4>@q</h4> }
-@errs.filter(_.path == field.name).map { e =>
-    <div>
-        <p>@e.err</p>
-    </div>
+@errors = @{
+    errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}."))
 }
-<div>
+
+@errorClass = @{if(errors.nonEmpty) "error" else ""}
+
+<div class='form-group @errorClass'>
+    @questions.get(field.name).map { q => <p class="question">@q.text</p> }
+    @errors.map { e =>
+        <span class="error-message">@e.err</span>
+    }
     <label for="@field.name">@field.label</label>
-    <input type="text" id="@field.name" class="form-control" title="@field.name" name="@field.name" value='@answers.get(field.name)'>
+    <input type="text" id="@field.name" class='form-control text-field @{
+        if(field.isNumeric) "number"
+    }' title="@field.name" name="@field.name" value='@answers.get(field.name)'>
+    <div class="inline right-align hint-text" id="@(field.name)_hint_text">@hints.find(_.path == field.name).map(_.hint)</div>
 </div>
-<div class="inline" id="title_hint_text">@hints.find(_.path == field.name).map(_.hint)</div>
