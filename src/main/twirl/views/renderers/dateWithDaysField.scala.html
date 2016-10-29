@@ -1,4 +1,8 @@
-@(field: forms.DateWithDaysField, questions: Map[String, String], answers: Map[String, String], errs: Seq[forms.validation.FieldError])
+@(field: forms.DateWithDaysField,
+        questions: Map[String, String],
+        answers: Map[String, String],
+        errs: Seq[forms.validation.FieldError],
+        hints:Seq[forms.validation.FieldHint])
 
-@field.dateField.renderFormInput(questions, answers, errs)
-@field.daysField.renderFormInput(questions, answers, errs)
+@field.dateField.renderFormInput(questions, answers, errs, hints)
+@field.daysField.renderFormInput(questions, answers, errs, hints)

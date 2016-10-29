@@ -51,7 +51,10 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
             else noErrors
           }.getOrElse(noErrors)
 
-          renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, errs)
+          val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
+          Logger.debug(hints.toString)
+
+          renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, errs, hints)
         }
 
       // Temporary hack to display the WIP page for sections that we haven't yet coded up
@@ -59,7 +62,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     }
   }
 
-  def renderSectionForm(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], questions: Map[String, String], fields: Seq[Field], errs: FieldErrors) = {
+  def renderSectionForm(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], questions: Map[String, String], fields: Seq[Field], errs: FieldErrors, hints: FieldHints) = {
     val ft = for {
       a <- OptionT(applications.byId(id))
       af <- OptionT(applicationForms.byId(a.applicationFormId))
@@ -72,7 +75,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
 
         val answers = section.map { s => JsonHelpers.flatten("", s.answers) }.getOrElse(Map[String, String]())
 
-        Ok(views.html.sectionForm(app, section, formSection, opp, fields, questions, answers, errs))
+        Ok(views.html.sectionForm(app, section, formSection, opp, fields, questions, answers, errs, hints))
       case None => NotFound
     }
   }
@@ -141,4 +144,14 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     errs
   }
 
+  def hinting(fieldValues: JsObject, checks: Map[String, FieldCheck]): FieldHints = {
+    Logger.debug(s"Hinting $fieldValues with $checks")
+    checks.toList.flatMap {
+      case (fieldName, check) =>
+        fieldValues \ fieldName match {
+          case JsDefined(jv) => check.hint(fieldName, jv)
+          case _ => check.hint(fieldName, JsNull)
+        }
+    }
+  }
 }

@@ -44,6 +44,7 @@ class TitleFormSpec extends WordSpecLike with Matchers with OptionValues {
       Seq(TextField(Some("label"), "title")),
       Map(),
       Map(),
+      List(),
       List()
     )
   }

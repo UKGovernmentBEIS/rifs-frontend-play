@@ -1,4 +1,4 @@
-@(field: forms.TextField, questions: Map[String, String], answers: Map[String, String], errs: Seq[forms.validation.FieldError])
+@(field: forms.TextField, questions: Map[String, String], answers: Map[String, String], errs: Seq[forms.validation.FieldError], hints: Seq[forms.validation.FieldHint])
 
 @questions.get(field.name).map { q => <h4>@q</h4> }
 @errs.filter(_.path == field.name).map { e =>
@@ -10,4 +10,4 @@
     <label for="@field.name">@field.label</label>
     <input type="text" id="@field.name" class="form-control" title="@field.name" name="@field.name" value='@answers.get(field.name)'>
 </div>
-<div class="inline" id="title_help_text"></div>
+<div class="inline" id="title_hint_text">@hints.find(_.path == field.name).map(_.hint)</div>

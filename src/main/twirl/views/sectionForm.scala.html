@@ -6,7 +6,8 @@
         fields: Seq[forms.Field],
         questions: Map[String, String],
         answers: Map[String, String],
-        errs: List[forms.validation.FieldError]
+        errs: List[forms.validation.FieldError],
+        hints:List[forms.validation.FieldHint]
 )
 
 @formatId(id: Long) = @{
@@ -31,7 +32,7 @@
 
             <form method="POST" action="@controllers.routes.ApplicationController.postSection(app.id, formSection.sectionNumber)">
                 <fieldset>
-                    @fields.map(_.renderFormInput(questions, answers, errs))
+                    @fields.map(_.renderFormInput(questions, answers, errs, hints))
 
                     @section.flatMap(_.completedAtText).getOrElse(<input type="submit" name="_complete_button" class="button--link-style" value="Mark question as complete"/>)
 

@@ -1,11 +1,11 @@
 package forms
 
-import forms.validation.FieldError
+import forms.validation.{FieldError, FieldHint}
 import play.api.libs.json._
 import play.twirl.api.Html
 
 trait Field {
-  def renderFormInput(questions: Map[String, String], answers: Map[String, String], errs: Seq[FieldError]): Html
+  def renderFormInput(questions: Map[String, String], answers: Map[String, String], errs: Seq[FieldError], hints: Seq[FieldHint]): Html
 
   def renderPreview(answers: Map[String, String]): Html
 

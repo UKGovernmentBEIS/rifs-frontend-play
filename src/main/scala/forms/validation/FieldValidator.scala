@@ -4,6 +4,8 @@ import cats.data.ValidatedNel
 
 case class FieldError(path: String, err: String)
 
+case class FieldHint(path: String, hint: String)
+
 trait FieldValidator[A, B] {
   outer =>
 
@@ -14,10 +16,15 @@ trait FieldValidator[A, B] {
 
   def validate(path: String, a: A): ValidatedNel[FieldError, B]
 
-  def hintText(a: A): Option[String] = None
+  def hintText(path: String, s: Option[String]): Option[FieldHint] = None
 
   def andThen[C](v2: FieldValidator[B, C]): FieldValidator[A, C] = new FieldValidator[A, C] {
     override def validate(path: String, a: A): ValidatedNel[FieldError, C] = outer.validate(path, a).andThen(v2.validate(path, _))
+
+    override def hintText(path: String, s: Option[String]): Option[FieldHint] = outer.hintText(path, s) match {
+      case None => v2.hintText(path, s)
+      case h => h
+    }
   }
 
 }
