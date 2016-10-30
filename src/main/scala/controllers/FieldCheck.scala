@@ -12,13 +12,13 @@ trait FieldCheck {
 object FieldChecks {
   val mandatoryCheck = new FieldCheck {
     override def apply(path: String, value: JsValue): List[FieldError] =
-      MandatoryValidator.validate(path, value.validate[String].asOpt).fold(_.toList, _ => List())
+      MandatoryValidator(None).validate(path, value.validate[String].asOpt).fold(_.toList, _ => List())
 
     override def hint(path: String, value: JsValue): Option[FieldHint] = None
   }
 
-  def mandatoryText(wordLimit: Int) = new FieldCheck {
-    val validator = MandatoryValidator.andThen(WordCountValidator(wordLimit))
+  def mandatoryText(wordLimit: Int, displayName: Option[String] = None) = new FieldCheck {
+    val validator = MandatoryValidator(displayName).andThen(WordCountValidator(wordLimit))
 
     override def apply(path: String, value: JsValue): List[FieldError] = validator.validate(path, decodeString(value)).fold(_.toList, _ => List())
 
@@ -37,9 +37,8 @@ object FieldChecks {
   }
 
 
-
-  def intFieldCheck(min:Int, max:Int) = new FieldCheck {
-    val validator: FieldValidator[Option[String], Int] = MandatoryValidator.andThen(IntValidator(min, max))
+  def intFieldCheck(min: Int, max: Int, displayName: Option[String] = None) = new FieldCheck {
+    val validator: FieldValidator[Option[String], Int] = MandatoryValidator(displayName).andThen(IntValidator(min, max))
 
     override def apply(path: String, jv: JsValue) = validator.validate(path, decodeString(jv)).fold(_.toList, _ => List())
 
