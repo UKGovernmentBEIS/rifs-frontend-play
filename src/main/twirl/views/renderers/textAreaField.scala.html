@@ -1,26 +1,34 @@
-@(field: forms.TextAreaField)
-    @import play.api.libs.json.JsString
+@(field: forms.TextAreaField,
+        questions: Map[String, Question],
+        answers: Map[String, String],
+        errs: Seq[forms.validation.FieldError],
+        hints: Seq[forms.validation.FieldHint])
 
-@field.question.map { q => <p class="question">@q.text</p>
-                           <p>@q.longDescription</p>
-                           <details>
-                               <summary role="button"><span class="summary">Help with this section</span></summary>
-                               <div class="panel panel-border-narrow">@for(line <- q.helpText.getOrElse("").split("\n")) {<p>@line</p>}</div>
-                           </details>
-                           }
 
-<div class='form-group @{if (field.errs.size > 0) "error"}'>
-    @field.errs.map { es =>
-        @es.toList.map { e =>
-        <span class="error-message">@e</span>
-        }
+@errors = @{
+    errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}."))
+}
+
+@errorClass = @{
+    if(errors.nonEmpty) "error" else ""
+}
+
+@questions.get(field.name).map { q => <p class="question">@q.text</p>
+    <p>@q.longDescription</p>
+    <details>
+        <summary role="button"><span class="summary">Help with this section</span></summary>
+        <div class="panel panel-border-narrow">@for(line <- q.helpText.getOrElse("").split("\n")) {
+            <p>@line</p>
+        }</div>
+    </details>
+}
+
+<div class='form-group @errorClass'>
+    @errors.map { e =>
+        <span class="error-message">@e.err</span>
     }
 
     <label for="@field.name">@field.label</label>
-    <textarea id="@field.name" class="form-control" title="@field.name" name="@field.name">@field.value</textarea>
-    <div class="inline right-align" id="title_help_text">
-        @for(rule <- field.rules) {
-        <span class="helptext" data-for="@field.name" data-rule="@rule.getClass.getSimpleName" data-ruleconfig='@rule.configAsJson'>@rule.helpText(JsString(field.value.getOrElse("")))</span>
-        }
-    </div>
+    <textarea id="@field.name" class="form-control" title="@field.name" name="@field.name">@answers.get(field.name)</textarea>
+    <div class="inline right-align hint-text" id="@(field.name)_hint_text">@hints.find(_.path == field.name).map(_.hint)</div>
 </div>
