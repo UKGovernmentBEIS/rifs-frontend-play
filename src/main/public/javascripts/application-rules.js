@@ -1,4 +1,6 @@
 (function() {
+    "use strict";
+
     if(!document.getElementsByClassName || !document.body.addEventListener) {return;}
 
     var rules = {
