@@ -11,6 +11,7 @@ object ApplicationData {
 
   implicit val dvReads = Json.reads[DateValues]
   implicit val dwdReads = Json.reads[DateWithDaysValues]
+  implicit val civReads = Json.reads[CostItemValues]
 
   private val provisionalDateValidator: DateWithDaysValidator = DateWithDaysValidator(allowPast = false, 1, 9)
 
@@ -21,11 +22,7 @@ object ApplicationData {
       case 3 => Map("eventObjectives" -> mandatoryText(500))
       case 4 => Map("topicAndSpeaker" -> mandatoryText(500))
       case 5 => Map("eventAudience" -> mandatoryText(500))
-      case 6 => Map(
-        "costItem.itemName" -> mandatoryText(20),
-        "costItem.cost" -> currencyValidator,
-        "costItem.percentage" -> intFieldCheck(1, 100, Some("percentage")),
-        "costItem.justification" -> mandatoryText(200))
+      case 6 => Map("costItem" -> fromValidator(CostItemValidator))
       case _ => Map()
     }
   }
