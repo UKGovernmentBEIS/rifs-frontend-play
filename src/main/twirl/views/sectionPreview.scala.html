@@ -3,7 +3,8 @@
         section: Option[ApplicationSection],
         formSection: ApplicationFormSection,
         opportunity: Opportunity,
-        fields: Seq[forms.Field]
+        fields: Seq[forms.Field],
+        answers: Map[String, String]
 )
 
 @formatId(id: Long) = @{
@@ -23,7 +24,7 @@
                 @formSection.title
             </h1>
 
-            @fields.map(_.renderPreview)
+            @fields.map(_.renderPreview(answers))
 
             <div class="rifs-form-buttons">
                 <a class="button secondary" href="@controllers.routes.ApplicationController.show(app.id)">Close</a>

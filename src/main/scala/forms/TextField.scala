@@ -1,18 +1,12 @@
 package forms
 
-import cats.data.NonEmptyList
+import forms.validation.{FieldError, FieldHint}
 import models.Question
-import play.api.libs.json.JsObject
 import play.twirl.api.Html
 
-case class TextField(label: Option[String], name: String, isNumeric: Boolean, rules: Seq[FieldRule], value: Option[String] = None, errs: Option[NonEmptyList[String]] = None, question: Option[Question] = None) extends Field {
-  override def renderFormInput: Html = views.html.renderers.textField(this)
+case class TextField(label: Option[String], name: String, isNumeric: Boolean) extends Field {
+  override def renderFormInput(questions: Map[String, Question], answers: Map[String, String], errs: Seq[FieldError], hints:Seq[FieldHint]): Html =
+    views.html.renderers.textField(this, questions, answers, errs, hints)
 
-  override def renderPreview: Html = views.html.renderers.preview.textField(this)
-
-  override def withValuesFrom(values: JsObject): TextField = this.copy(value = stringValue(values, name))
-
-  override def withErrorsFrom(errs: Map[String, NonEmptyList[String]]): TextField = this.copy(errs = errs.get(name))
-
-  override def withQuestionsFrom(questions: Map[String, Question]): TextField = this.copy(question = questions.get(name))
+  override def renderPreview(answers: Map[String, String]): Html = views.html.renderers.preview.textField(this, answers)
 }
