@@ -64,21 +64,19 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
 
   def renderSectionForm(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], questions: Map[String, Question], fields: Seq[Field], errs: FieldErrors, hints: FieldHints) = {
     val ft = for {
-      a <- OptionT(applications.byId(id))
+      a <- OptionT(applications.overview(id))
       af <- OptionT(applicationForms.byId(a.applicationFormId))
       o <- OptionT(opportunities.byId(af.opportunityId))
-      ov <- OptionT(applications.overview(id))
-    } yield (a, af, o, ov)
+    } yield (a, af, o)
 
     ft.value.map {
-      case Some((app, appForm, opp, overview)) =>
+      case Some((app, appForm, opp)) =>
         val formSection: ApplicationFormSection = appForm.sections.find(_.sectionNumber == sectionNumber).get
         val answers = section.map { s => JsonHelpers.flatten("", s.answers) }.getOrElse(Map[String, String]())
-        Ok(views.html.sectionForm(app, overview, appForm, section, formSection, opp, fields, questions, answers, errs, hints))
+        Ok(views.html.sectionForm(app, appForm, section, formSection, opp, fields, questions, answers, errs, hints))
       case None => NotFound
     }
   }
-
 
   import JsonHelpers._
 

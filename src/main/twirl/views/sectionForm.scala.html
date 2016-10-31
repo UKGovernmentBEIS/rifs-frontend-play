@@ -1,6 +1,5 @@
 @(
-        app: Application,
-        overview: ApplicationOverview,
+        appOverview: ApplicationOverview,
         appForm: ApplicationForm,
         section: Option[ApplicationSection],
         formSection: ApplicationFormSection,
@@ -28,7 +27,7 @@
         <div class="column-two-thirds">
             <div class="breadcrumbs">
                 <ol>
-                    <li><a href="@controllers.routes.ApplicationController.show(app.id)">&lt; Return to application overview</a></li>
+                    <li><a href="@controllers.routes.ApplicationController.show(appOverview.id)">&lt; Return to application overview</a></li>
                 </ol>
             </div>
             <h1 class="heading-xlarge">
@@ -36,7 +35,7 @@
                 @formSection.title
             </h1>
 
-            <form method="POST" action="@controllers.routes.ApplicationController.postSection(app.id, formSection.sectionNumber)">
+            <form method="POST" action="@controllers.routes.ApplicationController.postSection(appOverview.id, formSection.sectionNumber)">
                 @if(errs.nonEmpty) {
                     <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
 
@@ -67,7 +66,7 @@
             </form>
         </div>
         <div class="column-third">
-            @sidebar(overview, opportunity, appForm)
+            @sidebar(appOverview, appForm)
         </div>
     </div>
 }
