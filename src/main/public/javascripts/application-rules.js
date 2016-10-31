@@ -5,7 +5,7 @@
         "WordCountRule"(value, config) {
              var trimmed = value.replace(/^\s+|\s+$/gm,"");
              var w = trimmed.split(/\s+/).length;
-             var words = function(count) {return count === 1 ? "word" : "words";}
+             var words = function(count) {return count === 1 ? "word" : "words";};
 
              return !trimmed ? "" + config.maxWords + " " + words(config.maxWords) + " maximum"
                   : w <= config.maxWords ? "Words remaining: " + (config.maxWords - w)
