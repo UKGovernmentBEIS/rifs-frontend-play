@@ -29,7 +29,6 @@ class EventAudienceFormSpec extends WordSpecLike with Matchers with OptionValues
     val name = "eventAudience"
 
     sectionForm(
-      Application(ApplicationId(1), ApplicationFormId(1)),
       ApplicationOverview(ApplicationId(1), ApplicationFormId(1), Seq()),
       ApplicationForm(ApplicationFormId(1), OpportunityId(1), Seq(ApplicationFormSection(5, "Event Audience"))),
       section,

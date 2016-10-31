@@ -37,6 +37,7 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
   }
 
   import ApplicationData._
+  import FieldCheckHelpers._
 
   def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
     fieldsFor(sectionNumber) match {
@@ -126,32 +127,5 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
           }
         }
     }.getOrElse(Future.successful(BadRequest))
-  }
-
-  def selectPreviewRules(rules: Map[String, Seq[FieldRule]]): Map[String, Seq[FieldRule]] = {
-    rules.map { case (n, rs) => n -> rs.filter(_.validateOnPreview) }
-  }
-
-  def check(fieldValues: JsObject, checks: Map[String, FieldCheck]): FieldErrors = {
-    val errs = checks.toList.flatMap {
-      case (fieldName, check) =>
-        fieldValues \ fieldName match {
-          case JsDefined(jv) => check(fieldName, jv)
-          case _ => check(fieldName, JsNull)
-        }
-    }
-    Logger.debug(errs.toString)
-    errs
-  }
-
-  def hinting(fieldValues: JsObject, checks: Map[String, FieldCheck]): FieldHints = {
-    Logger.debug(s"Hinting $fieldValues with $checks")
-    checks.toList.flatMap {
-      case (fieldName, check) =>
-        fieldValues \ fieldName match {
-          case JsDefined(jv) => check.hint(fieldName, jv)
-          case _ => check.hint(fieldName, JsNull)
-        }
-    }
   }
 }

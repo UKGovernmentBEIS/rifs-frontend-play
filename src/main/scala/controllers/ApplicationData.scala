@@ -9,10 +9,6 @@ object ApplicationData {
 
   import FieldChecks._
 
-  type FieldErrors = List[FieldError]
-  val noErrors: FieldErrors = List()
-  type FieldHints = List[FieldHint]
-
   implicit val dvReads = Json.reads[DateValues]
   implicit val dwdReads = Json.reads[DateWithDaysValues]
 
@@ -78,7 +74,7 @@ object ApplicationData {
     }
   }
 
-  val titleFormFields: Seq[Field] = Seq(TextField(None, "title", false))
+  val titleFormFields: Seq[Field] = Seq(TextField(None, "title", isNumeric = false))
   val dateFormFields: Seq[Field] = Seq(DateWithDaysField("provisionalDate", provisionalDateValidator))
 
 
