@@ -20,7 +20,7 @@ function triggerEvent(element, eventName) {
 
 function testWordCountHelper(message, value) {
     QUnit.test("message for '" + value + "': " + message, function(assert) {
-      document.getElementById("qunit-fixture").innerHTML = "<input type='text' id='test'><span class='helptext' id='testhelptext' data-for='test' data-rule='WordCountRule' data-ruleconfig='{\"maxWords\":50}'></span>";
+      document.getElementById("qunit-fixture").innerHTML = "<input type='text' id='test'><span class='js__hint' id='testhelptext' data-for='test' data-rule='WordCount' data-ruleconfig='{\"maxWords\":50}'></span>";
       window.rifsHelperText();
 
       document.getElementById("test").value = value;

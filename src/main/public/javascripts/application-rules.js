@@ -2,7 +2,7 @@
     if(!document.getElementsByClassName || !document.body.addEventListener) {return;}
 
     var rules = {
-        "WordCountRule"(value, config) {
+        "WordCount"(value, config) {
              var trimmed = value.replace(/^\s+|\s+$/gm,"");
              var w = trimmed.split(/\s+/).length;
              var words = function(count) {return count === 1 ? "word" : "words";};
@@ -23,7 +23,7 @@
     }
 
     function rifsHelperText() {
-        var helpers = document.getElementsByClassName("helptext");
+        var helpers = document.getElementsByClassName("js__hint");
         for (var i = 0; i < helpers.length; i++) {
             var helper = helpers[i];
             var input = document.getElementById(helper.getAttribute("data-for")),
