@@ -6,24 +6,20 @@ import cats.data.OptionT
 import cats.instances.future._
 import forms.Field
 import models.{ApplicationId, ApplicationSection}
-import play.api.libs.json.JsObject
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class ApplicationPreviewController @Inject()(applications: ApplicationOps, applicationForms: ApplicationFormOps, opportunities: OpportunityOps)(implicit ec: ExecutionContext)
-  extends Controller
-    with ControllerUtils {
+  extends Controller {
 
   import ApplicationData._
 
   def previewSection(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
     fieldsFor(sectionNumber) match {
       case Some(fields) => applications.getSection(id, sectionNumber).flatMap { section =>
-        val populatedFields = fields.map { f => f.withValuesFrom(section.map(_.answers).getOrElse(JsObject(Seq()))) }
-
-        renderSectionPreview(id, sectionNumber, section, populatedFields)
+        renderSectionPreview(id, sectionNumber, section, fields)
       }
       case None => Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
     }
@@ -36,9 +32,11 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
       o <- OptionT(opportunities.byId(af.opportunityId))
     } yield (a, af, o)
 
+    val answers = section.map { s => JsonHelpers.flatten("", s.answers) }.getOrElse(Map[String, String]())
+
     ft.value.map {
       case Some((app, appForm, opp)) =>
-        Ok(views.html.sectionPreview(app, section, appForm.sections.find(_.sectionNumber == sectionNumber).get, opp, fields))
+        Ok(views.html.sectionPreview(app, section, appForm.sections.find(_.sectionNumber == sectionNumber).get, opp, fields, answers))
       case None => NotFound
     }
   }

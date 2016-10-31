@@ -1,11 +1,14 @@
 @(
-        app: Application,
-        overview: ApplicationOverview,
+        appOverview: ApplicationOverview,
         appForm: ApplicationForm,
         section: Option[ApplicationSection],
         formSection: ApplicationFormSection,
         opportunity: Opportunity,
-        fields: Seq[forms.Field]
+        fields: Seq[forms.Field],
+        questions: Map[String, Question],
+        answers: Map[String, String],
+        errs: List[forms.validation.FieldError],
+        hints:List[forms.validation.FieldHint]
 )
 @import partials._
 
@@ -24,7 +27,7 @@
         <div class="column-two-thirds">
             <div class="breadcrumbs">
                 <ol>
-                    <li><a href="@controllers.routes.ApplicationController.show(app.id)">&lt; Return to application overview</a></li>
+                    <li><a href="@controllers.routes.ApplicationController.show(appOverview.id)">&lt; Return to application overview</a></li>
                 </ol>
             </div>
             <h1 class="heading-xlarge">
@@ -32,8 +35,8 @@
                 @formSection.title
             </h1>
 
-            <form method="POST" action="@controllers.routes.ApplicationController.postSection(app.id, formSection.sectionNumber)">
-                @if(fields.flatMap(_.errs).size > 0) {
+            <form method="POST" action="@controllers.routes.ApplicationController.postSection(appOverview.id, formSection.sectionNumber)">
+                @if(errs.nonEmpty) {
                     <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
 
                         <h1 class="heading-medium error-summary-heading" id="error-summary-heading">
@@ -46,7 +49,7 @@
                     </div>
                 }
                 <fieldset>
-                    @fields.map(_.renderFormInput)
+                    @fields.map(_.renderFormInput(questions, answers, errs, hints))
 
                     @section.flatMap(_.completedAtText).getOrElse(
                         <label for="complete-checkbox" class="form-checkbox">
@@ -63,7 +66,7 @@
             </form>
         </div>
         <div class="column-third">
-            @sidebar(overview, opportunity, appForm)
+            @sidebar(appOverview, appForm)
         </div>
     </div>
 }
