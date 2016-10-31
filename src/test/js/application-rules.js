@@ -1,14 +1,3 @@
-function testWordCountHelper(message, value) {
-    QUnit.test("message for '" + value + "': " + message, function(assert) {
-      document.getElementById("qunit-fixture").innerHTML = "<input type='text' id='test'><span class='helptext' id='testhelptext' data-for='test' data-rule='WordCountRule' data-ruleconfig='{\"maxWords\":50}'></span>";
-      window.rifsHelperText();
-
-      document.getElementById("test").value = value;
-      triggerEvent(document.getElementById("test"), "keyup");
-      assert.equal(document.getElementById("testhelptext").innerHTML, message);
-    });
-}
-
 function triggerEvent(element, eventName) {
   var event; // The custom event that will be created
 
@@ -27,6 +16,17 @@ function triggerEvent(element, eventName) {
   } else {
     element.fireEvent("on" + event.eventType, event);
   }
+}
+
+function testWordCountHelper(message, value) {
+    QUnit.test("message for '" + value + "': " + message, function(assert) {
+      document.getElementById("qunit-fixture").innerHTML = "<input type='text' id='test'><span class='helptext' id='testhelptext' data-for='test' data-rule='WordCountRule' data-ruleconfig='{\"maxWords\":50}'></span>";
+      window.rifsHelperText();
+
+      document.getElementById("test").value = value;
+      triggerEvent(document.getElementById("test"), "keyup");
+      assert.equal(document.getElementById("testhelptext").innerHTML, message);
+    });
 }
 
 function repeat(word, times) {
