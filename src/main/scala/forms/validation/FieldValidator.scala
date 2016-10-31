@@ -4,7 +4,7 @@ import cats.data.ValidatedNel
 
 case class FieldError(path: String, err: String)
 
-case class FieldHint(path: String, hint: String)
+case class FieldHint(path: String, hint: String, matchingJsType: Option[String] = None, matchingJsConfig: Option[String] = None)
 
 trait FieldValidator[A, B] {
   outer =>
