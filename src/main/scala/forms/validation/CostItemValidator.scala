@@ -4,7 +4,7 @@ import cats.data.ValidatedNel
 
 case class CostItemValues(itemName: Option[String], cost: Option[String], percentage: Option[String], justification: Option[String])
 
-case class CostItem(item: String, cost: BigDecimal, percentage: Int, justification: String)
+case class CostItem(itemName: String, cost: BigDecimal, percentage: Int, justification: String, itemNumber: Option[Int] = None)
 
 case object CostItemValidator extends FieldValidator[CostItemValues, CostItem] {
   val itemValidator = MandatoryValidator(Some("item")).andThen(WordCountValidator(20))
@@ -22,6 +22,6 @@ case object CostItemValidator extends FieldValidator[CostItemValues, CostItem] {
     // it in a comment so it's easy to restore if you lose it by mistake.
     //import cats.syntax.cartesian._
     import cats.syntax.cartesian._
-    (itemV |@| costV |@| percentageV |@| justV).map(CostItem.apply _)
+    (itemV |@| costV |@| percentageV |@| justV).map(CostItem.apply (_,_,_,_,None))
   }
 }

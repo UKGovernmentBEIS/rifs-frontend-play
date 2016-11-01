@@ -5,8 +5,10 @@ import javax.inject.Inject
 import cats.data.OptionT
 import cats.instances.future._
 import forms.Field
+import forms.validation.{CostItem, CostItemValues}
 import models._
-import play.api.libs.json.JsObject
+import play.api.Logger
+import play.api.libs.json.{JsArray, JsDefined, JsObject, Json}
 import play.api.mvc.Result
 import play.api.mvc.Results._
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
@@ -82,7 +84,17 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
 
     sectionTypeFor(sectionNumber) match {
       case VanillaSection => Ok(views.html.sectionForm(app, appForm, section, formSection, opp, fields, questions, answers, errs, hints))
-      case CostSection => Ok(views.html.costSectionForm(app, appForm, section, formSection, opp, fields, questions, answers, errs, hints))
+      case CostSection =>
+        val sectionDoc = section.map(_.answers).getOrElse(JsObject(Seq()))
+        sectionDoc \ "items" match {
+          case JsDefined(JsArray(is)) =>
+            Logger.debug(is.toString)
+            val costItems = is.flatMap(_.validate[CostItemValues].asOpt)
+            Logger.debug(costItems.toString())
+            if (costItems.nonEmpty) Ok(views.html.costSectionList(costItems.toList))
+            else Ok(views.html.costItemForm(app, appForm, section, formSection, opp, fields, questions, answers, errs, hints))
+          case _ => Ok(views.html.costItemForm(app, appForm, section, formSection, opp, fields, questions, answers, errs, hints))
+        }
     }
   }
 

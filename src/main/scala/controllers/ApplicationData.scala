@@ -32,7 +32,7 @@ object ApplicationData {
       case 3 => Map("eventObjectives" -> mandatoryText(500))
       case 4 => Map("topicAndSpeaker" -> mandatoryText(500))
       case 5 => Map("eventAudience" -> mandatoryText(500))
-      case 6 => Map("costItem" -> fromValidator(CostItemValidator))
+      case 6 => Map("item" -> fromValidator(CostItemValidator))
       case _ => Map()
     }
 
@@ -73,7 +73,7 @@ object ApplicationData {
   )
 
   val costItemFieldQuestions = Map(
-    "costItem" -> Question("What will the costs be?",
+    "item" -> Question("What will the costs be?",
       Some("We will pay up to £2,000 towards the travel and accommodation costs of external speakers, room fees, equipment, time spent in organising the event and any other reasonable costs. " +
         "\nYou can't claim for food or drink. After the event, we'll need a detailed invoice itemising all costs claimed before we release the funds."),
       Some("When you're listing items, it's fine to cluster them in groups, for example: printed materials including hand-outs, posters and feedback forms." +
@@ -103,7 +103,7 @@ object ApplicationData {
     case 3 => Some(eventObjFormFields)
     case 4 => Some(topicAndSpeakerFields)
     case 5 => Some(eventAudienceFields)
-    case 6 => Some(Seq(CostItemField("costItem")))
+    case 6 => Some(Seq(CostItemField("item")))
     case _ => None
   }
 }

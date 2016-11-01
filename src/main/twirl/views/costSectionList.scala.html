@@ -1,0 +1,10 @@
+@import forms.validation.CostItemValues
+@(
+        items:List[CostItemValues]
+)
+
+<ul>
+@items.map {item =>
+  <li>@item.itemName</li>
+}
+  </ul>
