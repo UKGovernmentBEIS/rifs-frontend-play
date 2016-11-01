@@ -39,10 +39,6 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
   import FieldCheckHelpers._
 
   def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
-    doShowSectionForm(id, sectionNumber)
-  }
-
-  def doShowSectionForm(id: ApplicationId, sectionNumber: Int, errs: FieldErrors = noErrors): Future[Result] = {
     fieldsFor(sectionNumber) match {
       case Some(fields) =>
         applications.getSection(id, sectionNumber).flatMap { section =>
@@ -115,15 +111,11 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
   }
 
   def postSection(id: ApplicationId, sectionNumber: Int) = Action.async(JsonForm.parser) { implicit request =>
-    takeAction(id, sectionNumber, request.body.action, request.body.values)
-  }
-
-  def takeAction(id: ApplicationId, sectionNumber: Int, button: ButtonAction, fieldValues: JsObject): Future[Result] = {
-    button match {
-      case Complete => doComplete(id, sectionNumber, fieldValues)
-      case Save => doSave(id, sectionNumber, fieldValues)
-      case SaveItem => doSaveItem(id, sectionNumber, fieldValues)
-      case Preview => doPreview(id, sectionNumber, fieldValues)
+    request.body.action match {
+      case Complete => doComplete(id, sectionNumber, request.body.values)
+      case Save => doSave(id, sectionNumber, request.body.values)
+      case SaveItem => doSaveItem(id, sectionNumber, request.body.values)
+      case Preview => doPreview(id, sectionNumber, request.body.values)
     }
   }
 
@@ -132,13 +124,17 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
       Redirect(routes.ApplicationController.show(id))
     }
 
-  def doComplete(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
-    val errs = check(fieldValues, checksFor(sectionNumber))
-    if (errs.isEmpty) {
-      applications.completeSection(id, sectionNumber, fieldValues).map { _ =>
-        Redirect(routes.ApplicationController.show(id))
-      }
-    } else redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
+  def doComplete(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] =
+    applications.completeSection(id, sectionNumber, fieldValues).flatMap {
+      case Nil => Future.successful(Redirect(routes.ApplicationController.show(id)))
+      case errs => redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
+    }
+
+  def doSaveItem(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
+    applications.saveItem(id, sectionNumber, fieldValues).flatMap {
+      case Nil => Future.successful(Redirect(routes.ApplicationController.show(id)))
+      case errs => redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
+    }
   }
 
   def doPreview(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
@@ -151,11 +147,4 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
   }
 
 
-  def doSaveItem(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
-    // Save if there are no errors, otherwise redisplay with errors
-    val errs = check(fieldValues, checksFor(sectionNumber))
-    if (errs.isEmpty) {
-      doSave(id, sectionNumber, fieldValues)
-    } else redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
-  }
 }
