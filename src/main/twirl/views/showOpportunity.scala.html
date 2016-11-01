@@ -102,7 +102,7 @@
                         @prevSection.map { s =>
                         <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(s.sectionNumber))"
                            title="Navigate to the previous page."
-                           rel="previous">
+                           rel="previous" id="previous-page">
                             <span class="pagination-part-title">Previous</span>
                             <span class="pagination-part-label">@s.title</span>
                         </a>
@@ -113,7 +113,7 @@
                         @nextSection.map { s =>
                         <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(s.sectionNumber))"
                            title="Navigate to the next page."
-                           rel="next">
+                           rel="next" id="next-page">
                             <span class="pagination-part-title">Next</span>
                             <span class="pagination-label">@s.title</span>
                         </a>
