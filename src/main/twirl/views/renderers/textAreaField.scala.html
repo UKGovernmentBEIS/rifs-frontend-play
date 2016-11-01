@@ -13,8 +13,8 @@
     if(errors.nonEmpty) "error" else ""
 }
 
-@questions.get(field.name).map { q => <p class="question">@q.text</p>
-    <p>@q.longDescription</p>
+@questions.get(field.name).map { q => <p class="question text">@q.text</p>
+    <p class="text">@q.longDescription</p>
     <details>
         <summary role="button"><span class="summary">Help with this section</span></summary>
         <div class="panel panel-border-narrow">@for(line <- q.helpText.getOrElse("").split("\n")) {
