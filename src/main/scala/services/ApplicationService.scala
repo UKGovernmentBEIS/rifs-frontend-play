@@ -6,7 +6,7 @@ import config.Config
 import controllers.FieldCheckHelpers
 import controllers.FieldCheckHelpers.FieldErrors
 import models._
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsDefined, JsNumber, JsObject, Json}
 import play.api.libs.ws.WSClient
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -44,6 +44,14 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
   override def saveItem(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors] = {
     FieldCheckHelpers.check(doc, checksFor(sectionNumber)) match {
       case Nil =>
+        doc \ "itemNumber" match {
+          case JsDefined(JsNumber(itemNumber)) =>
+            val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/item/$itemNumber"
+            put(url, doc).map(_ => List())
+          case _ =>
+            val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/items"
+            post(url, doc).map(_ => List())
+        }
         val url = s"$baseUrl/application/${id.id}/section/$sectionNumber"
         post(url, doc).map(_ => List())
       case errs => Future.successful(errs)
