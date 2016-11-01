@@ -1,0 +1,25 @@
+
+// Show Opportunities - Navigation Elements
+
+aside .page-navigation ol {
+  float: left;
+  list-style-type: none;
+  padding: .25em .25em .25em 0;
+  width: 49%;
+
+  @media screen and (max-width: 820px) {
+    float: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+}
+
+aside nav ol li {
+  margin-bottom: .5em;
+}
+
+.part-number {
+  display: inline-block;
+  width: 1.25em;
+}

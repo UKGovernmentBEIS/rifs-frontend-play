@@ -30,5 +30,9 @@
 
     <label for="@field.name">@field.label</label>
     <textarea id="@field.name" class="form-control" title="@field.name" name="@field.name">@answers.get(field.name)</textarea>
-    <div class="inline right-align hint-text" id="@(field.name)_hint_text">@hints.find(_.path == field.name).map(_.hint)</div>
+    <div class="inline right-align hint-text" id="@(field.name)_hint_text">
+        @for(hint <- hints.find(_.path == field.name)) {
+            <span class="js__hint" data-for="@field.name" data-rule="@hint.matchingJsType" data-ruleconfig="@hint.matchingJsConfig">@hint.hint</span>
+        }
+    </div>
 </div>
