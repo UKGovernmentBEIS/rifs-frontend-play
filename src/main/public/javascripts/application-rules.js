@@ -4,7 +4,7 @@
     if(!document.getElementsByClassName || !document.body.addEventListener) {return;}
 
     var rules = {
-        "WordCount"(value, config) {
+        WordCount: function WordCount(value, config) {
              var trimmed = value.replace(/^\s+|\s+$/gm,"");
              var w = trimmed.split(/\s+/).length;
              var words = function(count) {return count === 1 ? "word" : "words";};
