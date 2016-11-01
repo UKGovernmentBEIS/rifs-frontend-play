@@ -27,6 +27,6 @@
             <input type="text" title="@(field.name).year" id="@(field.name).year" name="@(field.name).year" value='@answers.get(s"${field.name}.year")' class="form-control year" aria-label="@questions.get(field.name).map(_.text) Year" aria-invalid="@invalidTrueFalse">
         </div>
     </div>
-    <div class="hint-text" id="@(field.name)_hint_text">For example 31 3 2017</div>
+    <div class="hint-text" id="@(field.name)_hint_text" aria-label="For example 31 3 2017 for the 31st of March 2017">For example 31 3 2017</div>
 </div>
 

@@ -1,17 +1,17 @@
-@(field: forms.DateWithDaysField, startDate: String, days: Int, endDate: String)
+@(field: forms.DateWithDaysField, startDate: String, days: Int, endDate: String, accessibleStartDate: String, accessibleEndDate:String)
 
 <div class="duration-preview">
     <div>
         <h3 class="heading-medium no-top-margin">Start date</h3>
-        @startDate
-        </div>
+        <span aria-label="@accessibleStartDate">@startDate</span>
+    </div>
     <div>
         <h3 class="heading-medium no-top-margin">Days duration</h3>
         @days
     </div>
     <div>
         <h3 class="heading-medium no-top-margin">End date</h3>
-        @endDate
+        <span aria-label="@accessibleEndDate">@endDate</span>
     </div>
 </div>
 <div style="clear: both"></div>
