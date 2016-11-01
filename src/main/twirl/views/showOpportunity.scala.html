@@ -98,27 +98,31 @@
         <footer>
             <nav class="govuk-previous-and-next-navigation" role="navigation" aria-label="Pagination">
                 <ul class="group">
-                    <li class="previous-page">
                         @prevSection.map { s =>
-                        <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(s.sectionNumber))"
-                           title="Navigate to the previous page."
-                           rel="previous">
-                            <span class="pagination-part-title">Previous</span>
-                            <span class="pagination-part-label">@s.title</span>
-                        </a>
+                            <li class="previous-page">
+                                <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(s.sectionNumber))"
+                                   title="Navigate to the previous page."
+                                   rel="previous">
+                                    <span class="pagination-part-title">Previous</span>
+                                    <span class="pagination-part-label">@s.title</span>
+                                </a>
+                            </li>
+                        }.getOrElse {
+                            <li class="previous-page" aria-hidden="true"></li>
                         }
-                    </li>
 
-                    <li class="next-page">
                         @nextSection.map { s =>
-                        <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(s.sectionNumber))"
-                           title="Navigate to the next page."
-                           rel="next">
-                            <span class="pagination-part-title">Next</span>
-                            <span class="pagination-label">@s.title</span>
-                        </a>
+                            <li class="next-page">
+                                <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(s.sectionNumber))"
+                                   title="Navigate to the next page."
+                                   rel="next">
+                                    <span class="pagination-part-title">Next</span>
+                                    <span class="pagination-label">@s.title</span>
+                                </a>
+                            </li>
+                        }.getOrElse {
+                            <li class="next-page" aria-hidden="true"></li>
                         }
-                    </li>
                 </ul>
             </nav>
         </footer>
