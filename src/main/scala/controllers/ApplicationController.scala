@@ -53,8 +53,6 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
           }.getOrElse(noErrors)
 
           val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
-          Logger.debug(hints.toString)
-
           renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, errs, hints)
         }
 
@@ -63,7 +61,13 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
     }
   }
 
-  def renderSectionForm(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], questions: Map[String, Question], fields: Seq[Field], errs: FieldErrors, hints: FieldHints) = {
+  def renderSectionForm(id: ApplicationId,
+                        sectionNumber: Int,
+                        section: Option[ApplicationSection],
+                        questions: Map[String, Question],
+                        fields: Seq[Field],
+                        errs: FieldErrors,
+                        hints: FieldHints): Future[Result] = {
     val ft = for {
       a <- OptionT(applications.overview(id))
       af <- OptionT(applicationForms.byId(a.applicationFormId))
@@ -74,7 +78,11 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
       case Some((app, appForm, opp)) =>
         val formSection: ApplicationFormSection = appForm.sections.find(_.sectionNumber == sectionNumber).get
         val answers = section.map { s => JsonHelpers.flatten("", s.answers) }.getOrElse(Map[String, String]())
-        Ok(views.html.sectionForm(app, appForm, section, formSection, opp, fields, questions, answers, errs, hints))
+
+        sectionTypeFor(sectionNumber) match {
+          case VanillaSection => Ok(views.html.sectionForm(app, appForm, section, formSection, opp, fields, questions, answers, errs, hints))
+          case CostSection => Ok(views.html.costSectionForm(app, appForm, section, formSection, opp, fields, questions, answers, errs, hints))
+        }
       case None => NotFound
     }
   }
@@ -99,6 +107,16 @@ class ApplicationController @Inject()(applications: ApplicationOps, applicationF
       case Save =>
         applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
           Redirect(routes.ApplicationController.show(id))
+        }
+      case SaveItem =>
+        // Save if there are no errors, otherwise redisplay with errors
+        val errs = check(fieldValues, checksFor(sectionNumber))
+        if (errs.isEmpty) {
+          applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
+            Redirect(routes.ApplicationController.show(id))
+          }
+        } else {
+          Future.successful(Redirect(routes.ApplicationController.showSectionForm(id, sectionNumber)).flashing(("doValidation", "true")))
         }
       case Preview =>
         applications.saveSection(id, sectionNumber, fieldValues).map { _ =>

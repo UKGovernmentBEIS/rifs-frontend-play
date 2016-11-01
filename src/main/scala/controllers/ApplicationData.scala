@@ -7,6 +7,12 @@ import play.api.libs.json._
 
 object ApplicationData {
 
+  sealed trait SectionType
+
+  case object CostSection extends SectionType
+
+  case object VanillaSection extends SectionType
+
   import FieldChecks._
 
   implicit val dvReads = Json.reads[DateValues]
@@ -15,8 +21,12 @@ object ApplicationData {
 
   private val provisionalDateValidator: DateWithDaysValidator = DateWithDaysValidator(allowPast = false, 1, 9)
 
-  def checksFor(sectionNumber: Int): Map[String, FieldCheck] = {
-    sectionNumber match {
+  def sectionTypeFor(sectionNumber: Int): SectionType = sectionNumber match {
+    case 6 => CostSection
+    case _ => VanillaSection
+  }
+
+  def checksFor(sectionNumber: Int): Map[String, FieldCheck] = sectionNumber match {
       case 1 => Map("title" -> mandatoryText(20))
       case 2 => Map("provisionalDate" -> fromValidator(provisionalDateValidator))
       case 3 => Map("eventObjectives" -> mandatoryText(500))
@@ -25,17 +35,14 @@ object ApplicationData {
       case 6 => Map("costItem" -> fromValidator(CostItemValidator))
       case _ => Map()
     }
-  }
 
-  def previewChecksFor(sectionNumber: Int): Map[String, FieldCheck] = {
-    sectionNumber match {
-      case 1 => Map("title" -> mandatoryCheck)
-      case 2 => Map("provisionalDate" -> fromValidator(provisionalDateValidator))
-      case 3 => Map("eventObjectives" -> mandatoryCheck)
-      case 4 => Map("topicAndSpeaker" -> mandatoryCheck)
-      case 5 => Map("eventAudience" -> mandatoryCheck)
-      case _ => Map()
-    }
+  def previewChecksFor(sectionNumber: Int): Map[String, FieldCheck] = sectionNumber match {
+    case 1 => Map("title" -> mandatoryCheck)
+    case 2 => Map("provisionalDate" -> fromValidator(provisionalDateValidator))
+    case 3 => Map("eventObjectives" -> mandatoryCheck)
+    case 4 => Map("topicAndSpeaker" -> mandatoryCheck)
+    case 5 => Map("eventAudience" -> mandatoryCheck)
+    case _ => Map()
   }
 
   val eventObjHelp = "There are no fixed rules about content; however the most successful events have involved senior academics working with " +
@@ -76,31 +83,27 @@ object ApplicationData {
 
     ))
 
-  def questionsFor(sectionNumber: Int): Map[String, Question] = {
-    sectionNumber match {
-      case 1 => titleFormQuestions
-      case 2 => dateFormQuestions
-      case 3 => eventObjFormQuestions
-      case 4 => topicAndSpeakerQuestions
-      case 5 => eventAudienceQuestions
-      case 6 => costItemFieldQuestions
-      case _ => Map()
-    }
+  def questionsFor(sectionNumber: Int): Map[String, Question] = sectionNumber match {
+    case 1 => titleFormQuestions
+    case 2 => dateFormQuestions
+    case 3 => eventObjFormQuestions
+    case 4 => topicAndSpeakerQuestions
+    case 5 => eventAudienceQuestions
+    case 6 => costItemFieldQuestions
+    case _ => Map()
   }
 
   val titleFormFields: Seq[Field] = Seq(TextField(None, "title", isNumeric = false))
   val dateFormFields: Seq[Field] = Seq(DateWithDaysField("provisionalDate", provisionalDateValidator))
 
 
-  def fieldsFor(sectionNum: Int): Option[Seq[Field]] = {
-    sectionNum match {
-      case 1 => Some(titleFormFields)
-      case 2 => Some(dateFormFields)
-      case 3 => Some(eventObjFormFields)
-      case 4 => Some(topicAndSpeakerFields)
-      case 5 => Some(eventAudienceFields)
-      case 6 => Some(Seq(CostItemField("costItem")))
-      case _ => None
-    }
+  def fieldsFor(sectionNum: Int): Option[Seq[Field]] = sectionNum match {
+    case 1 => Some(titleFormFields)
+    case 2 => Some(dateFormFields)
+    case 3 => Some(eventObjFormFields)
+    case 4 => Some(topicAndSpeakerFields)
+    case 5 => Some(eventAudienceFields)
+    case 6 => Some(Seq(CostItemField("costItem")))
+    case _ => None
   }
 }
