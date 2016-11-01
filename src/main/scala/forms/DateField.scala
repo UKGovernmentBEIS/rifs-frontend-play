@@ -31,3 +31,19 @@ case class DateField(name: String, validator: DateFieldValidator) extends Field 
     }.fold(identity, identity)
   }
 }
+
+case class AccessibleDateTimeFormat() {
+  val inner = DateTimeFormat.forPattern("MMMM yyyy");
+
+  def print(date: LocalDate): String = {
+    val x = (date.getDayOfMonth) match {
+      case n if Seq(11, 12, 13) contains n => n+"th"
+      case n if n%10 == 1 => n+"st"
+      case n if n%10 == 2 => n+"nd"
+      case n if n%10 == 3 => n+"rd"
+      case n => n+"th"
+    }
+    s"$x of ${inner.print(date)}"
+  }
+}
+
