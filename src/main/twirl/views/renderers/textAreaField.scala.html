@@ -9,9 +9,8 @@
     errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}."))
 }
 
-@errorClass = @{
-    if(errors.nonEmpty) "error" else ""
-}
+@errorClass = @{if(errors.nonEmpty) "error" else ""}
+@invalidTrueFalse = @{if(errors.nonEmpty) "true" else "false"}
 
 @questions.get(field.name).map { q => <p class="question">@q.text</p>
     <p>@q.longDescription</p>
@@ -25,11 +24,11 @@
 
 <div class='form-group @errorClass'>
     @errors.map { e =>
-        <span class="error-message">@e.err</span>
+        <span class="error-message" role="alert">@e.err</span>
     }
 
     <label for="@field.name">@field.label</label>
-    <textarea id="@field.name" class="form-control" title="@field.name" name="@field.name">@answers.get(field.name)</textarea>
+    <textarea id="@field.name" class="form-control" title="@field.name" name="@field.name" aria-label="@questions.get(field.name).map(_.text) @field.label" aria-invalid="@invalidTrueFalse">@answers.get(field.name)</textarea>
     <div class="inline right-align hint-text" id="@(field.name)_hint_text">
         @for(hint <- hints.find(_.path == field.name)) {
             <span class="js__hint" data-for="@field.name" data-rule="@hint.matchingJsType" data-ruleconfig="@hint.matchingJsConfig">@hint.hint</span>

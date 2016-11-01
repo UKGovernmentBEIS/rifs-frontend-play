@@ -5,25 +5,26 @@
 }
 
 @errorClass = @{if(errors.nonEmpty) "error" else ""}
+@invalidTrueFalse = @{if(errors.nonEmpty) "true" else "false"}
 
 <div class='form-group @errorClass'>
     @questions.get(field.name).map { q => <p class="question">@q.text</p> }
     @errors.map { e =>
-        <span class="error-message">@e.err</span>
+        <span class="error-message" role="alert">@e.err</span>
     }
 
     <div class='date-selector'>
         <div>
             <label for="@(field.name).day">Day</label>
-            <input type="text" title="@(field.name).day" id="@(field.name).day" name="@(field.name).day" value='@answers.get(s"${field.name}.day")' class="form-control">
+            <input type="text" title="@(field.name).day" id="@(field.name).day" name="@(field.name).day" value='@answers.get(s"${field.name}.day")' class="form-control" aria-label="@questions.get(field.name).map(_.text) Day" aria-invalid="@invalidTrueFalse">
         </div>
         <div>
             <label for="@(field.name).month">Month</label>
-            <input type="text" title="@(field.name).month" id="@(field.name).month" name="@(field.name).month" value='@answers.get(s"${field.name}.month")' class="form-control">
+            <input type="text" title="@(field.name).month" id="@(field.name).month" name="@(field.name).month" value='@answers.get(s"${field.name}.month")' class="form-control" aria-label="@questions.get(field.name).map(_.text) Month" aria-invalid="@invalidTrueFalse">
         </div>
         <div>
             <label for="@(field.name).year">Year</label>
-            <input type="text" title="@(field.name).year" id="@(field.name).year" name="@(field.name).year" value='@answers.get(s"${field.name}.year")' class="form-control year">
+            <input type="text" title="@(field.name).year" id="@(field.name).year" name="@(field.name).year" value='@answers.get(s"${field.name}.year")' class="form-control year" aria-label="@questions.get(field.name).map(_.text) Year" aria-invalid="@invalidTrueFalse">
         </div>
     </div>
     <div class="hint-text" id="@(field.name)_hint_text">For example 31 3 2017</div>
