@@ -25,7 +25,7 @@ case class WordCountValidator(maxWords: Int) extends FieldValidator[String, Stri
       case _ => wordsRemaining(maxWords - wordCount)
     }
 
-    Some(FieldHint(path, text))
+    Some(FieldHint(path, text, Some("WordCount"), Some(s"""{\"maxWords\": $maxWords}""")))
   }
 }
 
