@@ -39,7 +39,7 @@ object ApplicationData {
   val eventObjHelp = "There are no fixed rules about content; however the most successful events have involved senior academics working with " +
     "colleagues to develop the research programme and share their strategic vision.\nFeedback from previous events has shown that it is important to keep the demands on time modest, with most seminars scheduled over a half day."
 
-  val eventObjDescriptionVal = "Explain what outcomes you hope the event will achieve, including who is likely to benefit and the actions you'll take to maximise the benefits"
+  val eventObjDescriptionVal = "Explain what outcomes you hope the event will achieve, including who is likely to benefit and the actions you'll take to maximise the benefits."
   val eventObjFormQuestions = Map("eventObjectives" -> Question("What are the objectives of the event?", Some(eventObjDescriptionVal), Some(eventObjHelp)))
   val eventObjFormFields: Seq[Field] = Seq(TextAreaField(None, "eventObjectives"))
 
