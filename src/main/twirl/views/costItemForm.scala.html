@@ -52,7 +52,7 @@
                     @fields.map(_.renderFormInput(questions, answers, errs, hints))
                 </fieldset>
                 <div class="rifs-form-buttons">
-                    <input type="submit" name="_save_item_button" class="button button--start" value="Save item">
+                    <input type="submit" name="@SaveItem.name" class="button button--start" value="Save item">
                     <a href="@controllers.routes.ApplicationController.show(appOverview.id)">Cancel</a>
                 </div>
             </form>
