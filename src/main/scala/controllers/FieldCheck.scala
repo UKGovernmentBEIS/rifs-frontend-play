@@ -1,6 +1,7 @@
 package controllers
 
 import forms.validation._
+import play.api.Logger
 import play.api.libs.json._
 
 trait FieldCheck {
@@ -25,12 +26,20 @@ object FieldChecks {
     override def hint(path: String, value: JsValue): Option[FieldHint] = validator.hintText(path, value.validate[String].asOpt)
   }
 
+  val currencyValidator = new FieldCheck {
+    override def apply(path: String, value: JsValue): List[FieldError] = CurrencyValidator.validate(path, decodeString(value)).fold(_.toList, _ => List())
+
+    override def hint(path: String, value: JsValue): Option[FieldHint] = CurrencyValidator.hintText(path, value.validate[String].asOpt)
+  }
+
   def fromValidator[T: Reads](v: FieldValidator[T, _]): FieldCheck = new FieldCheck {
     override def apply(path: String, jv: JsValue) = jv.validate[T].map { x =>
       v.validate(path, x).fold(_.toList, _ => List())
     } match {
       case JsSuccess(msgs, _) => msgs
-      case JsError(errs) => List(FieldError(path, "Could not decode form values!"))
+      case JsError(errs) =>
+        Logger.debug(errs.toString)
+        List(FieldError(path, "Could not decode form values!"))
     }
 
     override def hint(path: String, jv: JsValue): Option[FieldHint] = v.hintText(path, jv.validate[String].asOpt)

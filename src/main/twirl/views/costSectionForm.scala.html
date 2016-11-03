@@ -50,18 +50,10 @@
                 }
                 <fieldset>
                     @fields.map(_.renderFormInput(questions, answers, errs, hints))
-
-                    @section.flatMap(_.completedAtText).getOrElse(
-                        <label for="complete-checkbox" class="form-checkbox" style="width: 16em">
-                            <input id="complete-checkbox" type="checkbox" name="_complete_checkbox" />
-                            Mark question as complete
-                        </label>
-                    )
-
                 </fieldset>
                 <div class="rifs-form-buttons">
-                    <input type="submit" name="@Save.name" class="button button--start" value="Save and continue">
-                    <input type="submit" name="@Preview.name" class="button--link-style" value="Preview this page"/>
+                    <input type="submit" name="@SaveItem.name" class="button button--start" value="Save item">
+                    <a href="@controllers.routes.ApplicationController.show(appOverview.id)">Cancel</a>
                 </div>
             </form>
         </div>

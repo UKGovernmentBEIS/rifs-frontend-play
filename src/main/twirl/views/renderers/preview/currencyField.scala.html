@@ -1,0 +1,6 @@
+@(field: forms.CurrencyField, answers: Map[String, String])
+
+<div>
+    <h3>@field.label</h3>
+    <p class="currency-preview">&pound;@answers.get(field.name)</p>
+</div>
