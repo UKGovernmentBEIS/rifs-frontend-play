@@ -106,6 +106,10 @@ $medium-grey: #ccc;
   margin-top: 0;
 }
 
+.right-align {
+  text-align: right;
+}
+
 .contain-floats {
   @extend %contain-floats;
 }
@@ -187,8 +191,6 @@ ul.spacious li {
 table.spacious th {
   border-bottom: solid 2px $black;
 }
-
-
 
 // Preview
 .text-preview {
