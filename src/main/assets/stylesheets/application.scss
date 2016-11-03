@@ -45,6 +45,7 @@ $medium-grey: #ccc;
 
 // Rifs imports
 @import 'rifs/pagination';
+@import 'rifs/forms';
 
 
 // Global template elements
@@ -173,64 +174,7 @@ table.spacious th {
   border-bottom: solid 2px $black;
 }
 
-// Form elements
-.form-group {
-  margin-bottom: 2.5em;
-}
 
-label {
-  display: block;
-  font-weight: bold;
-}
-
-details {
-  margin-bottom: 1.5em;
-}
-
-input.text-field,
-textarea.form-control {
-  display: block;
-  padding: 6px;
-  width: 100%;
-}
-
-textarea.form-control {
-  height: 10em;
-}
-
-input.text-field.number {
-  text-align: right;
-  width: 3em;
-}
-
-.hint-text.right-align {
-    text-align:right;
-}
-
-.date-selector {
-  @extend %contain-floats;
-  margin-bottom: .5em;
-
-  input {
-    display: block;
-    padding: 6px;
-    text-align: right;
-    width: 3em;
-
-    .year {
-      width: 4em;
-    }
-  }
-}
-
-.date-selector>div {
-  float: left;
-  margin-right: 1.5em;
-}
-
-.question {
-  margin: 0 0 1.5em;
-}
 
 // Preview
 .text-preview {
@@ -249,7 +193,6 @@ input.text-field.number {
 }
 
 // Buttons
-
 input.button--link-style {
   @extend .font-small;
   background: none;
@@ -287,4 +230,9 @@ hr {
 .error .form-control {
   // support for nested controls
   border: 4px solid $error-colour;
+}
+
+// Typography
+.preview-text {
+  white-space: pre-wrap;
 }
