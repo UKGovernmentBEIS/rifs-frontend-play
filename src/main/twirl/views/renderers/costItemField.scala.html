@@ -35,10 +35,6 @@
             <label for="@f.name">@f.label</label>
             &pound; <input type="text" id="@f.name" class="form-control text-field currency" title="@f.name" name="@f.name" value='@answers.get(f.name)'>
         }
-        @defining(field.percentageField) { f =>
-            <label for="@f.name">@f.label</label>
-            <input type="text" id="@f.name" class="form-control text-field number" title="@f.name" name="@f.name" value='@answers.get(f.name)'>
-        }
     </div>
     @defining(field.justificationField) { f =>
         <label for="@f.name">@f.label</label>

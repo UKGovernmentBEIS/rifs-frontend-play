@@ -1,10 +1,71 @@
-@import forms.validation.CostItemValues
 @(
-        items:List[CostItemValues]
+        appOverview: ApplicationOverview,
+        appForm: ApplicationForm,
+        formSection: ApplicationFormSection,
+        opportunity: Opportunity,
+        items: List[forms.validation.CostItemValues],
+        questions: Map[String, Question]
 )
 
-<ul>
-@items.map {item =>
-  <li>@item.itemName</li>
+@import scala.util.Try
+    @import partials._
+
+@formatId(id: Long) = @{
+    f"RIFS$id%05d"
 }
-  </ul>
+
+@main(formSection.title) {
+    <div id="global-header-status" class="contain-floats">
+        <div class="float-right">
+            <span>Experienced Eric</span>
+        </div>
+    </div>
+
+    <div class="grid-row">
+        <div class="column-two-thirds">
+            <div class="breadcrumbs">
+                <ol>
+                    <li><a href="@controllers.routes.ApplicationController.show(appOverview.id)">&lt; Return to application overview</a></li>
+                </ol>
+            </div>
+            <h1 class="heading-xlarge">
+                <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
+                @formSection.title
+            </h1>
+            @questions.get("item").map { q => <p class="question text">@q.text</p>
+                <p class="text">@q.longDescription</p>
+                <details>
+                    <summary role="button"><span class="summary">Help with this section</span></summary>
+                    <div class="panel panel-border-narrow">@for(line <- q.helpText.getOrElse("").split("\n")) {
+                        <p>@line</p>
+                    }</div>
+                </details>
+            }
+            <table>
+                <thead>
+                    <th>Item</th>
+                    <th>Cost &pound;</th>
+                </thead>
+                <tbody>
+                @items.map { item =>
+                    <tr>
+                        <td>@item.itemName</td>
+                        <td>@item.cost</td>
+                    </tr>
+                }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>Total requested &pound;</td>
+                        <td>@items.map(i => Try(i.cost.map(_.toDouble).getOrElse(0.0)).toOption.getOrElse(0.0)).sum</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+
+    <div class="column-third">
+    @sidebar(appOverview, appForm)
+    </div>
+}
