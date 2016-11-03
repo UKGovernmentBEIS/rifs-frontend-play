@@ -24,7 +24,7 @@ textarea.form-control {
 }
 
 input.text-field.number {
-  text-align: right;
+  text-align: center;
   width: 3em;
 }
 
@@ -44,13 +44,13 @@ input.text-field.currency {
   input {
     display: block;
     padding: 6px;
-    text-align: right;
+    text-align: center;
     width: 3em;
-
-    .year {
-      width: 4em;
-    }
   }
+}
+
+.form-control.year {
+  width: 4em;
 }
 
 .date-selector>div {
