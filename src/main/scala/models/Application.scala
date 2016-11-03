@@ -16,6 +16,9 @@ case class ApplicationSection(id: ApplicationSectionId, applicationId: Applicati
   def completedAtText: Option[String] = completedAt.map(d => s"Completed ${dtf.print(d)}")
 }
 
-case class ApplicationSectionOverview(sectionNumber: Int, status: String)
+case class ApplicationSectionOverview(sectionNumber: Int, completedAt: Option[LocalDateTime] )
+{
+  val status = completedAt.map(_ => "Completed").getOrElse("In progress")
+}
 
 case class ApplicationOverview(id: ApplicationId, applicationFormId: ApplicationFormId, sections: Seq[ApplicationSectionOverview])
