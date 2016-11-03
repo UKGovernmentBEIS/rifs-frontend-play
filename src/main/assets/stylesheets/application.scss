@@ -128,11 +128,13 @@ $medium-grey: #ccc;
   line-height: 2.2;
 }
 
-// Notices, Panels etc.
-aside.notice div dl dd {
+
+// Definition Lists
+.definition-list dl dd {
   margin: 0;
   padding: 0;
 }
+
 
 // Typography
 .expanded-list {
@@ -201,12 +203,14 @@ table.spacious th {
 
 .duration-preview {
   @extend %contain-floats;
+
+  // Remove any left padding on the container divs so the floated
+  // inner divs line up on mobile.
+  div {
+    padding-left: 0;
+  }
 }
 
-.duration-preview>div {
-  float: left;
-  margin-right: 4em;
-}
 
 // Buttons
 input.button--link-style {
