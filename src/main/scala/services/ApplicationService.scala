@@ -62,7 +62,7 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
   }
 
   override def overview(id: ApplicationId): Future[Option[ApplicationOverview]] = {
-    val url = s"$baseUrl/application/${id.id}/overview"
+    val url = s"$baseUrl/application/${id.id}"
     getOpt[ApplicationOverview](url)
   }
 }
