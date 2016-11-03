@@ -2,5 +2,5 @@
 
 <div>
     <h3>@field.label</h3>
-    <p class="text preview-text">@answers.get(field.name)</p>
+    @answers.getOrElse(field.name, "").split("\n").filterNot(_ == "").map { p => <p class="text preview-text">@p</p> }
 </div>

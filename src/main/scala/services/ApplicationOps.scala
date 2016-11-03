@@ -1,6 +1,7 @@
 package services
 
 import com.google.inject.ImplementedBy
+import controllers.FieldCheckHelpers.FieldErrors
 import models._
 import play.api.libs.json.JsObject
 
@@ -17,7 +18,9 @@ trait ApplicationOps {
 
   def saveSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[Unit]
 
-  def completeSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[Unit]
+  def completeSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors]
+
+  def saveItem(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors]
 
   def getSection(id: ApplicationId, sectionNumber: Int): Future[Option[ApplicationSection]]
 }

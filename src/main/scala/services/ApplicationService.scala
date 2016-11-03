@@ -3,8 +3,9 @@ package services
 import com.google.inject.Inject
 import com.wellfactored.playbindings.ValueClassFormats
 import config.Config
+import controllers.FieldCheckHelpers
+import controllers.FieldCheckHelpers.FieldErrors
 import models._
-import org.joda.time.LocalDateTime
 import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSClient
 
@@ -29,10 +30,26 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     post(url, doc)
   }
 
-  override def completeSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[Unit] = {
-    val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/complete"
-    post(url, doc)
+  import controllers.ApplicationData._
+
+  override def completeSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors] = {
+    FieldCheckHelpers.check(doc, checksFor(sectionNumber)) match {
+      case Nil =>
+        val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/complete"
+        post(url, doc).map(_ => List())
+      case errs => Future.successful(errs)
+    }
   }
+
+  override def saveItem(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors] = {
+    FieldCheckHelpers.check(doc, checksFor(sectionNumber)) match {
+      case Nil =>
+        val url = s"$baseUrl/application/${id.id}/section/$sectionNumber"
+        post(url, doc).map(_ => List())
+      case errs => Future.successful(errs)
+    }
+  }
+
 
   override def getSection(id: ApplicationId, sectionNumber: Int): Future[Option[ApplicationSection]] = {
     val url = s"$baseUrl/application/${id.id}/section/$sectionNumber"
@@ -48,5 +65,4 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     val url = s"$baseUrl/application/${id.id}/overview"
     getOpt[ApplicationOverview](url)
   }
-
 }

@@ -42,7 +42,7 @@ f"RIFS$id%05d"
                     @app.sections.sortBy(_.sectionNumber).map { s =>
                     <tr>
                         <td>
-                            @s.sectionNumber. <a href="@controllers.routes.ApplicationController.showSectionForm(overview.id, s.sectionNumber)"> @s.title</a>
+                            @s.sectionNumber. <a id="section-@s.sectionNumber-link" href="@controllers.routes.ApplicationController.showSectionForm(overview.id, s.sectionNumber)"> @s.title</a>
                         </td>
                         <td class="status-column">
                             @statusText(overview, s.sectionNumber)

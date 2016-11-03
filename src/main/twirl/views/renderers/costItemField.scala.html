@@ -1,0 +1,50 @@
+@(field: forms.CostItemField,
+        questions: Map[String, Question],
+        answers: Map[String, String],
+        errs: Seq[forms.validation.FieldError],
+        hints: Seq[forms.validation.FieldHint])
+
+@errors = @{
+    errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}."))
+}
+
+@errorClass = @{
+    if(errors.nonEmpty) "error" else ""
+}
+
+@questions.get(field.name).map { q => <p class="question">@q.text</p>
+@q.longDescription.map { desc => @desc.split("\n").map { text => <p>@text</p> } }
+    <details>
+        <summary role="button"><span class="summary">Help with this section</span></summary>
+        <div class="panel panel-border-narrow">@for(line <- q.helpText.getOrElse("").split("\n")) {
+            <p>@line</p>
+        }</div>
+    </details>
+}
+
+<div class='form-group @errorClass'>
+    @errors.map { e =>
+        <span class="error-message">@e.err</span>
+    }
+    <div class="inline">
+        @defining(field.itemNameField) { f =>
+            <label for="@f.name">@f.label</label>
+            <input type="text" id="@f.name" class="form-control text-field" title="@f.name" name="@f.name" value='@answers.get(f.name)'>
+        }
+        @defining(field.costField) { f =>
+            <label for="@f.name">@f.label</label>
+            &pound; <input type="text" id="@f.name" class="form-control text-field currency" title="@f.name" name="@f.name" value='@answers.get(f.name)'>
+        }
+        @defining(field.percentageField) { f =>
+            <label for="@f.name">@f.label</label>
+            <input type="text" id="@f.name" class="form-control text-field number" title="@f.name" name="@f.name" value='@answers.get(f.name)'>
+        }
+    </div>
+    @defining(field.justificationField) { f =>
+        <label for="@f.name">@f.label</label>
+        <textarea id="@f.name" class="form-control" title="@f.name" name="@f.name">@answers.get(f.name)</textarea>
+        <div class="inline right-align hint-text" id="@(f.name)_hint_text">@hints.find(_.path == f.name).map(_.hint)</div>
+    }
+</div>
+
+
