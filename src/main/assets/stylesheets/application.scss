@@ -37,7 +37,6 @@ $medium-grey: #ccc;
 @import 'elements/panels';
 @import 'elements/details';
 @import 'elements/shame';
-@import 'elements/panels';
 
 // Taken from alphagov/static
 // https://github.com/alphagov/static/blob/master/app/assets/stylesheets/govuk-component/_previous-and-next-navigation.scss
@@ -83,6 +82,17 @@ $medium-grey: #ccc;
   @include phase-tag(alpha);
 }
 
+// Panels
+// Used to show the left edge of "toggled" content
+.rifs-border-narrow {
+  border-color: $black;
+  border-left-width: 5px;
+}
+
+.rifs-panel {
+  background-color: $medium-grey;
+}
+
 // General
 .float-left {
   float: left;
@@ -94,6 +104,10 @@ $medium-grey: #ccc;
 
 .no-top-margin {
   margin-top: 0;
+}
+
+.right-align {
+  text-align: right;
 }
 
 .contain-floats {
@@ -149,6 +163,10 @@ aside.notice div dl dd {
   font-weight: bold;
 }
 
+.font-normal {
+  font-weight: normal;
+}
+
 .greentick {
   color: rgb(1, 130, 67);
   font-size: 1.5em;
@@ -173,8 +191,6 @@ ul.spacious li {
 table.spacious th {
   border-bottom: solid 2px $black;
 }
-
-
 
 // Preview
 .text-preview {

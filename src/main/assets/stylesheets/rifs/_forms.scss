@@ -28,8 +28,13 @@ input.text-field.number {
   width: 3em;
 }
 
-.hint-text.right-align {
+input.text-field.currency {
   text-align: right;
+  width: 6em;
+}
+
+.hint-text {
+  margin-top: .5em;
 }
 
 .date-selector {
