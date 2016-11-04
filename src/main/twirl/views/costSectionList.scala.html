@@ -8,8 +8,9 @@
         questions: Map[String, Question]
 )
 
-@import scala.util.Try
-@import partials._
+    @import partials._
+
+    @import scala.util.Try
 
 @formatId(id: Long) = @{
     f"RIFS$id%05d"
@@ -53,7 +54,8 @@
                     <tr>
                         <td><a href="">@item.itemName</a></td>
                         <td>@item.cost</td>
-                        <td><a href="@controllers.routes.CostController.deleteItem(appOverview.id, formSection.sectionNumber, item.itemNumber.getOrElse(-1))">Delete</a></td>
+                        <td><a href="@controllers.routes.CostController.deleteItem(appOverview.id, formSection.sectionNumber, item.itemNumber.getOrElse(-1))">
+                            Delete</a></td>
                     </tr>
                 }
                 </tbody>
@@ -65,19 +67,21 @@
                 </tfoot>
             </table>
             <a href="@controllers.routes.CostController.addItem(appOverview.id, formSection.sectionNumber)">Add item</a>
-            <fieldset>
+            <form method="POST" action="@controllers.routes.CostController.post(appOverview.id, formSection.sectionNumber)">
+                <fieldset>
                 @section.flatMap(_.completedAtText).getOrElse(
                         <label for="complete-checkbox" class="form-checkbox font-normal" style="width: 16em">
-                            <input id="complete-checkbox" type="checkbox" name="_complete_checkbox" />
+                            <input id="complete-checkbox" type="checkbox" name="_complete_checkbox"/>
                         Mark question as complete
                         </label>
                 )
 
-            </fieldset>
-            <div class="rifs-form-buttons">
-                <input type="submit" name="@Save.name" class="button button--start" value="Save and continue">
-                <input type="submit" name="@Preview.name" class="button--link-style" value="Preview this page"/>
-            </div>
+                </fieldset>
+                <div class="rifs-form-buttons">
+                    <input type="submit" name="@Save.name" class="button button--start" value="Save and continue">
+                    <input type="submit" name="@Preview.name" class="button--link-style" value="Preview this page"/>
+                </div>
+            </form>
         </div>
     </div>
 
