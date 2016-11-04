@@ -1,7 +1,7 @@
 package forms.validation
 
 import cats.data.ValidatedNel
-
+import cats.implicits._
 case class CostItemValues(itemName: Option[String], cost: Option[String], justification: Option[String], itemNumber: Option[Int])
 
 case class CostItem(itemName: String, cost: BigDecimal, justification: String, itemNumber: Option[Int] = None)
@@ -16,10 +16,15 @@ case object CostItemValidator extends FieldValidator[CostItemValues, CostItem] {
     val costV = costValidator.validate(s"$path.cost", a.cost)
     val justV = justificationValidator.validate(s"$path.justification", a.justification)
 
-    // IDEA doesn't think this import is used - take care not to optimise it away! I've duplicated
-    // it in a comment so it's easy to restore if you lose it by mistake.
-    //import cats.syntax.cartesian._
-    import cats.syntax.cartesian._
     (itemV |@| costV |@| justV).map(CostItem.apply(_, _, _, None))
+  }
+}
+
+case class CostSectionValidator(maxValue:BigDecimal) extends FieldValidator[List[CostItemValues], List[CostItem]] {
+  override def validate(path: String, itemValues: List[CostItemValues]): ValidatedNel[FieldError, List[CostItem]] = {
+    itemValues.map(CostItemValidator.validate(path, _)).sequenceU.andThen { items:List[CostItem] =>
+      if (items.map(_.cost).sum > maxValue) FieldError(path, s"Total cost exceeds the maximum of $maxValue").invalidNel
+      else items.validNel
+    }
   }
 }

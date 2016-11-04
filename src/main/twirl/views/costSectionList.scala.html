@@ -5,7 +5,8 @@
         formSection: ApplicationFormSection,
         opportunity: Opportunity,
         items: List[forms.validation.CostItemValues],
-        questions: Map[String, Question]
+        questions: Map[String, Question],
+        errs: List[forms.validation.FieldError]
 )
 
     @import partials._
@@ -34,6 +35,14 @@
                 <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
                 @formSection.title
             </h1>
+            @if(errs.nonEmpty) {
+                <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
+                    <h1 class="heading-medium error-summary-heading" id="error-summary-heading">
+                        The information you entered is not valid
+                    </h1>
+                    <p>Please correct the problems indicated below.</p>
+                </div>
+            }
             @questions.get("item").map { q => <p class="question text">@q.text</p>
                 <p class="text">@q.longDescription</p>
                 <details>
@@ -43,11 +52,16 @@
                     }</div>
                 </details>
             }
+            @errs.map { e =>
+                <span class="error-message">@e.err</span>
+            }
             <table>
                 <thead>
-                    <th>Item</th>
-                    <th>Cost &pound;</th>
-                    <th></th>
+                    <tr>
+                        <th>Item</th>
+                        <th>Cost &pound;</th>
+                        <th></th>
+                    </tr>
                 </thead>
                 <tbody>
                 @items.map { item =>

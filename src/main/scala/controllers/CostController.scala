@@ -3,10 +3,9 @@ package controllers
 import javax.inject.Inject
 
 import cats.data.OptionT
-import cats.data.Validated.{Invalid, Valid}
 import cats.instances.future._
 import controllers.FieldCheckHelpers.FieldErrors
-import forms.validation.{CostItemValidator, CostItemValues, FieldError}
+import forms.validation.{CostItemValues, FieldError}
 import models.ApplicationId
 import play.api.Logger
 import play.api.libs.json.{JsObject, Json}
@@ -23,6 +22,7 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
   }
 
   implicit val costItemValuesR = Json.reads[CostItemValues]
+
   def post(applicationId: ApplicationId, sectionNumber: Int) = Action.async(JsonForm.parser) { implicit request =>
     Logger.debug(s"Action is ${request.body.action}")
     request.body.action match {
@@ -34,24 +34,15 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
       case Complete =>
         applications.getSection(applicationId, sectionNumber).flatMap {
           case Some(section) =>
-            (section.answers \ "items").validate[List[CostItemValues]].asOpt.map { items =>
-              Logger.debug(s"items are $items")
-              val validatedItems = items.map(CostItemValidator.validate("items", _))
-              val valids = validatedItems.collect { case Valid(i) => i }
-              // ignore for now - should be none anyway if the cost item form did its job
-              val errs = validatedItems.collect { case Invalid(es) => es }
-
-              if (valids.map(_.cost).sum <= 2000)
-                applications.completeSection(applicationId, sectionNumber, section.answers).map {
-                  _ => Redirect(controllers.routes.ApplicationController.show(applicationId))
-                }
-              else
+            applications.completeSection(applicationId, sectionNumber, section.answers).flatMap {
+              case Nil => Future.successful(Redirect(controllers.routes.ApplicationController.show(applicationId)))
+              case errs =>
                 actionHandler.redisplaySectionForm(
                   applicationId,
                   sectionNumber,
                   JsonHelpers.flatten("", section.answers),
-                  List(FieldError("items", "Total requested exceeds limit. Please check costs of items")))
-            }.getOrElse(Future.successful(Redirect(controllers.routes.ApplicationController.show(applicationId))))
+                  errs)
+            }
 
 
           case None => Future.successful(NotFound)

@@ -32,9 +32,14 @@ object ApplicationData {
       case 3 => Map("eventObjectives" -> mandatoryText(500))
       case 4 => Map("topicAndSpeaker" -> mandatoryText(500))
       case 5 => Map("eventAudience" -> mandatoryText(500))
-      case 6 => Map("item" -> fromValidator(CostItemValidator))
+      case 6 => Map("items" -> fromValidator(CostSectionValidator(2000)))
       case _ => Map()
     }
+
+  def itemChecksFor(sectionNumber:Int): Map[String, FieldCheck] = sectionNumber match {
+    case 6 => Map("item" -> fromValidator(CostItemValidator))
+    case _ => Map()
+  }
 
   def previewChecksFor(sectionNumber: Int): Map[String, FieldCheck] = sectionNumber match {
     case 1 => Map("title" -> mandatoryCheck)

@@ -92,7 +92,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
             Logger.debug(is.toString)
             val costItems = is.flatMap(_.validate[CostItemValues].asOpt)
             Logger.debug(costItems.toString())
-            if (costItems.nonEmpty) Ok(views.html.costSectionList(app, appForm, section, formSection, opp, costItems.toList, questionsFor(sectionNumber)))
+            if (costItems.nonEmpty) Ok(views.html.costSectionList(app, appForm, section, formSection, opp, costItems.toList, questionsFor(sectionNumber), errs))
             else Ok(views.html.costItemForm(app, appForm, formSection, opp, fields, questions, answers, errs, hints, cancelLink, None))
           case _ => Ok(views.html.costItemForm(app, appForm, formSection, opp, fields, questions, answers, errs, hints, cancelLink, None))
         }
