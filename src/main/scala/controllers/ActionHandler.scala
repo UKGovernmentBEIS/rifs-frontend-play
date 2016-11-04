@@ -5,10 +5,10 @@ import javax.inject.Inject
 import cats.data.OptionT
 import cats.instances.future._
 import forms.Field
-import forms.validation.{CostItem, CostItemValues}
+import forms.validation.CostItemValues
 import models._
 import play.api.Logger
-import play.api.libs.json.{JsArray, JsDefined, JsObject, Json}
+import play.api.libs.json.{JsArray, JsDefined, JsObject}
 import play.api.mvc.Result
 import play.api.mvc.Results._
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
@@ -92,8 +92,8 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
             Logger.debug(is.toString)
             val costItems = is.flatMap(_.validate[CostItemValues].asOpt)
             Logger.debug(costItems.toString())
-            if (costItems.nonEmpty) Ok(views.html.costSectionList(app, appForm, formSection, opp, costItems.toList, questionsFor(sectionNumber)))
-            else {Ok(views.html.costItemForm(app, appForm, formSection, opp, fields, questions, answers, errs, hints, cancelLink, None))}
+            if (costItems.nonEmpty) Ok(views.html.costSectionList(app, appForm, section, formSection, opp, costItems.toList, questionsFor(sectionNumber)))
+            else Ok(views.html.costItemForm(app, appForm, formSection, opp, fields, questions, answers, errs, hints, cancelLink, None))
           case _ => Ok(views.html.costItemForm(app, appForm, formSection, opp, fields, questions, answers, errs, hints, cancelLink, None))
         }
     }
