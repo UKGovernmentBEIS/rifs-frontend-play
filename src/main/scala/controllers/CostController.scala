@@ -38,9 +38,10 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
     import ApplicationData._
     val questions = questionsFor(sectionNumber)
     val fields = fieldsFor(sectionNumber).getOrElse(Seq())
+    val cancelLink = controllers.routes.ApplicationController.showSectionForm(applicationId, sectionNumber)
 
     details2.value.map {
-      case Some(((overview, form, opp), fs)) => Ok(views.html.costItemForm(overview, form, fs, opp, fields, questions, answers, errs, List(), None))
+      case Some(((overview, form, opp), fs)) => Ok(views.html.costItemForm(overview, form, fs, opp, fields, questions, answers, errs, List(), cancelLink, None))
       case None => NotFound
     }
   }

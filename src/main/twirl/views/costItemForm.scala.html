@@ -8,6 +8,7 @@
         answers: Map[String, String],
         errs: List[forms.validation.FieldError],
         hints: List[forms.validation.FieldHint],
+        cancelLink: Call,
         itemNumber: Option[Int]
 )
 @import partials._
@@ -55,7 +56,7 @@
                 </fieldset>
                 <div class="rifs-form-buttons">
                     <input type="submit" name="@SaveItem.name" class="button button--start" value="Save item">
-                    <a href="@controllers.routes.ApplicationController.show(appOverview.id)">Cancel</a>
+                    <a href="@cancelLink">Cancel</a>
                 </div>
             </form>
         </div>

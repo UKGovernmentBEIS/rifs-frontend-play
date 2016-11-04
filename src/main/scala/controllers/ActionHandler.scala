@@ -70,7 +70,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     fieldsFor(sectionNumber) match {
       case Some(fields) =>
         for (x <- ft; section <- sectionF) yield (x, section) match {
-          case (Some((app, appForm, opp)), section) => selectSectionForm(sectionNumber, section, questions, answers, fields, errs, app, appForm, opp)
+          case (Some((app, appForm, opp)), s) => selectSectionForm(sectionNumber, s, questions, answers, fields, errs, app, appForm, opp)
           case (None, _) => NotFound
         }
 
@@ -86,14 +86,15 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
       case VanillaSection => Ok(views.html.sectionForm(app, appForm, section, formSection, opp, fields, questions, answers, errs, hints))
       case CostSection =>
         val sectionDoc = section.map(_.answers).getOrElse(JsObject(Seq()))
+        val cancelLink = controllers.routes.ApplicationController.show(app.id)
         sectionDoc \ "items" match {
           case JsDefined(JsArray(is)) =>
             Logger.debug(is.toString)
             val costItems = is.flatMap(_.validate[CostItemValues].asOpt)
             Logger.debug(costItems.toString())
             if (costItems.nonEmpty) Ok(views.html.costSectionList(app, appForm, formSection, opp, costItems.toList, questionsFor(sectionNumber)))
-            else Ok(views.html.costItemForm(app, appForm, formSection, opp, fields, questions, answers, errs, hints, None))
-          case _ => Ok(views.html.costItemForm(app, appForm, formSection, opp, fields, questions, answers, errs, hints, None))
+            else {Ok(views.html.costItemForm(app, appForm, formSection, opp, fields, questions, answers, errs, hints, cancelLink, None))}
+          case _ => Ok(views.html.costItemForm(app, appForm, formSection, opp, fields, questions, answers, errs, hints, cancelLink, None))
         }
     }
   }
