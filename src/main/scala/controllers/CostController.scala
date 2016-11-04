@@ -26,11 +26,12 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
     val fields = fieldsFor(sectionNumber).getOrElse(Seq())
 
     details2.value.map {
-      case Some(((overview, form, opp), fs)) => Ok(views.html.costItemForm(overview, form, fs, opp, fields, questions, Map(), List(), List()), None)
+      case Some(((overview, form, opp), fs)) => Ok(views.html.costItemForm(overview, form, fs, opp, fields, questions, Map(), List(), List(), None))
       case None => NotFound
     }
   }
 
-  def postItem(applicationId: ApplicationId, sectionNumber: Int, itemNumber: Option[Int]) = Action.async { implicit request =>
+  def postItem(applicationId: ApplicationId, sectionNumber: Int) = Action.async(JsonForm.parser) { implicit request =>
+    actionHandler.doSaveItem(applicationId, sectionNumber, request.body.values)
   }
 }
