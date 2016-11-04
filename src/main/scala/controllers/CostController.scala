@@ -4,8 +4,10 @@ import javax.inject.Inject
 
 import cats.data.OptionT
 import cats.instances.future._
+import controllers.FieldCheckHelpers.FieldErrors
 import models.ApplicationId
-import play.api.mvc.{Action, Controller}
+import play.api.libs.json.JsObject
+import play.api.mvc.{Action, Controller, Result}
 import services.ApplicationOps
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -14,6 +16,18 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
   extends Controller {
 
   def addItem(applicationId: ApplicationId, sectionNumber: Int) = Action.async { implicit request =>
+    showItemForm(applicationId, sectionNumber, Map(), List())
+  }
+
+  def postItem(applicationId: ApplicationId, sectionNumber: Int) = Action.async(JsonForm.parser) { implicit request =>
+    val fieldValues: JsObject = request.body.values
+    applications.saveItem(applicationId, sectionNumber, fieldValues).flatMap {
+      case Nil => Future.successful(Redirect(routes.ApplicationController.showSectionForm(applicationId, sectionNumber)))
+      case errs => showItemForm(applicationId, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
+    }
+  }
+
+  def showItemForm(applicationId: ApplicationId, sectionNumber: Int, answers: Map[String, String], errs: FieldErrors): Future[Result] = {
     val details1 = actionHandler.gatherApplicationDetails(applicationId)
 
     val details2 = for {
@@ -26,12 +40,10 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
     val fields = fieldsFor(sectionNumber).getOrElse(Seq())
 
     details2.value.map {
-      case Some(((overview, form, opp), fs)) => Ok(views.html.costItemForm(overview, form, fs, opp, fields, questions, Map(), List(), List(), None))
+      case Some(((overview, form, opp), fs)) => Ok(views.html.costItemForm(overview, form, fs, opp, fields, questions, answers, errs, List(), None))
       case None => NotFound
     }
   }
 
-  def postItem(applicationId: ApplicationId, sectionNumber: Int) = Action.async(JsonForm.parser) { implicit request =>
-    actionHandler.doSaveItem(applicationId, sectionNumber, request.body.values)
-  }
+
 }
