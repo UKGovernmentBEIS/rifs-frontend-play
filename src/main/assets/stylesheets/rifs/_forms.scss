@@ -66,3 +66,27 @@ input.text-field.currency {
   overflow: auto;
   resize: vertical;
 }
+
+.column-half.form-spacing {
+  padding-bottom: 2em;
+  padding-left: 0;
+}
+
+.column-full.form-spacing {
+  padding-left: 0;
+}
+
+// We want this aligned right on larger screens, but on collapsed screens
+// when the sidebar moves to be underneath the first column (main content)
+// we want it to move to be left-aligned.
+@media(min-width: 641px) {
+  .pull-right-lg-only {
+    float: right;
+  }
+}
+
+@media(max-width: 640px) {
+  .pull-right-lg-only {
+    float: none;
+  }
+}

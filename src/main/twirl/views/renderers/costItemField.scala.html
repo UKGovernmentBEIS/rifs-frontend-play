@@ -24,27 +24,44 @@
 
 <div class='form-group @errorClass'>
     @errors.map { e =>
-        <span class="error-message">@e.err</span>
+    <span class="error-message">@e.err</span>
     }
-    <div class="inline">
-        @defining(field.itemNameField) { f =>
+
+    <fieldset>
+        <div class="column-half form-spacing">
+            @defining(field.itemNameField) { f =>
             <label for="@f.name">@f.label</label>
-            <input type="text" id="@f.name" class="form-control text-field" title="@f.name" name="@f.name" value='@answers.get(f.name)'>
-        }
-        @defining(field.costField) { f =>
+            <input type="text" id="@f.name" class="form-control text-field" title="@f.name" name="@f.name"
+                   value='@answers.get(f.name)'>
+            }
+        </div>
+        <div class="column-half form-spacing contain-floats ">
+            @defining(field.costField) { f =>
+            <span class="pull-right-lg-only">
+              <label for="@f.name">@f.label</label>
+                <input type="text" id="@f.name" class="form-control text-field currency" title="@f.name" name="@f.name"
+                   value='@answers.get(f.name)' placeholder="£" maxlength="4">
+            </span>
+
+            }
+        </div>
+
+        <div class="column-full form-spacing">
+            @defining(field.justificationField) { f =>
             <label for="@f.name">@f.label</label>
-            &pound; <input type="text" id="@f.name" class="form-control text-field currency" title="@f.name" name="@f.name" value='@answers.get(f.name)'>
-        }
-        @defining(field.percentageField) { f =>
-            <label for="@f.name">@f.label</label>
-            <input type="text" id="@f.name" class="form-control text-field number" title="@f.name" name="@f.name" value='@answers.get(f.name)'>
-        }
-    </div>
-    @defining(field.justificationField) { f =>
-        <label for="@f.name">@f.label</label>
-        <textarea id="@f.name" class="form-control" title="@f.name" name="@f.name">@answers.get(f.name)</textarea>
-        <div class="inline right-align hint-text" id="@(f.name)_hint_text">@hints.find(_.path == f.name).map(_.hint)</div>
+            <textarea id="@f.name" class="form-control" title="@f.name" name="@f.name">@answers.get(f.name)</textarea>
+            <div class="inline right-align hint-text" id="@(f.name)_hint_text">@hints.find(_.path ==
+                f.name).map(_.hint)
+            </div>
+            }
+        </div>
+    </fieldset>
+
+    @defining(field.percentageField) { f =>
+        <!--TODO: remove this section: it's only here until the validation passes without this field-->
+        <input type="hidden" id="@f.name" class="" title="@f.name" name="@f.name" value='100'>
     }
+
 </div>
 
 
