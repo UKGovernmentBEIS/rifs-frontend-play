@@ -42,7 +42,6 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
   }
 
 
-
   def postSection(id: ApplicationId, sectionNumber: Int) = Action.async(JsonForm.parser) { implicit request =>
     request.body.action match {
       case Complete => actionHandler.doComplete(id, sectionNumber, request.body.values)
