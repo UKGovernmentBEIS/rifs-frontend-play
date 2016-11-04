@@ -45,12 +45,14 @@
                 <thead>
                     <th>Item</th>
                     <th>Cost &pound;</th>
+                    <th></th>
                 </thead>
                 <tbody>
                 @items.map { item =>
                     <tr>
                         <td>@item.itemName</td>
                         <td>@item.cost</td>
+                        <td><a href="@controllers.routes.CostController.deleteItem(appOverview.id, formSection.sectionNumber, item.itemNumber.getOrElse(-1))">delete</a></td>
                     </tr>
                 }
                 </tbody>

@@ -52,6 +52,11 @@ trait RestService {
     val request = ws.url(url)
     request.put(Json.toJson(body)).map(_ => ())
   }
+
+  def delete(url: String): Future[Unit] = {
+    val request = ws.url(url)
+    request.delete().map(_ => ())
+  }
 }
 
 

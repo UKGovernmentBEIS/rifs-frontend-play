@@ -27,6 +27,12 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
     }
   }
 
+  def deleteItem(applicationId: ApplicationId, sectionNumber: Int, itemNumber:Int) = Action.async {
+    applications.deleteItem(applicationId, sectionNumber, itemNumber).map { _=>
+      Redirect(controllers.routes.ApplicationController.showSectionForm(applicationId, sectionNumber))
+    }
+  }
+
   def showItemForm(applicationId: ApplicationId, sectionNumber: Int, answers: Map[String, String], errs: FieldErrors): Future[Result] = {
     val details1 = actionHandler.gatherApplicationDetails(applicationId)
 

@@ -2,7 +2,7 @@ package forms.validation
 
 import cats.data.ValidatedNel
 
-case class CostItemValues(itemName: Option[String], cost: Option[String], justification: Option[String])
+case class CostItemValues(itemName: Option[String], cost: Option[String], justification: Option[String], itemNumber: Option[Int])
 
 case class CostItem(itemName: String, cost: BigDecimal, justification: String, itemNumber: Option[Int] = None)
 
@@ -20,6 +20,6 @@ case object CostItemValidator extends FieldValidator[CostItemValues, CostItem] {
     // it in a comment so it's easy to restore if you lose it by mistake.
     //import cats.syntax.cartesian._
     import cats.syntax.cartesian._
-    (itemV |@| costV |@| justV).map(CostItem.apply (_,_,_,None))
+    (itemV |@| costV |@| justV).map(CostItem.apply(_, _, _, None))
   }
 }

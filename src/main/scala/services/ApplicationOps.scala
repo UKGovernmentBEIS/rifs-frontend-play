@@ -22,5 +22,7 @@ trait ApplicationOps {
 
   def saveItem(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors]
 
+  def deleteItem(id: ApplicationId, sectionNumber: Int, itemNumber: Int): Future[Unit]
+
   def getSection(id: ApplicationId, sectionNumber: Int): Future[Option[ApplicationSection]]
 }
