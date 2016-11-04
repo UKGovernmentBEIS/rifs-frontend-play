@@ -26,21 +26,35 @@
     @errors.map { e =>
         <span class="error-message">@e.err</span>
     }
-    <div class="inline">
+
+    <fieldset>
+        <div class="column-half form-spacing">
         @defining(field.itemNameField) { f =>
             <label for="@f.name">@f.label</label>
             <input type="text" id="@f.name" class="form-control text-field" title="@f.name" name="@f.name" value='@answers.get(f.name)'>
         }
+        </div>
+        
+        <div class="column-half form-spacing contain-floats ">
         @defining(field.costField) { f =>
-            <label for="@f.name">@f.label</label>
-            &pound; <input type="text" id="@f.name" class="form-control text-field currency" title="@f.name" name="@f.name" value='@answers.get(f.name)'>
+            <span class="pull-right-lg-only">
+                <label for="@f.name">@f.label</label>
+                <input type="text" id="@f.name" class="form-control text-field currency" title="@f.name" name="@f.name"
+                value='@answers.get(f.name)' placeholder="£" maxlength="4">
+            </span>
         }
-    </div>
-    @defining(field.justificationField) { f =>
-        <label for="@f.name">@f.label</label>
-        <textarea id="@f.name" class="form-control" title="@f.name" name="@f.name">@answers.get(f.name)</textarea>
-        <div class="inline right-align hint-text" id="@(f.name)_hint_text">@hints.find(_.path == f.name).map(_.hint)</div>
-    }
+        </div>
+
+        <div class="column-full form-spacing">
+        @defining(field.justificationField) { f =>
+            <label for="@f.name">@f.label</label>
+            <textarea id="@f.name" class="form-control" title="@f.name" name="@f.name">@answers.get(f.name)</textarea>
+            <div class="inline right-align hint-text" id="@(f.name)_hint_text">@hints.find(_.path ==
+                    f.name).map(_.hint)
+            </div>
+        }
+        </div>
+    </fieldset>
 </div>
 
 
