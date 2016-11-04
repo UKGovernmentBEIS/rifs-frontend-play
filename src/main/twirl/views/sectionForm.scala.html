@@ -36,7 +36,8 @@
             </h1>
 
             <form method="POST"
-                  action="@controllers.routes.ApplicationController.postSection(appOverview.id, formSection.sectionNumber)">
+                  action="@controllers.routes.ApplicationController.postSection(appOverview.id, formSection.sectionNumber)"
+                  novalidate="novalidate">
                 @if(errs.nonEmpty) {
                 <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
 
