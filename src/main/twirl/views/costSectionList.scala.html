@@ -8,7 +8,7 @@
 )
 
 @import scala.util.Try
-    @import partials._
+@import partials._
 
 @formatId(id: Long) = @{
     f"RIFS$id%05d"
@@ -61,6 +61,7 @@
                     </tr>
                 </tfoot>
             </table>
+            <a href="@controllers.routes.CostController.addItem(appOverview.id, formSection.sectionNumber)">Add item</a>
         </div>
     </div>
 

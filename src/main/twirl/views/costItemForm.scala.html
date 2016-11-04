@@ -1,14 +1,14 @@
 @(
         appOverview: ApplicationOverview,
         appForm: ApplicationForm,
-        section: Option[ApplicationSection],
         formSection: ApplicationFormSection,
         opportunity: Opportunity,
         fields: Seq[forms.Field],
         questions: Map[String, Question],
         answers: Map[String, String],
         errs: List[forms.validation.FieldError],
-        hints:List[forms.validation.FieldHint]
+        hints:List[forms.validation.FieldHint],
+        itemNumber: Option[Int]
 )
 @import partials._
 
@@ -35,7 +35,7 @@
                 @formSection.title
             </h1>
 
-            <form method="POST" action="@controllers.routes.ApplicationController.postSection(appOverview.id, formSection.sectionNumber)">
+            <form method="POST" action="@controllers.routes.CostController.postItem(appOverview.id, formSection.sectionNumber, itemNumber)">
                 @if(errs.nonEmpty) {
                     <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
 
