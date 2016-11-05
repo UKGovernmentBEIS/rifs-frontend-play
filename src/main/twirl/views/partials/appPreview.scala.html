@@ -1,0 +1,15 @@
+@(
+formSection: ApplicationFormSection,
+fields: Seq[forms.Field],
+answers: Map[String, String]
+)
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+
+        <h3 class="heading-xlarge">
+            @formSection.title
+        </h3>
+        @fields.map(_.renderPreview(answers))
+    </div>
+</div>

@@ -17,6 +17,7 @@ GET         /application/:id/section/:num                controllers.Application
 POST        /application/:id/section/:num                controllers.ApplicationController.postSection(id: ApplicationId, num:Int)
 
 GET         /application/:id/section/:num/preview        controllers.ApplicationPreviewController.previewSection(id: ApplicationId, num:Int)
+GET         /application/:id/preview                     controllers.ApplicationPreviewController.applicationPreview(id: ApplicationId)
 
 GET         /wip                                         controllers.OpportunityController.wip(backUrl: String)
 

@@ -1,0 +1,128 @@
+@import models._
+@import partials._
+
+@(app: ApplicationForm, overview:ApplicationOverview, opportunity:Opportunity, sections: Seq[ApplicationSection], sectionnumbers: Set[Int], fieldsset: Map[Int,Seq[forms.Field]])
+
+@sectionLink(title: String, sectionNum: Int) = {
+<span class="part-number">@sectionNum.</span>
+<a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(sectionNum))">@title</a>
+}
+
+
+@titleCols() = @{
+val titles = app.sections.sortBy(_.sectionNumber).map(s => (s.title, s.sectionNumber))
+val midpoint: Int = Math.round(titles.length / 2.0).toInt
+val (leftCols, b) = titles.splitAt(midpoint)
+val rightCols = b.map(Some(_)) :+ None
+leftCols.zip(rightCols)
+}
+
+@formatId(id: Long) = @{
+f"RIFS$id%05d"
+}
+
+@main(s"Opportunity ${opportunity.id.id}") {
+<div class="grid-row">
+    <div class="column-two-thirds">
+
+        <div class="breadcrumbs">
+            <ol>
+                <li><a href="@controllers.routes.OpportunityController.showOpportunities()">&lt; Return to opportunity
+                    list</a></li>
+            </ol>
+        </div>
+
+        <h1 class="heading-xlarge">
+            <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
+        </h1>
+
+        <header class="page-header">
+            <h1 class="heading-xlarge">@opportunity.title</h1>
+        </header>
+
+
+
+
+
+        <aside>
+            <nav role="navigation" class="contain-floats page-navigation" aria-label="Navigation">
+                <ol>
+                    @titleCols.map { case (col1, col2) =>
+                    <li>
+                        @sectionLink(col1._1, col1._2)
+                    </li>
+                    }
+                </ol>
+                <ol>
+                    @titleCols.map { case (col1, col2) =>
+                    <li>
+                        @col2.map { t => @sectionLink(t._1, t._2) }.getOrElse("")
+                    </li>
+                    }
+                </ol>
+            </nav>
+        </aside>
+
+
+        <h1 class="heading-xlarge">
+            <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
+            @formSection.title
+        </h1>
+
+        @for(section <- sections){
+            @appPreview(
+                app.sections.find(_.sectionNumber == sectionnumber).get
+                fieldsset.get(sectionn.),
+                section.map { s => JsonHelpers.flatten("", s.answers) }.getOrElse(Map[String, String]())
+                )
+            }
+        }
+
+
+
+
+        @for(sectionnumber <- sectionnumbers){
+        <br>************** @sectionnumbers
+        }
+        <br>
+        @for(section <- sections){
+        <br>================ @section.id === @section.sectionNumber
+        }
+
+
+        <br><br><br>
+        ----------- @app <br><br><br>
+        ----------- @overview <br><br><br>
+        ----------- @opportunity <br><br><br>
+        ----------- @sections <br><br><br>
+        ----------- @sectionnumbers <br><br>
+
+
+
+
+    </div>
+
+
+    <div class="column-third">
+        <aside role="complementary">
+            <hr class="hr-blue">
+            <h3 class="heading-medium">Support</h3>
+            <ul class="list spacious">
+
+                <li>
+                    <a href="@controllers.routes.OpportunityController.showGuidancePage(opportunity.id)" target="_blank">Guidance on
+                        seminars</a>
+                </li>
+                <li>
+                    <a href="--controllers.routes.ApplicationController.showOrCreateForForm(applicationId)">Make an
+                        application</a>
+                </li>
+
+            </ul>
+        </aside>
+    </div>
+
+</div>
+}
+
+}
