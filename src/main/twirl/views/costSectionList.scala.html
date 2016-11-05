@@ -64,7 +64,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                @items.map { item =>
+                @items.sortBy(_.itemNumber).map { item =>
                     <tr>
                         <td><a href="">@item.itemName</a></td>
                         <td>@item.cost</td>
