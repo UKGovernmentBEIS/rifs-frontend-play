@@ -95,6 +95,7 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
        for(sc <- secs) {
         Map(sc.sectionNumber,  fieldsFor(sc.sectionNumber))
       } //yield (mp)
+      ???
     }
 
       y.map {
