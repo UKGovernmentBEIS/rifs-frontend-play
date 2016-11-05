@@ -22,46 +22,56 @@
     </details>
 }
 
-<div class='form-group @errorClass'>
-    @errors.map { e =>
-    <span class="error-message">@e.err</span>
-    }
+      <div class="column-full no-lr-padding">
 
-    <fieldset>
-        <div class="column-half form-spacing">
-            @defining(field.itemNameField) { f =>
-            <label for="@f.name">@f.label</label>
-            <input type="text" id="@f.name" class="form-control text-field" title="@f.name" name="@f.name"
-                   value='@answers.get(f.name)'>
+          @defining(field.itemNameField) { f =>
+              <div class="column-half no-lr-padding">
+                <div class="form-group @{if (errors.nonEmpty) "error" }">
+                  <label for="@f.name">@f.label</label>
+                  @if(errors.nonEmpty) {
+                          <!-- TODO: actually pick out the correct field error -->
+                      <span class="error-message">@errors.head.err</span>
+                  }
+                  <input type="text" id="@f.name" class="form-control text-field" title="@f.name" name="@f.name"
+                  value='@answers.get(f.name)'>
+                </div>
+              </div>
+
+          }
+
+          @defining(field.costField) { f =>
+                <div class="column-half no-r-padding">
+                    <div class="form-group @{if (errors.nonEmpty) "error" }">
+                    <span class="pull-right-lg-only">
+                        <label for="@f.name">@f.label</label>
+                        @if(errors.nonEmpty) {
+                                <!-- TODO: actually pick out the correct field error -->
+                            <span class="error-message">@errors.head.err</span>
+                        }
+                        <input type="text" id="@f.name" class="form-control text-field currency" title="@f.name" name="@f.name"
+                        value='@answers.get(f.name)' placeholder="£" maxlength="4">
+                    </span>
+                  </div>
+              </div>
             }
-        </div>
-        <div class="column-half form-spacing contain-floats ">
-            @defining(field.costField) { f =>
-            <span class="pull-right-lg-only">
-              <label for="@f.name">@f.label</label>
-                <input type="text" id="@f.name" class="form-control text-field currency" title="@f.name" name="@f.name"
-                   value='@answers.get(f.name)' placeholder="£" maxlength="4">
-            </span>
+      </div>
 
-            }
-        </div>
 
-        <div class="column-full form-spacing">
-            @defining(field.justificationField) { f =>
+    @defining(field.justificationField) { f =>
+      <div class="column-full no-lr-padding">
+        <div class="form-group @{if (errs.filter(e => e.path == f.name).isEmpty) "" else  "error"}">
             <label for="@f.name">@f.label</label>
+            @if(errors.nonEmpty) {
+                <!-- TODO: actually pick out the correct field error -->
+                <span class="error-message">@errors.head.err</span>
+            }
             <textarea id="@f.name" class="form-control" title="@f.name" name="@f.name">@answers.get(f.name)</textarea>
-            <div class="inline right-align hint-text" id="@(f.name)_hint_text">@hints.find(_.path ==
-                f.name).map(_.hint)
-            </div>
+            <div class="inline right-align hint-text" id="@(f.name)_hint_text">@hints.find(_.path == f.name).map(_.hint)</div>
             }
         </div>
-    </fieldset>
+      </div>
 
     @defining(field.percentageField) { f =>
         <!--TODO: remove this section: it's only here until the validation passes without this field-->
-        <input type="hidden" id="@f.name" class="" title="@f.name" name="@f.name" value='100'>
+        <input type="hidden" id="@f.name" name="@f.name" value='100'>
     }
-
-</div>
-
-
