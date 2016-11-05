@@ -81,7 +81,7 @@
                 </tfoot>
             </table>
             <a href="@controllers.routes.CostController.addItem(appOverview.id, formSection.sectionNumber)">Add item</a>
-            <form method="POST" action="@controllers.routes.CostController.post(appOverview.id, formSection.sectionNumber)">
+            <form method="POST" action="@controllers.routes.ApplicationController.postSection(appOverview.id, formSection.sectionNumber)">
                 <fieldset>
                 @section.flatMap(_.completedAtText).getOrElse(
                         <label for="complete-checkbox" class="form-checkbox font-normal" style="width: 16em">

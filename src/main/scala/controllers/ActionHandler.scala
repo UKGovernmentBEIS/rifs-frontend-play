@@ -7,7 +7,6 @@ import cats.instances.future._
 import forms.Field
 import forms.validation.CostItemValues
 import models._
-import play.api.Logger
 import play.api.libs.json.{JsArray, JsDefined, JsObject}
 import play.api.mvc.Result
 import play.api.mvc.Results._
@@ -15,20 +14,38 @@ import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: ApplicationFormOps, opportunities: OpportunityOps)(implicit ec: ExecutionContext) {
+class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: ApplicationFormOps, opportunities: OpportunityOps)(implicit ec: ExecutionContext)
+  extends ApplicationResults {
 
   import ApplicationData._
   import FieldCheckHelpers._
 
   def doSave(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] =
-    applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
-      Redirect(routes.ApplicationController.show(id))
+    sectionTypeFor(sectionNumber) match {
+      case VanillaSection => applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
+          Redirect(routes.ApplicationController.show(id))
+        }
+
+      case CostSection => Future.successful(redirectToOverview(id))
     }
 
   def doComplete(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] =
-    applications.completeSection(id, sectionNumber, fieldValues).flatMap {
-      case Nil => Future.successful(Redirect(routes.ApplicationController.show(id)))
-      case errs => redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
+    sectionTypeFor(sectionNumber) match {
+      case VanillaSection => applications.completeSection(id, sectionNumber, fieldValues).flatMap {
+        case Nil => Future.successful(Redirect(routes.ApplicationController.show(id)))
+        case errs => redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
+      }
+
+      case CostSection =>
+        applications.getSection(id, sectionNumber).flatMap {
+          case Some(section) =>
+            applications.completeSection(id, sectionNumber, section.answers).flatMap {
+              case Nil => Future.successful(redirectToOverview(id))
+              case errs => redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", section.answers), errs)
+            }
+
+          case None => Future.successful(NotFound)
+        }
     }
 
   def doSaveItem(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
@@ -39,12 +56,17 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
   }
 
   def doPreview(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
-    val errs = check(fieldValues, previewChecksFor(sectionNumber))
-    if (errs.isEmpty) {
-      applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
-        Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber))
-      }
-    } else redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
+    sectionTypeFor(sectionNumber) match {
+      case VanillaSection =>
+        val errs = check(fieldValues, previewChecksFor(sectionNumber))
+        if (errs.isEmpty) {
+          applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
+            Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber))
+          }
+        } else redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
+
+      case CostSection => Future.successful(wip(sectionFormCall(id, sectionNumber).url))
+    }
   }
 
   def renderSectionForm(id: ApplicationId,
@@ -89,9 +111,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
         val cancelLink = controllers.routes.ApplicationController.show(app.id)
         sectionDoc \ "items" match {
           case JsDefined(JsArray(is)) =>
-            Logger.debug(is.toString)
             val costItems = is.flatMap(_.validate[CostItemValues].asOpt)
-            Logger.debug(costItems.toString())
             if (costItems.nonEmpty) Ok(views.html.costSectionList(app, appForm, section, formSection, opp, costItems.toList, questionsFor(sectionNumber), errs))
             else Ok(views.html.costItemForm(app, appForm, formSection, opp, fields, questions, answers, errs, hints, cancelLink, None))
           case _ => Ok(views.html.costItemForm(app, appForm, formSection, opp, fields, questions, answers, errs, hints, cancelLink, None))

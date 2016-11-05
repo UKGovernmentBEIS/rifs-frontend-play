@@ -16,10 +16,9 @@ GET         /application/:id                                          controller
 GET         /application/:id/section/:num                             controllers.ApplicationController.showSectionForm(id: ApplicationId, num:Int)
 POST        /application/:id/section/:num                             controllers.ApplicationController.postSection(id: ApplicationId, num:Int)
 
-POST        /application/:id/section/:num/post                        controllers.CostController.post(id: ApplicationId, num:Int)
 
 GET         /application/:id/section/:num/add-item                    controllers.CostController.addItem(id:ApplicationId, num:Int)
-POST        /application/:id/section/:num/item                        controllers.CostController.postItem(id:ApplicationId, num: Int)
+POST        /application/:id/section/:num/item                        controllers.CostController.saveItem(id:ApplicationId, num: Int)
 GET         /application/:id/section/:num/item/:itemNum/delete        controllers.CostController.deleteItem(id:ApplicationId, num: Int, itemNum:Int)
 
 GET         /application/:id/section/:num/preview                     controllers.ApplicationPreviewController.previewSection(id: ApplicationId, num:Int)
