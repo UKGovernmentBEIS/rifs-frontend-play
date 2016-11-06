@@ -66,6 +66,27 @@ f"RIFS$id%05d"
             </nav>
         </aside>
 
+        <div class="panel rifs-panel rifs-border-narrow">
+            <aside role="complementary" class="notice">
+
+                <div>
+                    <dl>
+                        <dt class="heading-small">Review your application before submitting
+                            <br/><br/>
+                            <a> Download PDF </a>
+                        </dt>
+                    </dl>
+                </div>
+                <div class="column-full rifs-form-buttons">
+                    <p>
+                        <a href="@controllers.routes.ApplicationController.showOrCreateForForm(app.id)"
+                           class="button"
+                        >Close</a>
+                    </p>
+                </div>
+            </aside>
+        </div>
+
         @for(section <- sections){
             @appPreview(
                 app.sections.find(_.sectionNumber == section.sectionNumber).get,
