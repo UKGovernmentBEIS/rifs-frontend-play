@@ -1,13 +1,18 @@
 @import models._
 @import partials._
-
-@(app: ApplicationForm, overview:ApplicationOverview, opportunity:Opportunity, sections: Seq[ApplicationSection], sectionnumbers: Set[Int], fieldsset: Map[Int,Seq[forms.Field]])
+@import partials._
+@(
+  app: ApplicationForm,
+  overview:ApplicationOverview,
+  opportunity:Opportunity,
+  sections: Seq[ApplicationSection],
+  fieldsset: Map[Int,Seq[forms.Field]]
+)
 
 @sectionLink(title: String, sectionNum: Int) = {
 <span class="part-number">@sectionNum.</span>
-<a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(sectionNum))">@title</a>
+<a href="@controllers.routes.ApplicationController.showSectionForm(overview.id, sectionNum)">@title</a>
 }
-
 
 @titleCols() = @{
 val titles = app.sections.sortBy(_.sectionNumber).map(s => (s.title, s.sectionNumber))
@@ -37,12 +42,10 @@ f"RIFS$id%05d"
         </h1>
 
         <header class="page-header">
-            <h1 class="heading-xlarge">@opportunity.title</h1>
+            <h1 class="heading-xlarge">
+                @JsonHelpers.flatten("", (sections.head).answers).get(fieldsset(1).head.name)
+            </h1>
         </header>
-
-
-
-
 
         <aside>
             <nav role="navigation" class="contain-floats page-navigation" aria-label="Navigation">
@@ -63,66 +66,20 @@ f"RIFS$id%05d"
             </nav>
         </aside>
 
-
-        <h1 class="heading-xlarge">
-            <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
-            @formSection.title
-        </h1>
-
         @for(section <- sections){
             @appPreview(
-                app.sections.find(_.sectionNumber == sectionnumber).get
-                fieldsset.get(sectionn.),
-                section.map { s => JsonHelpers.flatten("", s.answers) }.getOrElse(Map[String, String]())
-                )
-            }
+                app.sections.find(_.sectionNumber == section.sectionNumber).get,
+                fieldsset(section.sectionNumber),
+                JsonHelpers.flatten("", section.answers)
+            )
         }
-
-
-
-
-        @for(sectionnumber <- sectionnumbers){
-        <br>************** @sectionnumbers
-        }
-        <br>
-        @for(section <- sections){
-        <br>================ @section.id === @section.sectionNumber
-        }
-
-
-        <br><br><br>
-        ----------- @app <br><br><br>
-        ----------- @overview <br><br><br>
-        ----------- @opportunity <br><br><br>
-        ----------- @sections <br><br><br>
-        ----------- @sectionnumbers <br><br>
-
-
-
 
     </div>
 
-
     <div class="column-third">
-        <aside role="complementary">
-            <hr class="hr-blue">
-            <h3 class="heading-medium">Support</h3>
-            <ul class="list spacious">
-
-                <li>
-                    <a href="@controllers.routes.OpportunityController.showGuidancePage(opportunity.id)" target="_blank">Guidance on
-                        seminars</a>
-                </li>
-                <li>
-                    <a href="--controllers.routes.ApplicationController.showOrCreateForForm(applicationId)">Make an
-                        application</a>
-                </li>
-
-            </ul>
-        </aside>
+        @sidebar(overview, app)
     </div>
 
 </div>
-}
 
 }

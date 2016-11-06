@@ -9,7 +9,9 @@ import models.{ApplicationId, ApplicationSection}
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
 
+import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future}
+import scala.runtime.Nothing$
 
 class ApplicationPreviewController @Inject()(applications: ApplicationOps, applicationForms: ApplicationFormOps, opportunities: OpportunityOps)(implicit ec: ExecutionContext)
   extends Controller {
@@ -42,9 +44,6 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
   }
 
   def applicationPreview(id: ApplicationId) = Action.async {
-    println("##########11111111111111")
-
-
     val ft = for {
       a <- OptionT(applications.overview(id))
       af <- OptionT(applicationForms.byId(a.applicationFormId))
@@ -53,53 +52,20 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
 
     val sections = applications.getSections(id)
 
-    for (is<- sections)
-      println("##########"+ is)
-
-    for (ss <- sections) {
-      println("##########" + ss)
-      //fieldsFor(ss.map(ddd =>ddd.sectionNumber))
-    }
-
-
-   // val t = ft.value.flatMap{ x => applications.getSections(id).map{ y => (x,y)}}
-   // val ts = ft.value.flatMap{ x => sections.map{ yd => yd.map(ydd => fieldsFor(ydd.sectionNumber).toSet)  }}
     val y = for {
       aafopp <- ft.value
       ss <- sections
     } yield (aafopp, ss)
 
-//val fff: Seq[ApplicationSection] = sections
- //   val gg = fff.map(a => a.s_.se)
-
-
-  //  val fieldsa = for (i<- sections) {
-  //    println("##########" + i)
- //     i.map(_.sectionNumber).toSet
-   // }
-
-    //for (j<- fieldsa)
-    //  println("----------fields:-" + j)
-
-//==val dd = y._2.
-  // val fieldseq = fieldsFor(1)
-   // val pp = for{
-      //sectionNumber.map(cc => Map(cc.sectionNumber, fieldsFor(cc.sectionNumber) ))
-   // h1<- sections.map(_.map(_.sectionNumber))
-   // h2<- sections.map(_.map(_.sectionNumber))
-    //h2 <- sectionNumber.map(fieldsFor(_.sectionNumber))
-   // } yield (Map(h1,h2))
-
-    def getFieldmap(secs:Seq[ApplicationSection]) : Map[Int, Seq[Field]] = {
-      val mp = scala.collection.mutable.Map[Int, Seq[Field]]()
-       for(sc <- secs) {
-        Map(sc.sectionNumber,  fieldsFor(sc.sectionNumber))
-      } //yield (mp)
-      ???
+    def getFieldMap(secs:Seq[ApplicationSection]) : Map[Int, Seq[Field]] = {
+      var fmap = new collection.immutable.HashMap[Int, Seq[Field]]
+      secs.map(sec => fmap += (sec.sectionNumber -> fieldsFor(sec.sectionNumber).get ))
+      fmap
     }
 
-      y.map {
-      case (Some((form, overview, opp )), ss) => Ok(views.html.applicationPreview(form, overview, opp, ss.sortWith(_.sectionNumber < _.sectionNumber), ss.map(_.sectionNumber).toSet, getFieldmap(ss) ))
+    y.map {
+      case (Some((form, overview, opp )), scs) => Ok(views.html.applicationPreview(form, overview, opp,
+        scs.sortWith(_.sectionNumber < _.sectionNumber), getFieldMap(scs) ))
       case _ => NotFound
     }
   }
