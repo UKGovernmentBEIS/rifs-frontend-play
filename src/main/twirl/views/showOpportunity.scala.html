@@ -68,33 +68,47 @@
 
         @currentSection.map { s =>
 
-            @if(sectionNumber == 1) {
 
-        <div class="panel panel-border-narrow">
+
+        <div class="panel rifs-panel rifs-border-narrow">
             <aside role="complementary" class="notice">
-                <div class="column-half">
+                <div class="column-half definition-list">
                     <dl>
                         <dt class="heading-small">Deadline</dt>
                         <dd>Apply any time</dd>
                     </dl>
                 </div>
 
-                <div class="column-half">
+                <div class="column-half definition-list">
                     <dl>
                         <dt class="heading-small">Value</dt>
                         <dd>&pound;@opportunity.value.amount @opportunity.value.unit</dd>
                     </dl>
                 </div>
+                <div class="column-full rifs-form-buttons">
+                    <p>
+                        <a href="@controllers.routes.ApplicationController.showOrCreateForForm(applicationId)"
+                            class="button"
+                        >Apply now</a>
+                    </p>
+                </div>
             </aside>
         </div>
-
-            }
 
         <article>
         <h2 class="heading-large">@s.sectionNumber. @s.title</h2>
         @s.paragraphs.map { p =>
         <p class="text">@p</p>
         }
+
+            <div class="rifs-form-buttons">
+                <p>
+                    <a href="@controllers.routes.ApplicationController.showOrCreateForForm(applicationId)"
+                       class="button"
+                    >Apply now</a>
+                </p>
+            </div>
+
         </article>
 
         <footer>
@@ -136,10 +150,6 @@
                 <li>
                     <a href="@controllers.routes.OpportunityController.showGuidancePage(opportunity.id)" target="_blank">Guidance on
                         seminars</a>
-                </li>
-                <li>
-                    <a href="@controllers.routes.ApplicationController.showOrCreateForForm(applicationId)">Make an
-                        application</a>
                 </li>
 
             </ul>

@@ -35,30 +35,30 @@
                 @formSection.title
             </h1>
 
-            <form method="POST" action="@controllers.routes.ApplicationController.postSection(appOverview.id, formSection.sectionNumber)">
+            <form method="POST"
+                  action="@controllers.routes.ApplicationController.postSection(appOverview.id, formSection.sectionNumber)"
+                  novalidate="novalidate">
                 @if(errs.nonEmpty) {
-                    <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
+                <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
 
-                        <h1 class="heading-medium error-summary-heading" id="error-summary-heading">
-                            The information you entered is not valid
-                        </h1>
+                    <h1 class="heading-medium error-summary-heading" id="error-summary-heading">
+                        The information you entered is not valid
+                    </h1>
 
-                        <p>
-                            Please correct the problems indicated below.
-                        </p>
-                    </div>
+                    <p>
+                        Please correct the problems indicated below.
+                    </p>
+                </div>
                 }
-                <fieldset>
-                    @fields.map(_.renderFormInput(questions, answers, errs, hints))
+                @fields.map(_.renderFormInput(questions, answers, errs, hints))
 
-                    @section.flatMap(_.completedAtText).getOrElse(
-                        <label for="complete-checkbox" class="form-checkbox" style="width: 16em">
-                            <input id="complete-checkbox" type="checkbox" name="_complete_checkbox" />
-                            Mark question as complete
-                        </label>
-                    )
+                @section.flatMap(_.completedAtText).getOrElse(
+                <label for="complete-checkbox" class="form-checkbox font-normal" style="width: 16em">
+                    <input id="complete-checkbox" type="checkbox" name="_complete_checkbox"/>
+                    Mark question as complete
+                </label>
+                )
 
-                </fieldset>
                 <div class="rifs-form-buttons">
                     <input type="submit" name="@Save.name" class="button button--start" value="Save and continue">
                     <input type="submit" name="@Preview.name" class="button--link-style" value="Preview this page"/>
