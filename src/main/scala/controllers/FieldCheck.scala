@@ -23,16 +23,18 @@ object FieldChecks {
 
     override def apply(path: String, value: JsValue): List[FieldError] = validator.validate(path, decodeString(value)).fold(_.toList, _ => List())
 
-    override def hint(path: String, value: JsValue): List[FieldHint] = validator.hintText(path, value.validate[String].asOpt)
+    override def hint(path: String, value: JsValue): List[FieldHint] = validator.hintText(path, value)
   }
 
   val currencyValidator = new FieldCheck {
     override def apply(path: String, value: JsValue): List[FieldError] = CurrencyValidator.validate(path, decodeString(value)).fold(_.toList, _ => List())
 
-    override def hint(path: String, value: JsValue): List[FieldHint] = CurrencyValidator.hintText(path, value.validate[String].asOpt)
+    override def hint(path: String, value: JsValue): List[FieldHint] = CurrencyValidator.hintText(path, value)
   }
 
   def fromValidator[T: Reads](v: FieldValidator[T, _]): FieldCheck = new FieldCheck {
+    override def toString(): String = s"check from validator $v"
+
     override def apply(path: String, jv: JsValue) = jv.validate[T].map { x =>
       v.validate(path, x).fold(_.toList, _ => List())
     } match {
@@ -42,7 +44,10 @@ object FieldChecks {
         List(FieldError(path, "Could not decode form values!"))
     }
 
-    override def hint(path: String, jv: JsValue): List[FieldHint] = v.hintText(path, jv.validate[String].asOpt)
+    override def hint(path: String, jv: JsValue): List[FieldHint] = {
+      Logger.debug(s"hinting value $jv at path $path")
+      v.hintText(path, jv)
+    }
   }
 
 
@@ -51,7 +56,7 @@ object FieldChecks {
 
     override def apply(path: String, jv: JsValue) = validator.validate(path, decodeString(jv)).fold(_.toList, _ => List())
 
-    override def hint(path: String, value: JsValue): List[FieldHint] = validator.hintText(path, value.validate[String].asOpt)
+    override def hint(path: String, value: JsValue): List[FieldHint] = validator.hintText(path, value)
   }
 
   def decodeString(jv: JsValue): Option[String] = {

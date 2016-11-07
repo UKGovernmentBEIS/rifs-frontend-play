@@ -7,7 +7,6 @@ import cats.instances.future._
 import controllers.FieldCheckHelpers.FieldErrors
 import forms.validation.CostItemValues
 import models.ApplicationId
-import play.api.Logger
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, Controller, Result}
 import services.ApplicationOps
@@ -20,13 +19,13 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
   implicit val costItemValuesR = Json.reads[CostItemValues]
 
   def addItem(applicationId: ApplicationId, sectionNumber: Int) = Action.async { implicit request =>
-    showItemForm(applicationId, sectionNumber, Map(), List())
+    showItemForm(applicationId, sectionNumber, JsObject(Seq()), List())
   }
 
   def saveItem(applicationId: ApplicationId, sectionNumber: Int) = Action.async(JsonForm.parser) { implicit request =>
     applications.saveItem(applicationId, sectionNumber, request.body.values).flatMap {
       case Nil => Future.successful(redirectToSectionForm(applicationId, sectionNumber))
-      case errs => showItemForm(applicationId, sectionNumber, JsonHelpers.flatten("", request.body.values), errs)
+      case errs => showItemForm(applicationId, sectionNumber, request.body.values, errs)
     }
   }
 
@@ -36,7 +35,7 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
     }
   }
 
-  def showItemForm(applicationId: ApplicationId, sectionNumber: Int, answers: Map[String, String], errs: FieldErrors): Future[Result] = {
+  def showItemForm(applicationId: ApplicationId, sectionNumber: Int, doc: JsObject, errs: FieldErrors): Future[Result] = {
     val details1 = actionHandler.gatherApplicationDetails(applicationId)
 
     val details2 = for {
@@ -49,9 +48,8 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
     val questions = questionsFor(sectionNumber)
     val fields = fieldsFor(sectionNumber).getOrElse(Seq())
     val cancelLink = sectionFormCall(applicationId, sectionNumber)
-    val itemChecks = itemChecksFor(sectionNumber)
-    Logger.debug(itemChecks.toString)
-    val hints = hinting(JsObject(Seq()), itemChecks)
+    val hints = hinting(doc, itemChecksFor(sectionNumber))
+    val answers = JsonHelpers.flatten("", doc)
 
     details2.value.map {
       case Some(((overview, form, opp), fs)) => Ok(views.html.costItemForm(overview, form, fs, opp, fields, questions, answers, errs, hints, cancelLink, None))
