@@ -9,9 +9,9 @@
         errs: List[forms.validation.FieldError]
 )
 
-    @import partials._
+@import partials._
 
-    @import scala.util.Try
+@import scala.util.Try
 
 @formatId(id: Long) = @{
     f"RIFS$id%05d"
@@ -58,9 +58,9 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Item</th>
-                        <th>Cost &pound;</th>
-                        <th></th>
+                        <th scope="col">Item</th>
+                        <th scope="col">Cost &pound;</th>
+                        <th scope="col"><span class="visuallyhidden">Action</span></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -77,10 +77,15 @@
                     <tr>
                         <td>Total requested &pound;</td>
                         <td>@items.map(i => Try(i.cost.map(_.toDouble).getOrElse(0.0)).toOption.getOrElse(0.0)).sum</td>
+                        <td></td>
                     </tr>
                 </tfoot>
             </table>
-            <a href="@controllers.routes.CostController.addItem(appOverview.id, formSection.sectionNumber)">Add item</a>
+
+            <p>
+                <a href="@controllers.routes.CostController.addItem(appOverview.id, formSection.sectionNumber)">Add item</a>
+            </p>
+
             <form method="POST" action="@controllers.routes.ApplicationController.postSection(appOverview.id, formSection.sectionNumber)">
                 <fieldset>
                 @section.flatMap(_.completedAtText).getOrElse(
@@ -97,10 +102,9 @@
                 </div>
             </form>
         </div>
-    </div>
 
-
-    <div class="column-third">
-    @sidebar(appOverview, appForm)
+        <div class="column-third">
+        @sidebar(appOverview, appForm)
+        </div>
     </div>
 }
