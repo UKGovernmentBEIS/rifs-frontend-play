@@ -18,6 +18,8 @@ case object CostItemValidator extends FieldValidator[CostItemValues, CostItem] {
 
     (itemV |@| costV |@| justV).map(CostItem.apply(_, _, _, None))
   }
+
+  override def hintText(path: String, s: Option[String]): List[FieldHint] = justificationValidator.hintText(s"$path.justification", s)
 }
 
 case class CostSectionValidator(maxValue:BigDecimal) extends FieldValidator[List[CostItemValues], List[CostItem]] {
