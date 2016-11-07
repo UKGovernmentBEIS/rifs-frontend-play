@@ -12,6 +12,20 @@
     if(errors.nonEmpty) "error" else ""
 }
 
+@errorClassFor(f: forms.Field) = @{
+    if(errs.exists(_.path == f.name)) "error" else ""
+}
+
+@errorsFor(f: forms.Field) = @{
+    errs.filter(_.path == f.name)
+}
+
+@errorBlock(f: forms.Field) = @{
+    if(errorsFor(f).nonEmpty) {
+            <span class="error-message">{errorsFor(f).head.err}</span>
+    }
+}
+
 @questions.get(field.name).map { q => <p class="question">@q.text</p>
 @q.longDescription.map { desc => @desc.split("\n").map { text => <p>@text</p> } }
     <details>
@@ -22,58 +36,44 @@
     </details>
 }
 
-      <div class="column-full no-lr-padding">
+<div class="column-full no-lr-padding">
 
-          @defining(field.itemNameField) { f =>
-              <div class="column-half no-lr-padding">
-                <div class="form-group @{if (errors.nonEmpty) "error" }">
-                  <label for="@f.name">@f.label</label>
-                  @if(errors.nonEmpty) {
-                          <!-- TODO: actually pick out the correct field error -->
-                      <span class="error-message">@errors.head.err</span>
-                  }
-                  <input type="text" id="@f.name" class="form-control text-field" title="@f.name" name="@f.name"
-                  value='@answers.get(f.name)'>
-                </div>
-              </div>
+    @defining(field.itemNameField) { f =>
+        <div class="column-half no-lr-padding">
+            <div class="form-group @errorClassFor(f)">
+                <label for="@f.name">@f.label</label>
+                @errorBlock(f)
+                <input type="text" id="@f.name" class="form-control text-field" title="@f.name" name="@f.name"
+                value='@answers.get(f.name)'>
+            </div>
+        </div>
 
-          }
+    }
 
-          @defining(field.costField) { f =>
-                <div class="column-half no-r-padding">
-                    <div class="form-group @{if (errors.nonEmpty) "error" }">
-                    <span class="pull-right-lg-only">
-                        <label for="@f.name">@f.label</label>
-                        @if(errors.nonEmpty) {
-                                <!-- TODO: actually pick out the correct field error -->
-                            <span class="error-message">@errors.head.err</span>
-                        }
-                        <div class="input-icon">
-                            <i>£</i>
-                            <input type="text" id="@f.name" class="form-control text-field currency" title="@f.name" name="@f.name" value='@answers.get(f.name)'>
-                        </div>
-                    </span>
-                  </div>
-              </div>
-            }
-      </div>
+    @defining(field.costField) { f =>
+        <div class="column-half no-r-padding">
+            <div class="form-group @errorClassFor(f)">
+                <span class="pull-right-lg-only">
+                    <label for="@f.name">@f.label</label>
+                    @errorBlock(f)
+                    <div class="input-icon">
+                        <i>£</i>
+                        <input type="text" id="@f.name" class="form-control text-field currency" title="@f.name" name="@f.name" value='@answers.get(f.name)'>
+                    </div>
+                </span>
+            </div>
+        </div>
+    }
+</div>
 
 
-    @defining(field.justificationField) { f =>
-      <div class="column-full no-lr-padding">
-        <div class="form-group @{if (errs.filter(e => e.path == f.name).isEmpty) "" else  "error"}">
+@defining(field.justificationField) { f =>
+    <div class="column-full no-lr-padding">
+        <div class='form-group @errorClassFor(f)'>
             <label for="@f.name">@f.label</label>
-            @if(errors.nonEmpty) {
-                <!-- TODO: actually pick out the correct field error -->
-                <span class="error-message">@errors.head.err</span>
-            }
+            @errorBlock(f)
             <textarea id="@f.name" class="form-control" title="@f.name" name="@f.name">@answers.get(f.name)</textarea>
             <div class="inline right-align hint-text" id="@(f.name)_hint_text">@hints.find(_.path == f.name).map(_.hint)</div>
-            }
         </div>
-      </div>
-
-    @defining(field.percentageField) { f =>
-        <!--TODO: remove this section: it's only here until the validation passes without this field-->
-        <input type="hidden" id="@f.name" name="@f.name" value='100'>
-    }
+    </div>
+}
