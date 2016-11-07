@@ -4,7 +4,7 @@
         section: Option[ApplicationSection],
         formSection: ApplicationFormSection,
         opportunity: Opportunity,
-        items: List[forms.validation.CostItemValues],
+        items: List[forms.validation.CostItem],
         questions: Map[String, Question],
         errs: List[forms.validation.FieldError]
 )
@@ -67,7 +67,7 @@
                 @items.sortBy(_.itemNumber).map { item =>
                     <tr>
                         <td><a href="">@item.itemName</a></td>
-                        <td>@item.cost</td>
+                        <td>@item.cost.setScale(2)</td>
                         <td><a href="@controllers.routes.CostController.deleteItem(appOverview.id, formSection.sectionNumber, item.itemNumber.getOrElse(-1))">
                             Delete</a></td>
                     </tr>
@@ -76,7 +76,7 @@
                 <tfoot>
                     <tr>
                         <td>Total requested &pound;</td>
-                        <td>@items.map(i => Try(i.cost.map(_.toDouble).getOrElse(0.0)).toOption.getOrElse(0.0)).sum</td>
+                        <td>@items.map(_.cost).sum.setScale(2)</td>
                         <td></td>
                     </tr>
                 </tfoot>

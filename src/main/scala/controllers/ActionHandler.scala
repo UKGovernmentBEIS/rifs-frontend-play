@@ -5,9 +5,9 @@ import javax.inject.Inject
 import cats.data.OptionT
 import cats.instances.future._
 import forms.Field
-import forms.validation.CostItemValues
+import forms.validation.{CostItem, CostItemValues}
 import models._
-import play.api.libs.json.{JsArray, JsDefined, JsObject}
+import play.api.libs.json.{JsArray, JsDefined, JsObject, Json}
 import play.api.mvc.Result
 import play.api.mvc.Results._
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
@@ -112,6 +112,8 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
   }
 
+  implicit val costItemR = Json.reads[CostItem]
+
   def selectSectionForm(sectionNumber: Int, section: Option[ApplicationSection], questions: Map[String, Question], answers: Map[String, String], fields: Seq[Field], errs: FieldErrors, app: ApplicationOverview, appForm: ApplicationForm, opp: Opportunity): Result = {
     val formSection: ApplicationFormSection = appForm.sections.find(_.sectionNumber == sectionNumber).get
     val hints = hinting(JsonHelpers.unflatten(answers), checksFor(sectionNumber))
@@ -123,7 +125,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
         val cancelLink = controllers.routes.ApplicationController.show(app.id)
         sectionDoc \ "items" match {
           case JsDefined(JsArray(is)) =>
-            val costItems = is.flatMap(_.validate[CostItemValues].asOpt)
+            val costItems = is.flatMap(_.validate[CostItem].asOpt)
             if (costItems.nonEmpty) Ok(views.html.costSectionList(app, appForm, section, formSection, opp, costItems.toList, questionsFor(sectionNumber), errs))
             else Redirect(controllers.routes.CostController.addItem(app.id, sectionNumber))
           case _ => Redirect(controllers.routes.CostController.addItem(app.id, sectionNumber))
