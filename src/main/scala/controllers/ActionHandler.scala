@@ -20,24 +20,21 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
   import ApplicationData._
   import FieldCheckHelpers._
 
-  def doSave(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] =
-    sectionTypeFor(sectionNumber) match {
-      case VanillaSection => applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
-          Redirect(routes.ApplicationController.show(id))
-        }
   def doSave(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
-    allValuesEmpty(fieldValues) match {
-      case true => applications.deleteSection(id, sectionNumber).map { _ =>
-        Redirect(routes.ApplicationController.show(id))
-      }
-      case false => applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
-        Redirect(routes.ApplicationController.show(id))
-      }
-    }
-  }
+    sectionTypeFor(sectionNumber) match {
+      case VanillaSection =>
+        allValuesEmpty(fieldValues) match {
+          case true => applications.deleteSection(id, sectionNumber).map { _ =>
+            Redirect(routes.ApplicationController.show(id))
+          }
+          case false => applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
+            Redirect(routes.ApplicationController.show(id))
+          }
+        }
 
       case CostSection => Future.successful(redirectToOverview(id))
     }
+  }
 
   def doComplete(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] =
     sectionTypeFor(sectionNumber) match {
