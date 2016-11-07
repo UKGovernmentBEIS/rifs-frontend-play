@@ -1,32 +1,37 @@
 @import models._
 @import partials._
-@import partials._
+
 @(
-  app: ApplicationForm,
-  overview:ApplicationOverview,
-  opportunity:Opportunity,
-  sections: Seq[ApplicationSection],
-  fieldsset: Map[Int,Seq[forms.Field]]
+    app: ApplicationForm,
+    overview:ApplicationOverview,
+    opportunity:Opportunity,
+    sections: Seq[ApplicationSection],
+    fieldsset: Map[Int,Seq[forms.Field]]
 )
 
 @sectionLink(title: String, sectionNum: Int) = {
-<span class="part-number">@sectionNum.</span>
-<a href="@controllers.routes.ApplicationController.showSectionForm(overview.id, sectionNum)">@title</a>
+    <span class="part-number">@sectionNum.</span>
+    <a href="@controllers.routes.ApplicationController.showSectionForm(overview.id, sectionNum)">@title</a>
 }
 
 @titleCols() = @{
-val titles = app.sections.sortBy(_.sectionNumber).map(s => (s.title, s.sectionNumber))
-val midpoint: Int = Math.round(titles.length / 2.0).toInt
-val (leftCols, b) = titles.splitAt(midpoint)
-val rightCols = b.map(Some(_)) :+ None
-leftCols.zip(rightCols)
+    val titles = app.sections.sortBy(_.sectionNumber).map(s => (s.title, s.sectionNumber))
+    val midpoint: Int = Math.round(titles.length / 2.0).toInt
+    val (leftCols, b) = titles.splitAt(midpoint)
+    val rightCols = b.map(Some(_)) :+ None
+    leftCols.zip(rightCols)
 }
 
 @formatId(id: Long) = @{
-f"RIFS$id%05d"
+    f"RIFS$id%05d"
 }
 
 @main(s"Opportunity ${opportunity.id.id}") {
+<div id="global-header-status" class="contain-floats">
+    <div class="float-right">
+        <span>Experienced Eric</span>
+    </div>
+</div>
 <div class="grid-row">
     <div class="column-two-thirds">
 
@@ -39,13 +44,8 @@ f"RIFS$id%05d"
 
         <h1 class="heading-xlarge">
             <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
+            @JsonHelpers.flatten("", (sections.head).answers).get(fieldsset(1).head.name)
         </h1>
-
-        <header class="page-header">
-            <h1 class="heading-xlarge">
-                @JsonHelpers.flatten("", (sections.head).answers).get(fieldsset(1).head.name)
-            </h1>
-        </header>
 
         <aside>
             <nav role="navigation" class="contain-floats page-navigation" aria-label="Navigation">
@@ -68,25 +68,25 @@ f"RIFS$id%05d"
 
         <div class="panel rifs-panel rifs-border-narrow">
             <aside role="complementary" class="notice">
-
                 <div>
                     <dl>
                         <dt class="heading-small">Review your application before submitting
                             <br/><br/>
-                            <a> Download PDF </a>
+                            <a> Print PDF </a>
                         </dt>
                     </dl>
                 </div>
                 <div class="column-full rifs-form-buttons">
                     <p>
-                        <a href="@controllers.routes.ApplicationController.showOrCreateForForm(app.id)"
-                           class="button"
-                        >Close</a>
+                        <a href="@controllers.routes.ApplicationController.show(overview.id)" class="button">
+                            Close
+                        </a>
                     </p>
                 </div>
             </aside>
         </div>
 
+        <article>
         @for(section <- sections){
             @appPreview(
                 app.sections.find(_.sectionNumber == section.sectionNumber).get,
@@ -94,6 +94,11 @@ f"RIFS$id%05d"
                 JsonHelpers.flatten("", section.answers)
             )
         }
+
+        <p class="rifs-form-buttons">
+            <a href="@controllers.routes.ApplicationController.show(overview.id)" class="button">Close</a>
+        </p>
+        </article>
 
     </div>
 
