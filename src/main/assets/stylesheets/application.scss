@@ -262,3 +262,25 @@ hr {
 .no-r-padding {
   padding-right: 0;
 }
+
+
+// Currency input icon
+.input-icon {
+  position: relative;
+}
+
+.input-icon > i {
+   position: absolute;
+   display: block;
+   top: 8px;
+   pointer-events: none;
+   width: 25px;
+   text-align: center;
+   font-style: normal;
+ }
+
+.input-icon > input {
+  padding-left: 25px;
+  padding-right: 6px;
+}
+

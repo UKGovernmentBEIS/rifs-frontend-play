@@ -48,8 +48,10 @@
                                 <!-- TODO: actually pick out the correct field error -->
                             <span class="error-message">@errors.head.err</span>
                         }
-                        <input type="text" id="@f.name" class="form-control text-field currency" title="@f.name" name="@f.name"
-                        value='@answers.get(f.name)' placeholder="£" maxlength="4">
+                        <div class="input-icon">
+                            <i>£</i>
+                            <input type="text" id="@f.name" class="form-control text-field currency" title="@f.name" name="@f.name" value='@answers.get(f.name)'>
+                        </div>
                     </span>
                   </div>
               </div>
