@@ -40,7 +40,7 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
     }
   }
 
-  def applicationPreview(id: ApplicationId) = Action.async {
+  def renderApplicationPreview(id: ApplicationId, isprintpreview: Boolean) = {
     val ft = for {
       a <- OptionT(applications.overview(id))
       af <- OptionT(applicationForms.byId(a.applicationFormId))
@@ -54,40 +54,28 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
       ss <- sections
     } yield (aafopp, ss)
 
-    def getFieldMap(secs:Seq[ApplicationSection]) : Map[Int, Seq[Field]] = {
-      Map(secs.map(sec => sec.sectionNumber -> fieldsFor(sec.sectionNumber).getOrElse(Seq())):_*)
-    }
-
     y.map {
-      case (Some((form, overview, opp )), scs) => Ok(views.html.applicationPreview(form, overview, opp,
-        scs.sortWith(_.sectionNumber < _.sectionNumber), getFieldMap(scs) ))
+      case (Some((form, overview, opp )), scs) =>
+          if(isprintpreview)
+            Ok(views.html.applicationPrintPreview(form, overview, opp,
+              scs.sortWith(_.sectionNumber < _.sectionNumber), getFieldMap(scs) ))
+        else
+            Ok(views.html.applicationPreview(form, overview, opp,
+              scs.sortWith(_.sectionNumber < _.sectionNumber), getFieldMap(scs) ))
       case _ => NotFound
     }
   }
 
+  def getFieldMap(secs:Seq[ApplicationSection]) : Map[Int, Seq[Field]] = {
+    Map(secs.map(sec => sec.sectionNumber -> fieldsFor(sec.sectionNumber).getOrElse(Seq())):_*)
+  }
+
+  def applicationPreview(id: ApplicationId) = Action.async {
+    renderApplicationPreview(id, false)
+  }
+
   def applicationPrintPreview(id: ApplicationId) = Action.async {
-    val ft = for {
-      a <- OptionT(applications.overview(id))
-      af <- OptionT(applicationForms.byId(a.applicationFormId))
-      opp <- OptionT(opportunities.byId(af.opportunityId))
-    } yield (af, a, opp)
-
-    val sections = applications.getSections(id)
-
-    val y = for {
-      aafopp <- ft.value
-      ss <- sections
-    } yield (aafopp, ss)
-
-    def getFieldMap(secs:Seq[ApplicationSection]) : Map[Int, Seq[Field]] = {
-      Map(secs.map(sec => sec.sectionNumber -> fieldsFor(sec.sectionNumber).getOrElse(Seq())):_*)
-    }
-
-    y.map {
-      case (Some((form, overview, opp )), scs) => Ok(views.html.applicationPrintPreview(form, overview, opp,
-        scs.sortWith(_.sectionNumber < _.sectionNumber), getFieldMap(scs) ))
-      case _ => NotFound
-    }
+    renderApplicationPreview(id, true)
   }
 
 
