@@ -8,10 +8,7 @@ import forms.Field
 import models.{ApplicationId, ApplicationSection}
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
-
-import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future}
-import scala.runtime.Nothing$
 
 class ApplicationPreviewController @Inject()(applications: ApplicationOps, applicationForms: ApplicationFormOps, opportunities: OpportunityOps)(implicit ec: ExecutionContext)
   extends Controller {
@@ -58,9 +55,7 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
     } yield (aafopp, ss)
 
     def getFieldMap(secs:Seq[ApplicationSection]) : Map[Int, Seq[Field]] = {
-      var fmap = new collection.immutable.HashMap[Int, Seq[Field]]
-      secs.map(sec => fmap += (sec.sectionNumber -> fieldsFor(sec.sectionNumber).get ))
-      fmap
+      Map(secs.map(sec => sec.sectionNumber -> fieldsFor(sec.sectionNumber).getOrElse(Seq())):_*)
     }
 
     y.map {
