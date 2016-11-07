@@ -20,7 +20,14 @@ GET         /application/:id/section/:num/preview        controllers.Application
 GET         /application/:id/preview                     controllers.ApplicationPreviewController.applicationPreview(id: ApplicationId)
 GET         /application/:id/printpreview                controllers.ApplicationPreviewController.applicationPrintPreview(id: ApplicationId)
 
-GET         /wip                                         controllers.OpportunityController.wip(backUrl: String)
+GET         /application/:id/section/:num/add-item                    controllers.CostController.addItem(id:ApplicationId, num:Int)
+POST        /application/:id/section/:num/item                        controllers.CostController.saveItem(id:ApplicationId, num: Int)
+GET         /application/:id/section/:num/item/:itemNum/delete        controllers.CostController.deleteItem(id:ApplicationId, num: Int, itemNum:Int)
+
+GET         /application/:id/section/:num/preview                     controllers.ApplicationPreviewController.previewSection(id: ApplicationId, num:Int)
+
+GET         /reset                                                    controllers.ApplicationController.reset
+GET         /wip                                                      controllers.OpportunityController.wip(backUrl: String)
 
 # Health check
-GET         /ping                                        controllers.HealthCheckController.ping()
+GET         /ping                                                     controllers.HealthCheckController.ping()
