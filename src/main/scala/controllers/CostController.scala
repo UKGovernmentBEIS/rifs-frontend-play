@@ -7,6 +7,7 @@ import cats.instances.future._
 import controllers.FieldCheckHelpers.FieldErrors
 import forms.validation.CostItemValues
 import models.ApplicationId
+import play.api.Logger
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, Controller, Result}
 import services.ApplicationOps
@@ -48,7 +49,9 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
     val questions = questionsFor(sectionNumber)
     val fields = fieldsFor(sectionNumber).getOrElse(Seq())
     val cancelLink = sectionFormCall(applicationId, sectionNumber)
-    val hints = hinting(doc, itemChecksFor(sectionNumber))
+    val checks = itemChecksFor(sectionNumber)
+    val hints = hinting(doc, checks)
+    Logger.debug(s"hinting $doc with $checks")
     val answers = JsonHelpers.flatten("", doc)
 
     details2.value.map {

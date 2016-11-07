@@ -125,8 +125,8 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
           case JsDefined(JsArray(is)) =>
             val costItems = is.flatMap(_.validate[CostItemValues].asOpt)
             if (costItems.nonEmpty) Ok(views.html.costSectionList(app, appForm, section, formSection, opp, costItems.toList, questionsFor(sectionNumber), errs))
-            else Ok(views.html.costItemForm(app, appForm, formSection, opp, fields, questions, answers, errs, hints, cancelLink, None))
-          case _ => Ok(views.html.costItemForm(app, appForm, formSection, opp, fields, questions, answers, errs, hints, cancelLink, None))
+            else Redirect(controllers.routes.CostController.addItem(app.id, sectionNumber))
+          case _ => Redirect(controllers.routes.CostController.addItem(app.id, sectionNumber))
         }
     }
   }
