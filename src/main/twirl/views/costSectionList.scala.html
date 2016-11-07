@@ -68,7 +68,7 @@
                     <tr>
                         <td><a href="">@item.itemName</a></td>
                         <td class="currency">@item.cost.setScale(2)</td>
-                        <td><a href="@controllers.routes.CostController.deleteItem(appOverview.id, formSection.sectionNumber, item.itemNumber.getOrElse(-1))">
+                        <td class="align-right"><a href="@controllers.routes.CostController.deleteItem(appOverview.id, formSection.sectionNumber, item.itemNumber.getOrElse(-1))">
                             Delete</a></td>
                     </tr>
                 }
