@@ -59,7 +59,7 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
           if(isprintpreview)
             Ok(views.html.applicationPrintPreview(form, overview, opp,
               scs.sortWith(_.sectionNumber < _.sectionNumber), getFieldMap(scs) ))
-        else
+          else
             Ok(views.html.applicationPreview(form, overview, opp,
               scs.sortWith(_.sectionNumber < _.sectionNumber), getFieldMap(scs) ))
       case _ => NotFound
@@ -77,6 +77,5 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
   def applicationPrintPreview(id: ApplicationId) = Action.async {
     renderApplicationPreview(id, true)
   }
-
-
+  
 }
