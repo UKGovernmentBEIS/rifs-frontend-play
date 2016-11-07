@@ -16,11 +16,15 @@ trait ApplicationOps {
 
   def overview(id: ApplicationId): Future[Option[ApplicationOverview]]
 
+  def deleteAll(): Future[Unit]
+
   def saveSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[Unit]
 
   def completeSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors]
 
   def saveItem(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors]
+
+  def deleteItem(id: ApplicationId, sectionNumber: Int, itemNumber: Int): Future[Unit]
 
   def getSection(id: ApplicationId, sectionNumber: Int): Future[Option[ApplicationSection]]
 
