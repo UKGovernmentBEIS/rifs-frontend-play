@@ -2,6 +2,7 @@ package forms.validation
 
 import cats.data.ValidatedNel
 import cats.syntax.validated._
+import play.api.libs.json.JsValue
 
 case class WordCountValidator(maxWords: Int) extends FieldValidator[String, String] {
 
@@ -16,8 +17,8 @@ case class WordCountValidator(maxWords: Int) extends FieldValidator[String, Stri
     }
   }
 
-  override def hintText(path: String, s: Option[String]): Option[FieldHint] = {
-    val wordCount = normalise(s.getOrElse("")).split("\\s+").filterNot(_ == "").length
+  override def hintText(path: String, jv: JsValue): List[FieldHint] = {
+    val wordCount = normalise(jv.validate[String].asOpt.getOrElse("")).split("\\s+").filterNot(_ == "").length
 
     val text = wordCount match {
       case 0 => noWords(maxWords)
@@ -25,7 +26,7 @@ case class WordCountValidator(maxWords: Int) extends FieldValidator[String, Stri
       case _ => wordsRemaining(maxWords - wordCount)
     }
 
-    Some(FieldHint(path, text, Some("WordCount"), Some(s"""{\"maxWords\": $maxWords}""")))
+    List(FieldHint(path, text, Some("WordCount"), Some(s"""{\"maxWords\": $maxWords}""")))
   }
 }
 

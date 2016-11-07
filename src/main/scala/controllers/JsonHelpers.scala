@@ -16,6 +16,10 @@ object JsonHelpers {
     }.fold(Map[String, String]())(_ combine _)
   }
 
+  def unflatten(values: Map[String, String]): JsObject = {
+    deflate(values.map { case (k, v) => k.split('.').toList -> List(v) })
+  }
+
   def formToJson(form: Map[String, Seq[String]]): JsObject = {
     deflate(form.map { case (k, vs) => k.split('.').toList -> vs.toList })
   }
