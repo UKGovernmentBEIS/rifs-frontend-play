@@ -1,6 +1,7 @@
 package forms.validation
 
 import cats.data.ValidatedNel
+import play.api.libs.json.JsValue
 
 case class FieldError(path: String, err: String)
 
@@ -16,12 +17,12 @@ trait FieldValidator[A, B] {
 
   def validate(path: String, a: A): ValidatedNel[FieldError, B]
 
-  def hintText(path: String, s: Option[String]): List[FieldHint] = List()
+  def hintText(path: String, jv: JsValue): List[FieldHint] = List()
 
   def andThen[C](v2: FieldValidator[B, C]): FieldValidator[A, C] = new FieldValidator[A, C] {
     override def validate(path: String, a: A): ValidatedNel[FieldError, C] = outer.validate(path, a).andThen(v2.validate(path, _))
 
-    override def hintText(path: String, s: Option[String]): List[FieldHint] = v2.hintText(path, s) ++ outer.hintText(path, s)
+    override def hintText(path: String, jv: JsValue): List[FieldHint] = v2.hintText(path, jv) ++ outer.hintText(path, jv)
   }
 
 }
