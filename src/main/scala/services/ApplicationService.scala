@@ -81,6 +81,11 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     getOpt[ApplicationOverview](url)
   }
 
+  override def deleteAll(): Future[Unit] = {
+    val url = s"$baseUrl/application"
+    delete(url)
+  }
+
   override def deleteSection(id: ApplicationId, sectionNumber: Int): Future[Unit] = {
     val url = s"$baseUrl/application/${id.id}/section/$sectionNumber"
     delete(url)

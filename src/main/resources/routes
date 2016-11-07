@@ -23,6 +23,7 @@ GET         /application/:id/section/:num/item/:itemNum/delete        controller
 
 GET         /application/:id/section/:num/preview                     controllers.ApplicationPreviewController.previewSection(id: ApplicationId, num:Int)
 
+GET         /reset                                                    controllers.ApplicationController.reset
 GET         /wip                                                      controllers.OpportunityController.wip(backUrl: String)
 
 # Health check

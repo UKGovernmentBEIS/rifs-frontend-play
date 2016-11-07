@@ -25,6 +25,10 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
     }
   }
 
+  def reset = Action.async {
+    applications.deleteAll.map(_ => Redirect(controllers.routes.StartPageController.startPage()))
+  }
+
   import ApplicationData._
   import FieldCheckHelpers._
 
@@ -50,4 +54,6 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
       case Preview => actionHandler.doPreview(id, sectionNumber, request.body.values)
     }
   }
+
+
 }
