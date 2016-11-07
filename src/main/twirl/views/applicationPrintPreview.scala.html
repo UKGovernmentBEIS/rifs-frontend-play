@@ -1,0 +1,41 @@
+@import models._
+@import partials._
+
+@(
+    app: ApplicationForm,
+    overview:ApplicationOverview,
+    opportunity:Opportunity,
+    sections: Seq[ApplicationSection],
+    fieldsset: Map[Int,Seq[forms.Field]]
+)
+
+
+@formatId(id: Long) = @{
+    f"RIFS$id%05d"
+}
+
+@main(s"Opportunity ${opportunity.id.id}") {
+<div class="grid-row">
+        <h1 class="heading-xlarge">
+            <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
+            @JsonHelpers.flatten("", (sections.head).answers).get(fieldsset(1).head.name)
+        </h1>
+
+        <article>
+        @for(section <- sections){
+            @appPreview(
+                app.sections.find(_.sectionNumber == section.sectionNumber).get,
+                fieldsset(section.sectionNumber),
+                JsonHelpers.flatten("", section.answers)
+            )
+            <br/>
+        }
+
+        <p class="rifs-form-buttons">
+            <a href="@controllers.routes.ApplicationController.show(overview.id)" class="button" onclick="self.close()">Close</a>
+        </p>
+        </article>
+
+</div>
+
+}

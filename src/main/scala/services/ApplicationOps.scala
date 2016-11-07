@@ -26,4 +26,6 @@ trait ApplicationOps {
 
   def getSections(id: ApplicationId): Future[Seq[ApplicationSection]]
 
+  def deleteSection(id: ApplicationId, sectionNumber: Int): Future[Unit]
+
 }
