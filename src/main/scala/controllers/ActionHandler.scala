@@ -61,7 +61,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
         Redirect(routes.ApplicationController.show(id))
       }
       case false => applications.saveItem(id, sectionNumber, fieldValues).flatMap {
-        case Nil => Future.successful(Redirect(routes.ApplicationController.show(id)))
+        case Nil => Future.successful(redirectToOverview(id))
         case errs => redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
       }
     }
