@@ -20,14 +20,21 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
   import ApplicationData._
   import FieldCheckHelpers._
 
-  def doSave(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] =
+  def doSave(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
     sectionTypeFor(sectionNumber) match {
-      case VanillaSection => applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
-          Redirect(routes.ApplicationController.show(id))
+      case VanillaSection =>
+        allValuesEmpty(fieldValues) match {
+          case true => applications.deleteSection(id, sectionNumber).map { _ =>
+            Redirect(routes.ApplicationController.show(id))
+          }
+          case false => applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
+            Redirect(routes.ApplicationController.show(id))
+          }
         }
 
       case CostSection => Future.successful(redirectToOverview(id))
     }
+  }
 
   def doComplete(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] =
     sectionTypeFor(sectionNumber) match {
@@ -49,9 +56,14 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
 
   def doSaveItem(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
-    applications.saveItem(id, sectionNumber, fieldValues).flatMap {
-      case Nil => Future.successful(Redirect(routes.ApplicationController.show(id)))
-      case errs => redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
+    allValuesEmpty(fieldValues) match {
+      case true => applications.deleteSection(id, sectionNumber).map { _ =>
+        Redirect(routes.ApplicationController.show(id))
+      }
+      case false => applications.saveItem(id, sectionNumber, fieldValues).flatMap {
+        case Nil => Future.successful(Redirect(routes.ApplicationController.show(id)))
+        case errs => redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
+      }
     }
   }
 
@@ -126,4 +138,9 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
       o <- OptionT(opportunities.byId(af.opportunityId))
     } yield (a, af, o)
   }.value
+
+  def allValuesEmpty(answerSet: JsObject): Boolean = {
+    JsonHelpers.flatten("", answerSet).filter(_._2.isEmpty == false).toList.isEmpty
+  }
+
 }

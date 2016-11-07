@@ -16,7 +16,7 @@ case class WordCountValidator(maxWords: Int) extends FieldValidator[String, Stri
     }
   }
 
-  override def hintText(path: String, s: Option[String]): Option[FieldHint] = {
+  override def hintText(path: String, s: Option[String]): List[FieldHint] = {
     val wordCount = normalise(s.getOrElse("")).split("\\s+").filterNot(_ == "").length
 
     val text = wordCount match {
@@ -25,7 +25,7 @@ case class WordCountValidator(maxWords: Int) extends FieldValidator[String, Stri
       case _ => wordsRemaining(maxWords - wordCount)
     }
 
-    Some(FieldHint(path, text, Some("WordCount"), Some(s"""{\"maxWords\": $maxWords}""")))
+    List(FieldHint(path, text, Some("WordCount"), Some(s"""{\"maxWords\": $maxWords}""")))
   }
 }
 
