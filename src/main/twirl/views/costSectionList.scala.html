@@ -59,7 +59,7 @@
                 <thead>
                     <tr>
                         <th scope="col">Item</th>
-                        <th scope="col">Cost &pound;</th>
+                        <th scope="col" class="align-right">Cost &pound;</th>
                         <th scope="col"><span class="visuallyhidden">Action</span></th>
                     </tr>
                 </thead>
@@ -67,8 +67,8 @@
                 @items.sortBy(_.itemNumber).map { item =>
                     <tr>
                         <td><a href="">@item.itemName</a></td>
-                        <td>@item.cost.setScale(2)</td>
-                        <td><a href="@controllers.routes.CostController.deleteItem(appOverview.id, formSection.sectionNumber, item.itemNumber.getOrElse(-1))">
+                        <td class="currency">@item.cost.setScale(2)</td>
+                        <td class="align-right"><a href="@controllers.routes.CostController.deleteItem(appOverview.id, formSection.sectionNumber, item.itemNumber.getOrElse(-1))">
                             Delete</a></td>
                     </tr>
                 }
@@ -76,7 +76,7 @@
                 <tfoot>
                     <tr>
                         <td>Total requested &pound;</td>
-                        <td>@items.map(_.cost).sum.setScale(2)</td>
+                        <td class="currency">@items.map(_.cost).sum.setScale(2)</td>
                         <td></td>
                     </tr>
                 </tfoot>
