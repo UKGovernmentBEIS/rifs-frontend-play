@@ -1,7 +1,6 @@
 // Path to assets for use with the file-url function
 // in the govuk frontend toolkit's url-helpers partial
 $path: '/assets/stylesheets/images/';
-$medium-grey: #ccc;
 
 // Base GDS Toolkit
 // Settings (variables)
@@ -90,7 +89,7 @@ $medium-grey: #ccc;
 }
 
 .rifs-panel {
-  background-color: $medium-grey;
+  background-color: $panel-colour;
 }
 
 // General
@@ -128,11 +127,13 @@ $medium-grey: #ccc;
   line-height: 2.2;
 }
 
-// Notices, Panels etc.
-aside.notice div dl dd {
+
+// Definition Lists
+.definition-list dl dd {
   margin: 0;
   padding: 0;
 }
+
 
 // Typography
 .expanded-list {
@@ -201,12 +202,14 @@ table.spacious th {
 
 .duration-preview {
   @extend %contain-floats;
+
+  // Remove any left padding on the container divs so the floated
+  // inner divs line up on mobile.
+  div {
+    padding-left: 0;
+  }
 }
 
-.duration-preview>div {
-  float: left;
-  margin-right: 4em;
-}
 
 // Buttons
 input.button--link-style {
@@ -221,11 +224,9 @@ input.button--link-style {
 
 a.button.secondary,
 input.secondary {
-  background-color: $medium-grey;
+  background-color: $grey-3;
   color: $black;
 }
-
-
 
 // GOV.UK overrides
 hr {
@@ -251,4 +252,44 @@ hr {
 // Typography
 .preview-text {
   white-space: pre-wrap;
+}
+
+.no-lr-padding {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.no-r-padding {
+  padding-right: 0;
+}
+
+
+// Currency input icon
+.input-icon {
+  position: relative;
+}
+
+.input-icon > i {
+   position: absolute;
+   display: block;
+   top: 8px;
+   pointer-events: none;
+   width: 25px;
+   text-align: center;
+   font-style: normal;
+ }
+
+.input-icon > input {
+  padding-left: 25px;
+  padding-right: 6px;
+}
+
+
+.currency {
+  text-align: right;
+  //font-family: monospace;
+}
+
+.align-right {
+  text-align: right;
 }

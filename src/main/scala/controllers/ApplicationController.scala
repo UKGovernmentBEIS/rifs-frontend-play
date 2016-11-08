@@ -9,11 +9,11 @@ import services.ApplicationOps
 import scala.concurrent.{ExecutionContext, Future}
 
 class ApplicationController @Inject()(actionHandler: ActionHandler, applications: ApplicationOps)(implicit ec: ExecutionContext)
-  extends Controller {
+  extends Controller with ApplicationResults {
 
   def showOrCreateForForm(id: ApplicationFormId) = Action.async {
     applications.getOrCreateForForm(id).map {
-      case Some(app) => Redirect(controllers.routes.ApplicationController.show(app.id))
+      case Some(app) => redirectToOverview(app.id)
       case None => NotFound
     }
   }
@@ -23,6 +23,10 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
       case Some((overview, form, opp)) => Ok(views.html.showApplicationForm(form, overview, opp))
       case None => NotFound
     }
+  }
+
+  def reset = Action.async {
+    applications.deleteAll().map(_ => Redirect(controllers.routes.StartPageController.startPage()))
   }
 
   import ApplicationData._
@@ -37,9 +41,10 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
         }
 
       // Temporary hack to display the WIP page for sections that we haven't yet coded up
-      case None => Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
+      case None => Future.successful(wip(routes.ApplicationController.show(id).url))
     }
   }
+
 
   def postSection(id: ApplicationId, sectionNumber: Int) = Action.async(JsonForm.parser) { implicit request =>
     request.body.action match {
@@ -49,4 +54,6 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
       case Preview => actionHandler.doPreview(id, sectionNumber, request.body.values)
     }
   }
+
+
 }

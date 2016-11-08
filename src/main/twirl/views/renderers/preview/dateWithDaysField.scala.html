@@ -1,19 +1,26 @@
 @(field: forms.DateWithDaysField, startDate: String, days: Int, endDate: String)
 
 <div class="duration-preview">
-    <div>
-        <h3 class="heading-medium no-top-margin">Start date</h3>
-        @startDate
-        </div>
-    <div>
-        <h3 class="heading-medium no-top-margin">Days duration</h3>
-        @days
+    <div class="column-third definition-list">
+        <dl>
+            <dt class="heading-small">Start date</dt>
+            <dd>@startDate</dd>
+        </dl>
     </div>
-    <div>
-        <h3 class="heading-medium no-top-margin">End date</h3>
-        @endDate
+
+    <div class="column-third definition-list">
+        <dl>
+            <dt class="heading-small">Days duration</dt>
+            <dd>@days</dd>
+        </dl>
+    </div>
+
+    <div class="column-third definition-list">
+        <dl>
+            <dt class="heading-small">End date</dt>
+            <dd>@endDate</dd>
+        </dl>
     </div>
 </div>
-<div style="clear: both"></div>
 
 
