@@ -1,5 +1,5 @@
 @(
-        app: ApplicationForm,
+        appForm: ApplicationForm,
         overview: ApplicationOverview,
         opportunity: Opportunity,
         sections: Seq[ApplicationSection],
@@ -21,19 +21,7 @@
             @title
         </h1>
 
-        <article>
-            @for(section <- sections) {
-                @app.sections.find(_.sectionNumber == section.sectionNumber).map { s =>
-                    @appPreview(s, answers.getOrElse(section.sectionNumber, Seq()), JsonHelpers.flatten("", section.answers))
-                    <br/>
-                }
-            }
-
-            <p class="rifs-form-buttons">
-                <a href="@controllers.routes.ApplicationController.show(overview.id)" class="button" onclick="self.close()">
-                    Close</a>
-            </p>
-        </article>
+        @appPreview(appForm, overview, sections, answers)
 
     </div>
 

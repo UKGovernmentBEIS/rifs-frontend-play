@@ -1,0 +1,16 @@
+@(
+formSection: ApplicationFormSection,
+fields: Seq[forms.Field],
+answers: Map[String, String]
+)
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+
+        <div>
+         <b>  @formSection.sectionNumber . @formSection.title </b>
+        </div>
+
+        @fields.map(_.renderPreview(answers))
+    </div>
+</div>

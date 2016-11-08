@@ -1,16 +1,23 @@
 @(
-formSection: ApplicationFormSection,
-fields: Seq[forms.Field],
-answers: Map[String, String]
+        appForm: ApplicationForm,
+        overview: ApplicationOverview,
+        sections: Seq[ApplicationSection],
+        answers: Map[Int, Seq[forms.Field]]
 )
 
-<div class="grid-row">
-    <div class="column-two-thirds">
+<article>
+    @appForm.sections.sortBy(_.sectionNumber).map { formSection =>
+        @sections.find(_.sectionNumber == formSection.sectionNumber).map { section =>
+            @appSectionPreview(formSection, answers.getOrElse(section.sectionNumber, Seq()), JsonHelpers.flatten("", section.answers))
+        }.getOrElse {
+            <div>
+                <b>@formSection.sectionNumber. @formSection.title</b>
+            </div>
+            <p>You have not supplied any answers for this section</p>
+        }
+    }
 
-        <div>
-         <b>  @formSection.sectionNumber . @formSection.title </b>
-        </div>
-
-        @fields.map(_.renderPreview(answers))
-    </div>
-</div>
+<p class="rifs-form-buttons">
+    <a href="@controllers.routes.ApplicationController.show(overview.id)" class="button">Close</a>
+</p>
+</article>

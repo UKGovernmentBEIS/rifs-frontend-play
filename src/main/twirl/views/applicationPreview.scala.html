@@ -89,17 +89,7 @@
                 </aside>
             </div>
 
-            <article>
-                @for(section <- sections) {
-                    @appForm.sections.find(_.sectionNumber == section.sectionNumber).map { appSection =>
-                        @appPreview(appSection, answers.getOrElse(section.sectionNumber, Seq()), JsonHelpers.flatten("", section.answers))
-                    }
-                }
-
-                <p class="rifs-form-buttons">
-                    <a href="@controllers.routes.ApplicationController.show(overview.id)" class="button">Close</a>
-                </p>
-            </article>
+            @appPreview(appForm, overview, sections, answers)
 
         </div>
 
