@@ -53,12 +53,12 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
 
     val sections = applications.getSections(id)
 
-    val y = for {
-      aafopp <- ft.value
+    val details = for {
+      appDetails <- ft.value
       ss <- sections
-    } yield (aafopp, ss)
+    } yield (appDetails, ss)
 
-    y.map {
+    details.map {
       case (Some((form, overview, opp)), scs) =>
         val title = scs.find(_.sectionNumber == 1).flatMap(s => (s.answers \ "title").validate[String].asOpt)
         Ok(preview(form, overview, opp, scs.sortBy(_.sectionNumber), title, getFieldMap(scs)))
@@ -66,7 +66,6 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
       case _ => NotFound
     }
   }
-
 
   def getFieldMap(secs: Seq[ApplicationSection]): Map[Int, Seq[Field]] = {
     Map(secs.map(sec => sec.sectionNumber -> fieldsFor(sec.sectionNumber).getOrElse(Seq())): _*)
