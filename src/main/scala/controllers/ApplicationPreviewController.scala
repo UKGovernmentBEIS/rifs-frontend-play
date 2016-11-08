@@ -57,11 +57,11 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
 
     y.map {
       case (Some((form, overview, opp)), scs) =>
+        val title = scs.find(_.sectionNumber == 1).flatMap(s => (s.answers \ "title").validate[String].asOpt)
         if (isprintpreview)
-          Ok(views.html.applicationPrintPreview(form, overview, opp, scs.sortBy(_.sectionNumber), getFieldMap(scs)))
+          Ok(views.html.applicationPrintPreview(form, overview, opp, scs.sortBy(_.sectionNumber),title, getFieldMap(scs)))
         else {
           // TODO: Remove the assumption that the first section is the title
-          val title = scs.find(_.sectionNumber == 1).flatMap(s => (s.answers \ "title").validate[String].asOpt)
           Ok(views.html.applicationPreview(form, overview, opp, scs.sortBy(_.sectionNumber), title, getFieldMap(scs)))
         }
       case _ => NotFound
