@@ -8,6 +8,7 @@ import forms.Field
 import models.{ApplicationId, ApplicationSection}
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class ApplicationPreviewController @Inject()(applications: ApplicationOps, applicationForms: ApplicationFormOps, opportunities: OpportunityOps)(implicit ec: ExecutionContext)
@@ -55,19 +56,20 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
     } yield (aafopp, ss)
 
     y.map {
-      case (Some((form, overview, opp )), scs) =>
-          if(isprintpreview)
-            Ok(views.html.applicationPrintPreview(form, overview, opp,
-              scs.sortWith(_.sectionNumber < _.sectionNumber), getFieldMap(scs) ))
-          else
-            Ok(views.html.applicationPreview(form, overview, opp,
-              scs.sortWith(_.sectionNumber < _.sectionNumber), getFieldMap(scs) ))
+      case (Some((form, overview, opp)), scs) =>
+        if (isprintpreview)
+          Ok(views.html.applicationPrintPreview(form, overview, opp, scs.sortBy(_.sectionNumber), getFieldMap(scs)))
+        else {
+          // TODO: Remove the assumption that the first section is the title
+          val title = scs.find(_.sectionNumber == 1).flatMap(s => (s.answers \ "title").validate[String].asOpt)
+          Ok(views.html.applicationPreview(form, overview, opp, scs.sortBy(_.sectionNumber), title, getFieldMap(scs)))
+        }
       case _ => NotFound
     }
   }
 
-  def getFieldMap(secs:Seq[ApplicationSection]) : Map[Int, Seq[Field]] = {
-    Map(secs.map(sec => sec.sectionNumber -> fieldsFor(sec.sectionNumber).getOrElse(Seq())):_*)
+  def getFieldMap(secs: Seq[ApplicationSection]): Map[Int, Seq[Field]] = {
+    Map(secs.map(sec => sec.sectionNumber -> fieldsFor(sec.sectionNumber).getOrElse(Seq())): _*)
   }
 
   def applicationPreview(id: ApplicationId) = Action.async {
@@ -77,5 +79,5 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
   def applicationPrintPreview(id: ApplicationId) = Action.async {
     renderApplicationPreview(id, true)
   }
-  
+
 }
