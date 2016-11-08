@@ -40,7 +40,6 @@
             <div class="breadcrumbs">
                 <ol>
                     <li><a href="@controllers.routes.ApplicationController.show(overview.id)">&lt; Return to application overview</a></li>
-
                 </ol>
             </div>
 
@@ -71,21 +70,21 @@
             <div class="panel rifs-panel rifs-border-narrow">
                 <aside role="complementary" class="notice">
                     <div>
-                        <dl>
-                            <dt class="heading-small">Review your application before submitting
-                                <br/><br/>
-                                <a href="@controllers.routes.ApplicationPreviewController.applicationPrintPreview(overview.id)" class="flat" target="_blank">
-                                    Print Preview </a>
-                            </dt>
-                        </dl>
+                        <h2 class="heading-small">Review your application before submitting</h2>
+                        <p class="bold-small">
+                            <a href="@controllers.routes.ApplicationPreviewController.applicationPrintPreview(overview.id)" class="flat" target="_blank">
+                                Print Preview </a>
+                        </p>
                     </div>
-                    <div class="column-full rifs-form-buttons">
+
+                    <div class="rifs-form-buttons">
                         <p>
                             <a href="@controllers.routes.ApplicationController.show(overview.id)" class="button">
                                 Close
                             </a>
                         </p>
                     </div>
+
                 </aside>
             </div>
 

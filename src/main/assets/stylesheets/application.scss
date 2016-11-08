@@ -254,6 +254,10 @@ hr {
   white-space: pre-wrap;
 }
 
+.nobreak {
+  white-space: nowrap;
+}
+
 .currency {
   text-align: right;
   //font-family: monospace;
