@@ -33,7 +33,7 @@ object FieldChecks {
   }
 
   def fromValidator[T: Reads](v: FieldValidator[T, _]): FieldCheck = new FieldCheck {
-    override def toString(): String = s"check from validator $v"
+    override def toString: String = s"check from validator $v"
 
     override def apply(path: String, jv: JsValue) = jv.validate[T].map { x =>
       v.validate(path, x).fold(_.toList, _ => List())
