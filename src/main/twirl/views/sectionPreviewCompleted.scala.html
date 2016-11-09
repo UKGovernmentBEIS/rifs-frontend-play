@@ -7,6 +7,8 @@
         answers: Map[String, String]
 )
 
+//TODO: CONSIDER Passing in the URLs as close and option of edit url
+
 @formatId(id: Long) = @{
     f"RIFS$id%05d"
 }
@@ -27,9 +29,13 @@
 
             @fields.map(_.renderPreview(answers))
 
+            <p></p>
+
+            @section.flatMap(_.completedAtText).getOrElse("")
+
             <div class="rifs-form-buttons">
                 <a class="button secondary" href="@controllers.routes.ApplicationController.show(app.id)">Close</a>
-                <a class="flat" href="@controllers.routes.ApplicationController.showSectionForm(app.id, formSection.sectionNumber)">Edit this page</a>
+                <a class="flat" href="@controllers.routes.ApplicationController.editSectionForm(app.id, formSection.sectionNumber)">Edit this page</a>
             </div>
         </div>
     </div>

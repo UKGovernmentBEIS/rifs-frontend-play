@@ -67,19 +67,31 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
   }
 
+
+  //TODO: TIDY & COnSIDER refactor + ARE WE STILL doing all the required validations ?
   def doPreview(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
     sectionTypeFor(sectionNumber) match {
       case VanillaSection =>
         val errs = check(fieldValues, previewChecksFor(sectionNumber))
         if (errs.isEmpty) {
           applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
-            Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber))
+            Redirect(routes.ApplicationPreviewController.previewSectionInProgress(id, sectionNumber))
           }
         } else redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
 
       case CostSection => Future.successful(wip(sectionFormCall(id, sectionNumber).url))
     }
   }
+
+  def doPreviewCompleted(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject) = {
+    Redirect(routes.ApplicationPreviewController.previewSectionCompleted(id, sectionNumber))
+  }
+
+  def displayCompletedPreview(id: ApplicationId, sectionNumber: Int): Future[Result] = {
+    Future.successful(Redirect(controllers.routes.ApplicationPreviewController.previewSectionCompleted(id, sectionNumber)))
+  }
+
+//----
 
   def renderSectionForm(id: ApplicationId,
                         sectionNumber: Int,

@@ -15,13 +15,15 @@ GET         /application_form/:id/apply                               controller
 GET         /application/:id                                          controllers.ApplicationController.show(id: ApplicationId)
 GET         /application/:id/section/:num                             controllers.ApplicationController.showSectionForm(id: ApplicationId, num:Int)
 POST        /application/:id/section/:num                             controllers.ApplicationController.postSection(id: ApplicationId, num:Int)
-
+GET         /application/:id/section/:num/edit                        controllers.ApplicationController.editSectionForm(id: ApplicationId, num:Int)
 
 GET         /application/:id/section/:num/add-item                    controllers.CostController.addItem(id:ApplicationId, num:Int)
 POST        /application/:id/section/:num/item                        controllers.CostController.saveItem(id:ApplicationId, num: Int)
 GET         /application/:id/section/:num/item/:itemNum/delete        controllers.CostController.deleteItem(id:ApplicationId, num: Int, itemNum:Int)
 
-GET         /application/:id/section/:num/preview                     controllers.ApplicationPreviewController.previewSection(id: ApplicationId, num:Int)
+#TODO: Conider combining Previews once they work (pass in optional edit button, consider completed date)
+GET         /application/:id/section/:num/previewCompleted            controllers.ApplicationPreviewController.previewSectionCompleted(id: ApplicationId, num:Int)
+GET         /application/:id/section/:num/previewInProgress           controllers.ApplicationPreviewController.previewSectionInProgress(id: ApplicationId, num:Int)
 
 GET         /reset                                                    controllers.ApplicationController.reset
 GET         /wip                                                      controllers.OpportunityController.wip(backUrl: String)
