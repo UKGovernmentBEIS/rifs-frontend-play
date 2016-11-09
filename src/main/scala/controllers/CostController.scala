@@ -2,13 +2,15 @@ package controllers
 
 import javax.inject.Inject
 
-import cats.data.OptionT
+import cats.data.Validated.{Invalid, Valid}
+import cats.data.{OptionT, ValidatedNel}
 import cats.instances.future._
+import cats.syntax.validated._
 import controllers.FieldCheckHelpers.FieldErrors
-import forms.validation.CostItemValues
+import forms.validation.{CostItem, CostItemValidator, CostItemValues, FieldError}
 import models.ApplicationId
 import play.api.Logger
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsError, JsObject, JsSuccess, Json}
 import play.api.mvc.{Action, Controller, Result}
 import services.ApplicationOps
 
@@ -17,16 +19,29 @@ import scala.concurrent.{ExecutionContext, Future}
 class CostController @Inject()(actionHandler: ActionHandler, applications: ApplicationOps)(implicit ec: ExecutionContext)
   extends Controller with ApplicationResults {
 
-  implicit val costItemValuesR = Json.reads[CostItemValues]
+  implicit val costItemValuesF = Json.format[CostItemValues]
+  implicit val costItemF = Json.format[CostItem]
 
   def addItem(applicationId: ApplicationId, sectionNumber: Int) = Action.async { implicit request =>
     showItemForm(applicationId, sectionNumber, JsObject(Seq()), List())
   }
 
+  def validateItem(o: JsObject): ValidatedNel[FieldError, CostItem] = {
+    (o \ "item").validate[CostItemValues] match {
+      case JsError(errs) => FieldError("item", s"could not convert $o to CostItemValues").invalidNel
+      case JsSuccess(values, _) =>
+        Logger.debug(values.toString)
+        CostItemValidator.validate("item", values)
+    }
+  }
+
   def saveItem(applicationId: ApplicationId, sectionNumber: Int) = Action.async(JsonForm.parser) { implicit request =>
-    applications.saveItem(applicationId, sectionNumber, request.body.values).flatMap {
-      case Nil => Future.successful(redirectToSectionForm(applicationId, sectionNumber))
-      case errs => showItemForm(applicationId, sectionNumber, request.body.values, errs)
+    validateItem(request.body.values) match {
+      case Valid(ci) => applications.saveItem(applicationId, sectionNumber, JsObject(Seq("item" -> Json.toJson(ci)))).flatMap {
+        case Nil => Future.successful(redirectToSectionForm(applicationId, sectionNumber))
+        case errs => showItemForm(applicationId, sectionNumber, request.body.values, errs)
+      }
+      case Invalid(errs) => showItemForm(applicationId, sectionNumber, request.body.values, errs.toList)
     }
   }
 
@@ -46,12 +61,12 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
 
     import ApplicationData._
     import FieldCheckHelpers._
+
     val questions = questionsFor(sectionNumber)
     val fields = fieldsFor(sectionNumber).getOrElse(Seq())
     val cancelLink = sectionFormCall(applicationId, sectionNumber)
     val checks = itemChecksFor(sectionNumber)
     val hints = hinting(doc, checks)
-    Logger.debug(s"hinting $doc with $checks")
     val answers = JsonHelpers.flatten("", doc)
 
     details2.value.map {

@@ -46,18 +46,14 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
   override def saveItem(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors] = {
     Logger.debug(doc.toString)
 
-    FieldCheckHelpers.check(doc, itemChecksFor(sectionNumber)) match {
-      case Nil =>
-        val item = (doc \ "item").toOption.flatMap(_.validate[JsObject].asOpt).getOrElse(JsObject(Seq()))
-        item \ "itemNumber" match {
-          case JsDefined(JsNumber(itemNumber)) =>
-            val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/item/$itemNumber"
-            put(url, item).map(_ => List())
-          case _ =>
-            val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/items"
-            post(url, item).map(_ => List())
-        }
-      case errs => Future.successful(errs)
+    val item = (doc \ "item").toOption.flatMap(_.validate[JsObject].asOpt).getOrElse(JsObject(Seq()))
+    item \ "itemNumber" match {
+      case JsDefined(JsNumber(itemNumber)) =>
+        val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/item/$itemNumber"
+        put(url, item).map(_ => List())
+      case _ =>
+        val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/items"
+        post(url, item).map(_ => List())
     }
   }
 

@@ -175,6 +175,11 @@ $path: '/assets/stylesheets/images/';
   padding: 0 0 0 15px;
 }
 
+
+table.spacious {
+  margin-bottom: 2em;
+}
+
 table.spacious td {
   padding-bottom: 15px;
   padding-top: 15px;
@@ -191,6 +196,15 @@ ul.spacious li {
 
 table.spacious th {
   border-bottom: solid 2px $black;
+}
+
+table.spacious tfoot > tr > td {
+  border-bottom: 2px solid $black;
+  border-top: 2px solid $black;
+}
+
+.footer-two-light td {
+  border-bottom: 1px solid $black !important;
 }
 
 // Preview
@@ -252,6 +266,36 @@ hr {
 // Typography
 .preview-text {
   white-space: pre-wrap;
+}
+
+.no-lr-padding {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.no-r-padding {
+  padding-right: 0;
+}
+
+
+// Currency input icon
+.input-icon {
+  position: relative;
+}
+
+.input-icon > i {
+   position: absolute;
+   display: block;
+   top: 8px;
+   pointer-events: none;
+   width: 25px;
+   text-align: center;
+   font-style: normal;
+ }
+
+.input-icon > input {
+  padding-left: 25px;
+  padding-right: 6px;
 }
 
 .nobreak {

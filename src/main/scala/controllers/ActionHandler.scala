@@ -5,7 +5,7 @@ import javax.inject.Inject
 import cats.data.OptionT
 import cats.instances.future._
 import forms.Field
-import forms.validation.{CostItem, CostItemValues}
+import forms.validation.CostItem
 import models._
 import play.api.libs.json.{JsArray, JsDefined, JsObject, Json}
 import play.api.mvc.Result
@@ -23,7 +23,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
   def doSave(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
     sectionTypeFor(sectionNumber) match {
       case VanillaSection =>
-        allValuesEmpty(fieldValues) match {
+        JsonHelpers.allFieldsEmpty(fieldValues) match {
           case true => applications.deleteSection(id, sectionNumber).map { _ =>
             Redirect(routes.ApplicationController.show(id))
           }
@@ -56,7 +56,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
 
   def doSaveItem(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
-    allValuesEmpty(fieldValues) match {
+    JsonHelpers.allFieldsEmpty(fieldValues) match {
       case true => applications.deleteSection(id, sectionNumber).map { _ =>
         Redirect(routes.ApplicationController.show(id))
       }
@@ -112,8 +112,6 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
   }
 
-  implicit val costItemR = Json.reads[CostItem]
-
   def selectSectionForm(sectionNumber: Int, section: Option[ApplicationSection], questions: Map[String, Question], answers: Map[String, String], fields: Seq[Field], errs: FieldErrors, app: ApplicationOverview, appForm: ApplicationForm, opp: Opportunity): Result = {
     val formSection: ApplicationFormSection = appForm.sections.find(_.sectionNumber == sectionNumber).get
     val hints = hinting(JsonHelpers.unflatten(answers), checksFor(sectionNumber))
@@ -140,9 +138,4 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
       o <- OptionT(opportunities.byId(af.opportunityId))
     } yield (a, af, o)
   }.value
-
-  def allValuesEmpty(answerSet: JsObject): Boolean = {
-    JsonHelpers.flatten("", answerSet).filter(_._2.isEmpty == false).toList.isEmpty
-  }
-
 }

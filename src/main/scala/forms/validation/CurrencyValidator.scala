@@ -2,6 +2,7 @@ package forms.validation
 
 import cats.data.ValidatedNel
 import cats.syntax.validated._
+import play.api.Logger
 
 import scala.util.Try
 

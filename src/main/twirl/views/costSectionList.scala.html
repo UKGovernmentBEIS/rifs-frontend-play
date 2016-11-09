@@ -55,56 +55,68 @@
             @errs.map { e =>
                 <span class="error-message">@e.err</span>
             }
-            <table>
+
+
+            <table class="spacious">
                 <thead>
                     <tr>
                         <th scope="col">Item</th>
-                        <th scope="col" class="align-right">Cost &pound;</th>
+                        <th scope="col" class="align-right">Total Cost &pound;</th>
                         <th scope="col"><span class="visuallyhidden">Action</span></th>
                     </tr>
                 </thead>
+
+                <tfoot>
+                    <tr>
+                        <td class="bold-small">Total requested &pound;</td>
+                        <td class="currency bold-small">@items.map(_.cost).sum.setScale(2, BigDecimal.RoundingMode.HALF_UP)</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr class="footer-two-light">
+                        <td colspan="3">
+                            <a href="@controllers.routes.CostController.addItem(appOverview.id, formSection.sectionNumber)">
+                                Add item</a>
+                        </td>
+                    </tr>
+                 </tfoot>
+
+
                 <tbody>
                 @items.sortBy(_.itemNumber).map { item =>
                     <tr>
                         <td><a href="">@item.itemName</a></td>
-                        <td class="currency">@item.cost.setScale(2)</td>
+                        <td class="currency">@item.cost.setScale(2, BigDecimal.RoundingMode.HALF_UP)</td>
                         <td class="align-right"><a href="@controllers.routes.CostController.deleteItem(appOverview.id, formSection.sectionNumber, item.itemNumber.getOrElse(-1))">
                             Delete</a></td>
                     </tr>
                 }
                 </tbody>
-                <tfoot>
-                    <tr>
-                        <td>Total requested &pound;</td>
-                        <td class="currency">@items.map(_.cost).sum.setScale(2)</td>
-                        <td></td>
-                    </tr>
-                </tfoot>
+
             </table>
 
-            <p>
-                <a href="@controllers.routes.CostController.addItem(appOverview.id, formSection.sectionNumber)">Add item</a>
-            </p>
 
             <form method="POST" action="@controllers.routes.ApplicationController.postSection(appOverview.id, formSection.sectionNumber)">
                 <fieldset>
-                @section.flatMap(_.completedAtText).getOrElse(
-                        <label for="complete-checkbox" class="form-checkbox font-normal" style="width: 16em">
-                            <input id="complete-checkbox" type="checkbox" name="_complete_checkbox"/>
-                        Mark question as complete
-                        </label>
-                )
-
+                    <p>
+                    @section.flatMap(_.completedAtText).getOrElse(
+                            <label for="complete-checkbox" class="form-checkbox font-normal" style="width: 16em">
+                                <input id="complete-checkbox" type="checkbox" name="_complete_checkbox"/>
+                            Mark question as complete
+                            </label>
+                    )
+                    </p>
                 </fieldset>
                 <div class="rifs-form-buttons">
                     <input type="submit" name="@Save.name" class="button button--start" value="Save and continue">
                     <input type="submit" name="@Preview.name" class="button--link-style" value="Preview this page"/>
                 </div>
             </form>
+
         </div>
 
         <div class="column-third">
         @sidebar(appOverview, appForm)
         </div>
+
     </div>
 }

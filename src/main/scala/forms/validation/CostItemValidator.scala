@@ -28,11 +28,9 @@ case object CostItemValidator extends FieldValidator[CostItemValues, CostItem] {
 
 }
 
-case class CostSectionValidator(maxValue: BigDecimal) extends FieldValidator[List[CostItemValues], List[CostItem]] {
-  override def validate(path: String, itemValues: List[CostItemValues]): ValidatedNel[FieldError, List[CostItem]] = {
-    itemValues.map(CostItemValidator.validate(path, _)).sequenceU.andThen { items: List[CostItem] =>
-      if (items.map(_.cost).sum > maxValue) FieldError(path, s"Total requested exceeds limit. Please check costs of items.").invalidNel
-      else items.validNel
-    }
+case class CostSectionValidator(maxValue: BigDecimal) extends FieldValidator[List[CostItem], List[CostItem]] {
+  override def validate(path: String, items: List[CostItem]): ValidatedNel[FieldError, List[CostItem]] = {
+    if (items.map(_.cost).sum > maxValue) FieldError(path, s"Total requested exceeds limit. Please check costs of items.").invalidNel
+    else items.validNel
   }
 }

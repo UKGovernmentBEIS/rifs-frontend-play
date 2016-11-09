@@ -3,8 +3,10 @@ package controllers
 import play.api.libs.json.{JsArray, JsObject, JsString}
 
 object JsonHelpers {
-  def flatten(name: String, o: JsObject): Map[String, String] = {
 
+  def flatten(o: JsObject): Map[String, String] = flatten("", o)
+
+  def flatten(name: String, o: JsObject): Map[String, String] = {
     def subName(n: String) = if (name == "") n else s"$name.$n"
 
     import cats.implicits._
@@ -34,4 +36,6 @@ object JsonHelpers {
 
     os.fold(JsObject(Seq()))(_.deepMerge(_))
   }
+
+  def allFieldsEmpty(doc: JsObject): Boolean = flatten(doc).forall { case (_, v) => v.trim() == "" }
 }
