@@ -112,8 +112,6 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
   }
 
-  implicit val costItemR = Json.reads[CostItem]
-
   def selectSectionForm(sectionNumber: Int, section: Option[ApplicationSection], questions: Map[String, Question], answers: Map[String, String], fields: Seq[Field], errs: FieldErrors, app: ApplicationOverview, appForm: ApplicationForm, opp: Opportunity): Result = {
     val formSection: ApplicationFormSection = appForm.sections.find(_.sectionNumber == sectionNumber).get
     val hints = hinting(JsonHelpers.unflatten(answers), checksFor(sectionNumber))

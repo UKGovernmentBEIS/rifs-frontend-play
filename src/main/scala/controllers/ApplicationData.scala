@@ -18,6 +18,7 @@ object ApplicationData {
   implicit val dvReads = Json.reads[DateValues]
   implicit val dwdReads = Json.reads[DateWithDaysValues]
   implicit val civReads = Json.reads[CostItemValues]
+  implicit val ciReads = Json.reads[CostItem]
 
   private val provisionalDateValidator: DateWithDaysValidator = DateWithDaysValidator(allowPast = false, 1, 9)
 
