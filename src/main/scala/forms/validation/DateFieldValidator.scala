@@ -24,9 +24,12 @@ case class DateFieldValidator(allowPast: Boolean) extends FieldValidator[DateVal
       case None => FieldError(path, "Must provide a valid date").invalidNel
     }
 
-  override def validate(path: String, vs: DateValues): ValidatedNel[FieldError, LocalDate] =
-    (mandatoryInt(s"$path.day", vs.day, "day") |@| mandatoryInt(s"$path.month", vs.month, "month") |@| mandatoryInt(s"$path.year", vs.year, "year"))
-      .map { case (d, m, y) => (d, m, y) }
-      .andThen { case (d, m, y) => validateDate(path, d, m, y) }
+  override def validate(path: String, vs: DateValues): ValidatedNel[FieldError, LocalDate] = {
+    val validatedInts: ValidatedNel[FieldError, (Int, Int, Int)] =
+      (mandatoryInt(s"$path.day", vs.day, "day") |@|
+        mandatoryInt(s"$path.month", vs.month, "month") |@|
+        mandatoryInt(s"$path.year", vs.year, "year")).tupled
+    validatedInts.andThen { case (d, m, y) => validateDate(path, d, m, y) }
+  }
 
 }

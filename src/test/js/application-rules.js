@@ -20,7 +20,7 @@ function triggerEvent(element, eventName) {
 
 function testWordCountHelper(message, value) {
     QUnit.test("message for '" + value + "': " + message, function(assert) {
-      document.getElementById("qunit-fixture").innerHTML = "<input type='text' id='test'><span class='js__hint' id='testhelptext' data-for='test' data-rule='WordCount' data-ruleconfig='{\"maxWords\":50}'></span>";
+      document.getElementById("qunit-fixture").innerHTML = "<textarea id='test'></textarea><span class='js__hint' id='testhelptext' data-for='test' data-rule='WordCount' data-ruleconfig='{\"maxWords\":50}'></span>";
       window.rifsHelperText();
 
       document.getElementById("test").value = value;
@@ -55,3 +55,5 @@ testWordCountHelper("Words remaining: 46", "These are four words.....still");
 //UTF
 testWordCountHelper("Words remaining: 46", "These are föur wörds");
 
+// GF-1418
+testWordCountHelper("Words remaining: 37", "one two \nthree four\n       five       six\r\n\n\n\n\nseven\r\n\n\neight 0 ten [] \"\" thirteen");

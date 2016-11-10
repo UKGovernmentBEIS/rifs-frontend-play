@@ -1,0 +1,92 @@
+// Form elements
+.form-group {
+  margin-bottom: 2.5em;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+}
+
+details {
+  margin-bottom: 1.5em;
+}
+
+input.text-field,
+textarea.form-control {
+  display: block;
+  padding: 6px;
+  width: 100%;
+}
+
+textarea.form-control {
+  height: 10em;
+}
+
+input.text-field.number {
+  text-align: center;
+  width: 3em;
+}
+
+input.text-field.currency {
+  text-align: right;
+  width: 6em;
+}
+
+.hint-text {
+  margin-top: .5em;
+}
+
+.date-selector {
+  @extend %contain-floats;
+  margin-bottom: .5em;
+
+  input {
+    display: block;
+    padding: 6px;
+    text-align: center;
+    width: 3em;
+  }
+}
+
+.form-control.year {
+  width: 4em;
+}
+
+.date-selector>div {
+  float: left;
+  margin-right: 1.5em;
+}
+
+.question {
+  margin: 0 0 1.5em;
+}
+
+.textarea-resize {
+  overflow: auto;
+  resize: vertical;
+}
+
+.column-half.form-spacing {
+  padding-bottom: 2em;
+  padding-left: 0;
+}
+
+.column-full.form-spacing {
+  padding-left: 0;
+}
+
+// We want this aligned right on larger screens, but on collapsed screens
+// when the sidebar moves to be underneath the first column (main content)
+// we want it to move to be left-aligned.
+@media(min-width: 641px) {
+  .pull-right-lg-only {
+    float: right;
+  }
+}
+
+@media(max-width: 640px) {
+  .pull-right-lg-only {
+    float: none;
+  }
+}

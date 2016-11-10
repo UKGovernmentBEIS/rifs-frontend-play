@@ -1,12 +1,13 @@
 package controllers
 
 import forms.validation._
+import play.api.Logger
 import play.api.libs.json._
 
 trait FieldCheck {
   def apply(path: String, value: JsValue): List[FieldError]
 
-  def hint(path: String, value: JsValue): Option[FieldHint]
+  def hint(path: String, value: JsValue): List[FieldHint]
 }
 
 object FieldChecks {
@@ -14,7 +15,7 @@ object FieldChecks {
     override def apply(path: String, value: JsValue): List[FieldError] =
       MandatoryValidator(None).validate(path, value.validate[String].asOpt).fold(_.toList, _ => List())
 
-    override def hint(path: String, value: JsValue): Option[FieldHint] = None
+    override def hint(path: String, value: JsValue): List[FieldHint] = List()
   }
 
   def mandatoryText(wordLimit: Int, displayName: Option[String] = None) = new FieldCheck {
@@ -22,10 +23,12 @@ object FieldChecks {
 
     override def apply(path: String, value: JsValue): List[FieldError] = validator.validate(path, decodeString(value)).fold(_.toList, _ => List())
 
-    override def hint(path: String, value: JsValue): Option[FieldHint] = validator.hintText(path, value.validate[String].asOpt)
+    override def hint(path: String, value: JsValue): List[FieldHint] = validator.hintText(path, value)
   }
 
   def fromValidator[T: Reads](v: FieldValidator[T, _]): FieldCheck = new FieldCheck {
+    override def toString: String = s"check from validator $v"
+
     override def apply(path: String, jv: JsValue) = jv.validate[T].map { x =>
       v.validate(path, x).fold(_.toList, _ => List())
     } match {
@@ -33,7 +36,7 @@ object FieldChecks {
       case JsError(errs) => List(FieldError(path, "Could not decode form values!"))
     }
 
-    override def hint(path: String, jv: JsValue): Option[FieldHint] = v.hintText(path, jv.validate[String].asOpt)
+    override def hint(path: String, jv: JsValue): List[FieldHint] = v.hintText(path, jv)
   }
 
 
@@ -42,7 +45,7 @@ object FieldChecks {
 
     override def apply(path: String, jv: JsValue) = validator.validate(path, decodeString(jv)).fold(_.toList, _ => List())
 
-    override def hint(path: String, value: JsValue): Option[FieldHint] = validator.hintText(path, value.validate[String].asOpt)
+    override def hint(path: String, value: JsValue): List[FieldHint] = validator.hintText(path, value)
   }
 
   def decodeString(jv: JsValue): Option[String] = {

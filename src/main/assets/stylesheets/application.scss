@@ -1,7 +1,6 @@
 // Path to assets for use with the file-url function
 // in the govuk frontend toolkit's url-helpers partial
 $path: '/assets/stylesheets/images/';
-$medium-grey: #ccc;
 
 // Base GDS Toolkit
 // Settings (variables)
@@ -37,7 +36,6 @@ $medium-grey: #ccc;
 @import 'elements/panels';
 @import 'elements/details';
 @import 'elements/shame';
-@import 'elements/panels';
 
 // Taken from alphagov/static
 // https://github.com/alphagov/static/blob/master/app/assets/stylesheets/govuk-component/_previous-and-next-navigation.scss
@@ -45,6 +43,7 @@ $medium-grey: #ccc;
 
 // Rifs imports
 @import 'rifs/pagination';
+@import 'rifs/forms';
 
 
 // Global template elements
@@ -82,6 +81,17 @@ $medium-grey: #ccc;
   @include phase-tag(alpha);
 }
 
+// Panels
+// Used to show the left edge of "toggled" content
+.rifs-border-narrow {
+  border-color: $black;
+  border-left-width: 5px;
+}
+
+.rifs-panel {
+  background-color: $panel-colour;
+}
+
 // General
 .float-left {
   float: left;
@@ -93,6 +103,10 @@ $medium-grey: #ccc;
 
 .no-top-margin {
   margin-top: 0;
+}
+
+.right-align {
+  text-align: right;
 }
 
 .contain-floats {
@@ -113,11 +127,13 @@ $medium-grey: #ccc;
   line-height: 2.2;
 }
 
-// Notices, Panels etc.
-aside.notice div dl dd {
+
+// Definition Lists
+.definition-list dl dd {
   margin: 0;
   padding: 0;
 }
+
 
 // Typography
 .expanded-list {
@@ -148,11 +164,20 @@ aside.notice div dl dd {
   font-weight: bold;
 }
 
+.font-normal {
+  font-weight: normal;
+}
+
 .greentick {
   color: rgb(1, 130, 67);
   font-size: 1.5em;
   line-height: .5;
   padding: 0 0 0 15px;
+}
+
+
+table.spacious {
+  margin-bottom: 2em;
 }
 
 table.spacious td {
@@ -173,63 +198,13 @@ table.spacious th {
   border-bottom: solid 2px $black;
 }
 
-// Form elements
-.form-group {
-  margin-bottom: 2.5em;
+table.spacious tfoot > tr > td {
+  border-bottom: 2px solid $black;
+  border-top: 2px solid $black;
 }
 
-label {
-  display: block;
-  font-weight: bold;
-}
-
-details {
-  margin-bottom: 1.5em;
-}
-
-input.text-field,
-textarea.form-control {
-  display: block;
-  padding: 6px;
-  width: 100%;
-}
-
-textarea.form-control {
-  height: 10em;
-}
-
-input.text-field.number {
-  text-align: right;
-  width: 3em;
-}
-
-.hint-text.right-align {
-    text-align:right;
-}
-
-.date-selector {
-  @extend %contain-floats;
-  margin-bottom: .5em;
-
-  input {
-    display: block;
-    padding: 6px;
-    text-align: right;
-    width: 3em;
-
-    .year {
-      width: 4em;
-    }
-  }
-}
-
-.date-selector>div {
-  float: left;
-  margin-right: 1.5em;
-}
-
-.question {
-  margin: 0 0 1.5em;
+.footer-two-light td {
+  border-bottom: 1px solid $black !important;
 }
 
 // Preview
@@ -241,15 +216,16 @@ input.text-field.number {
 
 .duration-preview {
   @extend %contain-floats;
+
+  // Remove any left padding on the container divs so the floated
+  // inner divs line up on mobile.
+  div {
+    padding-left: 0;
+  }
 }
 
-.duration-preview>div {
-  float: left;
-  margin-right: 4em;
-}
 
 // Buttons
-
 input.button--link-style {
   @extend .font-small;
   background: none;
@@ -262,11 +238,9 @@ input.button--link-style {
 
 a.button.secondary,
 input.secondary {
-  background-color: $medium-grey;
+  background-color: $grey-3;
   color: $black;
 }
-
-
 
 // GOV.UK overrides
 hr {
@@ -287,4 +261,49 @@ hr {
 .error .form-control {
   // support for nested controls
   border: 4px solid $error-colour;
+}
+
+// Typography
+.preview-text {
+  white-space: pre-wrap;
+}
+
+.no-lr-padding {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.no-r-padding {
+  padding-right: 0;
+}
+
+
+// Currency input icon
+.input-icon {
+  position: relative;
+}
+
+.input-icon > i {
+   position: absolute;
+   display: block;
+   top: 8px;
+   pointer-events: none;
+   width: 25px;
+   text-align: center;
+   font-style: normal;
+ }
+
+.input-icon > input {
+  padding-left: 25px;
+  padding-right: 6px;
+}
+
+
+.currency {
+  text-align: right;
+  //font-family: monospace;
+}
+
+.align-right {
+  text-align: right;
 }

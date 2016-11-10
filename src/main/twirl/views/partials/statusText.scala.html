@@ -3,7 +3,5 @@
     @overview.sections.find(_.sectionNumber == sectionNumber).map(os => os.status).getOrElse("Not started")
 </span>
 @if(overview.sections.find(_.sectionNumber == sectionNumber).map(os => os.status).getOrElse("Not started") == "Completed") {
-    <span class="greentick">
-        &#x2714;
-    </span>
+   <img src="@routes.Assets.at("images/checkmark-26x26.png")" alt="" width=26 height=26 class="greentick">
 }

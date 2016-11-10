@@ -10,7 +10,7 @@
 }
 
 @titleCols() = @{
-    val titles = opportunity.description.sortBy(_.sectionNumber).map(s => (s.title, s.sectionNumber))
+    val titles = opportunity.description.sortBy(_.sectionNumber).map(s => (s.title, s.sectionNumber)).zipWithIndex
     val midpoint: Int = Math.round(titles.length / 2.0).toInt
     val (leftCols, b) = titles.splitAt(midpoint)
     val rightCols = b.map(Some(_)) :+ None
@@ -48,17 +48,19 @@
         <aside>
             <nav role="navigation" class="contain-floats page-navigation" aria-label="Navigation">
                 <ol>
-                    @titleCols.map { case (col1, col2) =>
-                        <li>
+                    @titleCols.map { case ((col1, idx), _) =>
+                        <li id="title-@(idx + 1)">
                             @sectionLink(col1._1, col1._2)
                         </li>
                     }
                 </ol>
                 <ol>
-                    @titleCols.map { case (col1, col2) =>
-                        <li>
-                            @col2.map { t => @sectionLink(t._1, t._2) }.getOrElse("")
+                    @titleCols.map { case (_, col2) =>
+                        @col2.map { case (t, idx) =>
+                        <li id="title-@(idx + 1)">
+                             @sectionLink(t._1, t._2)
                         </li>
+                       }.getOrElse("")
                     }
                 </ol>
             </nav>
@@ -66,33 +68,47 @@
 
         @currentSection.map { s =>
 
-            @if(sectionNumber == 1) {
 
-        <div class="panel panel-border-narrow">
+
+        <div class="panel rifs-panel rifs-border-narrow">
             <aside role="complementary" class="notice">
-                <div class="column-half">
+                <div class="column-half definition-list">
                     <dl>
                         <dt class="heading-small">Deadline</dt>
                         <dd>Apply any time</dd>
                     </dl>
                 </div>
 
-                <div class="column-half">
+                <div class="column-half definition-list">
                     <dl>
                         <dt class="heading-small">Value</dt>
                         <dd>&pound;@opportunity.value.amount @opportunity.value.unit</dd>
                     </dl>
                 </div>
+                <div class="column-full rifs-form-buttons">
+                    <p>
+                        <a href="@controllers.routes.ApplicationController.showOrCreateForForm(applicationId)"
+                            class="button"
+                        >Apply now</a>
+                    </p>
+                </div>
             </aside>
         </div>
-
-            }
 
         <article>
         <h2 class="heading-large">@s.sectionNumber. @s.title</h2>
         @s.paragraphs.map { p =>
         <p class="text">@p</p>
         }
+
+            <div class="rifs-form-buttons">
+                <p>
+                    <a href="@controllers.routes.ApplicationController.showOrCreateForForm(applicationId)"
+                       class="button"
+                    >Apply now</a>
+                </p>
+            </div>
+
         </article>
 
         <footer>
@@ -138,10 +154,6 @@
                 <li>
                     <a href="@controllers.routes.OpportunityController.showGuidancePage(opportunity.id)" target="_blank">Guidance on
                         seminars</a>
-                </li>
-                <li>
-                    <a href="@controllers.routes.ApplicationController.showOrCreateForForm(applicationId)">Make an
-                        application</a>
                 </li>
 
             </ul>

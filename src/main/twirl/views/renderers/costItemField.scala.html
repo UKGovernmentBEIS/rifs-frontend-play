@@ -1,0 +1,79 @@
+@(field: forms.CostItemField,
+        questions: Map[String, Question],
+        answers: Map[String, String],
+        errs: Seq[forms.validation.FieldError],
+        hints: Seq[forms.validation.FieldHint])
+
+@errors = @{
+    errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}."))
+}
+
+@errorClass = @{
+    if(errors.nonEmpty) "error" else ""
+}
+
+@errorClassFor(f: forms.Field) = @{
+    if(errs.exists(_.path == f.name)) "error" else ""
+}
+
+@errorsFor(f: forms.Field) = @{
+    errs.filter(_.path == f.name)
+}
+
+@errorBlock(f: forms.Field) = @{
+    if(errorsFor(f).nonEmpty) {
+            <span class="error-message">{errorsFor(f).head.err}</span>
+    }
+}
+
+@questions.get(field.name).map { q => <p class="question">@q.text</p>
+@q.longDescription.map { desc => @desc.split("\n").map { text => <p>@text</p> } }
+    <details>
+        <summary role="button"><span class="summary">Help with this section</span></summary>
+        <div class="panel panel-border-narrow">@for(line <- q.helpText.getOrElse("").split("\n")) {
+            <p>@line</p>
+        }</div>
+    </details>
+}
+
+<div class="column-full no-lr-padding">
+
+    @defining(field.itemNameField) { f =>
+        <div class="column-half no-lr-padding">
+            <div class="form-group @errorClassFor(f)">
+                <label for="@f.name">@f.label</label>
+                @errorBlock(f)
+                <input type="text" id="@f.name" class="form-control text-field" title="@f.name" name="@f.name"
+                value='@answers.get(f.name)'>
+            </div>
+        </div>
+
+    }
+
+    @defining(field.costField) { f =>
+        <div class="column-half no-r-padding">
+            <div class="form-group @errorClassFor(f)">
+                <span class="pull-right-lg-only">
+                    <label for="@f.name">@f.label</label>
+                    @errorBlock(f)
+                    <div class="input-icon">
+                        <i>£</i>
+                        <input type="text" id="@f.name" class="form-control text-field currency" title="@f.name" name="@f.name" value='@answers.get(f.name)'>
+                    </div>
+                </span>
+            </div>
+        </div>
+    }
+</div>
+
+
+@defining(field.justificationField) { f =>
+    <div class="column-full no-lr-padding">
+        <div class='form-group @errorClassFor(f)'>
+            <label for="@f.name">@f.label</label>
+            @errorBlock(f)
+            <textarea id="@f.name" class="form-control textarea-resize" title="@f.name" name="@f.name">@answers.get(f.name)</textarea>
+            <div class="inline right-align hint-text" id="@(f.name)_hint_text">@hints.find(_.path == f.name).map(_.hint)</div>
+        </div>
+    </div>
+}

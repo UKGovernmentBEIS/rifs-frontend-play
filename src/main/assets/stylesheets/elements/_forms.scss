@@ -39,11 +39,9 @@ textarea {
 .form-section {
   @extend %contain-floats;
   @include box-sizing(border-box);
-
   float: left;
-  width: 100%;
-
   margin-bottom: $gutter;
+  width: 100%;
 
   @include media(tablet) {
     margin-bottom: $gutter * 2;
@@ -54,11 +52,9 @@ textarea {
 .form-group {
   @extend %contain-floats;
   @include box-sizing(border-box);
-
   float: left;
-  width: 100%;
-
   margin-bottom: $gutter-half;
+  width: 100%;
 
   @include media(tablet) {
     margin-bottom: $gutter;
@@ -87,8 +83,8 @@ textarea {
 // TODO: Amend so there is only one label style
 .form-label,
 .form-label-bold {
-  display: block;
   color: $text-colour;
+  display: block;
   padding-bottom: 2px;
 }
 
@@ -104,14 +100,13 @@ textarea {
 .form-block {
   @extend %contain-floats;
   float: left;
+  margin-bottom: 5px;
+  margin-top: -5px;
   width: 100%;
 
-  margin-top: -5px;
-  margin-bottom: 5px;
-
   @include media(tablet) {
-    margin-top: 0;
     margin-bottom: 10px;
+    margin-top: 0;
   }
 }
 
@@ -121,10 +116,9 @@ textarea {
 // Form hints and example text are light grey and sit above a form control
 .form-hint {
   @include core-19;
-  display: block;
   color: $secondary-text-colour;
+  display: block;
   font-weight: normal;
-
   margin-top: -2px;
   padding-bottom: 2px;
 }
@@ -143,11 +137,10 @@ textarea {
 .form-control {
   @include box-sizing(border-box);
   @include core-19;
-  width: 100%;
-
-  padding: 4px;
   background-color: $white;
   border: 2px solid $grey-1;
+  padding: 4px;
+  width: 100%;
 
   // TODO: Remove 50% width set for tablet and up
   // !! BREAKING CHANGE !!
@@ -163,8 +156,8 @@ textarea {
   margin: 10px 0;
 
   input {
-    vertical-align: middle;
     margin: -4px 5px 0 0;
+    vertical-align: middle;
   }
 }
 
@@ -174,8 +167,8 @@ textarea {
   margin: $gutter-half 0;
 
   input {
-    vertical-align: middle;
     margin: -2px 5px 0 0;
+    vertical-align: middle;
   }
 }
 

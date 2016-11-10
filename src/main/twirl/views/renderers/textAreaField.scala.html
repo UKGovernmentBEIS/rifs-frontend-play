@@ -12,8 +12,8 @@
 @errorClass = @{if(errors.nonEmpty) "error" else ""}
 @invalidTrueFalse = @{if(errors.nonEmpty) "true" else "false"}
 
-@questions.get(field.name).map { q => <p class="question">@q.text</p>
-    <p>@q.longDescription</p>
+@questions.get(field.name).map { q => <p class="question text">@q.text</p>
+    <p class="text">@q.longDescription</p>
     <details>
         <summary role="button"><span class="summary">Help with this section</span></summary>
         <div class="panel panel-border-narrow">@for(line <- q.helpText.getOrElse("").split("\n")) {
@@ -28,7 +28,7 @@
     }
 
     <label for="@field.name">@field.label</label>
-    <textarea id="@field.name" class="form-control" title="@field.name" name="@field.name" aria-label="@questions.get(field.name).map(_.text) @field.label" aria-invalid="@invalidTrueFalse">@answers.get(field.name)</textarea>
+    <textarea id="@field.name" class="form-control textarea-resize" title="@field.name" name="@field.name">@answers.get(field.name)</textarea>
     <div class="inline right-align hint-text" id="@(field.name)_hint_text">
         @for(hint <- hints.find(_.path == field.name)) {
             <span class="js__hint" data-for="@field.name" data-rule="@hint.matchingJsType" data-ruleconfig="@hint.matchingJsConfig">@hint.hint</span>

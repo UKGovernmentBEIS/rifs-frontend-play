@@ -1,0 +1,122 @@
+@(
+        appOverview: ApplicationOverview,
+        appForm: ApplicationForm,
+        section: Option[ApplicationSection],
+        formSection: ApplicationFormSection,
+        opportunity: Opportunity,
+        items: List[forms.validation.CostItem],
+        questions: Map[String, Question],
+        errs: List[forms.validation.FieldError]
+)
+
+@import partials._
+
+@import scala.util.Try
+
+@formatId(id: Long) = @{
+    f"RIFS$id%05d"
+}
+
+@main(formSection.title) {
+    <div id="global-header-status" class="contain-floats">
+        <div class="float-right">
+            <span>Experienced Eric</span>
+        </div>
+    </div>
+
+    <div class="grid-row">
+        <div class="column-two-thirds">
+            <div class="breadcrumbs">
+                <ol>
+                    <li><a href="@controllers.routes.ApplicationController.show(appOverview.id)">&lt; Return to application overview</a></li>
+                </ol>
+            </div>
+            <h1 class="heading-xlarge">
+                <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
+                @formSection.title
+            </h1>
+            @if(errs.nonEmpty) {
+                <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
+                    <h1 class="heading-medium error-summary-heading" id="error-summary-heading">
+                        The information you entered is not valid
+                    </h1>
+                    <p>Please correct the problems indicated below.</p>
+                </div>
+            }
+            @questions.get("item").map { q => <p class="question text">@q.text</p>
+                <p class="text">@q.longDescription</p>
+                <details>
+                    <summary role="button"><span class="summary">Help with this section</span></summary>
+                    <div class="panel panel-border-narrow">@for(line <- q.helpText.getOrElse("").split("\n")) {
+                        <p>@line</p>
+                    }</div>
+                </details>
+            }
+            @errs.map { e =>
+                <span class="error-message">@e.err</span>
+            }
+
+
+            <table class="spacious">
+                <thead>
+                    <tr>
+                        <th scope="col">Item</th>
+                        <th scope="col" class="align-right">Total Cost &pound;</th>
+                        <th scope="col"><span class="visuallyhidden">Action</span></th>
+                    </tr>
+                </thead>
+
+                <tfoot>
+                    <tr>
+                        <td class="bold-small">Total requested &pound;</td>
+                        <td class="currency bold-small">@items.map(_.cost).sum.setScale(2, BigDecimal.RoundingMode.HALF_UP)</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr class="footer-two-light">
+                        <td colspan="3">
+                            <a href="@controllers.routes.CostController.addItem(appOverview.id, formSection.sectionNumber)">
+                                Add item</a>
+                        </td>
+                    </tr>
+                 </tfoot>
+
+
+                <tbody>
+                @items.sortBy(_.itemNumber).map { item =>
+                    <tr>
+                        <td><a href="">@item.itemName</a></td>
+                        <td class="currency">@item.cost.setScale(2, BigDecimal.RoundingMode.HALF_UP)</td>
+                        <td class="align-right"><a href="@controllers.routes.CostController.deleteItem(appOverview.id, formSection.sectionNumber, item.itemNumber.getOrElse(-1))">
+                            Delete</a></td>
+                    </tr>
+                }
+                </tbody>
+
+            </table>
+
+
+            <form method="POST" action="@controllers.routes.ApplicationController.postSection(appOverview.id, formSection.sectionNumber)">
+                <fieldset>
+                    <p>
+                    @section.flatMap(_.completedAtText).getOrElse(
+                            <label for="complete-checkbox" class="form-checkbox font-normal" style="width: 16em">
+                                <input id="complete-checkbox" type="checkbox" name="_complete_checkbox"/>
+                            Mark question as complete
+                            </label>
+                    )
+                    </p>
+                </fieldset>
+                <div class="rifs-form-buttons">
+                    <input type="submit" name="@Save.name" class="button button--start" value="Save and continue">
+                    <input type="submit" name="@Preview.name" class="button--link-style" value="Preview this page"/>
+                </div>
+            </form>
+
+        </div>
+
+        <div class="column-third">
+        @sidebar(appOverview, appForm)
+        </div>
+
+    </div>
+}

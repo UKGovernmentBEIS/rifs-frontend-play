@@ -3,9 +3,11 @@ package services
 import com.google.inject.Inject
 import com.wellfactored.playbindings.ValueClassFormats
 import config.Config
+import controllers.FieldCheckHelpers
+import controllers.FieldCheckHelpers.FieldErrors
 import models._
-import org.joda.time.LocalDateTime
-import play.api.libs.json.{JsObject, Json}
+import play.api.Logger
+import play.api.libs.json.{JsDefined, JsNumber, JsObject, Json}
 import play.api.libs.ws.WSClient
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,9 +31,35 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     post(url, doc)
   }
 
-  override def completeSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[Unit] = {
-    val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/complete"
-    post(url, doc)
+  import controllers.ApplicationData._
+
+  override def completeSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors] = {
+    Logger.debug(s"doc is $doc")
+    FieldCheckHelpers.check(doc, checksFor(sectionNumber)) match {
+      case Nil =>
+        val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/complete"
+        post(url, doc).map(_ => List())
+      case errs => Future.successful(errs)
+    }
+  }
+
+  override def saveItem(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors] = {
+    Logger.debug(doc.toString)
+
+    val item = (doc \ "item").toOption.flatMap(_.validate[JsObject].asOpt).getOrElse(JsObject(Seq()))
+    item \ "itemNumber" match {
+      case JsDefined(JsNumber(itemNumber)) =>
+        val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/item/$itemNumber"
+        put(url, item).map(_ => List())
+      case _ =>
+        val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/items"
+        post(url, item).map(_ => List())
+    }
+  }
+
+  override def deleteItem(id: ApplicationId, sectionNumber: Int, itemNumber: Int): Future[Unit] = {
+    val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/item/$itemNumber"
+    delete(url)
   }
 
   override def getSection(id: ApplicationId, sectionNumber: Int): Future[Option[ApplicationSection]] = {
@@ -45,8 +73,17 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
   }
 
   override def overview(id: ApplicationId): Future[Option[ApplicationOverview]] = {
-    val url = s"$baseUrl/application/${id.id}/overview"
+    val url = s"$baseUrl/application/${id.id}"
     getOpt[ApplicationOverview](url)
   }
 
+  override def deleteAll(): Future[Unit] = {
+    val url = s"$baseUrl/application"
+    delete(url)
+  }
+
+  override def deleteSection(id: ApplicationId, sectionNumber: Int): Future[Unit] = {
+    val url = s"$baseUrl/application/${id.id}/section/$sectionNumber"
+    delete(url)
+  }
 }
