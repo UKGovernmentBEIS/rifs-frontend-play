@@ -13,6 +13,8 @@ GET         /opportunity/:opportunityId                               controller
 GET         /application_form/:id/apply                               controllers.ApplicationController.showOrCreateForForm(id: ApplicationFormId)
 
 GET         /application/:id                                          controllers.ApplicationController.show(id: ApplicationId)
+POST        /application/:id                                          controllers.ApplicationController.submit(id: ApplicationId)
+
 GET         /application/:id/section/:num                             controllers.ApplicationController.showSectionForm(id: ApplicationId, num:Int)
 POST        /application/:id/section/:num                             controllers.ApplicationController.postSection(id: ApplicationId, num:Int)
 

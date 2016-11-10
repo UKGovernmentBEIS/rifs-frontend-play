@@ -1,11 +1,13 @@
 @import models._
 @import partials._
 
-@(app: ApplicationForm, overview:ApplicationOverview, opportunity:Opportunity)
+@(app: ApplicationForm, overview:ApplicationOverview, opportunity:Opportunity, errs: Seq[forms.validation.SectionError])
 
 @formatId(id: Long) = @{
 f"RIFS$id%05d"
 }
+
+@errorClass = @{if(errs.nonEmpty) "error" else ""}
 
 @main(s"Overview") {
     <div id="global-header-status" class="contain-floats">
@@ -22,6 +24,19 @@ f"RIFS$id%05d"
                     <li><a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, None)">&lt; Back</a></li>
                 </ol>
             </div>
+
+            @if(errs.nonEmpty) {
+            <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
+                All questions must be answered
+                @errs.map { e =>
+                <span class="error-message">
+                    <a href="@controllers.routes.ApplicationController.showSectionForm(overview.id, e.formSection.sectionNumber)">
+                        @e.formSection.title </a>
+                    @e.msg</span>
+                }
+            </div>
+            }
+
             <div>
                 <div></div>
                 <h1 class="heading-xlarge">
@@ -30,6 +45,9 @@ f"RIFS$id%05d"
                 </h1>
                 <p>Complete all application sections before submitting to RIFS.</p>
             </div>
+
+            <form method="POST"
+                  action="@controllers.routes.ApplicationController.submit(overview.id)">
             <div>
                 <table class="spacious">
                     <thead>
@@ -52,11 +70,12 @@ f"RIFS$id%05d"
                     </tbody>
                 </table>
                 <p class="rifs-form-buttons">
-                    <a href="@controllers.routes.OpportunityController.wip(controllers.routes.ApplicationController.show(overview.id).url)" class="button"> Submit application to RIFS</a>
+                    <input type="submit" name="@Save.name" class="button button--start" value="Submit application to RIFS">
                     <a href="@controllers.routes.OpportunityController.wip(controllers.routes.ApplicationController.show(overview.id).url)" class="flat">Preview application</a>
                 </p>
             </div>
         </div>
+        </form>
         <div class="column-third">
             @sidebar(overview, app)
         </div>
