@@ -75,8 +75,4 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
     renderApplicationPreview(id, views.html.applicationPreview.apply)
   }
 
-  def applicationPrintPreview(id: ApplicationId) = Action.async {
-    renderApplicationPreview(id, views.html.applicationPrintPreview.apply)
-  }
-
 }

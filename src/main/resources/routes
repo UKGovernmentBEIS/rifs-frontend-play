@@ -18,7 +18,6 @@ POST        /application/:id/section/:num                controllers.Application
 
 GET         /application/:id/section/:num/preview        controllers.ApplicationPreviewController.previewSection(id: ApplicationId, num:Int)
 GET         /application/:id/preview                     controllers.ApplicationPreviewController.applicationPreview(id: ApplicationId)
-GET         /application/:id/printpreview                controllers.ApplicationPreviewController.applicationPrintPreview(id: ApplicationId)
 
 GET         /application/:id/section/:num/add-item                    controllers.CostController.addItem(id:ApplicationId, num:Int)
 POST        /application/:id/section/:num/item                        controllers.CostController.saveItem(id:ApplicationId, num: Int)
