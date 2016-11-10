@@ -5,8 +5,9 @@ import javax.inject.Inject
 import cats.data.OptionT
 import cats.instances.future._
 import forms.Field
-import models.{ApplicationId, ApplicationSection}
+import models._
 import play.api.mvc.{Action, Controller}
+import play.twirl.api.Html
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -40,4 +41,38 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
       case None => NotFound
     }
   }
+
+  type PreviewFunction = (ApplicationForm, ApplicationOverview, Opportunity, Seq[ApplicationSection], Option[String], Map[Int, Seq[forms.Field]]) => Html
+
+  def renderApplicationPreview(id: ApplicationId, preview: PreviewFunction) = {
+    val ft = for {
+      a <- OptionT(applications.overview(id))
+      af <- OptionT(applicationForms.byId(a.applicationFormId))
+      opp <- OptionT(opportunities.byId(af.opportunityId))
+    } yield (af, a, opp)
+
+    val sections = applications.getSections(id)
+
+    val details = for {
+      appDetails <- ft.value
+      ss <- sections
+    } yield (appDetails, ss)
+
+    details.map {
+      case (Some((form, overview, opp)), scs) =>
+        val title = scs.find(_.sectionNumber == 1).flatMap(s => (s.answers \ "title").validate[String].asOpt)
+        Ok(preview(form, overview, opp, scs.sortBy(_.sectionNumber), title, getFieldMap(scs)))
+
+      case _ => NotFound
+    }
+  }
+
+  def getFieldMap(secs: Seq[ApplicationSection]): Map[Int, Seq[Field]] = {
+    Map(secs.map(sec => sec.sectionNumber -> fieldsFor(sec.sectionNumber).getOrElse(Seq())): _*)
+  }
+
+  def applicationPreview(id: ApplicationId) = Action.async {
+    renderApplicationPreview(id, views.html.applicationPreview.apply)
+  }
+
 }
