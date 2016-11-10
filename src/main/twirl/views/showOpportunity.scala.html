@@ -82,7 +82,7 @@
                 <div class="column-half definition-list">
                     <dl>
                         <dt class="heading-small">Value</dt>
-                        <dd>&pound;@opportunity.value.amount @opportunity.value.unit</dd>
+                        <dd>&pound;@("%,.0f".format(opportunity.value.amount)) @opportunity.value.unit</dd>
                     </dl>
                 </div>
                 <div class="column-full rifs-form-buttons">
