@@ -71,9 +71,10 @@
                 <aside role="complementary" class="notice">
                     <div>
                         <h2 class="heading-small">Review your application before submitting</h2>
-                        <p class="bold-small">
-                            <a href="@controllers.routes.ApplicationPreviewController.applicationPrintPreview(overview.id)" class="flat" target="_blank">
-                                Print Preview </a>
+                        <p class="bold-small print-preview-button-container">
+                            <script>
+                                document.write('<button class="as-link" id="print" onclick="window.print();">Print Preview</button>');
+                            </script>
                         </p>
                     </div>
 
@@ -92,8 +93,8 @@
 
         </div>
 
-        <div class="column-third">
-        @sidebar(overview, appForm)
+        <div id="support-column" class="column-third">
+         @sidebar(overview, appForm)
         </div>
 
     </div>
