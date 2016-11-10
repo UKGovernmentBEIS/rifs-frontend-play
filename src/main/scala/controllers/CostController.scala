@@ -8,9 +8,9 @@ import cats.instances.future._
 import cats.syntax.validated._
 import controllers.FieldCheckHelpers.FieldErrors
 import forms.validation.{CostItem, CostItemValidator, CostItemValues, FieldError}
-import models.ApplicationId
+import models.{ApplicationId, ApplicationOverview}
 import play.api.Logger
-import play.api.libs.json.{JsError, JsObject, JsSuccess, Json}
+import play.api.libs.json._
 import play.api.mvc.{Action, Controller, Result}
 import services.ApplicationOps
 
@@ -64,14 +64,20 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
 
     val questions = questionsFor(sectionNumber)
     val fields = fieldsFor(sectionNumber).getOrElse(Seq())
-    val cancelLink = sectionFormCall(applicationId, sectionNumber)
     val checks = itemChecksFor(sectionNumber)
     val hints = hinting(doc, checks)
     val answers = JsonHelpers.flatten("", doc)
 
     details2.value.map {
-      case Some(((overview, form, opp), fs)) => Ok(views.html.costItemForm(overview, form, fs, opp, fields, questions, answers, errs, hints, cancelLink, None))
+      case Some(((overview, form, opp), fs)) =>
+        Ok(views.html.costItemForm(overview, form, fs, opp, fields, questions, answers, errs, hints, cancelLink(applicationId, overview, sectionNumber), None))
       case None => NotFound
     }
+  }
+
+  def cancelLink(applicationId: ApplicationId, overview: ApplicationOverview, sectionNumber: Int): String = {
+    val items = overview.sections.find(_.sectionNumber == sectionNumber).flatMap(s => (s.answers \ "items").validate[JsArray].asOpt).getOrElse(JsArray(Seq())).value
+    if (items.isEmpty) controllers.routes.ApplicationController.show(applicationId).url
+    else sectionFormCall(applicationId, sectionNumber).url
   }
 }
