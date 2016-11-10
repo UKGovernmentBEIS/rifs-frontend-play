@@ -46,8 +46,16 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
   }
 
   def deleteItem(applicationId: ApplicationId, sectionNumber: Int, itemNumber: Int) = Action.async {
-    applications.deleteItem(applicationId, sectionNumber, itemNumber).map { _ =>
-      redirectToSectionForm(applicationId, sectionNumber)
+    applications.deleteItem(applicationId, sectionNumber, itemNumber).flatMap { _ =>
+      // Check if we deleted the last item in the list and, if so, delete the section so
+      // it will go back to the Not Started state.
+      applications.getSection(applicationId, sectionNumber).flatMap {
+        case Some(s) if (s.answers \ "items").validate[JsArray].asOpt.getOrElse(JsArray(Seq())).value.isEmpty =>
+          applications.deleteSection(applicationId, sectionNumber).map { _ =>
+            redirectToSectionForm(applicationId, sectionNumber)
+          }
+        case _ => Future.successful(redirectToSectionForm(applicationId, sectionNumber))
+      }
     }
   }
 
