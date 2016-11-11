@@ -9,9 +9,7 @@
         errs: List[forms.validation.FieldError]
 )
 
-@import partials._
-
-@import scala.util.Try
+    @import partials._
 
 @formatId(id: Long) = @{
     f"RIFS$id%05d"
@@ -78,16 +76,23 @@
                                 Add item</a>
                         </td>
                     </tr>
-                 </tfoot>
+                </tfoot>
 
 
                 <tbody>
                 @items.sortBy(_.itemNumber).map { item =>
                     <tr>
-                        <td><a href="@controllers.routes.CostController.editItem(appOverview.id, formSection.sectionNumber, item.itemNumber.getOrElse(-1))">@item.itemName</a></td>
+                        <td>
+                            @item.itemNumber.map { num =>
+                            <a href="@controllers.routes.CostController.editItem(appOverview.id, formSection.sectionNumber, num)">@item.itemName</a>
+                            }.getOrElse(item.itemName)
+                        </td>
                         <td class="currency">@item.cost.setScale(2, BigDecimal.RoundingMode.HALF_UP)</td>
-                        <td class="align-right"><a href="@controllers.routes.CostController.deleteItem(appOverview.id, formSection.sectionNumber, item.itemNumber.getOrElse(-1))">
-                            Delete</a></td>
+                        <td class="align-right">
+                        @item.itemNumber.map { num =>
+                            <a href="@controllers.routes.CostController.deleteItem(appOverview.id, formSection.sectionNumber, num)">
+                                Delete</a>
+                        }</td>
                     </tr>
                 }
                 </tbody>
