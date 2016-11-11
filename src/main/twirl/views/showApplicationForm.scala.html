@@ -25,26 +25,30 @@ f"RIFS$id%05d"
                 </ol>
             </div>
 
-            @if(errs.nonEmpty) {
-            <div class="panel rifs-error-panel" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
-                <p>All questions must be answered</p>
-                @errs.map { e =>
-                <p class="error-message">
-                    <a href="@controllers.routes.ApplicationController.showSectionForm(overview.id, e.formSection.sectionNumber)">
-                        @e.formSection.title </a>
-                    @e.msg</p>
-                }
-            </div>
-            }
+
 
             <div>
-                <div></div>
                 <h1 class="heading-xlarge">
                     <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
                     Application overview
                 </h1>
                 <p>Complete all application sections before submitting to RIFS.</p>
             </div>
+
+            @if(errs.nonEmpty) {
+                <div class="panel rifs-error-panel" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+                    <p class="bold-small">All questions must be answered</p>
+                    <ul class="list list-bullet">
+                        @errs.map { e =>
+                            <li class="bold-small">
+                                <a href="@controllers.routes.ApplicationController.showSectionForm(overview.id, e.formSection.sectionNumber)">
+                                @e.formSection.title </a>
+                                @e.msg
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
 
             <form method="POST"
                   action="@controllers.routes.ApplicationController.submit(overview.id)">
