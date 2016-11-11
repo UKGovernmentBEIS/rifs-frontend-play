@@ -62,7 +62,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
         val sectionErrors: Seq[SectionError] = form.sections.sortBy(_.sectionNumber).flatMap { fs =>
           overview.sections.find(_.sectionNumber == fs.sectionNumber) match {
             case None => Some(SectionError(fs, "Not started"))
-            case Some(s) => checkSection(fs, s)
+            case Some(s) => checkSection(fs, s) 
           }
         }
         Ok(views.html.showApplicationForm(form, overview, opp, sectionErrors))
