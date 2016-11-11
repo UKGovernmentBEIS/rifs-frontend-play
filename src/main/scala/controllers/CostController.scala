@@ -35,7 +35,29 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
     }
   }
 
-  def saveItem(applicationId: ApplicationId, sectionNumber: Int) = Action.async(JsonForm.parser) { implicit request =>
+  def editItem(applicationId: ApplicationId, sectionNumber: Int, itemNumber: Int) = Action.async {
+    applications.getItem[JsObject](applicationId, sectionNumber, itemNumber).flatMap {
+      case Some(item) =>
+        Logger.debug(item.toString)
+        showItemForm(applicationId, sectionNumber, JsObject(Seq("item" -> item)), List(), Some(itemNumber))
+      case None => Future.successful(BadRequest)
+    }
+  }
+
+  def saveItem(applicationId: ApplicationId, sectionNumber: Int, itemNumber: Int) = Action.async(JsonForm.parser) { implicit request =>
+    validateItem(request.body.values) match {
+      case Valid(ci) =>
+        val itemJson = Json.toJson(ci).as[JsObject] + ("itemNumber" -> JsNumber(itemNumber))
+        val doc = JsObject(Seq("item" -> itemJson))
+        applications.saveItem(applicationId, sectionNumber, doc).flatMap {
+          case Nil => Future.successful(redirectToSectionForm(applicationId, sectionNumber))
+          case errs => showItemForm(applicationId, sectionNumber, request.body.values, errs)
+        }
+      case Invalid(errs) => showItemForm(applicationId, sectionNumber, request.body.values, errs.toList)
+    }
+  }
+
+  def createItem(applicationId: ApplicationId, sectionNumber: Int) = Action.async(JsonForm.parser) { implicit request =>
     validateItem(request.body.values) match {
       case Valid(ci) => applications.saveItem(applicationId, sectionNumber, JsObject(Seq("item" -> Json.toJson(ci)))).flatMap {
         case Nil => Future.successful(redirectToSectionForm(applicationId, sectionNumber))
@@ -59,7 +81,7 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
     }
   }
 
-  def showItemForm(applicationId: ApplicationId, sectionNumber: Int, doc: JsObject, errs: FieldErrors): Future[Result] = {
+  def showItemForm(applicationId: ApplicationId, sectionNumber: Int, doc: JsObject, errs: FieldErrors, itemNumber:Option[Int] = None): Future[Result] = {
     val details1 = actionHandler.gatherApplicationDetails(applicationId)
 
     val details2 = for {
@@ -78,7 +100,7 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
 
     details2.value.map {
       case Some(((overview, form, opp), fs)) =>
-        Ok(views.html.costItemForm(overview, form, fs, opp, fields, questions, answers, errs, hints, cancelLink(applicationId, overview, sectionNumber), None))
+        Ok(views.html.costItemForm(overview, form, fs, opp, fields, questions, answers, errs, hints, cancelLink(applicationId, overview, sectionNumber), itemNumber))
       case None => NotFound
     }
   }
