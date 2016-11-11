@@ -25,20 +25,9 @@ f"RIFS$id%05d"
                 </ol>
             </div>
 
-            @if(errs.nonEmpty) {
-            <div class="panel rifs-error-panel" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
-                <p>All questions must be answered</p>
-                @errs.map { e =>
-                <p class="error-message">
-                    <a href="@controllers.routes.ApplicationController.showSectionForm(overview.id, e.formSection.sectionNumber)">
-                        @e.formSection.title </a>
-                    @e.msg</p>
-                }
-            </div>
-            }
+
 
             <div>
-                <div></div>
                 <h1 class="heading-xlarge">
                     <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
                     Application overview
@@ -46,35 +35,53 @@ f"RIFS$id%05d"
                 <p>Complete all application sections before submitting to RIFS.</p>
             </div>
 
+            @if(errs.nonEmpty) {
+                <div class="panel rifs-error-panel" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+                    <p class="bold-small">All questions must be answered</p>
+                    <ul class="list list-bullet">
+                        @errs.map { e =>
+                            <li class="bold-small">
+                                <a href="@controllers.routes.ApplicationController.showSectionForm(overview.id, e.formSection.sectionNumber)">
+                                @e.formSection.title </a>
+                                @e.msg
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+
             <form method="POST"
-                  action="@controllers.routes.ApplicationController.submit(overview.id)">
-            <div>
-                <table class="spacious">
-                    <thead>
-                    <tr>
-                        <th scope="col">Event details</th>
-                        <th scope="col">Status</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @app.sections.sortBy(_.sectionNumber).map { s =>
-                    <tr>
-                        <td>
-                            @s.sectionNumber. <a id="section-@s.sectionNumber-link" href="@controllers.routes.ApplicationController.showSectionForm(overview.id, s.sectionNumber)"> @s.title</a>
-                        </td>
-                        <td class="status-column">
-                            @statusText(overview, s.sectionNumber)
-                        </td>
-                    </tr>
-                    }
-                    </tbody>
-                </table>
-                <p class="rifs-form-buttons">
-                    <input type="submit" name="@Save.name" class="button button--start" value="Submit application to RIFS">
-                    <a href="@controllers.routes.ApplicationPreviewController.applicationPreview(overview.id)" class="flat nobreak">Preview application</a>                </p>
-            </div>
+            action="@controllers.routes.ApplicationController.submit(overview.id)">
+                <div>
+                    <table class="spacious">
+                        <thead>
+                            <tr>
+                                <th scope="col">Event details</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @app.sections.sortBy(_.sectionNumber).map { s =>
+                            <tr>
+                                <td>
+                                    @s.sectionNumber. <a id="section-@s.sectionNumber-link" href="@controllers.routes.ApplicationController.showSectionForm(overview.id, s.sectionNumber)"> @s.title</a>
+                                </td>
+                                <td class="status-column">
+                                @statusText(overview, s.sectionNumber)
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                    <p class="rifs-form-buttons">
+                        <input type="submit" name="@Save.name" class="button button--start" value="Submit application to RIFS">
+                        <a href="@controllers.routes.ApplicationPreviewController.applicationPreview(overview.id)" class="flat nobreak">
+                            Preview application</a>
+                    </p>
+                </div>
+            </form>
         </div>
-        </form>
+
         <div id="support-column" class="column-third">
             @sidebar(overview, app)
         </div>
