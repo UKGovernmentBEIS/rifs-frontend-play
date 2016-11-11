@@ -4,7 +4,7 @@ import org.joda.time.LocalDateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.libs.json._
 
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 trait JodaFormats {
 
@@ -15,12 +15,10 @@ trait JodaFormats {
 
     override def reads(json: JsValue): JsResult[LocalDateTime] =
       implicitly[Reads[JsString]].reads(json).flatMap { js =>
-        Try(dtf.parseLocalDateTime(js.value))
-          .map(JsSuccess(_))
-          .recover {
-            case t: Throwable => JsError(t.getMessage)
-          }.get
+        Try(dtf.parseLocalDateTime(js.value)) match {
+          case Success(s) => JsSuccess(s)
+          case Failure(t) => JsError(t.getMessage)
+        }
       }
   }
-
 }

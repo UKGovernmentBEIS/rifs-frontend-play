@@ -13,6 +13,5 @@ case class CostItemField(name: String) extends Field {
   override def renderFormInput(questions: Map[String, Question], answers: Map[String, String], errs: Seq[FieldError], hints: Seq[FieldHint]): Html =
     views.html.renderers.costItemField(this, questions, answers, errs, hints)
 
-
-  override def renderPreview(answers: Map[String, String]): Html = Html("<html><h1>The costs preview has not been implemented yet</h1></html>")
+  override def renderPreview(answers: Map[String, String]): Html = Html("")
 }

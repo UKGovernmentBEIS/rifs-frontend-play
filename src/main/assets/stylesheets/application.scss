@@ -242,6 +242,19 @@ input.secondary {
   color: $black;
 }
 
+button.as-link {
+  display: inline-block;
+  position: relative;
+  background-color: transparent;
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+  color: $link-colour;
+  font-size: 1em;
+  text-decoration: underline;
+}
+
+
 // GOV.UK overrides
 hr {
   margin-bottom: 20px;
@@ -298,6 +311,9 @@ hr {
   padding-right: 6px;
 }
 
+.nobreak {
+  white-space: nowrap;
+}
 
 .currency {
   text-align: right;

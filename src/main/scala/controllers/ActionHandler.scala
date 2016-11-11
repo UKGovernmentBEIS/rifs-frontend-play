@@ -79,7 +79,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
         if (errs.isEmpty) {
           applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
             //TODO: Cal render directly to save reprocessing?
-            Redirect(routes.ApplicationPreviewController.PreviewSection(id, sectionNumber))
+            Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber))
           }
         } else redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
 
@@ -88,7 +88,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
   }
 
   def displayCompletedPreview(id: ApplicationId, sectionNumber: Int): Future[Result] = {
-    Future.successful(Redirect(controllers.routes.ApplicationPreviewController.PreviewSection(id, sectionNumber)))
+    Future.successful(Redirect(controllers.routes.ApplicationPreviewController.previewSection(id, sectionNumber)))
   }
 
   def renderSectionForm(id: ApplicationId,
