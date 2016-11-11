@@ -61,7 +61,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
         overview.sections.sortBy(_.sectionNumber).map(s => s.completedAt)
         val sectionErrors: Seq[SectionError] = form.sections.sortBy(_.sectionNumber).flatMap { fs =>
           overview.sections.find(_.sectionNumber == fs.sectionNumber) match {
-            case None => Some(SectionError(fs, "not started"))
+            case None => Some(SectionError(fs, "Not started"))
             case Some(s) => checkSection(fs, s)
           }
         }
@@ -73,7 +73,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
   def checkSection(fs:ApplicationFormSection, s: ApplicationSectionOverview): Option[SectionError] = {
     s.completedAt match {
       case Some(_) => None
-      case None => Some(SectionError(fs, "not completed"))
+      case None => Some(SectionError(fs, "In progress"))
     }
   }
 
