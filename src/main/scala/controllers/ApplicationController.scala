@@ -34,7 +34,6 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
   import FieldCheckHelpers._
 
   def editSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
-    Logger.debug("App Controller: editSectionForm")
     fieldsFor(sectionNumber) match {
       case Some(fields) => {
         applications.getSection(id, sectionNumber).flatMap { section => {
@@ -42,66 +41,41 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
           actionHandler.renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, noErrors, hints)
         }}
       }
-      // Temporary hack to display the WIP page for sections that we haven't yet coded up
-      case None => Future.successful(wip(routes.ApplicationController.show(id).url))
+      // Do we want a generic error handler for these kind of unlikely eventualities (+ avoid compiler warnings)
+      case None => ???
     }
   }
 
-  //TOD Refactor! part 2 2
   def resetAndEditSection(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
-    Logger.debug("App Controller: resetAndEditSection")
     fieldsFor(sectionNumber) match {
       case Some(fields) => {
-        //1 Save with no completed date to mark as in progress
-        Logger.debug("About to go to applications.clearSectionCompletedDate")
         applications.clearSectionCompletedDate(id, sectionNumber)
-        Logger.debug("Finished applications.clearSectionCompletedDate")
-        //2 open Edit Section form
         applications.getSection(id, sectionNumber).flatMap { section => {
           val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
           actionHandler.renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, noErrors, hints)
         }}
       }
-      // Temporary hack to display the WIP page for sections that we haven't yet coded up
-      case None => Future.successful(wip(routes.ApplicationController.show(id).url))
+      // Do we want a generic error handler for these kind of unlikely eventualities (+ avoid compiler warnings)
+      case None => ???
     }
   }
-
-
-
-//  def showSection(id:ApplicationId, sectionNumber:Int) = Action.async { request =>
-//    fieldsFor(sectionNumber) match {
-//      case Some(fields) => {
-//        applications.getSection(id, sectionNumber).map { sectiono =>
-//          sectiono.map { section =>
-//            section.completedAt match {
-//              case None => Ok(views.html.sectionForm(???))
-//              case Some(_) => Ok(views.html.sectionPreview(???))
-//            }
-//          }
-//        }
-//      }
-//      ???
-//    }
-//  }
 
   def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
     fieldsFor(sectionNumber) match {
       case Some(fields) => {
         applications.getSection(id, sectionNumber).flatMap { section =>
           section.flatMap(_.completedAtText) match {
-            case None => //|| (forceEditMode == true)
+            case None =>
               val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
               actionHandler.renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, noErrors, hints)
             case _ =>
-              //actionHandler.doPreview(id, sectionNumber, request.body.values)
-              //TODO: Tidy this to either call render directly or do a repost
-              actionHandler.displayCompletedPreview(id, sectionNumber)
+              actionHandler.RedirectToPreview(id, sectionNumber)
+
           }
         }
       }
-      // Temporary hack to display the WIP page for sections that we haven't yet coded up
-      case None => ??? //Future.successful(wip(routes.ApplicationController.show(id).url))
+      // Do we want a generic error handler for these kind of unlikely eventualities (+ avoid compiler warnings)
+      case None => ???
     }
   }
 

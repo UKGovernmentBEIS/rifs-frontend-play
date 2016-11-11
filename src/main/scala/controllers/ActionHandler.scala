@@ -33,7 +33,6 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
             Redirect(routes.ApplicationController.show(id))
           }
         }
-
       case CostSection => Future.successful(redirectToOverview(id))
     }
   }
@@ -58,8 +57,6 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
 
   def doSaveItem(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
-    Logger.debug("**********************************")
-    Logger.debug(fieldValues.toString)
     JsonHelpers.allFieldsEmpty(fieldValues) match {
       case true => applications.deleteSection(id, sectionNumber).map { _ =>
         Redirect(routes.ApplicationController.show(id))
@@ -78,7 +75,6 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
         val errs = check(fieldValues, previewChecksFor(sectionNumber))
         if (errs.isEmpty) {
           applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
-            //TODO: Cal render directly to save reprocessing?
             Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber))
           }
         } else redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
@@ -87,7 +83,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
   }
 
-  def displayCompletedPreview(id: ApplicationId, sectionNumber: Int): Future[Result] = {
+  def RedirectToPreview(id: ApplicationId, sectionNumber: Int): Future[Result] = {
     Future.successful(Redirect(controllers.routes.ApplicationPreviewController.previewSection(id, sectionNumber)))
   }
 

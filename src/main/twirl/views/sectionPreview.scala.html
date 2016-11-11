@@ -36,10 +36,10 @@
                 <div class="rifs-form-buttons">
 
                     <form method="POST"
-                        action="@controllers.routes.ApplicationController.resetAndEditSection(app.id, formSection.sectionNumber)"
+                        action=@editButton
                         novalidate="novalidate">
                         <a class="button secondary" href=@closeButton>Close</a>
-                        <input type="submit" name="Unnecessary as one action!" class="button--link-style" value="Edit this page"/>
+                        <input type="submit" class="button--link-style" value="Edit this page"/>
                     </form>
                 </div>
             }
