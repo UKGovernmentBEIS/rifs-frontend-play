@@ -30,7 +30,6 @@
             @fields.map(_.renderPreview(answers))
 
             @if(editButton.isDefined){
-                <p></p>
                 @section.flatMap(_.completedAtText)
 
                 <div class="rifs-form-buttons">
@@ -45,7 +44,6 @@
             }
 
             @if(editButton.isEmpty){
-                <p></p>
                 <div class="rifs-form-buttons">
                     <a class="button secondary" href="@closeButton">Close</a>
                 </div>
