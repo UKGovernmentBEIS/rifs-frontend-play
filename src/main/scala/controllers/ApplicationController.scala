@@ -41,8 +41,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
           actionHandler.renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, noErrors, hints)
         }}
       }
-      // Do we want a generic error handler for these kind of unlikely eventualities (+ avoid compiler warnings)
-      case None => ???
+      case None => Future(NotFound)
     }
   }
 
@@ -55,8 +54,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
           actionHandler.renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, noErrors, hints)
         }}
       }
-      // Do we want a generic error handler for these kind of unlikely eventualities (+ avoid compiler warnings)
-      case None => ???
+      case None => Future(NotFound)
     }
   }
 
@@ -74,8 +72,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
           }
         }
       }
-      // Do we want a generic error handler for these kind of unlikely eventualities (+ avoid compiler warnings)
-      case None => ???
+      case None => Future(NotFound)
     }
   }
 
