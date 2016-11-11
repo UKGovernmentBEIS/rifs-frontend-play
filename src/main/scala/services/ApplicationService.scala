@@ -86,4 +86,11 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     val url = s"$baseUrl/application/${id.id}/section/$sectionNumber"
     delete(url)
   }
+
+  override def clearSectionCompletedDate(id: ApplicationId, sectionNumber: Int): Future[Unit] = {
+    val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/markNotCompleted"
+    put(url, None)
+  }
+
+
 }

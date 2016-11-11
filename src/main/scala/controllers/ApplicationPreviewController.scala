@@ -5,7 +5,8 @@ import javax.inject.Inject
 import cats.data.OptionT
 import cats.instances.future._
 import forms.Field
-import models.{ApplicationId, ApplicationSection}
+import models._
+import play.Logger
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
 
@@ -16,55 +17,52 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
 
   import ApplicationData._
 
-
-  //TODO: Tidy the code below presumably a lot of duplication
-  def previewSectionCompleted(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
+  //TODO: Check completed date to determine preview view
+  def PreviewSection (id: ApplicationId, sectionNumber: Int) = Action.async { request =>
     fieldsFor(sectionNumber) match {
       case Some(fields) => applications.getSection(id, sectionNumber).flatMap { section =>
-        renderSectionPreviewCompleted(id, sectionNumber, section, fields)
+        section.flatMap(_.completedAtText) match {
+          case None => renderSectionPreviewInProgress (id, sectionNumber, section, fields)
+          case _ => renderSectionPreviewCompleted (id, sectionNumber, section, fields)
+        }
       }
       case None => Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
     }
   }
 
-  def previewSectionInProgress(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
-    fieldsFor(sectionNumber) match {
-      case Some(fields) => applications.getSection(id, sectionNumber).flatMap { section =>
-        renderSectionPreviewInProgress(id, sectionNumber, section, fields)
-      }
-      case None => Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
-    }
-  }
-
-  def renderSectionPreviewInProgress(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], fields: Seq[Field]) = {
-    val ft = for {
-      a <- OptionT(applications.byId(id))
-      af <- OptionT(applicationForms.byId(a.applicationFormId))
-      o <- OptionT(opportunities.byId(af.opportunityId))
-    } yield (a, af, o)
-
+  def renderSectionPreviewCompleted (id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], fields: Seq[Field]) = {
+    val ft = gatherApplicationDetails(id)
     val answers = section.map { s => JsonHelpers.flatten("", s.answers) }.getOrElse(Map[String, String]())
 
-    ft.value.map {
+    ft.map {
       case Some((app, appForm, opp)) =>
-        Ok(views.html.sectionPreviewInProgress(app, section, appForm.sections.find(_.sectionNumber == sectionNumber).get, opp, fields, answers))
+        Logger.debug("URL = " + controllers.routes.ApplicationController.resetAndEditSection(app.id, sectionNumber).url)
+        Ok(views.html.sectionPreview(app, section, appForm.sections.find(_.sectionNumber == sectionNumber).get,
+          opp, fields, answers, controllers.routes.ApplicationController.show(app.id).url, Option(controllers.routes.ApplicationController.resetAndEditSection(app.id, sectionNumber).url)))
       case None => NotFound
     }
   }
 
-  def renderSectionPreviewCompleted(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], fields: Seq[Field]) = {
-    val ft = for {
-      a <- OptionT(applications.byId(id))
-      af <- OptionT(applicationForms.byId(a.applicationFormId))
-      o <- OptionT(opportunities.byId(af.opportunityId))
-    } yield (a, af, o)
-
+  def renderSectionPreviewInProgress (id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], fields: Seq[Field]) = {
+    val ft = gatherApplicationDetails(id)
     val answers = section.map { s => JsonHelpers.flatten("", s.answers) }.getOrElse(Map[String, String]())
 
-    ft.value.map {
+    ft.map {
       case Some((app, appForm, opp)) =>
-        Ok(views.html.sectionPreviewCompleted(app, section, appForm.sections.find(_.sectionNumber == sectionNumber).get, opp, fields, answers))
+        Ok(views.html.sectionPreview(app, section, appForm.sections.find(_.sectionNumber == sectionNumber).get, opp, fields, answers, controllers.routes.ApplicationController.editSectionForm(app.id, sectionNumber).url, None))
       case None => NotFound
     }
   }
+
+  //this is duplicated from ActionHandler - needs refactoring
+  def gatherApplicationDetails(id: ApplicationId): Future[Option[(ApplicationOverview, ApplicationForm, Opportunity)]] = {
+    for {
+      a <- OptionT(applications.overview(id))
+      af <- OptionT(applicationForms.byId(a.applicationFormId))
+      o <- OptionT(opportunities.byId(af.opportunityId))
+    } yield (a, af, o)
+  }.value
+
 }
+
+

@@ -16,14 +16,17 @@ GET         /application/:id                                          controller
 GET         /application/:id/section/:num                             controllers.ApplicationController.showSectionForm(id: ApplicationId, num:Int)
 POST        /application/:id/section/:num                             controllers.ApplicationController.postSection(id: ApplicationId, num:Int)
 GET         /application/:id/section/:num/edit                        controllers.ApplicationController.editSectionForm(id: ApplicationId, num:Int)
+#CHECK THIS:  The post is because we want to do a pre-save with an empty Completed Date before going to edit form
+#Goes to a put in the business layer
+POST         /application/:id/section/:num/edit                        controllers.ApplicationController.resetAndEditSection(id: ApplicationId, num:Int)
+
 
 GET         /application/:id/section/:num/add-item                    controllers.CostController.addItem(id:ApplicationId, num:Int)
 POST        /application/:id/section/:num/item                        controllers.CostController.saveItem(id:ApplicationId, num: Int)
 GET         /application/:id/section/:num/item/:itemNum/delete        controllers.CostController.deleteItem(id:ApplicationId, num: Int, itemNum:Int)
 
-#TODO: Conider combining Previews once they work (pass in optional edit button, consider completed date)
-GET         /application/:id/section/:num/previewCompleted            controllers.ApplicationPreviewController.previewSectionCompleted(id: ApplicationId, num:Int)
-GET         /application/:id/section/:num/previewInProgress           controllers.ApplicationPreviewController.previewSectionInProgress(id: ApplicationId, num:Int)
+GET         /application/:id/section/:num/preview                     controllers.ApplicationPreviewController.PreviewSection(id: ApplicationId, num:Int)
+
 
 GET         /reset                                                    controllers.ApplicationController.reset
 GET         /wip                                                      controllers.OpportunityController.wip(backUrl: String)

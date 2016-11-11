@@ -1,0 +1,56 @@
+@(
+        app: ApplicationOverview,
+        section: Option[ApplicationSection],
+        formSection: ApplicationFormSection,
+        opportunity: Opportunity,
+        fields: Seq[forms.Field],
+        answers: Map[String, String],
+        closeButton: String,
+        editButton: Option[String]
+)
+
+@formatId(id: Long) = @{
+    f"RIFS$id%05d"
+}
+
+@main(s"Event title") {
+    <div class="grid-row">
+        <div class="column-full">
+            <div class="breadcrumbs">
+                <ol>
+                    <li><a href="@controllers.routes.ApplicationController.show(app.id)">&lt; Return to application overview</a></li>
+                </ol>
+            </div>
+
+            <h1 class="heading-xlarge">
+                <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
+                @formSection.title
+            </h1>
+
+            @fields.map(_.renderPreview(answers))
+
+            @if(editButton.isDefined){
+                <p></p>
+                @section.flatMap(_.completedAtText)
+
+                <div class="rifs-form-buttons">
+
+                    <form method="POST"
+                        action="@controllers.routes.ApplicationController.resetAndEditSection(app.id, formSection.sectionNumber)"
+                        novalidate="novalidate">
+                        <a class="button secondary" href=@closeButton>Close</a>
+                        <input type="submit" name="Unnecessary as one action!" class="button--link-style" value="Edit this page"/>
+                    </form>
+                </div>
+            }
+
+            @if(editButton.isEmpty){
+                <p></p>
+                <div class="rifs-form-buttons">
+                    <a class="button secondary" href="@closeButton">Close</a>
+                </div>
+            }
+
+        </div>
+    </div>
+}

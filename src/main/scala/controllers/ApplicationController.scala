@@ -33,45 +33,57 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
   import ApplicationData._
   import FieldCheckHelpers._
 
-  //TODO: DELETE WHEN SURE WE AREN"T TAKING THIS APPROACH
-  //def editSectionForm(id: ApplicationId, sectionNumber: Int) = showSectionForm (id, sectionNumber, true)
-  //
-  //  def showSectionForm(id: ApplicationId, sectionNumber: Int, forceEditMode: Boolean=false) = Action.async { request =>
-  //    fieldsFor(sectionNumber) match {
-  //      case Some(fields) =>
-  //        applications.getSection(id, sectionNumber).flatMap { section =>
-  //          section.flatMap(_.completedAtText) match {
-  //            case None =>   //|| (forceEditMode == true)
-  //              Logger.debug("***************************************")
-  //              Logger.debug(request.body.toString)
-  //              val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
-  //              actionHandler.renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, noErrors, hints)
-  //            case _  if (forceEditMode == true) =>
-  //              val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
-  //              actionHandler.renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, noErrors, hints)
-  //            case _  if (forceEditMode == false) =>
-  //              actionHandler.renderSectionPreview(id, sectionNumber, section, fields)
-  //          }
-  //        }
-  //      // Temporary hack to display the WIP page for sections that we haven't yet coded up
-  //      case None => Future.successful(wip(routes.ApplicationController.show(id).url))
-  //    }
-  //  }
-
-  //TODO: TIDY a, cut down from previous so could probably be refactored. b, consider merging into showSectionForm method (as per commented out code above)
   def editSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
+    Logger.debug("App Controller: editSectionForm")
     fieldsFor(sectionNumber) match {
       case Some(fields) => {
         applications.getSection(id, sectionNumber).flatMap { section => {
           val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
           actionHandler.renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, noErrors, hints)
-        }
-        }
+        }}
       }
-      //Needs an error page maybe - SECTION DOESN'T EXIST - we shouldn't end up here as it is either edit or add new
+      // Temporary hack to display the WIP page for sections that we haven't yet coded up
       case None => Future.successful(wip(routes.ApplicationController.show(id).url))
     }
   }
+
+  //TOD Refactor! part 2 2
+  def resetAndEditSection(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
+    Logger.debug("App Controller: resetAndEditSection")
+    fieldsFor(sectionNumber) match {
+      case Some(fields) => {
+        //1 Save with no completed date to mark as in progress
+        Logger.debug("About to go to applications.clearSectionCompletedDate")
+        applications.clearSectionCompletedDate(id, sectionNumber)
+        Logger.debug("Finished applications.clearSectionCompletedDate")
+        //2 open Edit Section form
+        applications.getSection(id, sectionNumber).flatMap { section => {
+          val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
+          actionHandler.renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, noErrors, hints)
+        }}
+      }
+      // Temporary hack to display the WIP page for sections that we haven't yet coded up
+      case None => Future.successful(wip(routes.ApplicationController.show(id).url))
+    }
+  }
+
+
+
+//  def showSection(id:ApplicationId, sectionNumber:Int) = Action.async { request =>
+//    fieldsFor(sectionNumber) match {
+//      case Some(fields) => {
+//        applications.getSection(id, sectionNumber).map { sectiono =>
+//          sectiono.map { section =>
+//            section.completedAt match {
+//              case None => Ok(views.html.sectionForm(???))
+//              case Some(_) => Ok(views.html.sectionPreview(???))
+//            }
+//          }
+//        }
+//      }
+//      ???
+//    }
+//  }
 
   def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
     fieldsFor(sectionNumber) match {
@@ -82,12 +94,14 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
               val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
               actionHandler.renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, noErrors, hints)
             case _ =>
+              //actionHandler.doPreview(id, sectionNumber, request.body.values)
+              //TODO: Tidy this to either call render directly or do a repost
               actionHandler.displayCompletedPreview(id, sectionNumber)
           }
         }
       }
       // Temporary hack to display the WIP page for sections that we haven't yet coded up
-      case None => Future.successful(wip(routes.ApplicationController.show(id).url))
+      case None => ??? //Future.successful(wip(routes.ApplicationController.show(id).url))
     }
   }
 

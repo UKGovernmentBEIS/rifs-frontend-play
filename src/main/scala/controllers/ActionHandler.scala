@@ -7,6 +7,7 @@ import cats.instances.future._
 import forms.Field
 import forms.validation.CostItem
 import models._
+import play.Logger
 import play.api.libs.json.{JsArray, JsDefined, JsObject, Json}
 import play.api.mvc.Result
 import play.api.mvc.Results._
@@ -19,6 +20,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
 
   import ApplicationData._
   import FieldCheckHelpers._
+
 
   def doSave(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
     sectionTypeFor(sectionNumber) match {
@@ -56,6 +58,8 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
 
   def doSaveItem(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
+    Logger.debug("**********************************")
+    Logger.debug(fieldValues.toString)
     JsonHelpers.allFieldsEmpty(fieldValues) match {
       case true => applications.deleteSection(id, sectionNumber).map { _ =>
         Redirect(routes.ApplicationController.show(id))
@@ -67,15 +71,15 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
   }
 
-
-  //TODO: TIDY & COnSIDER refactor + ARE WE STILL doing all the required validations ?
+  //Leaving this ambiguous method name as a future story allows previewing & marking as complete in the same move (when we may reconsider merging in displaycompletedPreview below)
   def doPreview(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
     sectionTypeFor(sectionNumber) match {
       case VanillaSection =>
         val errs = check(fieldValues, previewChecksFor(sectionNumber))
         if (errs.isEmpty) {
           applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
-            Redirect(routes.ApplicationPreviewController.previewSectionInProgress(id, sectionNumber))
+            //TODO: Cal render directly to save reprocessing?
+            Redirect(routes.ApplicationPreviewController.PreviewSection(id, sectionNumber))
           }
         } else redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
 
@@ -83,15 +87,9 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
   }
 
-  def doPreviewCompleted(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject) = {
-    Redirect(routes.ApplicationPreviewController.previewSectionCompleted(id, sectionNumber))
-  }
-
   def displayCompletedPreview(id: ApplicationId, sectionNumber: Int): Future[Result] = {
-    Future.successful(Redirect(controllers.routes.ApplicationPreviewController.previewSectionCompleted(id, sectionNumber)))
+    Future.successful(Redirect(controllers.routes.ApplicationPreviewController.PreviewSection(id, sectionNumber)))
   }
-
-//----
 
   def renderSectionForm(id: ApplicationId,
                         sectionNumber: Int,
