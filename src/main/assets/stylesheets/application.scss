@@ -49,6 +49,7 @@ $path: '/assets/stylesheets/images/';
 // Global template elements
 #global-header-status {
   @extend %contain-floats;
+  margin-top: .4em;
 }
 
 // Page widgets
