@@ -67,6 +67,11 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     getOpt[ApplicationSection](url)
   }
 
+  override def getSections(id: ApplicationId): Future[Seq[ApplicationSection]] = {
+    val url = s"$baseUrl/application/${id.id}/sections"
+    getMany[ApplicationSection](url)
+  }
+
   override def getOrCreateForForm(applicationFormId: ApplicationFormId): Future[Option[Application]] = {
     val url = s"$baseUrl/application_form/${applicationFormId.id}/application"
     getOpt[Application](url)

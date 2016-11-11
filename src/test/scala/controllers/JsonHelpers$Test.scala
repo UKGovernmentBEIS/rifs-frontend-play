@@ -1,7 +1,7 @@
 package controllers
 
 import org.scalatest.{Matchers, OptionValues, WordSpecLike}
-import play.api.libs.json.JsString
+import play.api.libs.json.{JsArray, JsObject, JsString}
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -21,4 +21,11 @@ class JsonHelpers$Test extends WordSpecLike with Matchers with OptionValues {
     }
   }
 
+  "allFieldsEmpty" should {
+    "consider an empty items list as an empty field" in {
+      val o = JsObject(Seq("items" -> JsArray(Seq())))
+
+      JsonHelpers.allFieldsEmpty(o) shouldBe true
+    }
+  }
 }

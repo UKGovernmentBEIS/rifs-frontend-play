@@ -1,0 +1,9 @@
+@(
+formSection: ApplicationFormSection,
+fields: Seq[forms.Field],
+answers: Map[String, String]
+)
+<div>
+    <h2 class="heading-medium">@formSection.sectionNumber . @formSection.title </h2>
+    @fields.map(_.renderPreview(answers))
+</div>

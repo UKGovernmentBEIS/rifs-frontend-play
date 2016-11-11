@@ -71,12 +71,11 @@ f"RIFS$id%05d"
                 </table>
                 <p class="rifs-form-buttons">
                     <input type="submit" name="@Save.name" class="button button--start" value="Submit application to RIFS">
-                    <a href="@controllers.routes.OpportunityController.wip(controllers.routes.ApplicationController.show(overview.id).url)" class="flat">Preview application</a>
-                </p>
+                    <a href="@controllers.routes.ApplicationPreviewController.applicationPreview(overview.id)" class="flat nobreak">Preview application</a>                </p>
             </div>
         </div>
         </form>
-        <div class="column-third">
+        <div id="support-column" class="column-third">
             @sidebar(overview, app)
         </div>
     </div>
