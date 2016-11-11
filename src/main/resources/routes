@@ -3,14 +3,14 @@
 # ~~~~
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                                             controllers.Assets.at(path="/public", file)
+GET         /assets/*file                                controllers.Assets.at(path="/public", file)
 
-GET         /                                                         controllers.StartPageController.startPage
-GET         /opportunities                                            controllers.OpportunityController.showOpportunities
-GET         /opportunities/guidance/:opportunityId                    controllers.OpportunityController.showGuidancePage(opportunityId:OpportunityId)
-GET         /opportunity/:opportunityId                               controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
+GET         /                                            controllers.StartPageController.startPage
+GET         /opportunities                               controllers.OpportunityController.showOpportunities
+GET         /opportunities/guidance/:opportunityId                      controllers.OpportunityController.showGuidancePage(opportunityId:OpportunityId)
+GET         /opportunity/:opportunityId                  controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
 
-GET         /application_form/:id/apply                               controllers.ApplicationController.showOrCreateForForm(id: ApplicationFormId)
+GET         /application_form/:id/apply                  controllers.ApplicationController.showOrCreateForForm(id: ApplicationFormId)
 
 GET         /application/:id                                          controllers.ApplicationController.show(id: ApplicationId)
 POST        /application/:id                                          controllers.ApplicationController.submit(id: ApplicationId)
@@ -18,12 +18,15 @@ POST        /application/:id                                          controller
 GET         /application/:id/section/:num                             controllers.ApplicationController.showSectionForm(id: ApplicationId, num:Int)
 POST        /application/:id/section/:num                             controllers.ApplicationController.postSection(id: ApplicationId, num:Int)
 
-GET         /application/:id/section/:num/preview                     controllers.ApplicationPreviewController.previewSection(id: ApplicationId, num:Int)
-GET         /application/:id/preview                                  controllers.ApplicationPreviewController.applicationPreview(id: ApplicationId)
+GET         /application/:id/section/:num/preview        controllers.ApplicationPreviewController.previewSection(id: ApplicationId, num:Int)
+GET         /application/:id/preview                     controllers.ApplicationPreviewController.applicationPreview(id: ApplicationId)
 
-GET         /application/:id/section/:num/add-item                    controllers.CostController.addItem(id:ApplicationId, num:Int)
-POST        /application/:id/section/:num/item                        controllers.CostController.saveItem(id:ApplicationId, num: Int)
-GET         /application/:id/section/:num/item/:itemNum/delete        controllers.CostController.deleteItem(id:ApplicationId, num: Int, itemNum:Int)
+GET         /application/:id/section/:num/add-item                    controllers.CostController.addItem(id:ApplicationId, num: Int)
+POST        /application/:id/section/:num/item                        controllers.CostController.createItem(id:ApplicationId, num: Int)
+POST        /application/:id/section/:num/item/:itemNum               controllers.CostController.saveItem(id:ApplicationId, num: Int, itemNum: Int)
+GET         /application/:id/section/:num/item/:itemNum/delete        controllers.CostController.deleteItem(id:ApplicationId, num: Int, itemNum: Int)
+GET         /application/:id/section/:num/item/:itemNum/edit          controllers.CostController.editItem(id:ApplicationId, num: Int, itemNum: Int)
+
 
 GET         /application/:id/section/:num/preview                     controllers.ApplicationPreviewController.previewSection(id: ApplicationId, num:Int)
 
