@@ -13,9 +13,17 @@
 )
     @import partials._
 
+@answers
 
 @formatId(id: Long) = @{
     f"RIFS$id%05d"
+}
+
+@createOrSave = @{
+    itemNumber match {
+        case Some(n) => controllers.routes.CostController.saveItem(appOverview.id, formSection.sectionNumber, n)
+        case None => controllers.routes.CostController.createItem(appOverview.id, formSection.sectionNumber)
+    }
 }
 
 @main(formSection.title) {
@@ -37,7 +45,7 @@
                 @formSection.title
             </h1>
 
-            <form method="POST" action="@controllers.routes.CostController.saveItem(appOverview.id, formSection.sectionNumber)">
+            <form method="POST" action="@createOrSave">
                 @if(errs.nonEmpty) {
                     <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
                         <h1 class="heading-medium error-summary-heading" id="error-summary-heading">

@@ -1,6 +1,6 @@
 package controllers
 
-import play.api.libs.json.{JsArray, JsObject, JsString}
+import play.api.libs.json._
 
 object JsonHelpers {
 
@@ -13,6 +13,7 @@ object JsonHelpers {
     o.fields.map {
       case (n, jo: JsObject) => flatten(subName(n), jo)
       case (n, JsString(s)) => Map(subName(n) -> s)
+      case (n, JsNumber(num)) => Map(subName(n) -> num.toString)
       // HACK: for the moment treat an array as a big string
       case (n, JsArray(values)) => Map(subName(n) -> (if (values.isEmpty) "" else values.mkString))
       // For the moment any non-string value gets dropped

@@ -7,7 +7,7 @@ import controllers.FieldCheckHelpers
 import controllers.FieldCheckHelpers.FieldErrors
 import models._
 import play.api.Logger
-import play.api.libs.json.{JsDefined, JsNumber, JsObject, Json}
+import play.api.libs.json._
 import play.api.libs.ws.WSClient
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -60,6 +60,11 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
   override def deleteItem(id: ApplicationId, sectionNumber: Int, itemNumber: Int): Future[Unit] = {
     val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/item/$itemNumber"
     delete(url)
+  }
+
+  override def getItem[T : Reads](id: ApplicationId, sectionNumber: Int, itemNumber: Int): Future[Option[T]] = {
+    val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/item/$itemNumber"
+    getOpt[T](url)
   }
 
   override def getSection(id: ApplicationId, sectionNumber: Int): Future[Option[ApplicationSection]] = {
