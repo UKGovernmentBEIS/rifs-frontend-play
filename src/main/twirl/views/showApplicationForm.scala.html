@@ -26,13 +26,13 @@ f"RIFS$id%05d"
             </div>
 
             @if(errs.nonEmpty) {
-            <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
-                All questions must be answered
+            <div class="panel rifs-error-panel" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+                <p>All questions must be answered</p>
                 @errs.map { e =>
-                <span class="error-message">
+                <p class="error-message">
                     <a href="@controllers.routes.ApplicationController.showSectionForm(overview.id, e.formSection.sectionNumber)">
                         @e.formSection.title </a>
-                    @e.msg</span>
+                    @e.msg</p>
                 }
             </div>
             }
