@@ -1,0 +1,25 @@
+#global-header-status,
+#support-column,
+nav,
+.panel,
+.no-print,
+.button,
+.breadcrumbs
+{
+  display: none;
+}
+
+#content {
+  float: none !important;
+  width: 100%;
+}
+
+.text {
+  max-width: 100%;
+  width: 100%;
+}
+
+.column-two-thirds {
+  width: 95%;
+}
+

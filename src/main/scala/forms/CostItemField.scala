@@ -14,5 +14,5 @@ case class CostItemField(name: String) extends Field {
     views.html.renderers.costItemField(this, questions, answers, errs, hints)
 
 
-  override def renderPreview(answers: Map[String, String]): Html = ???
+  override def renderPreview(answers: Map[String, String]): Html = Html("")
 }

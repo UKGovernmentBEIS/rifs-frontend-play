@@ -8,7 +8,7 @@
         answers: Map[String, String],
         errs: List[forms.validation.FieldError],
         hints: List[forms.validation.FieldHint],
-        cancelLink: Call,
+        cancelLink: String,
         itemNumber: Option[Int]
 )
     @import partials._
@@ -56,8 +56,7 @@
                 </div>
             </form>
         </div>
-
-        <div class="column-third">
+        <div id="support-column" class="column-third">
         @sidebar(appOverview, appForm)
         </div>
     </div>
