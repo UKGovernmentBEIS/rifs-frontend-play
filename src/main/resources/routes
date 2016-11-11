@@ -30,3 +30,4 @@ GET         /wip                                                      controller
 
 # Health check
 GET         /ping                                                     controllers.HealthCheckController.ping()
+GET         /version                                                  controllers.HealthCheckController.version
