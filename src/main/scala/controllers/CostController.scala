@@ -51,9 +51,9 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
         val doc = JsObject(Seq("item" -> itemJson))
         applications.saveItem(applicationId, sectionNumber, doc).flatMap {
           case Nil => Future.successful(redirectToSectionForm(applicationId, sectionNumber))
-          case errs => showItemForm(applicationId, sectionNumber, request.body.values, errs)
+          case errs => showItemForm(applicationId, sectionNumber, request.body.values, errs, Some(itemNumber))
         }
-      case Invalid(errs) => showItemForm(applicationId, sectionNumber, request.body.values, errs.toList)
+      case Invalid(errs) => showItemForm(applicationId, sectionNumber, request.body.values, errs.toList, Some(itemNumber))
     }
   }
 
