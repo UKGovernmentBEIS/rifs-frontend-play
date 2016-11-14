@@ -92,6 +92,12 @@ $path: '/assets/stylesheets/images/';
   background-color: $panel-colour;
 }
 
+.rifs-error-panel {
+  border-color: $red;
+  border-left-width: 5px;
+  background-color: lighten($red, 50%);
+}
+
 // General
 .float-left {
   float: left;
