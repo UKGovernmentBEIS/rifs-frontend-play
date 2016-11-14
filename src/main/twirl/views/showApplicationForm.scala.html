@@ -7,7 +7,7 @@
 f"RIFS$id%05d"
 }
 
-@errorClass = @{if(errs.nonEmpty) "error" else ""}
+@errorClass = @{if(errs.nonEmpty) "rifs-error-panel" else ""}
 
 @main(s"Overview") {
     <div id="global-header-status" class="contain-floats">
@@ -36,7 +36,7 @@ f"RIFS$id%05d"
             </div>
 
             @if(errs.nonEmpty) {
-                <div class="panel rifs-error-panel" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+                <div class="panel @errorClass" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
                     <p class="bold-small">All questions must be answered</p>
                     <ul class="list list-bullet">
                         @errs.map { e =>
