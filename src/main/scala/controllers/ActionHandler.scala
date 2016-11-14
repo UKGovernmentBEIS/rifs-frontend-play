@@ -83,51 +83,28 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
   }
 
   def PreviewAndComplete(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
-    ???
-    //Not considered if save or saveitem !!!
 
-    //1 Preview checks (i.e. usually can't preview a blank
-      //2.1 Success
-        //3 Is empty
-            //3.1 TRUE: Delete (probably never reach as generally there is no preview allowed on empty content
-            //3.2 False:
-              //4 Do validation
-
-
-      //2.2 Fail
-  }
-
-
-  def PreviewAndComplete(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
-    //    JsonHelpers.allFieldsEmpty(fieldValues) match {
-    //      case true => applications.deleteSection(id, sectionNumber).map { _ =>
-    //        Redirect(routes.ApplicationController.show(id))
-    //      }
-
+    //Not considered saveitem yet!!!
     sectionTypeFor(sectionNumber) match {
       case VanillaSection =>
-        {
-          //val errs = check(fieldValues, previewChecksFor(sectionNumber))
-          //if (errs.isEmpty) {
+      //1 Do preview Validation (i.e. usually can't preview a blank)
+        Logger.debug("VanillaSection")
+        val errs = check(fieldValues, previewChecksFor(sectionNumber))
+        //2.1 Success
+        Logger.debug("Errors Size = " + errs.size)
+        if (errs.isEmpty) {
           JsonHelpers.allFieldsEmpty(fieldValues) match {
             case true => applications.deleteSection(id, sectionNumber).map { _ =>
               Redirect(routes.ApplicationController.show(id))
             }
-            case false => {
-              applications.saveSection (id, sectionNumber, fieldValues).flatMap {
-                case Nil => Redirect (routes.ApplicationPreviewController.previewSection (id, sectionNumber) )
-                case errs => redisplaySectionForm (id, sectionNumber, JsonHelpers.flatten ("", fieldValues), errs)
+            case false => applications.completeSection(id, sectionNumber, fieldValues).flatMap {
+              case Nil => Future.successful( Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber)))
+              case errs => redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
             }
           }
-
-          case _ => ???
-
-
-          //   }
-          // } else redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
-
-          //case CostSection => Future.successful(wip(sectionFormCall(id, sectionNumber).url))
         }
+        else redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
+      // CostSection => ???
     }
   }
 

@@ -3,7 +3,7 @@ package controllers
 import javax.inject.Inject
 
 import models._
-import play.api.Logger
+import play.Logger
 import play.api.mvc.{Action, Controller}
 import services.ApplicationOps
 

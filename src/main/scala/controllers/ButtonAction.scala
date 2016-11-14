@@ -1,5 +1,7 @@
 package controllers
 
+import play.Logger
+
 sealed trait ButtonAction {
   def name: String
 }
@@ -20,7 +22,7 @@ case object SaveItem extends ButtonAction {
   override val name: String = "_save_item_button"
 }
 
-case object PreviewAndCompete extends ButtonAction {
+case object PreviewAndComplete extends ButtonAction {
   override val name: String = "_preview_and_complete_button"
 }
 
@@ -28,10 +30,14 @@ object ButtonAction {
   def unapply(s: String): Option[ButtonAction] = {
     s match {
       case Complete.name => Some(Complete)
-      case Save.name => Some(Save)
+      case Save.name =>
+        Logger.debug("WE ARE IN ButtonAction::Save")
+        Some(Save)
       case Preview.name => Some(Preview)
-      case SaveItem.name => Some(SaveItem)
-      case PreviewAndCompete.name => Some(PreviewAndCompete)
+      case SaveItem.name =>
+        Logger.debug("WE ARE IN ButtonAction::SaveItem")
+        Some(SaveItem)
+      case PreviewAndComplete.name => Some(PreviewAndComplete)
       case _ => None
     }
   }
