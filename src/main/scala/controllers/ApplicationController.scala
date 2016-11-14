@@ -3,7 +3,9 @@ package controllers
 import javax.inject.Inject
 
 import models._
+
 import play.Logger
+import forms.validation.{FieldError, FieldHint, SectionError}
 import play.api.mvc.{Action, Controller}
 import services.ApplicationOps
 
@@ -21,7 +23,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
 
   def show(id: ApplicationId) = Action.async {
     actionHandler.gatherApplicationDetails(id).map {
-      case Some((overview, form, opp)) => Ok(views.html.showApplicationForm(form, overview, opp))
+      case Some((overview, form, opp)) => Ok(views.html.showApplicationForm(form, overview, opp, List()))
       case None => NotFound
     }
   }
@@ -86,5 +88,25 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
     }
   }
 
+  def submit(id: ApplicationId) = Action.async { request =>
+    actionHandler.gatherApplicationDetails(id).map {
+      case Some((overview, form, opp)) =>
+        val sectionErrors: Seq[SectionError] = form.sections.sortBy(_.sectionNumber).flatMap { fs =>
+          overview.sections.find(_.sectionNumber == fs.sectionNumber) match {
+            case None => Some(SectionError(fs, "Not started"))
+            case Some(s) => checkSection(fs, s)
+          }
+        }
+        Ok(views.html.showApplicationForm(form, overview, opp, sectionErrors))
+      case None => NotFound
+    }
+  }
+
+  def checkSection(fs:ApplicationFormSection, s: ApplicationSectionOverview): Option[SectionError] = {
+    s.completedAt match {
+      case Some(_) => None
+      case None => Some(SectionError(fs, "In progress"))
+    }
+  }
 
 }

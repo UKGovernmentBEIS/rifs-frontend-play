@@ -87,11 +87,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     //Not considered saveitem yet!!!
     sectionTypeFor(sectionNumber) match {
       case VanillaSection =>
-      //1 Do preview Validation (i.e. usually can't preview a blank)
-        Logger.debug("VanillaSection")
         val errs = check(fieldValues, previewChecksFor(sectionNumber))
-        //2.1 Success
-        Logger.debug("Errors Size = " + errs.size)
         if (errs.isEmpty) {
           JsonHelpers.allFieldsEmpty(fieldValues) match {
             case true => applications.deleteSection(id, sectionNumber).map { _ =>
@@ -104,7 +100,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
           }
         }
         else redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
-      // CostSection => ???
+      case CostSection => ???
     }
   }
 
