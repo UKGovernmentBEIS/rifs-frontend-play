@@ -15,6 +15,16 @@ GET         /application_form/:id/apply                               controller
 GET         /application/:id                                          controllers.ApplicationController.show(id: ApplicationId)
 GET         /application/:id/section/:num                             controllers.ApplicationController.showSectionForm(id: ApplicationId, num:Int)
 POST        /application/:id/section/:num                             controllers.ApplicationController.postSection(id: ApplicationId, num:Int)
+GET         /application/:id/section/:num/edit                        controllers.ApplicationController.editSectionForm(id: ApplicationId, num:Int)
+POST        /application/:id/section/:num/edit                        controllers.ApplicationController.resetAndEditSection(id: ApplicationId, num:Int)
+
+
+GET         /application/:id/section/:num/preview                     controllers.ApplicationPreviewController.previewSection(id: ApplicationId, num:Int)
+GET         /application/:id/preview                                  controllers.ApplicationPreviewController.applicationPreview(id: ApplicationId)
+
+GET         /application/:id/section/:num/add-item                    controllers.CostController.addItem(id:ApplicationId, num:Int)
+POST        /application/:id/section/:num/item                        controllers.CostController.saveItem(id:ApplicationId, num: Int, itemNumber: Int)
+GET         /application/:id/section/:num/item/:itemNum/delete        controllers.CostController.deleteItem(id:ApplicationId, num: Int, itemNum:Int)
 
 GET         /application/:id/section/:num/preview                     controllers.ApplicationPreviewController.previewSection(id: ApplicationId, num:Int)
 GET         /application/:id/preview                                  controllers.ApplicationPreviewController.applicationPreview(id: ApplicationId)
@@ -24,6 +34,7 @@ POST        /application/:id/section/:num/item                        controller
 POST        /application/:id/section/:num/item/:itemNum               controllers.CostController.saveItem(id:ApplicationId, num: Int, itemNum: Int)
 GET         /application/:id/section/:num/item/:itemNum/delete        controllers.CostController.deleteItem(id:ApplicationId, num: Int, itemNum: Int)
 GET         /application/:id/section/:num/item/:itemNum/edit          controllers.CostController.editItem(id:ApplicationId, num: Int, itemNum: Int)
+
 
 GET         /reset                                                    controllers.ApplicationController.reset
 GET         /wip                                                      controllers.OpportunityController.wip(backUrl: String)
