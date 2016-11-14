@@ -76,9 +76,4 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
     }
   }
 
-  def getStatus(overview: ApplicationOverview, secno: Int) = {
-    val y = overview.sections.find(_.sectionNumber == secno).map(s => s.status).getOrElse("Not Started")
-    y
-  }
-
 }
