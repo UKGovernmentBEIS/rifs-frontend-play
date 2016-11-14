@@ -9,7 +9,7 @@ import services.BackendHealthCheckOps
 
 import scala.concurrent.ExecutionContext
 
-class HealthCheckController @Inject()(backend: BackendHealthCheckOps)(implicit ec :ExecutionContext) extends Controller {
+class HealthCheckController @Inject()(backend: BackendHealthCheckOps)(implicit ec: ExecutionContext) extends Controller {
   def ping = Action {
     Ok("alive")
   }
@@ -17,9 +17,9 @@ class HealthCheckController @Inject()(backend: BackendHealthCheckOps)(implicit e
   def version = Action.async { implicit request =>
     // need to convert the Anys to Strings so play json knows how to
     // convert it
-    val ourVersion = Json.toJson(BuildInfo.toMap.map(e => e._1 -> e._2.toString)).as[JsObject]
+    val ourVersion = Json.toJson(BuildInfo.toMap.mapValues(_.toString)).as[JsObject]
 
-    backend.version().map {backendVersion =>
+    backend.version().map { backendVersion =>
       val serviceVersions = JsObject(Seq("rifs-business" -> backendVersion))
       Ok(ourVersion + ("services" -> serviceVersions))
     }
