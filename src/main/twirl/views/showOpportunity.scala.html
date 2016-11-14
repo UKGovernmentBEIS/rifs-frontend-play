@@ -1,7 +1,7 @@
 @(applicationId: ApplicationFormId, opportunity: Opportunity, sectionNumber: Int)
 
 @sectionLink(title: String, sectionNum: Int) = {
-    <span class="part-number">@sectionNum.</span>
+    <span class="part-number">@sectionNum. </span>
     @if(sectionNum == sectionNumber) {
         @title
     } else {
@@ -10,7 +10,7 @@
 }
 
 @titleCols() = @{
-    val titles = opportunity.description.sortBy(_.sectionNumber).map(s => (s.title, s.sectionNumber)).zipWithIndex
+    val titles = opportunity.sections.sortBy(_.sectionNumber).map(s => (s.title, s.sectionNumber)).zipWithIndex
     val midpoint: Int = Math.round(titles.length / 2.0).toInt
     val (leftCols, b) = titles.splitAt(midpoint)
     val rightCols = b.map(Some(_)) :+ None
@@ -18,15 +18,15 @@
 }
 
 @nextSection = @{
-    opportunity.description.find(_.sectionNumber == sectionNumber + 1)
+    opportunity.sections.find(_.sectionNumber == sectionNumber + 1)
 }
 
 @prevSection = @{
-    opportunity.description.find(_.sectionNumber == sectionNumber - 1)
+    opportunity.sections.find(_.sectionNumber == sectionNumber - 1)
 }
 
 @currentSection = @{
-    opportunity.description.find(_.sectionNumber == sectionNumber)
+    opportunity.sections.find(_.sectionNumber == sectionNumber)
 }
 
 @main(s"Opportunity ${opportunity.id.id}") {
@@ -97,9 +97,7 @@
 
         <article>
         <h2 class="heading-large">@s.sectionNumber. @s.title</h2>
-        @s.paragraphs.map { p =>
-        <p class="text">@p</p>
-        }
+        @s.text.map(forms.MarkdownHelper.mdToHtml)
 
             <div class="rifs-form-buttons">
                 <p>

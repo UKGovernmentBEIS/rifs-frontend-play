@@ -11,7 +11,7 @@ import play.api.libs.ws.WSClient
 import scala.concurrent.{ExecutionContext, Future}
 
 class OpportunityService @Inject()(val ws: WSClient)(implicit val ec: ExecutionContext) extends OpportunityOps with RestService with ValueClassFormats {
-  implicit val odsRead = Json.reads[OpportunityDescriptionSection]
+  implicit val odsRead = Json.reads[OpportunitySection]
   implicit val ovRead = Json.reads[OpportunityValue]
   implicit val odRead = Json.reads[OpportunityDuration]
   implicit val oppRead = Json.reads[Opportunity]

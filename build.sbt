@@ -40,6 +40,7 @@ libraryDependencies ++= Seq(
   "org.typelevel" %% "cats" % "0.7.2",
   "com.github.melrief" %% "pureconfig" % "0.1.6",
   "com.wellfactored" %% "play-bindings" % "1.1.0",
+  "org.planet42" %% "laika-core" % "0.6.0",
 
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
   "org.jsoup" % "jsoup" % "1.9.2" % Test
