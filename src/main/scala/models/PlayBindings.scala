@@ -1,5 +1,4 @@
 package models
 
 
-object PlayBindings {
-}
+object PlayBindings
