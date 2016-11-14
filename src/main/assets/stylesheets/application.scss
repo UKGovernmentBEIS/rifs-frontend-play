@@ -208,6 +208,13 @@ table.spacious tfoot > tr > td {
   border-bottom: 1px solid $black !important;
 }
 
+a.return-link:visited {
+  color: $black;
+}
+a.return-link:link {
+  color: $black;
+}
+
 // Preview
 .text-preview {
   font-size: 1.2em;
