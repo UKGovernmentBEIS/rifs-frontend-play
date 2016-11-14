@@ -42,7 +42,7 @@ f"RIFS$id%05d"
                         @errs.map { e =>
                             <li class="bold-small">
                                 <a href="@controllers.routes.ApplicationController.showSectionForm(overview.id, e.formSection.sectionNumber)">
-                                @e.formSection.title </a>
+                                @e.formSection.title </a> &nbsp;
                                 @e.msg
                             </li>
                         }

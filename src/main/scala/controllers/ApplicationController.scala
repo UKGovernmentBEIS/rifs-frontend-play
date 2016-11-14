@@ -58,7 +58,6 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
   def submit(id: ApplicationId) = Action.async { request =>
     actionHandler.gatherApplicationDetails(id).map {
       case Some((overview, form, opp)) =>
-        overview.sections.sortBy(_.sectionNumber).map(s => s.completedAt)
         val sectionErrors: Seq[SectionError] = form.sections.sortBy(_.sectionNumber).flatMap { fs =>
           overview.sections.find(_.sectionNumber == fs.sectionNumber) match {
             case None => Some(SectionError(fs, "Not started"))
