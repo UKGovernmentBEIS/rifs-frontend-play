@@ -22,13 +22,6 @@ POST        /application/:id/section/:num/edit                        controller
 GET         /application/:id/section/:num/preview                     controllers.ApplicationPreviewController.previewSection(id: ApplicationId, num:Int)
 GET         /application/:id/preview                                  controllers.ApplicationPreviewController.applicationPreview(id: ApplicationId)
 
-GET         /application/:id/section/:num/add-item                    controllers.CostController.addItem(id:ApplicationId, num:Int)
-POST        /application/:id/section/:num/item                        controllers.CostController.saveItem(id:ApplicationId, num: Int, itemNumber: Int)
-GET         /application/:id/section/:num/item/:itemNum/delete        controllers.CostController.deleteItem(id:ApplicationId, num: Int, itemNum:Int)
-
-GET         /application/:id/section/:num/preview                     controllers.ApplicationPreviewController.previewSection(id: ApplicationId, num:Int)
-GET         /application/:id/preview                                  controllers.ApplicationPreviewController.applicationPreview(id: ApplicationId)
-
 GET         /application/:id/section/:num/add-item                    controllers.CostController.addItem(id:ApplicationId, num: Int)
 POST        /application/:id/section/:num/item                        controllers.CostController.createItem(id:ApplicationId, num: Int)
 POST        /application/:id/section/:num/item/:itemNum               controllers.CostController.saveItem(id:ApplicationId, num: Int, itemNum: Int)

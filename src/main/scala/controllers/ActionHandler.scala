@@ -79,7 +79,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
           }
         } else redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
 
-      case CostSection => Future.successful(wip(sectionFormCall(id, sectionNumber).url))
+      case CostSection => Future.successful(Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber)))
     }
   }
 

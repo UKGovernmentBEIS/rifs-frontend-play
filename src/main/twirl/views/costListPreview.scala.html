@@ -1,0 +1,71 @@
+@(
+        app: ApplicationOverview,
+        section: Option[ApplicationSectionOverview],
+        formSection: Option[ApplicationFormSection],
+        opportunity: Opportunity,
+        costs: List[forms.validation.CostItem],
+        closeButton: String,
+        editButton: Option[String]
+)
+
+@formatId(id: Long) = @{
+    f"RIFS$id%05d"
+}
+
+@main(s"Event title") {
+    <div class="grid-row">
+        <div class="column-full">
+            <div class="breadcrumbs">
+                <ol>
+                    <li><a href="@controllers.routes.ApplicationController.show(app.id)">&lt; Return to application overview</a></li>
+                </ol>
+            </div>
+
+            <h1 class="heading-xlarge">
+                <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
+                @formSection.map(_.title)
+            </h1>
+
+            <table class="rifs-costs-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Total cost &pound;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @costs.map { cost =>
+                    <tr>
+                        <td class="rifs-cost-itemname">@cost.itemName</td>
+                        <td class="rifs-cost-cost">@cost.cost.setScale(2, BigDecimal.RoundingMode.HALF_UP)</td>
+                    </tr>
+                    <tr>
+                        <td class="rifs-cost-justification">@cost.justification</td>
+                        <td></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+
+
+            @if(editButton.isDefined) {
+                @section.flatMap(_.completedAtText)
+
+                <div class="rifs-form-buttons">
+
+                    <form method="POST" action=@editButton novalidate="novalidate">
+                        <a class="button secondary" href=@closeButton>Close</a>
+                        <input type="submit" class="button--link-style" value="Edit this page"/>
+                    </form>
+                </div>
+            }
+
+            @if(editButton.isEmpty) {
+                <div class="rifs-form-buttons">
+                    <a class="button secondary" href="@closeButton">Close</a>
+                </div>
+            }
+
+        </div>
+    </div>
+}
