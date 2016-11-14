@@ -7,6 +7,7 @@ import cats.instances.future._
 import forms.Field
 import forms.validation.CostItem
 import models._
+import play.Logger
 import play.api.libs.json.{JsArray, JsDefined, JsObject, Json}
 import play.api.mvc.Result
 import play.api.mvc.Results._
@@ -20,6 +21,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
   import ApplicationData._
   import FieldCheckHelpers._
 
+
   def doSave(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
     sectionTypeFor(sectionNumber) match {
       case VanillaSection =>
@@ -31,7 +33,6 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
             Redirect(routes.ApplicationController.show(id))
           }
         }
-
       case CostSection => Future.successful(redirectToOverview(id))
     }
   }
@@ -67,6 +68,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
   }
 
+  //Leaving this ambiguous method name as a future story allows previewing & marking as complete in the same move (when we may reconsider merging in displaycompletedPreview below)
   def doPreview(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
     sectionTypeFor(sectionNumber) match {
       case VanillaSection =>
@@ -79,6 +81,10 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
 
       case CostSection => Future.successful(wip(sectionFormCall(id, sectionNumber).url))
     }
+  }
+
+  def RedirectToPreview(id: ApplicationId, sectionNumber: Int): Future[Result] = {
+    Future.successful(Redirect(controllers.routes.ApplicationPreviewController.previewSection(id, sectionNumber)))
   }
 
   def renderSectionForm(id: ApplicationId,

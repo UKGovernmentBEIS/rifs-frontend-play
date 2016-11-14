@@ -3,6 +3,7 @@ package controllers
 import javax.inject.Inject
 
 import models._
+import play.api.Logger
 import play.api.mvc.{Action, Controller}
 import services.ApplicationOps
 
@@ -32,19 +33,48 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
   import ApplicationData._
   import FieldCheckHelpers._
 
-  def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
+  def editSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
     fieldsFor(sectionNumber) match {
-      case Some(fields) =>
-        applications.getSection(id, sectionNumber).flatMap { section =>
+      case Some(fields) => {
+        applications.getSection(id, sectionNumber).flatMap { section => {
           val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
           actionHandler.renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, noErrors, hints)
-        }
-
-      // Temporary hack to display the WIP page for sections that we haven't yet coded up
-      case None => Future.successful(wip(routes.ApplicationController.show(id).url))
+        }}
+      }
+      case None => Future(NotFound)
     }
   }
 
+  def resetAndEditSection(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
+    fieldsFor(sectionNumber) match {
+      case Some(fields) => {
+        applications.clearSectionCompletedDate(id, sectionNumber)
+        applications.getSection(id, sectionNumber).flatMap { section => {
+          val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
+          actionHandler.renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, noErrors, hints)
+        }}
+      }
+      case None => Future(NotFound)
+    }
+  }
+
+  def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
+    fieldsFor(sectionNumber) match {
+      case Some(fields) => {
+        applications.getSection(id, sectionNumber).flatMap { section =>
+          section.flatMap(_.completedAtText) match {
+            case None =>
+              val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
+              actionHandler.renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, noErrors, hints)
+            case _ =>
+              actionHandler.RedirectToPreview(id, sectionNumber)
+
+          }
+        }
+      }
+      case None => Future(NotFound)
+    }
+  }
 
   def postSection(id: ApplicationId, sectionNumber: Int) = Action.async(JsonForm.parser) { implicit request =>
     request.body.action match {
