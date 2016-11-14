@@ -20,6 +20,10 @@ case object SaveItem extends ButtonAction {
   override val name: String = "_save_item_button"
 }
 
+case object PreviewAndCompete extends ButtonAction {
+  override val name: String = "_preview_and_complete_button"
+}
+
 object ButtonAction {
   def unapply(s: String): Option[ButtonAction] = {
     s match {
@@ -27,6 +31,7 @@ object ButtonAction {
       case Save.name => Some(Save)
       case Preview.name => Some(Preview)
       case SaveItem.name => Some(SaveItem)
+      case PreviewAndCompete.name => Some(PreviewAndCompete)
       case _ => None
     }
   }

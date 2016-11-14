@@ -68,7 +68,6 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
   }
 
-  //Leaving this ambiguous method name as a future story allows previewing & marking as complete in the same move (when we may reconsider merging in displaycompletedPreview below)
   def doPreview(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
     sectionTypeFor(sectionNumber) match {
       case VanillaSection =>
@@ -83,65 +82,114 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
   }
 
-  def RedirectToPreview(id: ApplicationId, sectionNumber: Int): Future[Result] = {
-    Future.successful(Redirect(controllers.routes.ApplicationPreviewController.previewSection(id, sectionNumber)))
+  def PreviewAndComplete(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
+    ???
+    //Not considered if save or saveitem !!!
+
+    //1 Preview checks (i.e. usually can't preview a blank
+      //2.1 Success
+        //3 Is empty
+            //3.1 TRUE: Delete (probably never reach as generally there is no preview allowed on empty content
+            //3.2 False:
+              //4 Do validation
+
+
+      //2.2 Fail
   }
 
-  def renderSectionForm(id: ApplicationId,
-                        sectionNumber: Int,
-                        section: Option[ApplicationSection],
-                        questions: Map[String, Question],
-                        fields: Seq[Field],
-                        errs: FieldErrors,
-                        hints: FieldHints): Future[Result] = {
-    val answers = section.map { s => JsonHelpers.flatten("", s.answers) }.getOrElse(Map[String, String]())
 
-    gatherApplicationDetails(id).map {
-      case Some((app, appForm, opp)) => selectSectionForm(sectionNumber, section, questions, answers, fields, errs, app, appForm, opp)
-      case None => NotFound
-    }
-  }
-
-  def redisplaySectionForm(id: ApplicationId, sectionNumber: Int, answers: Map[String, String], errs: FieldErrors = noErrors): Future[Result] = {
-    val ft = gatherApplicationDetails(id)
-    val sectionF = applications.getSection(id, sectionNumber)
-    val questions = questionsFor(sectionNumber)
-
-    fieldsFor(sectionNumber) match {
-      case Some(fields) =>
-        for (x <- ft; section <- sectionF) yield (x, section) match {
-          case (Some((app, appForm, opp)), s) => selectSectionForm(sectionNumber, s, questions, answers, fields, errs, app, appForm, opp)
-          case (None, _) => NotFound
-        }
-
-      case None => Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
-    }
-  }
-
-  def selectSectionForm(sectionNumber: Int, section: Option[ApplicationSection], questions: Map[String, Question], answers: Map[String, String], fields: Seq[Field], errs: FieldErrors, app: ApplicationOverview, appForm: ApplicationForm, opp: Opportunity): Result = {
-    val formSection: ApplicationFormSection = appForm.sections.find(_.sectionNumber == sectionNumber).get
-    val hints = hinting(JsonHelpers.unflatten(answers), checksFor(sectionNumber))
+  def PreviewAndComplete(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
+    //    JsonHelpers.allFieldsEmpty(fieldValues) match {
+    //      case true => applications.deleteSection(id, sectionNumber).map { _ =>
+    //        Redirect(routes.ApplicationController.show(id))
+    //      }
 
     sectionTypeFor(sectionNumber) match {
-      case VanillaSection => Ok(views.html.sectionForm(app, appForm, section, formSection, opp, fields, questions, answers, errs, hints))
-      case CostSection =>
-        val sectionDoc = section.map(_.answers).getOrElse(JsObject(Seq()))
-        val cancelLink = controllers.routes.ApplicationController.show(app.id)
-        sectionDoc \ "items" match {
-          case JsDefined(JsArray(is)) =>
-            val costItems = is.flatMap(_.validate[CostItem].asOpt)
-            if (costItems.nonEmpty) Ok(views.html.costSectionList(app, appForm, section, formSection, opp, costItems.toList, questionsFor(sectionNumber), errs))
-            else Redirect(controllers.routes.CostController.addItem(app.id, sectionNumber))
-          case _ => Redirect(controllers.routes.CostController.addItem(app.id, sectionNumber))
+      case VanillaSection =>
+        {
+          //val errs = check(fieldValues, previewChecksFor(sectionNumber))
+          //if (errs.isEmpty) {
+          JsonHelpers.allFieldsEmpty(fieldValues) match {
+            case true => applications.deleteSection(id, sectionNumber).map { _ =>
+              Redirect(routes.ApplicationController.show(id))
+            }
+            case false => {
+              applications.saveSection (id, sectionNumber, fieldValues).flatMap {
+                case Nil => Redirect (routes.ApplicationPreviewController.previewSection (id, sectionNumber) )
+                case errs => redisplaySectionForm (id, sectionNumber, JsonHelpers.flatten ("", fieldValues), errs)
+            }
+          }
+
+          case _ => ???
+
+
+          //   }
+          // } else redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
+
+          //case CostSection => Future.successful(wip(sectionFormCall(id, sectionNumber).url))
         }
     }
   }
 
-  def gatherApplicationDetails(id: ApplicationId): Future[Option[(ApplicationOverview, ApplicationForm, Opportunity)]] = {
-    for {
-      a <- OptionT(applications.overview(id))
-      af <- OptionT(applicationForms.byId(a.applicationFormId))
-      o <- OptionT(opportunities.byId(af.opportunityId))
-    } yield (a, af, o)
-  }.value
-}
+    def RedirectToPreview(id: ApplicationId, sectionNumber: Int): Future[Result] = {
+      Future.successful(Redirect(controllers.routes.ApplicationPreviewController.previewSection(id, sectionNumber)))
+    }
+
+    def renderSectionForm(id: ApplicationId,
+                          sectionNumber: Int,
+                          section: Option[ApplicationSection],
+                          questions: Map[String, Question],
+                          fields: Seq[Field],
+                          errs: FieldErrors,
+                          hints: FieldHints): Future[Result] = {
+      val answers = section.map { s => JsonHelpers.flatten("", s.answers) }.getOrElse(Map[String, String]())
+
+      gatherApplicationDetails(id).map {
+        case Some((app, appForm, opp)) => selectSectionForm(sectionNumber, section, questions, answers, fields, errs, app, appForm, opp)
+        case None => NotFound
+      }
+    }
+
+    def redisplaySectionForm(id: ApplicationId, sectionNumber: Int, answers: Map[String, String], errs: FieldErrors = noErrors): Future[Result] = {
+      val ft = gatherApplicationDetails(id)
+      val sectionF = applications.getSection(id, sectionNumber)
+      val questions = questionsFor(sectionNumber)
+
+      fieldsFor(sectionNumber) match {
+        case Some(fields) =>
+          for (x <- ft; section <- sectionF) yield (x, section) match {
+            case (Some((app, appForm, opp)), s) => selectSectionForm(sectionNumber, s, questions, answers, fields, errs, app, appForm, opp)
+            case (None, _) => NotFound
+          }
+
+        case None => Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
+      }
+    }
+
+    def selectSectionForm(sectionNumber: Int, section: Option[ApplicationSection], questions: Map[String, Question], answers: Map[String, String], fields: Seq[Field], errs: FieldErrors, app: ApplicationOverview, appForm: ApplicationForm, opp: Opportunity): Result = {
+      val formSection: ApplicationFormSection = appForm.sections.find(_.sectionNumber == sectionNumber).get
+      val hints = hinting(JsonHelpers.unflatten(answers), checksFor(sectionNumber))
+
+      sectionTypeFor(sectionNumber) match {
+        case VanillaSection => Ok(views.html.sectionForm(app, appForm, section, formSection, opp, fields, questions, answers, errs, hints))
+        case CostSection =>
+          val sectionDoc = section.map(_.answers).getOrElse(JsObject(Seq()))
+          val cancelLink = controllers.routes.ApplicationController.show(app.id)
+          sectionDoc \ "items" match {
+            case JsDefined(JsArray(is)) =>
+              val costItems = is.flatMap(_.validate[CostItem].asOpt)
+              if (costItems.nonEmpty) Ok(views.html.costSectionList(app, appForm, section, formSection, opp, costItems.toList, questionsFor(sectionNumber), errs))
+              else Redirect(controllers.routes.CostController.addItem(app.id, sectionNumber))
+            case _ => Redirect(controllers.routes.CostController.addItem(app.id, sectionNumber))
+          }
+      }
+    }
+
+    def gatherApplicationDetails(id: ApplicationId): Future[Option[(ApplicationOverview, ApplicationForm, Opportunity)]] = {
+      for {
+        a <- OptionT(applications.overview(id))
+        af <- OptionT(applicationForms.byId(a.applicationFormId))
+        o <- OptionT(opportunities.byId(af.opportunityId))
+      } yield (a, af, o)
+    }.value
+  }
