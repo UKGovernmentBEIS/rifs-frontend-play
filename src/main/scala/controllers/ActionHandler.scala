@@ -84,7 +84,6 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
 
   def PreviewAndComplete(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
 
-    //Not considered saveitem yet!!!
     sectionTypeFor(sectionNumber) match {
       case VanillaSection =>
         val errs = check(fieldValues, previewChecksFor(sectionNumber))
@@ -100,7 +99,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
           }
         }
         else redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
-      case CostSection => ???
+      case CostSection => Future.successful(wip(sectionFormCall(id, sectionNumber).url))
     }
   }
 
