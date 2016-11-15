@@ -11,7 +11,7 @@
             @appSectionPreview(formSection, answers.getOrElse(section.sectionNumber, Seq()), JsonHelpers.flatten("", section.answers))
         }.getOrElse {
             <div>
-                <p class="heading-large">@formSection.sectionNumber. @formSection.title</p>
+                <p class="heading-medium">@formSection.sectionNumber. @formSection.title</p>
                 <p class="text">You have not supplied any answers for this section.</p>
             </div>
 
