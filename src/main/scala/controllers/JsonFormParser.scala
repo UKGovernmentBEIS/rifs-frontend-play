@@ -16,7 +16,7 @@ object JsonForm {
     */
   def decodeButton(keys: Set[String]): Option[ButtonAction] = keys.flatMap(ButtonAction.unapply).headOption.map {
     case Save => if (keys.contains("_complete_checkbox")) Complete else Save
-    case Preview => if (keys.contains("_complete_checkbox")) CompleteAndPreview else Preview
+    case Preview => if (keys.contains("_complete_checkbox")) completeAndPreview else Preview
     case b => b
   }
 

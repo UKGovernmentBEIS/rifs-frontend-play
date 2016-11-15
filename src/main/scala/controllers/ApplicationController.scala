@@ -2,10 +2,8 @@ package controllers
 
 import javax.inject.Inject
 
+import forms.validation.SectionError
 import models._
-
-import play.Logger
-import forms.validation.{FieldError, FieldHint, SectionError}
 import play.api.mvc.{Action, Controller}
 import services.ApplicationOps
 
@@ -69,7 +67,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
               val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
               actionHandler.renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, noErrors, hints)
             case _ =>
-              actionHandler.RedirectToPreview(id, sectionNumber)
+              actionHandler.redirectToPreview(id, sectionNumber)
 
           }
         }
@@ -84,7 +82,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
       case Save => actionHandler.doSave(id, sectionNumber, request.body.values)
       case SaveItem => actionHandler.doSaveItem(id, sectionNumber, request.body.values)
       case Preview => actionHandler.doPreview(id, sectionNumber, request.body.values)
-      case CompleteAndPreview => actionHandler.CompleteAndPreview(id, sectionNumber, request.body.values)
+      case completeAndPreview => actionHandler.completeAndPreview(id, sectionNumber, request.body.values)
     }
   }
 

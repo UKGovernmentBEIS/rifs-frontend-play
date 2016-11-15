@@ -1,7 +1,5 @@
 package controllers
 
-import play.Logger
-
 sealed trait ButtonAction {
   def name: String
 }
@@ -22,8 +20,8 @@ case object SaveItem extends ButtonAction {
   override val name: String = "_save_item_button"
 }
 
-case object CompleteAndPreview extends ButtonAction {
-  override val name: String = "_preview_and_complete_button"
+case object completeAndPreview extends ButtonAction {
+  override val name: String = "_complete_and_preview_button"
 }
 
 object ButtonAction {
@@ -33,7 +31,7 @@ object ButtonAction {
       case Save.name => Some(Save)
       case Preview.name => Some(Preview)
       case SaveItem.name => Some(SaveItem)
-      case CompleteAndPreview.name => Some(CompleteAndPreview)
+      case completeAndPreview.name => Some(completeAndPreview)
       case _ => None
     }
   }
