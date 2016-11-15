@@ -1,9 +1,11 @@
 package forms
 
+import controllers.JsonHelpers
 import forms.validation.{DateWithDaysValidator, DateWithDaysValues, FieldError, FieldHint}
-import models.Question
+import models.{ApplicationFormSection, ApplicationOverview, Question}
 import org.joda.time.format._
 import play.api.Logger
+import play.api.libs.json.JsObject
 import play.twirl.api.Html
 
 case class DateWithDaysField(name: String, validator: DateWithDaysValidator) extends Field {
@@ -13,16 +15,16 @@ case class DateWithDaysField(name: String, validator: DateWithDaysValidator) ext
 
   val fmt = DateTimeFormat.forPattern("d MMMM yyyy")
 
-  override def renderFormInput(questions: Map[String, Question], answers: Map[String, String], errs: Seq[FieldError], hints: Seq[FieldHint]): Html =
-    views.html.renderers.dateWithDaysField(this, questions, answers, errs, hints)
+  override def renderFormInput(app: ApplicationOverview, formSection: ApplicationFormSection, questions: Map[String, Question], answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]): Html =
+    views.html.renderers.dateWithDaysField(this, app, formSection, questions, answers, errs, hints)
 
-  override def renderPreview(answers: Map[String, String]): Html = {
-    Logger.debug(answers.toString())
-    val day = answers.get(s"${dateField.name}.day")
-    val month = answers.get(s"${dateField.name}.month")
-    val year = answers.get(s"${dateField.name}.year")
+  override def renderPreview(app: ApplicationOverview, formSection: ApplicationFormSection, answers: JsObject): Html = {
+    val flattenedAnswers = JsonHelpers.flatten("", answers)
+    val day = flattenedAnswers.get(s"${dateField.name}.day")
+    val month = flattenedAnswers.get(s"${dateField.name}.month")
+    val year = flattenedAnswers.get(s"${dateField.name}.year")
 
-    val vs = DateWithDaysValues(Some(DateValues(day, month, year)), answers.get(s"${daysField.name}"))
+    val vs = DateWithDaysValues(Some(DateValues(day, month, year)), flattenedAnswers.get(s"${daysField.name}"))
     validator.validate("", vs).map { dwd =>
       val endDate = dwd.date.plusDays(dwd.days - 1)
       views.html.renderers.preview.dateWithDaysField(this, fmt.print(dwd.date), dwd.days, fmt.print(endDate))

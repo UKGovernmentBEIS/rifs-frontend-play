@@ -23,7 +23,7 @@ object ApplicationData {
   private val provisionalDateValidator: DateWithDaysValidator = DateWithDaysValidator(allowPast = false, 1, 9)
 
   def sectionTypeFor(sectionNumber: Int): SectionType = sectionNumber match {
-    case 6 => CostSection
+    case 6 => VanillaSection
     case _ => VanillaSection
   }
 
@@ -109,7 +109,7 @@ object ApplicationData {
     case 3 => Some(eventObjFormFields)
     case 4 => Some(topicAndSpeakerFields)
     case 5 => Some(eventAudienceFields)
-    case 6 => Some(Seq(CostItemField("item")))
+    case 6 => Some(Seq(CostListField("")))
     case _ => None
   }
 }

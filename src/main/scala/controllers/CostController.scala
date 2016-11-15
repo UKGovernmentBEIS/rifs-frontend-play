@@ -97,11 +97,10 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
     val fields = fieldsFor(sectionNumber).getOrElse(Seq())
     val checks = itemChecksFor(sectionNumber)
     val hints = hinting(doc, checks)
-    val answers = JsonHelpers.flatten("", doc)
 
     details2.value.map {
       case Some(((overview, form, opp), fs)) =>
-        Ok(views.html.costItemForm(overview, form, fs, opp, fields, questions, answers, errs, hints, cancelLink(applicationId, overview, sectionNumber), itemNumber))
+        Ok(views.html.costItemForm(overview, form, fs, opp, fields, questions, doc, errs, hints, cancelLink(applicationId, overview, sectionNumber), itemNumber))
       case None => NotFound
     }
   }

@@ -1,0 +1,50 @@
+@(field: forms.CostListField,
+        app: ApplicationOverview,
+        formSection: ApplicationFormSection,
+        questions: Map[String, Question],
+        items: Seq[forms.validation.CostItem],
+        errs: Seq[forms.validation.FieldError])
+
+<table class="spacious">
+    <thead>
+        <tr>
+            <th scope="col">Item</th>
+            <th scope="col" class="align-right">Total Cost &pound;</th>
+            <th scope="col"><span class="visuallyhidden">Action</span></th>
+        </tr>
+    </thead>
+
+    <tfoot>
+        <tr>
+            <td class="bold-small">Total requested &pound;</td>
+            <td class="currency bold-small">@items.map(_.cost).sum.setScale(2, BigDecimal.RoundingMode.HALF_UP)</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="footer-two-light">
+            <td colspan="3">
+                <a href="@controllers.routes.CostController.addItem(app.id, formSection.sectionNumber)">
+                    Add item</a>
+            </td>
+        </tr>
+    </tfoot>
+
+
+    <tbody>
+    @items.sortBy(_.itemNumber).map { item =>
+        <tr>
+            <td>
+                @item.itemNumber.map { num =>
+                <a href="@controllers.routes.CostController.editItem(app.id, formSection.sectionNumber, num)">@item.itemName</a>
+                }.getOrElse(item.itemName)
+            </td>
+            <td class="currency">@item.costText</td>
+            <td class="align-right">
+            @item.itemNumber.map { num =>
+                <a href="@controllers.routes.CostController.deleteItem(app.id, formSection.sectionNumber, num)">
+                    Delete</a>
+            }</td>
+        </tr>
+    }
+    </tbody>
+
+</table>

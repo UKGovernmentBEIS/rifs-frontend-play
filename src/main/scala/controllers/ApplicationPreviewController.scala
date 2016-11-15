@@ -59,7 +59,7 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
 
   def renderSectionPreviewCompleted(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], fields: Seq[Field]) = {
     val ft = gatherApplicationDetails(id)
-    val answers = section.map { s => JsonHelpers.flatten("", s.answers) }.getOrElse(Map[String, String]())
+    val answers = section.map { s =>  s.answers }.getOrElse(JsObject(Seq()))
 
     ft.map {
       case Some((app, appForm, opp)) =>
@@ -71,7 +71,7 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
 
   def renderSectionPreviewInProgress(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], fields: Seq[Field]) = {
     val ft = gatherApplicationDetails(id)
-    val answers = section.map { s => JsonHelpers.flatten("", s.answers) }.getOrElse(Map[String, String]())
+    val answers = section.map { s =>  s.answers }.getOrElse(JsObject(Seq()))
 
     ft.map {
       case Some((app, appForm, opp)) =>
@@ -89,7 +89,7 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
     } yield (a, af, o)
   }.value
 
-  type PreviewFunction = (ApplicationForm, ApplicationOverview, Opportunity, Seq[ApplicationSection], Option[String], Map[Int, Seq[forms.Field]]) => Html
+  type PreviewFunction = (ApplicationOverview, ApplicationForm, Opportunity, Seq[ApplicationSection], Option[String], Map[Int, Seq[forms.Field]]) => Html
 
   def renderApplicationPreview(id: ApplicationId, preview: PreviewFunction) = {
     val ft = gatherApplicationDetails(id)
@@ -103,7 +103,7 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
     details.map {
       case (Some((form, overview, o)), scs) =>
         val title = scs.find(_.sectionNumber == 1).flatMap(s => (s.answers \ "title").validate[String].asOpt)
-        Ok(preview(overview, form, o, scs.sortBy(_.sectionNumber), title, getFieldMap(scs)))
+        Ok(preview(form, overview, o, scs.sortBy(_.sectionNumber), title, getFieldMap(scs)))
 
       case _ => NotFound
     }
