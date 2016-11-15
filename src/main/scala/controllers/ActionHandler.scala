@@ -44,7 +44,6 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
       case Some(answers) => applications.completeSection(id, sectionNumber, fieldValues).flatMap {
         case Nil => Future.successful(redirectToOverview(id))
         case errs => redisplaySectionForm(id, sectionNumber, answers, errs)
-
       }
       case None => Future.successful(NotFound)
     }
@@ -52,9 +51,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
 
   def doSaveItem(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
     JsonHelpers.allFieldsEmpty(fieldValues) match {
-      case true => applications.deleteSection(id, sectionNumber).map { _ =>
-        Redirect(routes.ApplicationController.show(id))
-      }
+      case true => applications.deleteSection(id, sectionNumber).map(_ => redirectToOverview(id))
       case false => applications.saveItem(id, sectionNumber, fieldValues).flatMap {
         case Nil => Future.successful(redirectToOverview(id))
         case errs => redisplaySectionForm(id, sectionNumber, fieldValues, errs)
@@ -62,7 +59,8 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
   }
 
-  //Leaving this ambiguous method name as a future story allows previewing & marking as complete in the same move (when we may reconsider merging in displaycompletedPreview below)
+  // Leaving this ambiguous method name as a future story allows previewing & marking as complete
+  // in the same move (when we may reconsider merging in displaycompletedPreview below)
   def doPreview(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
     sectionTypeFor(sectionNumber) match {
       case VanillaSection =>
@@ -77,7 +75,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
   }
 
-  def RedirectToPreview(id: ApplicationId, sectionNumber: Int): Future[Result] = {
+  def redirectToPreview(id: ApplicationId, sectionNumber: Int): Future[Result] = {
     Future.successful(Redirect(controllers.routes.ApplicationPreviewController.previewSection(id, sectionNumber)))
   }
 
