@@ -9,18 +9,24 @@
     <thead>
         <tr>
             <th>Item</th>
-            <th>Total cost &pound;</th>
+            <th class="align-right">Total cost &pound;</th>
         </tr>
     </thead>
+    <tfoot>
+        <tr>
+            <th>Total Requested £</th>
+            <th class="currency">999.99</th>
+        </tr>
+    </tfoot>
     <tbody>
     @costs.map { cost =>
         <tr>
-            <td class="rifs-cost-itemname">@cost.itemName</td>
-            <td class="rifs-cost-cost">@cost.costText</td>
+            <td class="bold-small">@cost.itemName</td>
+            <td class="currency">@cost.costText</td>
         </tr>
-        <tr>
-            <td class="rifs-cost-justification">@cost.justification</td>
-            <td></td>
+        <tr class="line">
+            <td>@cost.justification</td>
+            <td>&nbsp;</td>
         </tr>
     }
     </tbody>
