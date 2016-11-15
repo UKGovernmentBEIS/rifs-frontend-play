@@ -84,7 +84,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
       case Save => actionHandler.doSave(id, sectionNumber, request.body.values)
       case SaveItem => actionHandler.doSaveItem(id, sectionNumber, request.body.values)
       case Preview => actionHandler.doPreview(id, sectionNumber, request.body.values)
-      case PreviewAndComplete => actionHandler.PreviewAndComplete(id, sectionNumber, request.body.values)
+      case CompleteAndPreview => actionHandler.CompleteAndPreview(id, sectionNumber, request.body.values)
     }
   }
 

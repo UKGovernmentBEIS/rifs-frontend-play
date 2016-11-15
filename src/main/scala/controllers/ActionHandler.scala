@@ -82,7 +82,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
   }
 
-  def PreviewAndComplete(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
+  def CompleteAndPreview(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
 
     sectionTypeFor(sectionNumber) match {
       case VanillaSection =>
