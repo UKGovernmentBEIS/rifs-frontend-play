@@ -5,6 +5,19 @@
         items: Seq[forms.validation.CostItem],
         errs: Seq[forms.validation.FieldError])
 
+
+@errorsFor(n: String) = @{
+    errs.filter(_.path == n)
+}
+
+@errorBlock(n: String) = @{
+    if(errorsFor(n).nonEmpty) {
+            <span class="error-message">{errorsFor(n).head.err}</span>
+    }
+}
+
+@errorBlock("items")
+
 <table class="spacious">
     <thead>
         <tr>

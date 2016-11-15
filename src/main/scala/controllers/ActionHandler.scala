@@ -39,7 +39,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
   def doComplete(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] =
     sectionTypeFor(sectionNumber) match {
       case VanillaSection => applications.completeSection(id, sectionNumber, fieldValues).flatMap {
-        case Nil => Future.successful(Redirect(routes.ApplicationController.show(id)))
+        case Nil => Future.successful(redirectToOverview(id))
         case errs => redisplaySectionForm(id, sectionNumber, fieldValues, errs)
       }
 

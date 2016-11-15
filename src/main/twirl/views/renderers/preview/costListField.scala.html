@@ -1,0 +1,29 @@
+@(field: forms.CostListField, costs: Seq[forms.validation.CostItem])
+
+@formatId(id: Long) = @{
+    f"RIFS$id%05d"
+}
+
+
+<table class="rifs-costs-table">
+    <thead>
+        <tr>
+            <th>Item</th>
+            <th>Total cost &pound;</th>
+        </tr>
+    </thead>
+    <tbody>
+    @costs.map { cost =>
+        <tr>
+            <td class="rifs-cost-itemname">@cost.itemName</td>
+            <td class="rifs-cost-cost">@cost.costText</td>
+        </tr>
+        <tr>
+            <td class="rifs-cost-justification">@cost.justification</td>
+            <td></td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+

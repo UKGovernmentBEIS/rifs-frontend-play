@@ -37,7 +37,7 @@ class TopicsAndSpeakersFormSpec extends WordSpecLike with Matchers with OptionVa
       Opportunity(OpportunityId(1), "Research priorities in health care", "", None, OpportunityValue(0, ""), Seq()),
       Seq(TextAreaField(Some("label"), name)),
       Map(name -> q),
-      Map(),
+      JsObject(Seq()),
       List(),
       List(FieldHint(name, "500 words maximum"))
     )

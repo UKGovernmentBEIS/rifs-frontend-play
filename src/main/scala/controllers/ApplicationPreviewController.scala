@@ -5,9 +5,8 @@ import javax.inject.Inject
 import cats.data.OptionT
 import cats.instances.future._
 import forms.Field
-import forms.validation.CostItem
 import models._
-import play.api.libs.json.{JsArray, JsDefined, JsObject}
+import play.api.libs.json.JsObject
 import play.api.mvc.{Action, Controller}
 import play.twirl.api.Html
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
@@ -20,46 +19,20 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
   import ApplicationData._
 
   def previewSection(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
-    sectionTypeFor(sectionNumber) match {
-      case VanillaSection => fieldsFor(sectionNumber) match {
-        case Some(fields) => applications.getSection(id, sectionNumber).flatMap { section =>
-          section.flatMap(_.completedAtText) match {
-            case None => renderSectionPreviewInProgress(id, sectionNumber, section, fields)
-            case _ => renderSectionPreviewCompleted(id, sectionNumber, section, fields)
-          }
+    fieldsFor(sectionNumber) match {
+      case Some(fields) => applications.getSection(id, sectionNumber).flatMap { section =>
+        section.flatMap(_.completedAtText) match {
+          case None => renderSectionPreviewInProgress(id, sectionNumber, section, fields)
+          case _ => renderSectionPreviewCompleted(id, sectionNumber, section, fields)
         }
-        case None => Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
       }
-      case ItemSection => renderCostPreview(id, sectionNumber)
-    }
-  }
-
-  def renderCostPreview(id: ApplicationId, sectionNumber: Int) = {
-    val ft = gatherApplicationDetails(id)
-
-    ft.map {
-      case Some((app, appForm, opp)) =>
-        val section = app.sections.find(_.sectionNumber == sectionNumber)
-        val formSection = appForm.sections.find(_.sectionNumber == sectionNumber)
-        val sectionDoc = section.map(_.answers).getOrElse(JsObject(Seq()))
-        val cancelLink = controllers.routes.ApplicationController.show(app.id)
-        sectionDoc \ "items" match {
-          case JsDefined(JsArray(is)) =>
-            val costItems = is.flatMap(_.validate[CostItem].asOpt)
-            val closeLink = controllers.routes.ApplicationController.show(id).url
-            val editLink = Some(controllers.routes.ApplicationController.resetAndEditSection(id, sectionNumber).url)
-            if (costItems.nonEmpty) Ok(views.html.costListPreview(app, section, formSection, opp, costItems.toList, closeLink, editLink))
-            else Redirect(controllers.routes.CostController.addItem(app.id, sectionNumber))
-          case _ => Redirect(controllers.routes.CostController.addItem(app.id, sectionNumber))
-        }
-
-      case None => NotFound
+      case None => Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
     }
   }
 
   def renderSectionPreviewCompleted(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], fields: Seq[Field]) = {
     val ft = gatherApplicationDetails(id)
-    val answers = section.map { s =>  s.answers }.getOrElse(JsObject(Seq()))
+    val answers = section.map { s => s.answers }.getOrElse(JsObject(Seq()))
 
     ft.map {
       case Some((app, appForm, opp)) =>
@@ -71,7 +44,7 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
 
   def renderSectionPreviewInProgress(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], fields: Seq[Field]) = {
     val ft = gatherApplicationDetails(id)
-    val answers = section.map { s =>  s.answers }.getOrElse(JsObject(Seq()))
+    val answers = section.map { s => s.answers }.getOrElse(JsObject(Seq()))
 
     ft.map {
       case Some((app, appForm, opp)) =>
