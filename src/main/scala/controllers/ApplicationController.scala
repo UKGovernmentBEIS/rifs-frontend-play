@@ -63,7 +63,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
               val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
               actionHandler.renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, noErrors, hints)
             case _ =>
-              actionHandler.redirectToPreview(id, sectionNumber)
+              Future.successful(actionHandler.redirectToPreview(id, sectionNumber))
 
           }
         }

@@ -65,37 +65,40 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
         val errs = check(fieldValues, previewChecksFor(sectionNumber))
         if (errs.isEmpty) {
           applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
-            Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber))
+            redirectToPreview(id, sectionNumber)
           }
         } else redisplaySectionForm(id, sectionNumber, fieldValues, errs)
 
-      case ItemSection => Future.successful(Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber)))
+      case ItemSection => Future.successful(redirectToPreview(id, sectionNumber))
     }
   }
 
   def completeAndPreview(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
     sectionTypeFor(sectionNumber) match {
       case VanillaSection =>
-        val errs = check(fieldValues, previewChecksFor(sectionNumber))
-        if (errs.isEmpty) {
+        val previewCheckErrs = check(fieldValues, previewChecksFor(sectionNumber))
+        if (previewCheckErrs.isEmpty) {
           JsonHelpers.allFieldsEmpty(fieldValues) match {
-            case true => applications.deleteSection(id, sectionNumber).map { _ =>
-              Redirect(routes.ApplicationController.show(id))
-            }
+            case true => applications.deleteSection(id, sectionNumber).map(_ => redirectToOverview(id))
             case false => applications.completeSection(id, sectionNumber, fieldValues).flatMap {
-              case Nil => Future.successful(Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber)))
+              case Nil => Future.successful(redirectToPreview(id, sectionNumber))
               case errs => redisplaySectionForm(id, sectionNumber, fieldValues, errs)
             }
           }
         }
-        else redisplaySectionForm(id, sectionNumber, fieldValues, errs)
-      case ItemSection => Future.successful(Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber)))
+        else redisplaySectionForm(id, sectionNumber, fieldValues, previewCheckErrs)
+
+      case ItemSection =>
+        applications.completeSection(id, sectionNumber, fieldValues).flatMap {
+          case Nil => Future.successful(redirectToPreview(id, sectionNumber))
+          case errs => redisplaySectionForm(id, sectionNumber, fieldValues, errs)
+        }
+        Future.successful(redirectToPreview(id, sectionNumber))
     }
   }
 
-  def redirectToPreview(id: ApplicationId, sectionNumber: Int): Future[Result] = {
-    Future.successful(Redirect(controllers.routes.ApplicationPreviewController.previewSection(id, sectionNumber)))
-  }
+  def redirectToPreview(id: ApplicationId, sectionNumber: Int) =
+    Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber))
 
   def renderSectionForm(id: ApplicationId,
                         sectionNumber: Int,
