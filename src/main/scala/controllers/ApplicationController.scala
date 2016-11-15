@@ -59,7 +59,6 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
     fieldsFor(sectionNumber) match {
       case Some(fields) =>
         applications.getSection(id, sectionNumber).flatMap { section =>
-          Logger.debug(s"section is $section")
           section.flatMap(_.completedAtText) match {
             case None =>
               val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
