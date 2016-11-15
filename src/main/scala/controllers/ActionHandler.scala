@@ -6,7 +6,6 @@ import cats.data.OptionT
 import cats.instances.future._
 import forms.Field
 import models._
-import play.api.Logger
 import play.api.libs.json.{JsArray, JsDefined, JsObject}
 import play.api.mvc.Result
 import play.api.mvc.Results._
@@ -25,35 +24,31 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     sectionTypeFor(sectionNumber) match {
       case VanillaSection =>
         JsonHelpers.allFieldsEmpty(fieldValues) match {
-          case true => applications.deleteSection(id, sectionNumber).map { _ =>
-            Redirect(routes.ApplicationController.show(id))
-          }
-          case false => applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
-            Redirect(routes.ApplicationController.show(id))
-          }
+          case true => applications.deleteSection(id, sectionNumber).map(_ => redirectToOverview(id))
+          case false => applications.saveSection(id, sectionNumber, fieldValues).map(_ => redirectToOverview(id))
         }
       case ItemSection => Future.successful(redirectToOverview(id))
     }
   }
 
-  def doComplete(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] =
-    sectionTypeFor(sectionNumber) match {
-      case VanillaSection => applications.completeSection(id, sectionNumber, fieldValues).flatMap {
-        case Nil => Future.successful(redirectToOverview(id))
-        case errs => redisplaySectionForm(id, sectionNumber, fieldValues, errs)
-      }
-
-      case ItemSection =>
-        applications.getSection(id, sectionNumber).flatMap {
-          case Some(section) =>
-            applications.completeSection(id, sectionNumber, section.answers).flatMap {
-              case Nil => Future.successful(redirectToOverview(id))
-              case errs => redisplaySectionForm(id, sectionNumber, section.answers, errs)
-            }
-
-          case None => Future.successful(NotFound)
-        }
+  def doComplete(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
+    val answersF: Future[Option[JsObject]] = sectionTypeFor(sectionNumber) match {
+      case VanillaSection => Future.successful(Some(fieldValues))
+      // Instead of using the values that were passed in from the form we'll use the values that
+      // have already been saved against the item list, since these were created by the add-item
+      // form.
+      case ItemSection => applications.getSection(id, sectionNumber).map(_.map(_.answers))
     }
+
+    answersF.flatMap {
+      case Some(answers) => applications.completeSection(id, sectionNumber, fieldValues).flatMap {
+        case Nil => Future.successful(redirectToOverview(id))
+        case errs => redisplaySectionForm(id, sectionNumber, answers, errs)
+
+      }
+      case None => Future.successful(NotFound)
+    }
+  }
 
   def doSaveItem(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
     JsonHelpers.allFieldsEmpty(fieldValues) match {
