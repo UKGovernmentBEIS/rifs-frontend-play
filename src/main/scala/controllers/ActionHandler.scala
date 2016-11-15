@@ -76,34 +76,22 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
   def completeAndPreview(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
     val answersF: Future[Option[JsObject]] = sectionTypeFor(sectionNumber) match {
       case VanillaSection => Future.successful(Some(fieldValues))
-      // Instead of using the values that were passed in from the form we'll use the values that
-      // have already been saved against the item list, since these were created by the add-item
-      // form.
       case ItemSection => applications.getSection(id, sectionNumber).map(_.map(_.answers))
     }
 
     answersF.flatMap {
       case Some(answers) =>
-        sectionTypeFor(sectionNumber) match {
-          case VanillaSection =>
-            val previewCheckErrs = check(answers, previewChecksFor(sectionNumber))
-            if (previewCheckErrs.isEmpty) {
-              JsonHelpers.allFieldsEmpty(answers) match {
-                case true => applications.deleteSection(id, sectionNumber).map(_ => redirectToOverview(id))
-                case false => applications.completeSection(id, sectionNumber, answers).flatMap {
-                  case Nil => Future.successful(redirectToPreview(id, sectionNumber))
-                  case errs => redisplaySectionForm(id, sectionNumber, answers, errs)
-                }
-              }
-            }
-            else redisplaySectionForm(id, sectionNumber, answers, previewCheckErrs)
-
-          case ItemSection =>
-            applications.completeSection(id, sectionNumber, answers).flatMap {
+        val previewCheckErrs = check(answers, previewChecksFor(sectionNumber))
+        if (previewCheckErrs.isEmpty) {
+          JsonHelpers.allFieldsEmpty(answers) match {
+            case true => applications.deleteSection(id, sectionNumber).map(_ => redirectToOverview(id))
+            case false => applications.completeSection(id, sectionNumber, answers).flatMap {
               case Nil => Future.successful(redirectToPreview(id, sectionNumber))
               case errs => redisplaySectionForm(id, sectionNumber, answers, errs)
             }
-        }
+          }
+        } else redisplaySectionForm(id, sectionNumber, answers, previewCheckErrs)
+
       case None => Future.successful(NotFound)
     }
   }
@@ -153,7 +141,6 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
           case JsDefined(JsArray(is)) if is.nonEmpty => Ok(views.html.sectionForm(app, appForm, section, formSection, opp, fields, questions, answers, errs, hints))
           case _ => Redirect(controllers.routes.CostController.addItem(app.id, sectionNumber))
         }
-
     }
   }
 
