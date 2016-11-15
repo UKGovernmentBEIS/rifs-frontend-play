@@ -15,11 +15,11 @@
     <tfoot>
         <tr>
             <th>Total Requested £</th>
-            <th class="currency">999.99</th>
+            <th class="currency">@costs.map(_.cost).sum.setScale(2, BigDecimal.RoundingMode.HALF_UP)</th>
         </tr>
     </tfoot>
     <tbody>
-    @costs.map { cost =>
+    @costs.sortBy(_.itemNumber).map { cost =>
         <tr>
             <td class="bold-small">@cost.itemName</td>
             <td class="currency">@cost.costText</td>
