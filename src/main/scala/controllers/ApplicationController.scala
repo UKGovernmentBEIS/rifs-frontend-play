@@ -2,9 +2,8 @@ package controllers
 
 import javax.inject.Inject
 
+import forms.validation.SectionError
 import models._
-import forms.validation.{FieldError, FieldHint, SectionError}
-import play.api.Logger
 import play.api.mvc.{Action, Controller}
 import services.ApplicationOps
 
@@ -78,6 +77,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
       case Save => actionHandler.doSave(id, sectionNumber, request.body.values)
       case SaveItem => actionHandler.doSaveItem(id, sectionNumber, request.body.values)
       case Preview => actionHandler.doPreview(id, sectionNumber, request.body.values)
+      case completeAndPreview => actionHandler.completeAndPreview(id, sectionNumber, request.body.values)
     }
   }
 
