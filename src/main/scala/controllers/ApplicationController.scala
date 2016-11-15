@@ -59,13 +59,12 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
     fieldsFor(sectionNumber) match {
       case Some(fields) =>
         applications.getSection(id, sectionNumber).flatMap { section =>
-          Logger.debug(s"section is $section")
           section.flatMap(_.completedAtText) match {
             case None =>
               val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
               actionHandler.renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, noErrors, hints)
             case _ =>
-              actionHandler.RedirectToPreview(id, sectionNumber)
+              actionHandler.redirectToPreview(id, sectionNumber)
 
           }
         }

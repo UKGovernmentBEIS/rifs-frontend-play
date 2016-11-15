@@ -23,7 +23,6 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
   implicit val costItemF = Json.format[CostItem]
 
   def addItem(applicationId: ApplicationId, sectionNumber: Int) = Action.async { implicit request =>
-    Logger.debug(s"add item")
     showItemForm(applicationId, sectionNumber, JsObject(Seq()), List())
   }
 
@@ -31,16 +30,13 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
     (o \ "item").validate[CostItemValues] match {
       case JsError(errs) => FieldError("item", s"could not convert $o to CostItemValues").invalidNel
       case JsSuccess(values, _) =>
-        Logger.debug(values.toString)
         CostItemValidator.validate("item", values)
     }
   }
 
   def editItem(applicationId: ApplicationId, sectionNumber: Int, itemNumber: Int) = Action.async {
     applications.getItem[JsObject](applicationId, sectionNumber, itemNumber).flatMap {
-      case Some(item) =>
-        Logger.debug(item.toString)
-        showItemForm(applicationId, sectionNumber, JsObject(Seq("item" -> item)), List(), Some(itemNumber))
+      case Some(item) => showItemForm(applicationId, sectionNumber, JsObject(Seq("item" -> item)), List(), Some(itemNumber))
       case None => Future.successful(BadRequest)
     }
   }
@@ -98,7 +94,6 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
     val checks = itemChecksFor(sectionNumber)
     val hints = hinting(doc, checks)
 
-    Logger.debug(s"fields are $fields")
     details2.value.map {
       case Some(((overview, form, opp), fs)) =>
         Ok(views.html.costItemForm(overview, form, fs, opp, fields, questions, doc, errs, hints, cancelLink(applicationId, overview, sectionNumber), itemNumber))
