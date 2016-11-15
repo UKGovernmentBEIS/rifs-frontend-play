@@ -34,6 +34,7 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
   import controllers.ApplicationData._
 
   override def completeSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors] = {
+    Logger.debug(s"checking doc $doc")
     FieldCheckHelpers.check(doc, checksFor(sectionNumber)) match {
       case Nil =>
         val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/complete"
