@@ -6,7 +6,8 @@ import cats.data.OptionT
 import cats.instances.future._
 import forms.Field
 import models._
-import play.api.libs.json.JsObject
+import play.api.Logger
+import play.api.libs.json.{JsArray, JsDefined, JsObject}
 import play.api.mvc.Result
 import play.api.mvc.Results._
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
@@ -31,7 +32,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
             Redirect(routes.ApplicationController.show(id))
           }
         }
-      case CostSection => Future.successful(redirectToOverview(id))
+      case ItemSection => Future.successful(redirectToOverview(id))
     }
   }
 
@@ -42,7 +43,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
         case errs => redisplaySectionForm(id, sectionNumber, fieldValues, errs)
       }
 
-      case CostSection =>
+      case ItemSection =>
         applications.getSection(id, sectionNumber).flatMap {
           case Some(section) =>
             applications.completeSection(id, sectionNumber, section.answers).flatMap {
@@ -77,7 +78,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
           }
         } else redisplaySectionForm(id, sectionNumber, fieldValues, errs)
 
-      case CostSection => Future.successful(Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber)))
+      case ItemSection => Future.successful(Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber)))
     }
   }
 
@@ -119,7 +120,16 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
   def selectSectionForm(sectionNumber: Int, section: Option[ApplicationSection], questions: Map[String, Question], answers: JsObject, fields: Seq[Field], errs: FieldErrors, app: ApplicationOverview, appForm: ApplicationForm, opp: Opportunity): Result = {
     val formSection: ApplicationFormSection = appForm.sections.find(_.sectionNumber == sectionNumber).get
     val hints = hinting(answers, checksFor(sectionNumber))
-    Ok(views.html.sectionForm(app, appForm, section, formSection, opp, fields, questions, answers, errs, hints))
+
+    sectionTypeFor(sectionNumber) match {
+      case VanillaSection => Ok(views.html.sectionForm(app, appForm, section, formSection, opp, fields, questions, answers, errs, hints))
+      case ItemSection =>
+        answers \ "items" match {
+          case JsDefined(JsArray(is)) if is.nonEmpty => Ok(views.html.sectionForm(app, appForm, section, formSection, opp, fields, questions, answers, errs, hints))
+          case _ => Redirect(controllers.routes.CostController.addItem(app.id, sectionNumber))
+        }
+
+    }
   }
 
   def gatherApplicationDetails(id: ApplicationId): Future[Option[(ApplicationOverview, ApplicationForm, Opportunity)]] = {

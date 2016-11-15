@@ -23,6 +23,7 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
   implicit val costItemF = Json.format[CostItem]
 
   def addItem(applicationId: ApplicationId, sectionNumber: Int) = Action.async { implicit request =>
+    Logger.debug(s"add item")
     showItemForm(applicationId, sectionNumber, JsObject(Seq()), List())
   }
 
@@ -81,7 +82,6 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
     }
   }
 
-
   def showItemForm(applicationId: ApplicationId, sectionNumber: Int, doc: JsObject, errs: FieldErrors, itemNumber:Option[Int] = None): Future[Result] = {
     val details1 = actionHandler.gatherApplicationDetails(applicationId)
 
@@ -94,10 +94,11 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
     import FieldCheckHelpers._
 
     val questions = questionsFor(sectionNumber)
-    val fields = fieldsFor(sectionNumber).getOrElse(Seq())
+    val fields = itemFieldsFor(sectionNumber).getOrElse(Seq())
     val checks = itemChecksFor(sectionNumber)
     val hints = hinting(doc, checks)
 
+    Logger.debug(s"fields are $fields")
     details2.value.map {
       case Some(((overview, form, opp), fs)) =>
         Ok(views.html.costItemForm(overview, form, fs, opp, fields, questions, doc, errs, hints, cancelLink(applicationId, overview, sectionNumber), itemNumber))

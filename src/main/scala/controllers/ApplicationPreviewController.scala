@@ -30,7 +30,7 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appli
         }
         case None => Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
       }
-      case CostSection => renderCostPreview(id, sectionNumber)
+      case ItemSection => renderCostPreview(id, sectionNumber)
     }
   }
 
