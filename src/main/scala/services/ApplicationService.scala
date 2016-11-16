@@ -60,7 +60,7 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     delete(url)
   }
 
-  override def getItem[T : Reads](id: ApplicationId, sectionNumber: Int, itemNumber: Int): Future[Option[T]] = {
+  override def getItem[T: Reads](id: ApplicationId, sectionNumber: Int, itemNumber: Int): Future[Option[T]] = {
     val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/item/$itemNumber"
     getOpt[T](url)
   }

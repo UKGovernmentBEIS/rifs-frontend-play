@@ -108,21 +108,20 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
                         hints: FieldHints): Future[Result] = {
     val answers = section.map { s => s.answers }.getOrElse(JsObject(Seq()))
 
-    gatherApplicationDetails(id).map {
-      case Some((app, appForm, opp)) => selectSectionForm(sectionNumber, section, questions, answers, fields, errs, app, appForm, opp)
+    gatherSectionDetails(id, sectionNumber).map {
+      case Some((app, appForm, formSection, opp)) => selectSectionForm(sectionNumber, section, formSection.questionMap, answers, fields, errs, app, appForm, opp)
       case None => NotFound
     }
   }
 
   def redisplaySectionForm(id: ApplicationId, sectionNumber: Int, answers: JsObject, errs: FieldErrors = noErrors): Future[Result] = {
-    val ft = gatherApplicationDetails(id)
+    val ft = gatherSectionDetails(id, sectionNumber)
     val sectionF = applications.getSection(id, sectionNumber)
-    val questions = questionsFor(sectionNumber)
 
     fieldsFor(sectionNumber) match {
       case Some(fields) =>
         for (x <- ft; section <- sectionF) yield (x, section) match {
-          case (Some((app, appForm, opp)), s) => selectSectionForm(sectionNumber, s, questions, answers, fields, errs, app, appForm, opp)
+          case (Some((app, appForm, formSection, opp)), s) => selectSectionForm(sectionNumber, s, formSection.questionMap, answers, fields, errs, app, appForm, opp)
           case (None, _) => NotFound
         }
 
@@ -144,11 +143,12 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
   }
 
-  def gatherApplicationDetails(id: ApplicationId): Future[Option[(ApplicationOverview, ApplicationForm, Opportunity)]] = {
+  def gatherSectionDetails(id: ApplicationId, sectionNumber: Int): Future[Option[(ApplicationOverview, ApplicationForm, ApplicationFormSection, Opportunity)]] = {
     for {
       a <- OptionT(applications.overview(id))
       af <- OptionT(applicationForms.byId(a.applicationFormId))
+      fs <- OptionT.fromOption(af.sections.find(_.sectionNumber == sectionNumber))
       o <- OptionT(opportunities.byId(af.opportunityId))
-    } yield (a, af, o)
+    } yield (a, af, fs, o)
   }.value
 }
