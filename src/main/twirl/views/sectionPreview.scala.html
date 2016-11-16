@@ -1,5 +1,5 @@
 @(
-        app: ApplicationOverview,
+        appOverview: ApplicationOverview,
         section: Option[ApplicationSection],
         formSection: ApplicationFormSection,
         opportunity: Opportunity,
@@ -13,15 +13,9 @@
     f"RIFS$id%05d"
 }
 
-@main(s"Event title") {
+@main(s"Event title", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(appOverview.id).url))) {
     <div class="grid-row">
         <div class="column-full">
-            <div class="breadcrumbs">
-                <ol>
-                    <li><a href="@controllers.routes.ApplicationController.show(app.id)">&lt; Return to application overview</a></li>
-                </ol>
-            </div>
-
             <h1 class="heading-xlarge">
                 <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
                 @formSection.title
