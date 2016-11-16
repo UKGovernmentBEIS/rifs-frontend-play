@@ -10,7 +10,7 @@ case class ApplicationFormSection(sectionNumber: Int, title: String, questions: 
     * Map of `String -> Question` used by the form templates
     * @return
     */
-  def questionMap: Map[String, Question] = {
+  lazy val questionMap: Map[String, Question] = {
     questions
       .groupBy(_.key)
       .mapValues(_.headOption)
