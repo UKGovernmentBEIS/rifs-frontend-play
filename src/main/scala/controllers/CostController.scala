@@ -30,16 +30,13 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
     (o \ "item").validate[CostItemValues] match {
       case JsError(errs) => FieldError("item", s"could not convert $o to CostItemValues").invalidNel
       case JsSuccess(values, _) =>
-        Logger.debug(values.toString)
         CostItemValidator.validate("item", values)
     }
   }
 
   def editItem(applicationId: ApplicationId, sectionNumber: Int, itemNumber: Int) = Action.async {
     applications.getItem[JsObject](applicationId, sectionNumber, itemNumber).flatMap {
-      case Some(item) =>
-        Logger.debug(item.toString)
-        showItemForm(applicationId, sectionNumber, JsObject(Seq("item" -> item)), List(), Some(itemNumber))
+      case Some(item) => showItemForm(applicationId, sectionNumber, JsObject(Seq("item" -> item)), List(), Some(itemNumber))
       case None => Future.successful(BadRequest)
     }
   }
@@ -93,14 +90,13 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
     import FieldCheckHelpers._
 
     val questions = questionsFor(sectionNumber)
-    val fields = fieldsFor(sectionNumber).getOrElse(Seq())
+    val fields = itemFieldsFor(sectionNumber).getOrElse(Seq())
     val checks = itemChecksFor(sectionNumber)
     val hints = hinting(doc, checks)
-    val answers = JsonHelpers.flatten("", doc)
 
     details2.value.map {
       case Some(((overview, form, opp), fs)) =>
-        Ok(views.html.costItemForm(overview, form, fs, opp, fields, questions, answers, errs, hints, cancelLink(applicationId, overview, sectionNumber), itemNumber))
+        Ok(views.html.costItemForm(overview, form, fs, opp, fields, questions, doc, errs, hints, cancelLink(applicationId, overview, sectionNumber), itemNumber))
       case None => NotFound
     }
   }

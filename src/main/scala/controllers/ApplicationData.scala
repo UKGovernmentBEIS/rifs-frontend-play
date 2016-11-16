@@ -9,7 +9,7 @@ object ApplicationData {
 
   sealed trait SectionType
 
-  case object CostSection extends SectionType
+  case object ItemSection extends SectionType
 
   case object VanillaSection extends SectionType
 
@@ -23,7 +23,7 @@ object ApplicationData {
   private val provisionalDateValidator: DateWithDaysValidator = DateWithDaysValidator(allowPast = false, 1, 9)
 
   def sectionTypeFor(sectionNumber: Int): SectionType = sectionNumber match {
-    case 6 => CostSection
+    case 6 => ItemSection
     case _ => VanillaSection
   }
 
@@ -109,6 +109,11 @@ object ApplicationData {
     case 3 => Some(eventObjFormFields)
     case 4 => Some(topicAndSpeakerFields)
     case 5 => Some(eventAudienceFields)
+    case 6 => Some(Seq(CostListField("")))
+    case _ => None
+  }
+
+  def itemFieldsFor(sectionNum:Int): Option[Seq[Field]] = sectionNum match {
     case 6 => Some(Seq(CostItemField("item")))
     case _ => None
   }

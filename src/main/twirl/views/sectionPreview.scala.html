@@ -4,7 +4,7 @@
         formSection: ApplicationFormSection,
         opportunity: Opportunity,
         fields: Seq[forms.Field],
-        answers: Map[String, String],
+        answers: play.api.libs.json.JsObject,
         closeButton: String,
         editButton: Option[String]
 )
@@ -27,7 +27,7 @@
                 @formSection.title
             </h1>
 
-            @fields.map(_.renderPreview(answers))
+            @fields.map(_.renderPreview(app, formSection, answers))
 
             @if(editButton.isDefined){
                 @section.flatMap(_.completedAtText)

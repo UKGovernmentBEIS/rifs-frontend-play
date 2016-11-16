@@ -36,7 +36,7 @@ class EventAudienceFormSpec extends WordSpecLike with Matchers with OptionValues
       Opportunity(OpportunityId(1), "Research priorities in health care", "", None, OpportunityValue(0, ""), Seq()),
       Seq(TextAreaField(Some("label"), name)),
       Map(name -> q),
-      Map(),
+      JsObject(Seq()),
       List(),
       List(FieldHint(name, "500 words maximum"))
     )
