@@ -57,15 +57,8 @@ object ApplicationData {
 
   val eventAudienceFields: Seq[Field] = Seq(TextAreaField(None, "eventAudience"))
 
-
-  val dateFormQuestions = Map(
-    "provisionalDate.days" -> Question("How long will it last?"),
-    "provisionalDate.date" -> Question("When do you propose to hold the event?")
-  )
-
   val titleFormFields: Seq[Field] = Seq(TextField(None, "title", isNumeric = false))
   val dateFormFields: Seq[Field] = Seq(DateWithDaysField("provisionalDate", provisionalDateValidator))
-
 
   def fieldsFor(sectionNum: Int): Option[Seq[Field]] = sectionNum match {
     case 1 => Some(titleFormFields)
