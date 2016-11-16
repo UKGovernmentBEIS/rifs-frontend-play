@@ -7,7 +7,7 @@ import cats.instances.future._
 import forms.Field
 import forms.validation.CostItem
 import models._
-import play.api.libs.json.{JsArray, JsDefined, JsObject, Json}
+import play.api.libs.json.{JsArray, JsDefined, JsObject}
 import play.api.mvc.Result
 import play.api.mvc.Results._
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
@@ -20,6 +20,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
   import ApplicationData._
   import FieldCheckHelpers._
 
+
   def doSave(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
     sectionTypeFor(sectionNumber) match {
       case VanillaSection =>
@@ -31,7 +32,6 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
             Redirect(routes.ApplicationController.show(id))
           }
         }
-
       case CostSection => Future.successful(redirectToOverview(id))
     }
   }
@@ -79,6 +79,31 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
 
       case CostSection => Future.successful(wip(sectionFormCall(id, sectionNumber).url))
     }
+  }
+
+  def completeAndPreview(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
+
+    sectionTypeFor(sectionNumber) match {
+      case VanillaSection =>
+        val errs = check(fieldValues, previewChecksFor(sectionNumber))
+        if (errs.isEmpty) {
+          JsonHelpers.allFieldsEmpty(fieldValues) match {
+            case true => applications.deleteSection(id, sectionNumber).map { _ =>
+              Redirect(routes.ApplicationController.show(id))
+            }
+            case false => applications.completeSection(id, sectionNumber, fieldValues).flatMap {
+              case Nil => Future.successful(Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber)))
+              case errs => redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
+            }
+          }
+        }
+        else redisplaySectionForm(id, sectionNumber, JsonHelpers.flatten("", fieldValues), errs)
+      case CostSection => Future.successful(wip(sectionFormCall(id, sectionNumber).url))
+    }
+  }
+
+  def redirectToPreview(id: ApplicationId, sectionNumber: Int): Future[Result] = {
+    Future.successful(Redirect(controllers.routes.ApplicationPreviewController.previewSection(id, sectionNumber)))
   }
 
   def renderSectionForm(id: ApplicationId,

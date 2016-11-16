@@ -1,10 +1,12 @@
 @(
-        app: Application,
+        app: ApplicationOverview,
         section: Option[ApplicationSection],
         formSection: ApplicationFormSection,
         opportunity: Opportunity,
         fields: Seq[forms.Field],
-        answers: Map[String, String]
+        answers: Map[String, String],
+        closeButton: String,
+        editButton: Option[String]
 )
 
 @formatId(id: Long) = @{
@@ -27,10 +29,26 @@
 
             @fields.map(_.renderPreview(answers))
 
-            <div class="rifs-form-buttons">
-                <a class="button secondary" href="@controllers.routes.ApplicationController.show(app.id)">Close</a>
-                <a class="flat" href="@controllers.routes.ApplicationController.showSectionForm(app.id, formSection.sectionNumber)">Edit this page</a>
-            </div>
+            @if(editButton.isDefined){
+                @section.flatMap(_.completedAtText)
+
+                <div class="rifs-form-buttons">
+
+                    <form method="POST"
+                        action=@editButton
+                        novalidate="novalidate">
+                        <a class="button secondary" href=@closeButton>Close</a>
+                        <input type="submit" class="button--link-style" value="Edit this page"/>
+                    </form>
+                </div>
+            }
+
+            @if(editButton.isEmpty){
+                <div class="rifs-form-buttons">
+                    <a class="button secondary" href="@closeButton">Close</a>
+                </div>
+            }
+
         </div>
     </div>
 }

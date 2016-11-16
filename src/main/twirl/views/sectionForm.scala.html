@@ -52,12 +52,10 @@
                 }
                 @fields.map(_.renderFormInput(questions, answers, errs, hints))
 
-                @section.flatMap(_.completedAtText).getOrElse(
                 <label for="complete-checkbox" class="form-checkbox font-normal" style="width: 16em">
                     <input id="complete-checkbox" type="checkbox" name="_complete_checkbox"/>
                     Mark question as complete
                 </label>
-                )
 
                 <div class="rifs-form-buttons">
                     <input type="submit" name="@Save.name" class="button button--start" value="Save and continue">
@@ -65,7 +63,7 @@
                 </div>
             </form>
         </div>
-        <div class="column-third">
+        <div id="support-column" class="column-third">
             @sidebar(appOverview, appForm)
         </div>
     </div>

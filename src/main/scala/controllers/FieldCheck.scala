@@ -1,7 +1,6 @@
 package controllers
 
 import forms.validation._
-import play.api.Logger
 import play.api.libs.json._
 
 trait FieldCheck {
@@ -18,12 +17,20 @@ object FieldChecks {
     override def hint(path: String, value: JsValue): List[FieldHint] = List()
   }
 
-  def mandatoryText(wordLimit: Int, displayName: Option[String] = None) = new FieldCheck {
-    val validator = MandatoryValidator(displayName).andThen(WordCountValidator(wordLimit))
+  trait OptionalFieldCheck[T] extends FieldCheck {
+    def validator: FieldValidator[Option[String], T]
 
     override def apply(path: String, value: JsValue): List[FieldError] = validator.validate(path, decodeString(value)).fold(_.toList, _ => List())
 
     override def hint(path: String, value: JsValue): List[FieldHint] = validator.hintText(path, value)
+  }
+
+  def mandatoryText(wordLimit: Int, displayName: Option[String] = None) = new OptionalFieldCheck[String] {
+    override val validator: FieldValidator[Option[String], String] = MandatoryValidator(displayName).andThen(WordCountValidator(wordLimit))
+  }
+
+  def intFieldCheck(min: Int, max: Int, displayName: Option[String] = None) = new OptionalFieldCheck[Int] {
+    override val validator: FieldValidator[Option[String], Int] = MandatoryValidator(displayName).andThen(IntValidator(min, max))
   }
 
   def fromValidator[T: Reads](v: FieldValidator[T, _]): FieldCheck = new FieldCheck {
@@ -39,14 +46,6 @@ object FieldChecks {
     override def hint(path: String, jv: JsValue): List[FieldHint] = v.hintText(path, jv)
   }
 
-
-  def intFieldCheck(min: Int, max: Int, displayName: Option[String] = None) = new FieldCheck {
-    val validator: FieldValidator[Option[String], Int] = MandatoryValidator(displayName).andThen(IntValidator(min, max))
-
-    override def apply(path: String, jv: JsValue) = validator.validate(path, decodeString(jv)).fold(_.toList, _ => List())
-
-    override def hint(path: String, value: JsValue): List[FieldHint] = validator.hintText(path, value)
-  }
 
   def decodeString(jv: JsValue): Option[String] = {
     jv match {

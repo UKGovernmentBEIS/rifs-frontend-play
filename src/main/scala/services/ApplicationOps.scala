@@ -3,7 +3,7 @@ package services
 import com.google.inject.ImplementedBy
 import controllers.FieldCheckHelpers.FieldErrors
 import models._
-import play.api.libs.json.JsObject
+import play.api.libs.json.{JsObject, Reads}
 
 import scala.concurrent.Future
 
@@ -24,10 +24,15 @@ trait ApplicationOps {
 
   def saveItem(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors]
 
+  def getItem[T: Reads](id: ApplicationId, sectionNumber: Int, itemNumber: Int): Future[Option[T]]
+
   def deleteItem(id: ApplicationId, sectionNumber: Int, itemNumber: Int): Future[Unit]
 
   def getSection(id: ApplicationId, sectionNumber: Int): Future[Option[ApplicationSection]]
 
+  def getSections(id: ApplicationId): Future[Seq[ApplicationSection]]
+
   def deleteSection(id: ApplicationId, sectionNumber: Int): Future[Unit]
 
+  def clearSectionCompletedDate(id: ApplicationId, sectionNumber: Int): Future[Unit]
 }

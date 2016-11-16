@@ -7,7 +7,7 @@ import controllers.FieldCheckHelpers
 import controllers.FieldCheckHelpers.FieldErrors
 import models._
 import play.api.Logger
-import play.api.libs.json.{JsDefined, JsNumber, JsObject, Json}
+import play.api.libs.json._
 import play.api.libs.ws.WSClient
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -62,9 +62,19 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     delete(url)
   }
 
+  override def getItem[T : Reads](id: ApplicationId, sectionNumber: Int, itemNumber: Int): Future[Option[T]] = {
+    val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/item/$itemNumber"
+    getOpt[T](url)
+  }
+
   override def getSection(id: ApplicationId, sectionNumber: Int): Future[Option[ApplicationSection]] = {
     val url = s"$baseUrl/application/${id.id}/section/$sectionNumber"
     getOpt[ApplicationSection](url)
+  }
+
+  override def getSections(id: ApplicationId): Future[Seq[ApplicationSection]] = {
+    val url = s"$baseUrl/application/${id.id}/sections"
+    getMany[ApplicationSection](url)
   }
 
   override def getOrCreateForForm(applicationFormId: ApplicationFormId): Future[Option[Application]] = {
@@ -86,4 +96,11 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     val url = s"$baseUrl/application/${id.id}/section/$sectionNumber"
     delete(url)
   }
+
+  override def clearSectionCompletedDate(id: ApplicationId, sectionNumber: Int): Future[Unit] = {
+    val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/markNotCompleted"
+    put(url, None)
+  }
+
+
 }
