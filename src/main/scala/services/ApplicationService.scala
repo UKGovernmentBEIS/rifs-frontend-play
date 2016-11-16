@@ -100,5 +100,9 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     put(url, None)
   }
 
-
+  override def submit(id: ApplicationId): Future[Option[SubmittedApplicationRef]] = {
+    implicit val saRefReads = Json.reads[SubmittedApplicationRef]
+    val url = s"$baseUrl/application/1/submit"
+    postWithResult[SubmittedApplicationRef,String](url, "")
+  }
 }

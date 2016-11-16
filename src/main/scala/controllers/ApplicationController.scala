@@ -92,7 +92,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
   }
 
   def submit(id: ApplicationId) = Action.async { request =>
-    gatherApplicationDetails(id).map {
+    gatherApplicationDetails(id).flatMap {
       case Some((overview, form, opp)) =>
         val sectionErrors: Seq[SectionError] = form.sections.sortBy(_.sectionNumber).flatMap { fs =>
           overview.sections.find(_.sectionNumber == fs.sectionNumber) match {
@@ -100,8 +100,18 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
             case Some(s) => checkSection(fs, s)
           }
         }
-        Ok(views.html.showApplicationForm(form, overview, opp, sectionErrors))
-      case None => NotFound
+        if(sectionErrors.isEmpty){
+          val emailto = "experiencederic@university.ac.uk"
+          actionHandler.doSubmit(id).map {
+            case Some((e)) =>
+              Ok(views.html.submitApplicationForm(e.applicationRef, emailto))
+            case None => NotFound
+          }
+        }
+        else
+          Future.successful( Ok(views.html.showApplicationForm(form, overview, opp, sectionErrors)) )
+
+      case None => Future.successful( NotFound )
     }
   }
 

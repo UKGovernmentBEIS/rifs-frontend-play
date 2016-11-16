@@ -1,0 +1,38 @@
+@(apprefno: Long, emailto: String)
+
+@main(s"Overview") {
+<div id="global-header-status" class="contain-floats">
+    <div class="float-right">
+        <span>Experienced Eric</span>
+    </div>
+</div>
+
+<!-- main content -->
+<div class="grid-row">
+    <div >
+
+
+        <div class="panel app-submit-confirm" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+            <p class="bold-small"> Application submitted</p>
+            <p> Your reference number </p>
+            <p> @apprefno</p>
+        </div>
+        <div>
+            <p>
+                We have sent a confirmation email to <br/>
+                @emailto
+            </p>
+            <p>
+                <b>What happens next? </b><br/>
+                It usually takes us about four weeks to process your application and makes a decision.
+            </p>
+            <p>
+                <b>Contact </b><br/>
+                Email: fundteamrifs.uk<br/>
+                phone: 0800 333 4444
+            </p>
+        </div>
+    </div>
+
+</div>
+}
