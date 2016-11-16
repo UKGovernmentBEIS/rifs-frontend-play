@@ -36,9 +36,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
   import FieldCheckHelpers._
 
   def editSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
-    val ft = actionHandler.gatherSectionDetails(id, sectionNumber)
-
-    ft.flatMap {
+    actionHandler.gatherSectionDetails(id, sectionNumber).flatMap {
       case Some((app, af, afs, opp)) =>
         fieldsFor(sectionNumber) match {
           case Some(fields) =>
