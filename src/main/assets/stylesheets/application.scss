@@ -99,6 +99,14 @@ $path: '/assets/stylesheets/images/';
   background-color: lighten($red, 50%);
 }
 
+.username-container {
+  float: right;
+}
+
+.backlink-container {
+  float: left;
+}
+
 // General
 .float-left {
   float: left;
