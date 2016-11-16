@@ -9,7 +9,6 @@ import cats.syntax.validated._
 import controllers.FieldCheckHelpers.FieldErrors
 import forms.validation.{CostItem, CostItemValidator, CostItemValues, FieldError}
 import models.{ApplicationId, ApplicationOverview}
-import play.api.Logger
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller, Result}
 import services.ApplicationOps
@@ -79,7 +78,7 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
   }
 
   def showItemForm(applicationId: ApplicationId, sectionNumber: Int, doc: JsObject, errs: FieldErrors, itemNumber:Option[Int] = None): Future[Result] = {
-    val details1 = actionHandler.gatherApplicationDetails(applicationId)
+    val details1 = actionHandler.gatherSectionDetails(applicationId, sectionNumber)
 
     val details2 = for {
       ds <- OptionT(details1)
@@ -89,14 +88,13 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
     import ApplicationData._
     import FieldCheckHelpers._
 
-    val questions = questionsFor(sectionNumber)
     val fields = itemFieldsFor(sectionNumber).getOrElse(Seq())
     val checks = itemChecksFor(sectionNumber)
     val hints = hinting(doc, checks)
 
     details2.value.map {
-      case Some(((overview, form, opp), fs)) =>
-        Ok(views.html.costItemForm(overview, form, fs, opp, fields, questions, doc, errs, hints, cancelLink(applicationId, overview, sectionNumber), itemNumber))
+      case Some(((overview, form, formSection, opp), fs)) =>
+        Ok(views.html.costItemForm(overview, form, fs, opp, fields, formSection.questionMap, doc, errs, hints, cancelLink(applicationId, overview, sectionNumber), itemNumber))
       case None => NotFound
     }
   }

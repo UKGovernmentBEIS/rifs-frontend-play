@@ -12,6 +12,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ApplicationFormService @Inject()(val ws: WSClient)(implicit val ec: ExecutionContext)
   extends ApplicationFormOps with JodaFormats with RestService with ValueClassFormats {
+  implicit val appFormQuestionReads = Json.reads[ApplicationFormQuestion]
   implicit val appSecRead = Json.reads[ApplicationFormSection]
   implicit val appRead = Json.reads[ApplicationForm]
 
