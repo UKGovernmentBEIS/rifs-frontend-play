@@ -19,6 +19,10 @@ case class ApplicationSection(id: ApplicationSectionId, applicationId: Applicati
 }
 
 case class ApplicationSectionOverview(sectionNumber: Int, completedAt: Option[LocalDateTime], answers: JsObject) {
+  val dtf = DateTimeFormat.forPattern("d MMMM HH:mm")
+
+  def completedAtText: Option[String] = completedAt.map(d => s"Completed ${dtf.print(d)}")
+
   val status = completedAt.map(_ => "Completed").getOrElse("In progress")
 }
 

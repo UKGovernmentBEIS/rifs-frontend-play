@@ -2,15 +2,16 @@ package controllers
 
 import javax.inject.Inject
 
+import cats.data.OptionT
+import cats.instances.future._
+import forms.validation.SectionError
 import models._
-import forms.validation.{FieldError, FieldHint, SectionError}
-import play.api.Logger
 import play.api.mvc.{Action, Controller}
-import services.ApplicationOps
+import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ApplicationController @Inject()(actionHandler: ActionHandler, applications: ApplicationOps)(implicit ec: ExecutionContext)
+class ApplicationController @Inject()(actionHandler: ActionHandler, applications: ApplicationOps, forms: ApplicationFormOps, opps: OpportunityOps)(implicit ec: ExecutionContext)
   extends Controller with ApplicationResults {
 
   def showOrCreateForForm(id: ApplicationFormId) = Action.async {
@@ -21,7 +22,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
   }
 
   def show(id: ApplicationId) = Action.async {
-    actionHandler.gatherApplicationDetails(id).map {
+    gatherApplicationDetails(id).map {
       case Some((overview, form, opp)) => Ok(views.html.showApplicationForm(form, overview, opp, List()))
       case None => NotFound
     }
@@ -35,44 +36,47 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
   import FieldCheckHelpers._
 
   def editSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
-    fieldsFor(sectionNumber) match {
-      case Some(fields) => {
-        applications.getSection(id, sectionNumber).flatMap { section => {
-          val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
-          actionHandler.renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, noErrors, hints)
-        }}
-      }
+    actionHandler.gatherSectionDetails(id, sectionNumber).flatMap {
+      case Some((app, af, afs, opp)) =>
+        fieldsFor(sectionNumber) match {
+          case Some(fields) =>
+            applications.getSection(id, sectionNumber).flatMap { section =>
+              val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
+              actionHandler.renderSectionForm(id, sectionNumber, section, afs.questionMap, fields, noErrors, hints)
+            }
+          case None => Future(NotFound)
+        }
       case None => Future(NotFound)
     }
   }
 
   def resetAndEditSection(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
     fieldsFor(sectionNumber) match {
-      case Some(fields) => {
-        applications.clearSectionCompletedDate(id, sectionNumber)
-        applications.getSection(id, sectionNumber).flatMap { section => {
-          val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
-          actionHandler.renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, noErrors, hints)
-        }}
-      }
+      case Some(fields) =>
+        applications.clearSectionCompletedDate(id, sectionNumber).map { _ =>
+          Redirect(controllers.routes.ApplicationController.editSectionForm(id, sectionNumber))
+        }
       case None => Future(NotFound)
     }
   }
 
   def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
-    fieldsFor(sectionNumber) match {
-      case Some(fields) => {
-        applications.getSection(id, sectionNumber).flatMap { section =>
-          section.flatMap(_.completedAtText) match {
-            case None =>
-              val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
-              actionHandler.renderSectionForm(id, sectionNumber, section, questionsFor(sectionNumber), fields, noErrors, hints)
-            case _ =>
-              actionHandler.RedirectToPreview(id, sectionNumber)
+    actionHandler.gatherSectionDetails(id, sectionNumber).flatMap {
+      case Some((overview, form, afs, opp)) =>
+        fieldsFor(sectionNumber) match {
+          case Some(fields) =>
+            applications.getSection(id, sectionNumber).flatMap { section =>
+              section.flatMap(_.completedAtText) match {
+                case None =>
+                  val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
+                  actionHandler.renderSectionForm(id, sectionNumber, section, afs.questionMap, fields, noErrors, hints)
+                case _ =>
+                  Future.successful(actionHandler.redirectToPreview(id, sectionNumber))
 
-          }
+              }
+            }
+          case None => Future(NotFound)
         }
-      }
       case None => Future(NotFound)
     }
   }
@@ -83,11 +87,12 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
       case Save => actionHandler.doSave(id, sectionNumber, request.body.values)
       case SaveItem => actionHandler.doSaveItem(id, sectionNumber, request.body.values)
       case Preview => actionHandler.doPreview(id, sectionNumber, request.body.values)
+      case completeAndPreview => actionHandler.completeAndPreview(id, sectionNumber, request.body.values)
     }
   }
 
   def submit(id: ApplicationId) = Action.async { request =>
-    actionHandler.gatherApplicationDetails(id).map {
+    gatherApplicationDetails(id).map {
       case Some((overview, form, opp)) =>
         val sectionErrors: Seq[SectionError] = form.sections.sortBy(_.sectionNumber).flatMap { fs =>
           overview.sections.find(_.sectionNumber == fs.sectionNumber) match {
@@ -100,11 +105,19 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
     }
   }
 
-  def checkSection(fs:ApplicationFormSection, s: ApplicationSectionOverview): Option[SectionError] = {
+  def checkSection(fs: ApplicationFormSection, s: ApplicationSectionOverview): Option[SectionError] = {
     s.completedAt match {
       case Some(_) => None
       case None => Some(SectionError(fs, "In progress"))
     }
   }
+
+  def gatherApplicationDetails(id: ApplicationId): Future[Option[(ApplicationOverview, ApplicationForm, Opportunity)]] = {
+    for {
+      a <- OptionT(applications.overview(id))
+      af <- OptionT(forms.byId(a.applicationFormId))
+      o <- OptionT(opps.byId(af.opportunityId))
+    } yield (a, af, o)
+  }.value
 
 }

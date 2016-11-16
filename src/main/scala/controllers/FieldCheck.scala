@@ -1,6 +1,7 @@
 package controllers
 
 import forms.validation._
+import play.api.Logger
 import play.api.libs.json._
 
 trait FieldCheck {
@@ -40,7 +41,9 @@ object FieldChecks {
       v.validate(path, x).fold(_.toList, _ => List())
     } match {
       case JsSuccess(msgs, _) => msgs
-      case JsError(errs) => List(FieldError(path, "Could not decode form values!"))
+      case JsError(errs) =>
+        Logger.debug(s"could not decode form values from $jv with validator $v on path $path")
+        List(FieldError(path, "Could not decode form values!"))
     }
 
     override def hint(path: String, jv: JsValue): List[FieldHint] = v.hintText(path, jv)

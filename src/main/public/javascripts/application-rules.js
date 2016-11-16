@@ -3,7 +3,7 @@
 
     Array.prototype.clean = function(deleteValue) {
         for (var i = 0; i < this.length; i++) {
-            if (this[i] == deleteValue) {
+            if (this[i] === deleteValue) {
                 this.splice(i, 1);
                 i--;
             }
@@ -25,6 +25,7 @@
     };
 
     function addInputListener(input, helper, rule, config) {
+        // TODO: get this working in IE8
         if (!input || !rule) {return;}
 
         input.addEventListener("keyup", function() {

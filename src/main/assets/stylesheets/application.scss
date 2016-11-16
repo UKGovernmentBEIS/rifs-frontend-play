@@ -160,7 +160,7 @@ $path: '/assets/stylesheets/images/';
 }
 
 .table-style-heading-small {
-  // Small bold heading with a line underneath (See: showOpportunities.scala.hmtl)
+  // Small bold heading with a line underneath (See: showOpportunities.scala.html)
   @extend .heading-small;
   margin-bottom: 0;
 }
@@ -216,6 +216,29 @@ table.spacious th {
 table.spacious tfoot > tr > td {
   border-bottom: 2px solid $black;
   border-top: 2px solid $black;
+}
+
+.rifs-costs-table {
+  margin-bottom: 2em;
+
+  td {
+    border-bottom: 0;
+    padding-bottom: 15px;
+    padding-top: 15px;
+  }
+
+  .line td {
+    border-bottom: 1px solid $black;
+  }
+
+  thead {
+    border-bottom: 2px solid $black;
+  }
+
+  tfoot {
+    border-bottom: 2px solid $black;
+    border-top: 2px solid $black;
+  }
 }
 
 .footer-two-light td {
@@ -319,14 +342,14 @@ hr {
 }
 
 .input-icon > i {
-   position: absolute;
-   display: block;
-   top: 8px;
-   pointer-events: none;
-   width: 25px;
-   text-align: center;
-   font-style: normal;
- }
+  display: block;
+  font-style: normal;
+  pointer-events: none;
+  position: absolute;
+  text-align: center;
+  top: 8px;
+  width: 25px;
+}
 
 .input-icon > input {
   padding-left: 25px;

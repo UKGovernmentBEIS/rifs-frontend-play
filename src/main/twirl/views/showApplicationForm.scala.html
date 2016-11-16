@@ -1,7 +1,7 @@
 @import models._
 @import partials._
 
-@(app: ApplicationForm, overview:ApplicationOverview, opportunity:Opportunity, errs: Seq[forms.validation.SectionError])
+@(app: ApplicationForm, overview: ApplicationOverview, opportunity: Opportunity, errs: Seq[forms.validation.SectionError])
 
 @formatId(id: Long) = @{
 f"RIFS$id%05d"
