@@ -1,6 +1,6 @@
-@(title: String, mainClass: Option[String] = None, bodyEnd: Html = Html(""), headExtra: Html = Html("")
-        , insideHeader: Html = Html(""), links: Html = Html("")
-        , backLabel: Option[String] = None, backUrl:Option[String] = None)(content: Html)
+@(title: String, mainClass: Option[String] = None, bodyEnd: Html = Html(""), headExtra: Html = Html(""),
+        insideHeader: Html = Html(""), links: Html = Html(""),
+        backLink:Option[BackLink] = None)(content: Html)
 
 @head = {
 @headExtra
@@ -22,10 +22,10 @@
     <main id="content" class="@mainClass" role="main" tabindex="-1">
             <!-- removed alphaBanner -->
         <div id="global-header-status">
-            @if(backLabel.isDefined) {
+            @if(backLink.isDefined) {
                 <div class="float-left">
-                        &lt; <a class="return-link" href="@controllers.routes.OpportunityController.showOpportunities()">
-                @backLabel</a>
+                        &lt; <a class="return-link" href=@backLink.get.url  >
+                @backLink.get.label</a>
                 </div>
             }
             <div class="username-container float-right">

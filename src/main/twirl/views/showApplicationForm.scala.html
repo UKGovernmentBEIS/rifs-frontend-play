@@ -9,18 +9,10 @@ f"RIFS$id%05d"
 
 @errorClass = @{if(errs.nonEmpty) "rifs-error-panel" else ""}
 
-@main(s"Overview") {
+@main(s"Overview", backLink=Some(BackLink("Return to my dashboard", controllers.routes.OpportunityController.wip(routes.ApplicationController.show(overview.id).url).url))) {
     <!-- main content -->
     <div class="grid-row">
         <div class="column-two-thirds">
-            <div class="breadcrumbs">
-                <ol>
-                    <li><a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, None)">&lt; Back</a></li>
-                </ol>
-            </div>
-
-
-
             <div>
                 <h1 class="heading-xlarge">
                     <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
