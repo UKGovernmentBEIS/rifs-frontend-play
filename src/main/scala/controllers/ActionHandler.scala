@@ -123,7 +123,15 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
   }
 
-  def selectSectionForm(sectionNumber: Int, section: Option[ApplicationSection], questions: Map[String, Question], answers: JsObject, fields: Seq[Field], errs: FieldErrors, app: ApplicationOverview, appForm: ApplicationForm, opp: Opportunity): Result = {
+  def selectSectionForm(sectionNumber: Int,
+                        section: Option[ApplicationSection],
+                        questions: Map[String, Question],
+                        answers: JsObject,
+                        fields: Seq[Field],
+                        errs: FieldErrors,
+                        app: ApplicationOverview,
+                        appForm: ApplicationForm,
+                        opp: Opportunity): Result = {
     val formSection: ApplicationFormSection = appForm.sections.find(_.sectionNumber == sectionNumber).get
     val hints = hinting(answers, checksFor(sectionNumber))
 
