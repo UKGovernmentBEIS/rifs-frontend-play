@@ -22,9 +22,9 @@ class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, appli
     ft.flatMap {
       case Some((app, form, formSection, opp)) =>
         applications.getSection(id, sectionNumber).flatMap { section =>
-          section.map(_.completedAtText) match {
-            case None => renderSectionPreviewInProgress(id, sectionNumber, section, formSection.fields)
-            case _ => renderSectionPreviewCompleted(id, sectionNumber, section, formSection.fields)
+          section.map(_.isComplete) match {
+            case Some(true) => renderSectionPreviewCompleted(id, sectionNumber, section, formSection.fields)
+            case _ => renderSectionPreviewInProgress(id, sectionNumber, section, formSection.fields)
           }
         }
 
@@ -54,7 +54,6 @@ class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, appli
       case None => NotFound
     }
   }
-
 
   type PreviewFunction = (ApplicationOverview, ApplicationForm, Opportunity, Seq[ApplicationSection], Option[String], Map[Int, Seq[forms.Field]]) => Html
 
