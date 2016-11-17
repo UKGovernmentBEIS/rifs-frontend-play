@@ -4,7 +4,6 @@ import javax.inject.Inject
 
 import cats.data.OptionT
 import cats.instances.future._
-import forms.Field
 import models._
 import play.api.libs.json.{JsArray, JsDefined, JsObject}
 import play.api.mvc.Result
@@ -108,8 +107,8 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     val answers = section.map { s => s.answers }.getOrElse(JsObject(Seq()))
 
     gatherSectionDetails(id, sectionNumber).map {
-      case Some((app, appForm, formSection, opp)) =>
-        selectSectionForm(sectionNumber, section, formSection, answers, errs, app, appForm, opp)
+      case Some((app, appForm, appFormSection, opp)) =>
+        selectSectionForm(sectionNumber, section, appFormSection, answers, errs, app, appForm, opp)
       case None => NotFound
     }
   }
@@ -118,15 +117,15 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     val ft = gatherSectionDetails(id, sectionNumber)
     val sectionF = applications.getSection(id, sectionNumber)
 
-    for (x <- ft; section <- sectionF) yield (x, section) match {
-      case (Some((app, appForm, formSection, opp)), s) => selectSectionForm(sectionNumber, s, formSection, answers, errs, app, appForm, opp)
+    for (appDetails <- ft; section <- sectionF) yield (appDetails, section) match {
+      case (Some((app, appForm, appFormSection, opp)), s) => selectSectionForm(sectionNumber, s, appFormSection, answers, errs, app, appForm, opp)
       case (None, _) => NotFound
     }
   }
 
   def selectSectionForm(sectionNumber: Int,
                         section: Option[ApplicationSection],
-                        fs: ApplicationFormSection,
+                        appFormSection: ApplicationFormSection,
                         answers: JsObject,
                         errs: FieldErrors,
                         app: ApplicationOverview,
@@ -136,10 +135,10 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     val hints = hinting(answers, checksFor(sectionNumber))
 
     sectionTypeFor(sectionNumber) match {
-      case VanillaSection => Ok(views.html.sectionForm(app, appForm, section, formSection, opp, fs.fields, fs.questionMap, answers, errs, hints))
+      case VanillaSection => Ok(views.html.sectionForm(app, appForm, section, formSection, opp, appFormSection.fields, appFormSection.questionMap, answers, errs, hints))
       case ItemSection =>
         answers \ "items" match {
-          case JsDefined(JsArray(is)) if is.nonEmpty => Ok(views.html.sectionForm(app, appForm, section, formSection, opp, fs.fields, fs.questionMap, answers, errs, hints))
+          case JsDefined(JsArray(is)) if is.nonEmpty => Ok(views.html.sectionForm(app, appForm, section, formSection, opp, appFormSection.fields, appFormSection.questionMap, answers, errs, hints))
           case _ => Redirect(controllers.routes.CostController.addItem(app.id, sectionNumber))
         }
     }

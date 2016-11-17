@@ -20,11 +20,11 @@ class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, appli
     val ft = actionHandler.gatherSectionDetails(id, sectionNumber)
 
     ft.flatMap {
-      case Some((app, form, formSection, opp)) =>
+      case Some((app, appForm, appFormSection, opp)) =>
         applications.getSection(id, sectionNumber).flatMap { section =>
           section.map(_.isComplete) match {
-            case Some(true) => renderSectionPreviewCompleted(id, sectionNumber, section, formSection.fields)
-            case _ => renderSectionPreviewInProgress(id, sectionNumber, section, formSection.fields)
+            case Some(true) => renderSectionPreviewCompleted(id, sectionNumber, section, appFormSection.fields)
+            case _ => renderSectionPreviewInProgress(id, sectionNumber, section, appFormSection.fields)
           }
         }
 
@@ -63,13 +63,13 @@ class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, appli
 
     val details = for {
       appDetails <- ft
-      ss <- sections
-    } yield (appDetails, ss)
+      sections <- sections
+    } yield (appDetails, sections)
 
     details.map {
-      case (Some((app, form, o)), scs) =>
+      case (Some((app, appForm, opp)), scs) =>
         val title = scs.find(_.sectionNumber == 1).flatMap(s => (s.answers \ "title").validate[String].asOpt)
-        Ok(preview(app, form, o, scs.sortBy(_.sectionNumber), title, getFieldMap(form)))
+        Ok(preview(app, appForm, opp, scs.sortBy(_.sectionNumber), title, getFieldMap(appForm)))
 
       case _ => NotFound
     }
