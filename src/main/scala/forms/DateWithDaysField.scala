@@ -4,16 +4,17 @@ import controllers.JsonHelpers
 import forms.validation.{DateWithDaysValidator, DateWithDaysValues, FieldError, FieldHint}
 import models.{ApplicationFormSection, ApplicationOverview, Question}
 import org.joda.time.format._
-import play.api.Logger
 import play.api.libs.json.JsObject
 import play.twirl.api.Html
 
-case class DateWithDaysField(name: String, validator: DateWithDaysValidator) extends Field {
+case class DateWithDaysField(name: String, allowPast: Boolean, minValue: Int, maxValue: Int) extends Field {
 
   val dateField = DateField(s"$name.date")
   val daysField = TextField(Some("Days"), s"$name.days", isNumeric = true)
 
   val fmt = DateTimeFormat.forPattern("d MMMM yyyy")
+
+  val validator = DateWithDaysValidator(allowPast, minValue, maxValue)
 
   override def renderFormInput(app: ApplicationOverview, formSection: ApplicationFormSection, questions: Map[String, Question], answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]): Html =
     views.html.renderers.dateWithDaysField(this, app, formSection, questions, answers, errs, hints)

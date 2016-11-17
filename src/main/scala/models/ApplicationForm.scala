@@ -1,13 +1,16 @@
 package models
 
+import forms.Field
+
 case class ApplicationFormId(id: Long) extends AnyVal
 
 case class ApplicationFormQuestion(key: String, text: String, description: Option[String], helpText: Option[String])
 
-case class ApplicationFormSection(sectionNumber: Int, title: String, questions: Seq[ApplicationFormQuestion]) {
+case class ApplicationFormSection(sectionNumber: Int, title: String, questions: Seq[ApplicationFormQuestion], fields: Seq[Field]) {
   /**
     * Convenience function to turn the sequence of `ApplicationFormQuestions` sent by the backend into a
     * Map of `String -> Question` used by the form templates
+    *
     * @return
     */
   lazy val questionMap: Map[String, Question] = {
