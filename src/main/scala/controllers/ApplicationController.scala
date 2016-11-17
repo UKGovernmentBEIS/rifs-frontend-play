@@ -23,7 +23,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
 
   def show(id: ApplicationId) = Action.async {
     gatherApplicationDetails(id).map {
-      case Some((overview, form, opp)) => Ok(views.html.showApplicationForm(form, overview, opp, List()))
+      case Some((overview, form, opp)) => Ok(views.html.showApplicationForm(form, overview, opp, List.empty))
       case None => NotFound
     }
   }
@@ -37,45 +37,33 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
 
   def editSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
     actionHandler.gatherSectionDetails(id, sectionNumber).flatMap {
-      case Some((app, af, afs, opp)) =>
-        fieldsFor(sectionNumber) match {
-          case Some(fields) =>
-            applications.getSection(id, sectionNumber).flatMap { section =>
-              val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
-              actionHandler.renderSectionForm(id, sectionNumber, section, afs.questionMap, fields, noErrors, hints)
-            }
-          case None => Future(NotFound)
+      case Some((app, appForm, appFormSection, opp)) =>
+        applications.getSection(id, sectionNumber).flatMap { section =>
+          val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List.empty)
+          actionHandler.renderSectionForm(id, sectionNumber, section, appFormSection.questionMap, noErrors, hints)
         }
       case None => Future(NotFound)
     }
   }
 
   def resetAndEditSection(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
-    fieldsFor(sectionNumber) match {
-      case Some(fields) =>
-        applications.clearSectionCompletedDate(id, sectionNumber).map { _ =>
-          Redirect(controllers.routes.ApplicationController.editSectionForm(id, sectionNumber))
-        }
-      case None => Future(NotFound)
+    applications.clearSectionCompletedDate(id, sectionNumber).map { _ =>
+      Redirect(controllers.routes.ApplicationController.editSectionForm(id, sectionNumber))
     }
   }
 
   def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
     actionHandler.gatherSectionDetails(id, sectionNumber).flatMap {
-      case Some((overview, form, afs, opp)) =>
-        fieldsFor(sectionNumber) match {
-          case Some(fields) =>
-            applications.getSection(id, sectionNumber).flatMap { section =>
-              section.flatMap(_.completedAtText) match {
-                case None =>
-                  val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
-                  actionHandler.renderSectionForm(id, sectionNumber, section, afs.questionMap, fields, noErrors, hints)
-                case _ =>
-                  Future.successful(actionHandler.redirectToPreview(id, sectionNumber))
+      case Some((app, appForm, appFormSection, opp)) =>
+        applications.getSection(id, sectionNumber).flatMap { section =>
+          section.flatMap(_.completedAtText) match {
+            case None =>
+              val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List.empty)
+              actionHandler.renderSectionForm(id, sectionNumber, section, appFormSection.questionMap, noErrors, hints)
+            case _ =>
+              Future.successful(actionHandler.redirectToPreview(id, sectionNumber))
 
-              }
-            }
-          case None => Future(NotFound)
+          }
         }
       case None => Future(NotFound)
     }
@@ -93,22 +81,22 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
 
   def submit(id: ApplicationId) = Action.async { request =>
     gatherApplicationDetails(id).map {
-      case Some((overview, form, opp)) =>
-        val sectionErrors: Seq[SectionError] = form.sections.sortBy(_.sectionNumber).flatMap { fs =>
-          overview.sections.find(_.sectionNumber == fs.sectionNumber) match {
+      case Some((app, appForm, opp)) =>
+        val sectionErrors: Seq[SectionError] = appForm.sections.sortBy(_.sectionNumber).flatMap { fs =>
+          app.sections.find(_.sectionNumber == fs.sectionNumber) match {
             case None => Some(SectionError(fs, "Not started"))
             case Some(s) => checkSection(fs, s)
           }
         }
-        Ok(views.html.showApplicationForm(form, overview, opp, sectionErrors))
+        Ok(views.html.showApplicationForm(appForm, app, opp, sectionErrors))
       case None => NotFound
     }
   }
 
-  def checkSection(fs: ApplicationFormSection, s: ApplicationSectionOverview): Option[SectionError] = {
-    s.completedAt match {
+  def checkSection(appFormSection: ApplicationFormSection, appSection: ApplicationSectionOverview): Option[SectionError] = {
+    appSection.completedAt match {
       case Some(_) => None
-      case None => Some(SectionError(fs, "In progress"))
+      case None => Some(SectionError(appFormSection, "In progress"))
     }
   }
 

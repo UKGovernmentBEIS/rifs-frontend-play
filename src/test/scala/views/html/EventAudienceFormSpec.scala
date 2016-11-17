@@ -30,9 +30,9 @@ class EventAudienceFormSpec extends WordSpecLike with Matchers with OptionValues
 
     sectionForm(
       ApplicationOverview(ApplicationId(1), ApplicationFormId(1), Seq()),
-      ApplicationForm(ApplicationFormId(1), OpportunityId(1), Seq(ApplicationFormSection(5, "Event Audience", Seq()))),
+      ApplicationForm(ApplicationFormId(1), OpportunityId(1), Seq(ApplicationFormSection(5, "Event Audience", Seq(), Seq()))),
       section,
-      ApplicationFormSection(5, "Event Audience", Seq()),
+      ApplicationFormSection(5, "Event Audience", Seq(), Seq()),
       Opportunity(OpportunityId(1), "Research priorities in health care", "", None, OpportunityValue(0, ""), Seq()),
       Seq(TextAreaField(Some("label"), name)),
       Map(name -> q),
