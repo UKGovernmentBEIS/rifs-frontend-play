@@ -22,7 +22,7 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
   implicit val costItemF = Json.format[CostItem]
 
   def addItem(applicationId: ApplicationId, sectionNumber: Int) = Action.async { implicit request =>
-    showItemForm(applicationId, sectionNumber, JsObject(Seq()), List())
+    showItemForm(applicationId, sectionNumber, JsObject(List.empty), List.empty)
   }
 
   def validateItem(o: JsObject): ValidatedNel[FieldError, CostItem] = {
@@ -35,7 +35,7 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
 
   def editItem(applicationId: ApplicationId, sectionNumber: Int, itemNumber: Int) = Action.async {
     applications.getItem[JsObject](applicationId, sectionNumber, itemNumber).flatMap {
-      case Some(item) => showItemForm(applicationId, sectionNumber, JsObject(Seq("item" -> item)), List(), Some(itemNumber))
+      case Some(item) => showItemForm(applicationId, sectionNumber, JsObject(Seq("item" -> item)), List.empty, Some(itemNumber))
       case None => Future.successful(BadRequest)
     }
   }
@@ -68,7 +68,7 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
       // Check if we deleted the last item in the list and, if so, delete the section so
       // it will go back to the Not Started state.
       applications.getSection(applicationId, sectionNumber).flatMap {
-        case Some(s) if (s.answers \ "items").validate[JsArray].asOpt.getOrElse(JsArray(Seq())).value.isEmpty =>
+        case Some(s) if (s.answers \ "items").validate[JsArray].asOpt.getOrElse(JsArray(List.empty)).value.isEmpty =>
           applications.deleteSection(applicationId, sectionNumber).map { _ =>
             redirectToSectionForm(applicationId, sectionNumber)
           }
@@ -88,7 +88,7 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
     import ApplicationData._
     import FieldCheckHelpers._
 
-    val fields = itemFieldsFor(sectionNumber).getOrElse(Seq())
+    val fields = itemFieldsFor(sectionNumber).getOrElse(List.empty)
     val checks = itemChecksFor(sectionNumber)
     val hints = hinting(doc, checks)
 
@@ -100,7 +100,7 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
   }
 
   def cancelLink(applicationId: ApplicationId, overview: ApplicationOverview, sectionNumber: Int): String = {
-    val items = overview.sections.find(_.sectionNumber == sectionNumber).flatMap(s => (s.answers \ "items").validate[JsArray].asOpt).getOrElse(JsArray(Seq())).value
+    val items = overview.sections.find(_.sectionNumber == sectionNumber).flatMap(s => (s.answers \ "items").validate[JsArray].asOpt).getOrElse(JsArray(List.empty)).value
     if (items.isEmpty) controllers.routes.ApplicationController.show(applicationId).url
     else sectionFormCall(applicationId, sectionNumber).url
   }

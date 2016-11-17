@@ -34,7 +34,7 @@ class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, appli
 
   def renderSectionPreviewCompleted(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], fields: Seq[Field]) = {
     val ft = gatherApplicationDetails(id)
-    val answers = section.map { s => s.answers }.getOrElse(JsObject(Seq()))
+    val answers = section.map { s => s.answers }.getOrElse(JsObject(List.empty))
 
     ft.map {
       case Some((app, appForm, opp)) =>
@@ -46,7 +46,7 @@ class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, appli
 
   def renderSectionPreviewInProgress(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], fields: Seq[Field]) = {
     val ft = gatherApplicationDetails(id)
-    val answers = section.map { s => s.answers }.getOrElse(JsObject(Seq()))
+    val answers = section.map { s => s.answers }.getOrElse(JsObject(List.empty))
 
     ft.map {
       case Some((app, appForm, opp)) =>

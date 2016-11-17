@@ -23,7 +23,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
 
   def show(id: ApplicationId) = Action.async {
     gatherApplicationDetails(id).map {
-      case Some((overview, form, opp)) => Ok(views.html.showApplicationForm(form, overview, opp, List()))
+      case Some((overview, form, opp)) => Ok(views.html.showApplicationForm(form, overview, opp, List.empty))
       case None => NotFound
     }
   }
@@ -39,7 +39,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
     actionHandler.gatherSectionDetails(id, sectionNumber).flatMap {
       case Some((app, appForm, appFormSection, opp)) =>
         applications.getSection(id, sectionNumber).flatMap { section =>
-          val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
+          val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List.empty)
           actionHandler.renderSectionForm(id, sectionNumber, section, appFormSection.questionMap, noErrors, hints)
         }
       case None => Future(NotFound)
@@ -58,7 +58,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
         applications.getSection(id, sectionNumber).flatMap { section =>
           section.flatMap(_.completedAtText) match {
             case None =>
-              val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
+              val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List.empty)
               actionHandler.renderSectionForm(id, sectionNumber, section, appFormSection.questionMap, noErrors, hints)
             case _ =>
               Future.successful(actionHandler.redirectToPreview(id, sectionNumber))

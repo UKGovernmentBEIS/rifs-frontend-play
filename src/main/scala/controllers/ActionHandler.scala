@@ -104,7 +104,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
                         questions: Map[String, Question],
                         errs: FieldErrors,
                         hints: FieldHints): Future[Result] = {
-    val answers = section.map { s => s.answers }.getOrElse(JsObject(Seq()))
+    val answers = section.map { s => s.answers }.getOrElse(JsObject(List.empty))
 
     gatherSectionDetails(id, sectionNumber).map {
       case Some((app, appForm, appFormSection, opp)) =>
