@@ -61,24 +61,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
   }
 
   def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
-    actionHandler.gatherSectionDetails(id, sectionNumber).flatMap {
-      case Some((overview, form, afs, opp)) =>
-        fieldsFor(sectionNumber) match {
-          case Some(fields) =>
-            applications.getSection(id, sectionNumber).flatMap { section =>
-              section.flatMap(_.completedAtText) match {
-                case None =>
-                  val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List())
-                  actionHandler.renderSectionForm(id, sectionNumber, section, afs.questionMap, fields, noErrors, hints)
-                case _ =>
-                  Future.successful(actionHandler.redirectToPreview(id, sectionNumber))
-
-              }
-            }
-          case None => Future(NotFound)
-        }
-      case None => Future(NotFound)
-    }
+    ???
   }
 
   def postSection(id: ApplicationId, sectionNumber: Int) = Action.async(JsonForm.parser) { implicit request =>
