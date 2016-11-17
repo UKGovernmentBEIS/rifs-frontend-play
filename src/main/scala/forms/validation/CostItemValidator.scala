@@ -6,7 +6,9 @@ import play.api.libs.json.{JsString, JsValue}
 
 case class CostItemValues(itemName: Option[String], cost: Option[String], justification: Option[String], itemNumber: Option[Int])
 
-case class CostItem(itemName: String, cost: BigDecimal, justification: String, itemNumber: Option[Int] = None)
+case class CostItem(itemName: String, cost: BigDecimal, justification: String, itemNumber: Option[Int] = None) {
+  val costText: String = cost.setScale(2, BigDecimal.RoundingMode.HALF_UP).toString
+}
 
 case object CostItemValidator extends FieldValidator[CostItemValues, CostItem] {
   val itemValidator = MandatoryValidator(Some("item")).andThen(WordCountValidator(20))
@@ -29,8 +31,19 @@ case object CostItemValidator extends FieldValidator[CostItemValues, CostItem] {
 }
 
 case class CostSectionValidator(maxValue: BigDecimal) extends FieldValidator[List[CostItem], List[CostItem]] {
+  val nonEmptyV = new FieldValidator[List[CostItem], List[CostItem]] {
+    override def validate(path: String, items: List[CostItem]): ValidatedNel[FieldError, List[CostItem]] =
+      if (items.isEmpty) FieldError(path, s"Must provide at least one item.").invalidNel
+      else items.validNel
+  }
+
+  val notTooCostlyV = new FieldValidator[List[CostItem], List[CostItem]] {
+    override def validate(path: String, items: List[CostItem]): ValidatedNel[FieldError, List[CostItem]] =
+      if (items.map(_.cost).sum > maxValue) FieldError(path, s"Total requested exceeds limit. Please check costs of items.").invalidNel
+      else items.validNel
+  }
+
   override def validate(path: String, items: List[CostItem]): ValidatedNel[FieldError, List[CostItem]] = {
-    if (items.map(_.cost).sum > maxValue) FieldError(path, s"Total requested exceeds limit. Please check costs of items.").invalidNel
-    else items.validNel
+    (nonEmptyV.validate("", items) |@| notTooCostlyV.validate("", items)).tupled.map(_ => items)
   }
 }

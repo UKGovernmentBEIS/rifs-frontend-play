@@ -34,7 +34,7 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
   import controllers.ApplicationData._
 
   override def completeSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors] = {
-    Logger.debug(s"doc is $doc")
+    Logger.debug(s"checking doc $doc")
     FieldCheckHelpers.check(doc, checksFor(sectionNumber)) match {
       case Nil =>
         val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/complete"
@@ -44,8 +44,6 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
   }
 
   override def saveItem(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors] = {
-    Logger.debug(doc.toString)
-
     val item = (doc \ "item").toOption.flatMap(_.validate[JsObject].asOpt).getOrElse(JsObject(Seq()))
     item \ "itemNumber" match {
       case JsDefined(JsNumber(itemNumber)) =>
@@ -62,7 +60,7 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     delete(url)
   }
 
-  override def getItem[T : Reads](id: ApplicationId, sectionNumber: Int, itemNumber: Int): Future[Option[T]] = {
+  override def getItem[T: Reads](id: ApplicationId, sectionNumber: Int, itemNumber: Int): Future[Option[T]] = {
     val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/item/$itemNumber"
     getOpt[T](url)
   }

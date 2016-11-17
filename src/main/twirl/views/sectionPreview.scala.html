@@ -1,10 +1,10 @@
 @(
-        app: ApplicationOverview,
+        appOverview: ApplicationOverview,
         section: Option[ApplicationSection],
         formSection: ApplicationFormSection,
         opportunity: Opportunity,
         fields: Seq[forms.Field],
-        answers: Map[String, String],
+        answers: play.api.libs.json.JsObject,
         closeButton: String,
         editButton: Option[String]
 )
@@ -13,21 +13,15 @@
     f"RIFS$id%05d"
 }
 
-@main(s"Event title") {
+@main(s"Event title", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(appOverview.id).url))) {
     <div class="grid-row">
-        <div class="column-two-thirds">
-            <div class="breadcrumbs" aria-label="Return to application overview" role="navigation">
-                <ol>
-                    <li><a href="@controllers.routes.ApplicationController.show(app.id)">&lt; Return to application overview</a></li>
-                </ol>
-            </div>
-
+        <div class="column-full">
             <h1 class="heading-xlarge">
                 <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
                 @formSection.title
             </h1>
 
-            @fields.map(_.renderPreview(answers))
+            @fields.map(_.renderPreview(appOverview, formSection, answers))
 
             @if(editButton.isDefined){
                 @section.flatMap(_.completedAtText)

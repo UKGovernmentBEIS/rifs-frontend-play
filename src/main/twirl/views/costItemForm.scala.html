@@ -5,7 +5,7 @@
         opportunity: Opportunity,
         fields: Seq[forms.Field],
         questions: Map[String, Question],
-        answers: Map[String, String],
+        answers: play.api.libs.json.JsObject,
         errs: List[forms.validation.FieldError],
         hints: List[forms.validation.FieldHint],
         cancelLink: String,
@@ -13,7 +13,6 @@
 )
     @import partials._
 
-@answers
 
 @formatId(id: Long) = @{
     f"RIFS$id%05d"
@@ -26,20 +25,9 @@
     }
 }
 
-@main(formSection.title) {
-    <div id="global-header-status" class="contain-floats">
-        <div class="float-right">
-            <span>Experienced Eric</span>
-        </div>
-    </div>
-
+@main(formSection.title, backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(appOverview.id).url))) {
     <div class="grid-row">
         <div class="column-two-thirds">
-            <div class="breadcrumbs">
-                <ol>
-                    <li><a href="@controllers.routes.ApplicationController.show(appOverview.id)">&lt; Return to application overview</a></li>
-                </ol>
-            </div>
             <h1 class="heading-xlarge">
                 <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
                 @formSection.title
@@ -56,7 +44,7 @@
                 }
                 <fieldset>
                     @itemNumber.map { i => <input type="hidden" name="itemNumber" value="@i"> }
-                    @fields.map(_.renderFormInput(questions, answers, errs, hints))
+                    @fields.map(_.renderFormInput(appOverview, formSection, questions, answers, errs, hints))
                 </fieldset>
                 <div class="rifs-form-buttons">
                     <input type="submit" name="@SaveItem.name" class="button" value="Save item">

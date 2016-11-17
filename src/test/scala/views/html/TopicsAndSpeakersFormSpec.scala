@@ -31,13 +31,13 @@ class TopicsAndSpeakersFormSpec extends WordSpecLike with Matchers with OptionVa
 
     sectionForm(
       ApplicationOverview(ApplicationId(1), ApplicationFormId(1), Seq()),
-      ApplicationForm(ApplicationFormId(1), OpportunityId(1), Seq(ApplicationFormSection(5, "Event Audience"))),
+      ApplicationForm(ApplicationFormId(1), OpportunityId(1), Seq(ApplicationFormSection(5, "Event Audience", Seq()))),
       section,
-      ApplicationFormSection(3, "Event Objectives"),
+      ApplicationFormSection(3, "Event Objectives", Seq()),
       Opportunity(OpportunityId(1), "Research priorities in health care", "", None, OpportunityValue(0, ""), Seq()),
       Seq(TextAreaField(Some("label"), name)),
       Map(name -> q),
-      Map(),
+      JsObject(Seq()),
       List(),
       List(FieldHint(name, "500 words maximum"))
     )

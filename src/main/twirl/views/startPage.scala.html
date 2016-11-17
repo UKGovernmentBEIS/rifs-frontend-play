@@ -1,92 +1,29 @@
 @()
 
-<html>
-    <head>
-        <link href="@routes.Assets.at("stylesheets/startpage.css")" media="screen" rel="stylesheet" type="text/css" />
-        <title>Start Page</title>
-    </head>
+@main(s"Guidance on grants") {
+<div class="grid-row">
+    <div class="column-full text">
 
-    <body>
-        <div id="base" class="">
+        <h1 class="heading-xlarge"> What is your role? </h1>
 
-                <!-- Unnamed (Rectangle) -->
-            <div id="u0" class="ax_default h1">
-                <div id="u0_div" class=""></div>
-                    <!-- Unnamed () -->
-                <div id="u1" class="text">
-                    <p><span style="font-family:'Arial Bold', 'Arial';">Seminar opportunity </span></p>
-                </div>
-            </div>
-
-                <!-- Unnamed (Rectangle) -->
-            <div id="u2" class="ax_default paragraph">
-                <div id="u2_div" class=""></div>
-                    <!-- Unnamed () -->
-                <div id="u3" class="text">
-                    <p><span style="font-family:'Arial';">Applicant prototype v02 (desktop) </span></p>
-                    <a href="@controllers.routes.ApplicationController.reset">[reset]</a>
-                </div>
-            </div>
-
-                <!-- Unnamed (Group) -->
-            <div id="u4" class="ax_default" data-width="742" data-height="43">
-
-                    <!-- Unnamed (Rectangle) -->
-                <div id="u5" class="ax_default h3">
-                    <div id="u5_div" class=""></div>
-                        <!-- Unnamed () -->
-                    <div id="u6" class="text">
-                        <p><span style="font-family:'Arial';">27 September 2016</span></p>
-                    </div>
-                </div>
-
-                    <!-- Unnamed (Rectangle) -->
-                <div id="u7" class="ax_default h1">
-                    <div id="u7_div" class=""></div>
-                        <!-- Unnamed () -->
-                    <div id="u8" class="text" style="display:none; visibility: hidden">
-                        <p><span style="font-family:'Arial Bold', 'Arial';"></span></p>
-                    </div>
-                </div>
-            </div>
-
-                <!-- Unnamed (Rectangle) -->
-            <div id="u9" class="ax_default link1_">
-                <div id="u9_div" class=""></div>
-                    <!-- Unnamed () -->
-                <div id="u10" class="text">
-                    <p><a href="/opportunities" style="font-family:'Arial'">Applicant journey</a></p>
-                </div>
-            </div>
-
-                <!-- Unnamed (Rectangle) -->
-            <div id="u11" class="ax_default label">
-                <div id="u11_div" class=""></div>
-                    <!-- Unnamed () -->
-                <div id="u12" class="text">
-                    <p><span>Sprint 1 user story </span></p>
-                </div>
-            </div>
-
-                <!-- Unnamed (Rectangle) -->
-            <div id="u13" class="ax_default link1_">
-                <div id="u13_div" class=""></div>
-                    <!-- Unnamed () -->
-                <div id="u14" class="text">
-                    <p><span style="font-family:'Arial';text-decoration:underline;">Portfolio manager journey</span></p>
-                </div>
-            </div>
-
-                <!-- Unnamed (Rectangle) -->
-            <div id="u15" class="ax_default label">
-                <div id="u15_div" class=""></div>
-                    <!-- Unnamed () -->
-                <div id="u16" class="text">
-                    <p><span>Link not active </span></p>
-                </div>
-            </div>
-        </div>
-    </body>
+        <p class="lede">
+            Choose a role to start your journey
+        </p>
 
 
-</html>
+        <p>
+            <a href="/opportunities"> I am an applicant </a>
+        </p>
+
+        <p>
+            I am a portfolio manager
+        </p>
+
+        <hr>
+
+        <p>
+            <a href="/reset">[reset]</a>
+        </p>
+    </div>
+</div>
+}

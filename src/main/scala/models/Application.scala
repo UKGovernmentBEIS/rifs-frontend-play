@@ -11,12 +11,18 @@ case class ApplicationSectionId(id: Long) extends AnyVal
 case class Application(id: ApplicationId, applicationFormId: ApplicationFormId)
 
 case class ApplicationSection(id: ApplicationSectionId, applicationId: ApplicationId, sectionNumber: Int, answers: JsObject, completedAt: Option[LocalDateTime]) {
-  val dtf = DateTimeFormat.forPattern("d MMMM HH:mm")
+  val dtf = DateTimeFormat.forPattern("d MMMM YYYY h:ma")
 
-  def completedAtText: Option[String] = completedAt.map(d => s"Completed ${dtf.print(d)}")
+  def completedAtText: Option[String] = {
+    completedAt.map(d => s"Completed ${dtf.print(d)}".replaceAll("PM$", "pm").replaceAll("AM$", "am"))
+  }
 }
 
 case class ApplicationSectionOverview(sectionNumber: Int, completedAt: Option[LocalDateTime], answers: JsObject) {
+  val dtf = DateTimeFormat.forPattern("d MMMM HH:mm")
+
+  def completedAtText: Option[String] = completedAt.map(d => s"Completed ${dtf.print(d)}")
+
   val status = completedAt.map(_ => "Completed").getOrElse("In progress")
 }
 

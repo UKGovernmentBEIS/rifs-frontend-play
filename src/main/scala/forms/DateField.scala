@@ -10,6 +10,7 @@ import play.twirl.api.Html
 case class DateValues(day: Option[String], month: Option[String], year: Option[String])
 
 case class DateField(name: String, validator: DateFieldValidator) extends Field {
+
   override def renderFormInput(questions: Map[String, Question], answers: Map[String, String], errs: Seq[FieldError], hints:Seq[FieldHint]): Html = {
     Logger.debug(s"rendering date field with $name using $answers and $errs")
     views.html.renderers.dateField(this, questions, answers, errs)
