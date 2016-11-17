@@ -131,14 +131,13 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
                         app: ApplicationOverview,
                         appForm: ApplicationForm,
                         opp: Opportunity): Result = {
-    val formSection: ApplicationFormSection = appForm.sections.find(_.sectionNumber == sectionNumber).get
     val hints = hinting(answers, checksFor(sectionNumber))
 
     sectionTypeFor(sectionNumber) match {
-      case VanillaSection => Ok(views.html.sectionForm(app, appForm, section, formSection, opp, appFormSection.fields, appFormSection.questionMap, answers, errs, hints))
+      case VanillaSection => Ok(views.html.sectionForm(app, appForm, section, appFormSection, opp, appFormSection.fields, appFormSection.questionMap, answers, errs, hints))
       case ItemSection =>
         answers \ "items" match {
-          case JsDefined(JsArray(is)) if is.nonEmpty => Ok(views.html.sectionForm(app, appForm, section, formSection, opp, appFormSection.fields, appFormSection.questionMap, answers, errs, hints))
+          case JsDefined(JsArray(is)) if is.nonEmpty => Ok(views.html.sectionForm(app, appForm, section, appFormSection, opp, appFormSection.fields, appFormSection.questionMap, answers, errs, hints))
           case _ => Redirect(controllers.routes.CostController.addItem(app.id, sectionNumber))
         }
     }
