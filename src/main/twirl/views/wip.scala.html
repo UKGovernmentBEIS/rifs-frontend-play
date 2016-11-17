@@ -1,11 +1,9 @@
 @(backUrl:String)
 
 
-@main("Wip Page") {
+@main("Wip Page", backLink=Some(BackLink("Go Back", backUrl))) {
     <div>
-        <a href="@backUrl">&lt; Go Back</a>
-        <br/><br/>
-        <h1>Work in Progress</h1>
+        <h1 class="heading-xlarge">Work in Progress</h1>
         <br/><br/>
     </div>
 }

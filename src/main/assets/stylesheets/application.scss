@@ -49,6 +49,7 @@ $path: '/assets/stylesheets/images/';
 // Global template elements
 #global-header-status {
   @extend %contain-floats;
+  margin-top: .4em;
 }
 
 // Page widgets
@@ -96,6 +97,14 @@ $path: '/assets/stylesheets/images/';
   border-color: $red;
   border-left-width: 5px;
   background-color: lighten($red, 50%);
+}
+
+.username-container {
+  float: right;
+}
+
+.backlink-container {
+  float: left;
 }
 
 // General
@@ -234,6 +243,13 @@ table.spacious tfoot > tr > td {
 
 .footer-two-light td {
   border-bottom: 1px solid $black !important;
+}
+
+a.return-link:visited {
+  color: $black;
+}
+a.return-link:link {
+  color: $black;
 }
 
 // Preview
