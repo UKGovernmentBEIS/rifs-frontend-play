@@ -6,6 +6,11 @@ import cats.data.OptionT
 import cats.instances.future._
 import forms.validation.SectionError
 import models._
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.LocalDateTime
+import org.joda.time.DateTimeZone
+
+
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
 
@@ -102,9 +107,11 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
         }
         if(sectionErrors.isEmpty){
           val emailto = "experiencederic@university.ac.uk"
+          val dtf = DateTimeFormat.forPattern("HH:mm:ss")
+          val appsubmittime = dtf.print(LocalDateTime.now()) //returns TimeZOne Europe/London
           actionHandler.doSubmit(id).map {
             case Some((e)) =>
-              Ok(views.html.submitApplicationForm(e.applicationRef, emailto))
+              Ok(views.html.submitApplicationForm(e.applicationRef, emailto, appsubmittime))
             case None => NotFound
           }
         }

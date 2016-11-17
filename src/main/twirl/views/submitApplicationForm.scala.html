@@ -1,4 +1,4 @@
-@(apprefno: Long, emailto: String)
+@(apprefno: Long, emailto: String, submittime: String)
 
 @main(s"Overview") {
 <div id="global-header-status" class="contain-floats">
@@ -13,7 +13,7 @@
 
 
         <div class="panel app-submit-confirm" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
-            <p class="bold-small"> Application submitted</p>
+            <p class="bold-small"> Application submitted @submittime GMT</p>
             <p> Your reference number </p>
             <p> @apprefno</p>
         </div>
