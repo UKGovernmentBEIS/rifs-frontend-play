@@ -13,20 +13,22 @@ import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ApplicationPreviewController @Inject()(applications: ApplicationOps, appForms: ApplicationFormOps, opps: OpportunityOps)(implicit ec: ExecutionContext)
+class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, applications: ApplicationOps, appForms: ApplicationFormOps, opps: OpportunityOps)(implicit ec: ExecutionContext)
   extends Controller {
 
-  import ApplicationData._
-
   def previewSection(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
-    fieldsFor(sectionNumber) match {
-      case Some(fields) => applications.getSection(id, sectionNumber).flatMap { section =>
-        section.flatMap(_.completedAtText) match {
-          case None => renderSectionPreviewInProgress(id, sectionNumber, section, fields)
-          case _ => renderSectionPreviewCompleted(id, sectionNumber, section, fields)
+    val ft = actionHandler.gatherSectionDetails(id, sectionNumber)
+
+    ft.flatMap {
+      case Some((app, form, formSection, opp)) =>
+        applications.getSection(id, sectionNumber).flatMap { section =>
+          section.map(_.completedAtText) match {
+            case None => renderSectionPreviewInProgress(id, sectionNumber, section, formSection.fields)
+            case _ => renderSectionPreviewCompleted(id, sectionNumber, section, formSection.fields)
+          }
         }
-      }
-      case None => Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
+
+      case None => Future(NotFound)
     }
   }
 
@@ -66,16 +68,16 @@ class ApplicationPreviewController @Inject()(applications: ApplicationOps, appFo
     } yield (appDetails, ss)
 
     details.map {
-      case (Some((form, overview, o)), scs) =>
+      case (Some((app, form, o)), scs) =>
         val title = scs.find(_.sectionNumber == 1).flatMap(s => (s.answers \ "title").validate[String].asOpt)
-        Ok(preview(form, overview, o, scs.sortBy(_.sectionNumber), title, getFieldMap(scs)))
+        Ok(preview(app, form, o, scs.sortBy(_.sectionNumber), title, getFieldMap(form)))
 
       case _ => NotFound
     }
   }
 
-  def getFieldMap(secs: Seq[ApplicationSection]): Map[Int, Seq[Field]] = {
-    Map(secs.map(sec => sec.sectionNumber -> fieldsFor(sec.sectionNumber).getOrElse(Seq())): _*)
+  def getFieldMap(form: ApplicationForm): Map[Int, Seq[Field]] = {
+    Map(form.sections.map(sec => sec.sectionNumber -> sec.fields): _*)
   }
 
   def applicationPreview(id: ApplicationId) = Action.async {

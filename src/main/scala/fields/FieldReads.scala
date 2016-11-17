@@ -21,6 +21,7 @@ object FieldReads {
           case "textArea" => json.validate[TextAreaField]
           case "dateWithDays" => json.validate[DateWithDaysField]
           case "costList" => json.validate[CostListField]
+          case _ => ???
         }
       }
     }

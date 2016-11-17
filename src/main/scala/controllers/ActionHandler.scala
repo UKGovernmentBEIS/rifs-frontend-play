@@ -103,13 +103,12 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
                         sectionNumber: Int,
                         section: Option[ApplicationSection],
                         questions: Map[String, Question],
-                        fields: Seq[Field],
                         errs: FieldErrors,
                         hints: FieldHints): Future[Result] = {
     val answers = section.map { s => s.answers }.getOrElse(JsObject(Seq()))
 
     gatherSectionDetails(id, sectionNumber).map {
-      case Some((app, appForm, formSection, opp)) => selectSectionForm(sectionNumber, section, formSection.questionMap, answers, fields, errs, app, appForm, opp)
+      case Some((app, appForm, formSection, opp)) => selectSectionForm(sectionNumber, section, formSection.questionMap, answers, formSection.fields, errs, app, appForm, opp)
       case None => NotFound
     }
   }
@@ -118,14 +117,9 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     val ft = gatherSectionDetails(id, sectionNumber)
     val sectionF = applications.getSection(id, sectionNumber)
 
-    fieldsFor(sectionNumber) match {
-      case Some(fields) =>
-        for (x <- ft; section <- sectionF) yield (x, section) match {
-          case (Some((app, appForm, formSection, opp)), s) => selectSectionForm(sectionNumber, s, formSection.questionMap, answers, fields, errs, app, appForm, opp)
-          case (None, _) => NotFound
-        }
-
-      case None => Future.successful(Ok(views.html.wip(routes.ApplicationController.show(id).url)))
+    for (x <- ft; section <- sectionF) yield (x, section) match {
+      case (Some((app, appForm, formSection, opp)), s) => selectSectionForm(sectionNumber, s, formSection.questionMap, answers, formSection.fields, errs, app, appForm, opp)
+      case (None, _) => NotFound
     }
   }
 

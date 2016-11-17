@@ -51,26 +51,6 @@ object ApplicationData {
     case _ => Map()
   }
 
-  val eventObjFormFields: Seq[Field] = Seq(TextAreaField(None, "eventObjectives"))
-
-  val topicAndSpeakerFields: Seq[Field] = Seq(TextAreaField(None, "topicAndSpeaker"))
-
-  val eventAudienceFields: Seq[Field] = Seq(TextAreaField(None, "eventAudience"))
-
-  val titleFormFields: Seq[Field] = Seq(TextField(None, "title", isNumeric = false))
-
-  val dateFormFields: Seq[Field] = Seq(provisionalDateField)
-
-  def fieldsFor(sectionNum: Int): Option[Seq[Field]] = sectionNum match {
-    case 1 => Some(titleFormFields)
-    case 2 => Some(dateFormFields)
-    case 3 => Some(eventObjFormFields)
-    case 4 => Some(topicAndSpeakerFields)
-    case 5 => Some(eventAudienceFields)
-    case 6 => Some(Seq(CostListField("")))
-    case _ => None
-  }
-
   def itemFieldsFor(sectionNum: Int): Option[Seq[Field]] = sectionNum match {
     case 6 => Some(Seq(CostItemField("item")))
     case _ => None
