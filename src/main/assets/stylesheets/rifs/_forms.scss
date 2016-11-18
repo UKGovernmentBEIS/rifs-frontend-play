@@ -90,3 +90,24 @@ input.text-field.currency {
     float: none;
   }
 }
+
+
+// .input-icon: used to display a £ inside an input box
+.input-icon {
+  position: relative;
+}
+
+.input-icon > i {
+  display: block;
+  font-style: normal;
+  pointer-events: none;
+  position: absolute;
+  text-align: center;
+  top: 8px;
+  width: 25px;
+}
+
+.input-icon > input {
+  padding-left: 25px;
+  padding-right: 6px;
+}
