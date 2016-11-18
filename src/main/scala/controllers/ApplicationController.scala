@@ -12,7 +12,11 @@ import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ApplicationController @Inject()(actionHandler: ActionHandler, applications: ApplicationOps, forms: ApplicationFormOps, opps: OpportunityOps)(implicit ec: ExecutionContext)
+class ApplicationController @Inject()(
+                                       actionHandler: ActionHandler,
+                                       applications: ApplicationOps,
+                                       forms: ApplicationFormOps,
+                                       opps: OpportunityOps)(implicit ec: ExecutionContext)
   extends Controller with ApplicationResults {
 
   def showOrCreateForForm(id: ApplicationFormId) = Action.async {
@@ -72,7 +76,6 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
     }
   }
 
-
   def postSection(id: ApplicationId, sectionNumber: Int) = Action.async(JsonForm.parser) {
     implicit request =>
       request.body.action match {
@@ -88,13 +91,13 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
     request =>
       gatherApplicationDetails(id).flatMap {
         case Some(app) =>
-          val sectionErrors: Seq[SectionError] = app.applicationForm.sections.sortBy(_.sectionNumber).flatMap {
-            fs =>
-              app.sections.find(_.sectionNumber == fs.sectionNumber) match {
-                case None => Some(SectionError(fs, "Not started"))
-                case Some(s) => checkSection(fs, s)
-              }
+          val sectionErrors: Seq[SectionError] = app.applicationForm.sections.sortBy(_.sectionNumber).flatMap { fs =>
+            app.sections.find(_.sectionNumber == fs.sectionNumber) match {
+              case None => Some(SectionError(fs, "Not started"))
+              case Some(s) => checkSection(fs, s)
+            }
           }
+
           if (sectionErrors.isEmpty) {
             val emailto = "experiencederic@university.ac.uk"
             val dtf = DateTimeFormat.forPattern("HH:mm:ss")
@@ -104,9 +107,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
                 Ok(views.html.submitApplicationForm(e.applicationRef, emailto, appsubmittime))
               case None => NotFound
             }
-          }
-          else
-            Future.successful(Ok(views.html.showApplicationForm(app, sectionErrors)))
+          } else Future.successful(Ok(views.html.showApplicationForm(app, sectionErrors)))
 
         case None => Future.successful(NotFound)
       }
