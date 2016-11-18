@@ -6,6 +6,7 @@ import forms.validation.SectionError
 import models._
 import org.joda.time.LocalDateTime
 import org.joda.time.format.DateTimeFormat
+import play.api.libs.json.JsObject
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
 
@@ -54,22 +55,23 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
 
   def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
     actionHandler.gatherSectionDetails(id, sectionNumber).flatMap {
-      case Some((app, appFormSection)) => {
-        app.sections.find(_.sectionNumber == sectionNumber).map { s =>
-          s.completedAtText match {
-            case None =>
+      case Some((app, appFormSection)) =>
+        app.sections.find(_.sectionNumber == sectionNumber) match {
+          case None =>
+            val hints = hinting(JsObject(List.empty), checksFor(sectionNumber))
+            actionHandler.renderSectionForm(id, sectionNumber, None, appFormSection.questionMap, noErrors, hints)
+
+          case Some(s) =>
+            if (s.isComplete) Future.successful(actionHandler.redirectToPreview(id, sectionNumber))
+            else {
               val hints = hinting(s.answers, checksFor(sectionNumber))
               actionHandler.renderSectionForm(id, sectionNumber, Some(s), appFormSection.questionMap, noErrors, hints)
-
-            case _ =>
-              Future.successful(actionHandler.redirectToPreview(id, sectionNumber))
-          }
+            }
         }
-      }.getOrElse(Future(NotFound))
       case None => Future(NotFound)
     }
-
   }
+
 
   def postSection(id: ApplicationId, sectionNumber: Int) = Action.async(JsonForm.parser) {
     implicit request =>
