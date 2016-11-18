@@ -15,7 +15,7 @@ case class SubmittedApplicationRef(applicationRef: Long) extends AnyVal
 case class ApplicationSection(id: ApplicationSectionId, applicationId: ApplicationId, sectionNumber: Int, answers: JsObject, completedAt: Option[LocalDateTime]) {
   def isComplete: Boolean = completedAt.isDefined
 
-  val dtf = DateTimeFormat.forPattern("d MMMM YYYY h:ma")
+  val dtf = DateTimeFormat.forPattern("d MMMM YYYY h:mma")
 
   val completedAtText: Option[String] =
     completedAt.map(d => s"Completed ${dtf.print(d)}".replaceAll("PM$", "pm").replaceAll("AM$", "am"))
@@ -24,7 +24,7 @@ case class ApplicationSection(id: ApplicationSectionId, applicationId: Applicati
 case class ApplicationSectionOverview(sectionNumber: Int, completedAt: Option[LocalDateTime], answers: JsObject) {
   def isComplete: Boolean = completedAt.isDefined
 
-  val dtf = DateTimeFormat.forPattern("d MMMM YYYY h:ma")
+  val dtf = DateTimeFormat.forPattern("d MMMM YYYY h:mma")
 
   val completedAtText: Option[String] =
     completedAt.map(d => s"Completed ${dtf.print(d)}".replaceAll("PM$", "pm").replaceAll("AM$", "am"))

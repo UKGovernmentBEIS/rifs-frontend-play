@@ -1,0 +1,37 @@
+// Page widgets
+.rifs-step-panel {
+  background-color: lighten($turquoise, 50%);
+  // Vertically align the child content
+  display: table;
+  padding: 1.5em;
+  text-align: center;
+}
+
+.rifs-step-content {
+  // vertically align the content in the div.
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.hr-blue {
+  background-color: $mainstream-brand;
+  height: 10px;
+  margin-bottom: 1em;
+  margin-top: 15px;
+}
+
+.phase-banner {
+  @include phase-banner(alpha);
+}
+
+.alpha-tag {
+  @include phase-tag(alpha);
+}
+
+.username-container {
+  float: right;
+}
+
+.backlink-container {
+  float: left;
+}

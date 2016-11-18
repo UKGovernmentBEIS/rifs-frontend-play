@@ -1,0 +1,42 @@
+.rifs-form-buttons {
+  margin-top: 2em;
+}
+
+.rifs-form-buttons a,
+.rifs-form-buttons input {
+  margin-right: 1.5em;
+}
+
+.rifs-form-buttons a.flat,
+.rifs-form-buttons .button--link-style {
+  line-height: 2.2;
+}
+
+// Buttons
+input.button--link-style {
+  @extend .font-small;
+  background: none;
+  border: 0;
+  color: $link-colour;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+a.button.secondary,
+input.secondary {
+  background-color: $grey-3;
+  color: $black;
+}
+
+button.as-link {
+  background-color: transparent;
+  border: 0;
+  color: $link-colour;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1em;
+  padding: 0;
+  position: relative;
+  text-decoration: underline;
+}

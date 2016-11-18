@@ -1,0 +1,17 @@
+// Definition Lists
+.definition-list dl dd {
+  margin: 0;
+  padding: 0;
+}
+
+.expanded-list {
+  @extend .list;
+
+  li {
+    margin-bottom: 20px;
+  }
+}
+
+ul.spacious li {
+  margin: .9em 0;
+}

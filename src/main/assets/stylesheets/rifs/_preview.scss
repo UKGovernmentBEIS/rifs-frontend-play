@@ -1,0 +1,20 @@
+// Preview
+.text-preview {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin: 2em 0;
+}
+
+.preview-text {
+  white-space: pre-wrap;
+}
+
+.duration-preview {
+  @extend %contain-floats;
+
+  // Remove any left padding on the container divs so the floated
+  // inner divs line up on mobile.
+  div {
+    padding-left: 0;
+  }
+}
