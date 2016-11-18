@@ -1,8 +1,6 @@
-@(date: String, accessibleDate:String)
-
+@(field: forms.DateField, answers: Map[String, String])
 <div>
-    <h3>Date</h3>
-    <span aria-label="@accessibleDate">@date</span>
+    <h3>Start Date</h3>
+    @answers.get(s"${field.name}.day") @answers.get(s"${field.name}.month") @answers.get(s"${field.name}.year")
 </div>
-
 
