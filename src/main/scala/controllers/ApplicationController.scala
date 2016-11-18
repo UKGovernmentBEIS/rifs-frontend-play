@@ -6,6 +6,10 @@ import cats.data.OptionT
 import cats.instances.future._
 import forms.validation.SectionError
 import models._
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.LocalDateTime
+
+
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
 
@@ -62,7 +66,6 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
               actionHandler.renderSectionForm(id, sectionNumber, section, appFormSection.questionMap, noErrors, hints)
             case _ =>
               Future.successful(actionHandler.redirectToPreview(id, sectionNumber))
-
           }
         }
       case None => Future(NotFound)
@@ -80,16 +83,28 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
   }
 
   def submit(id: ApplicationId) = Action.async { request =>
-    gatherApplicationDetails(id).map {
-      case Some((app, appForm, opp)) =>
-        val sectionErrors: Seq[SectionError] = appForm.sections.sortBy(_.sectionNumber).flatMap { fs =>
-          app.sections.find(_.sectionNumber == fs.sectionNumber) match {
+    gatherApplicationDetails(id).flatMap {
+      case Some((overview, form, opp)) =>
+        val sectionErrors: Seq[SectionError] = form.sections.sortBy(_.sectionNumber).flatMap { fs =>
+          overview.sections.find(_.sectionNumber == fs.sectionNumber) match {
             case None => Some(SectionError(fs, "Not started"))
             case Some(s) => checkSection(fs, s)
           }
         }
-        Ok(views.html.showApplicationForm(appForm, app, opp, sectionErrors))
-      case None => NotFound
+        if(sectionErrors.isEmpty){
+          val emailto = "experiencederic@university.ac.uk"
+          val dtf = DateTimeFormat.forPattern("HH:mm:ss")
+          val appsubmittime = dtf.print(LocalDateTime.now()) //returns TimeZOne Europe/London
+          actionHandler.doSubmit(id).map {
+            case Some(e) =>
+              Ok(views.html.submitApplicationForm(e.applicationRef, emailto, appsubmittime))
+            case None => NotFound
+          }
+        }
+        else
+          Future.successful( Ok(views.html.showApplicationForm(form, overview, opp, sectionErrors)) )
+
+      case None => Future.successful( NotFound )
     }
   }
 

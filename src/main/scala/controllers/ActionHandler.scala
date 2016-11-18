@@ -72,6 +72,10 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
   }
 
+  def doSubmit(id: ApplicationId): Future[Option[SubmittedApplicationRef]] = {
+    applications.submit(id)
+  }
+
   def completeAndPreview(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
     val answersF: Future[Option[JsObject]] = sectionTypeFor(sectionNumber) match {
       case VanillaSection => Future.successful(Some(fieldValues))
