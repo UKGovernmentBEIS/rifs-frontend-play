@@ -9,7 +9,7 @@ f"RIFS$id%05d"
 
 @errorClass = @{if(errs.nonEmpty) "rifs-error-panel" else ""}
 
-@main(s"Overview", backLink=Some(BackLink("Return to my dashboard", controllers.routes.OpportunityController.wip(routes.ApplicationController.show(overview.id).url).url))) {
+@main(s"Overview - RIFS", backLink=Some(BackLink("Return to my dashboard", controllers.routes.OpportunityController.wip(routes.ApplicationController.show(overview.id).url).url))) {
     <!-- main content -->
     <div class="grid-row">
         <div class="column-two-thirds">

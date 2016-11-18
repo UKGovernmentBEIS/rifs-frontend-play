@@ -16,8 +16,7 @@
     f"RIFS$id%05d"
 }
 
-
-@main(formSection.title, backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(appOverview.id).url))) {
+@main(s"${formSection.title} - RIFS", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(appOverview.id).url))) {
     <div class="grid-row">
         <div class="column-two-thirds">
             <h1 class="heading-xlarge">

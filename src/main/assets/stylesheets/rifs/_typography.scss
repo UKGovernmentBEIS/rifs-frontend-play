@@ -1,0 +1,31 @@
+// Typography
+
+.hr-bold {
+  background-color: $black;
+  border: 0;
+  border-width: 1px;
+  color: $black; // old IE
+  height: 2px;
+  margin-bottom: 1em;
+  margin-top: 1em;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.font-normal {
+  font-weight: normal;
+}
+
+a.return-link:visited {
+  color: $black;
+}
+a.return-link:link {
+  color: $black;
+}
+
+a[href^="tel:"] {
+  color: $black;
+  text-decoration: none;
+}
