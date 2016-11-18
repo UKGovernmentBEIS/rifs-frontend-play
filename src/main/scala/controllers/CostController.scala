@@ -3,12 +3,11 @@ package controllers
 import javax.inject.Inject
 
 import cats.data.Validated.{Invalid, Valid}
-import cats.data.{OptionT, ValidatedNel}
-import cats.instances.future._
+import cats.data.ValidatedNel
 import cats.syntax.validated._
 import controllers.FieldCheckHelpers.FieldErrors
 import forms.validation.{CostItem, CostItemValidator, CostItemValues, FieldError}
-import models.{ApplicationDetail, ApplicationId, ApplicationOverview}
+import models.{ApplicationDetail, ApplicationId}
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller, Result}
 import services.ApplicationOps

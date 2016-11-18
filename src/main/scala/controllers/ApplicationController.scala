@@ -41,13 +41,12 @@ class ApplicationController @Inject()(
   import FieldCheckHelpers._
 
   def editSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
-    actionHandler.gatherSectionDetails(id, sectionNumber).flatMap {
-      case Some((app, appFormSection)) =>
-        applications.getSection(id, sectionNumber).flatMap { section =>
-          val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List.empty)
-          actionHandler.renderSectionForm(id, sectionNumber, section, appFormSection.questionMap, noErrors, hints)
-        }
-      case None => Future(NotFound)
+    actionHandler.gatherSectionDetails(id, sectionNumber).map {
+      case Some((app, formSection)) =>
+        val section = app.sections.find(_.sectionNumber == sectionNumber)
+        val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List.empty)
+        actionHandler.renderSectionForm(app, formSection, sectionNumber, section, noErrors, hints)
+      case None => NotFound
     }
   }
 
@@ -58,21 +57,21 @@ class ApplicationController @Inject()(
   }
 
   def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
-    actionHandler.gatherSectionDetails(id, sectionNumber).flatMap {
-      case Some((app, appFormSection)) =>
+    actionHandler.gatherSectionDetails(id, sectionNumber).map {
+      case Some((app, formSection)) =>
         app.sections.find(_.sectionNumber == sectionNumber) match {
           case None =>
             val hints = hinting(JsObject(List.empty), checksFor(sectionNumber))
-            actionHandler.renderSectionForm(id, sectionNumber, None, appFormSection.questionMap, noErrors, hints)
+            actionHandler.renderSectionForm(app, formSection, sectionNumber, None, noErrors, hints)
 
           case Some(s) =>
-            if (s.isComplete) Future.successful(actionHandler.redirectToPreview(id, sectionNumber))
+            if (s.isComplete) actionHandler.redirectToPreview(id, sectionNumber)
             else {
               val hints = hinting(s.answers, checksFor(sectionNumber))
-              actionHandler.renderSectionForm(id, sectionNumber, Some(s), appFormSection.questionMap, noErrors, hints)
+              actionHandler.renderSectionForm(app, formSection, sectionNumber, Some(s), noErrors, hints)
             }
         }
-      case None => Future(NotFound)
+      case None => NotFound
     }
   }
 

@@ -102,19 +102,14 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
   def redirectToPreview(id: ApplicationId, sectionNumber: Int) =
     Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber))
 
-  def renderSectionForm(id: ApplicationId,
+  def renderSectionForm(app: ApplicationDetail,
+                        formSection: ApplicationFormSection,
                         sectionNumber: Int,
                         section: Option[ApplicationSection],
-                        questions: Map[String, Question],
                         errs: FieldErrors,
-                        hints: FieldHints): Future[Result] = {
+                        hints: FieldHints): Result = {
     val answers = section.map { s => s.answers }.getOrElse(JsObject(List.empty))
-
-    gatherSectionDetails(id, sectionNumber).map {
-      case Some((app, appFormSection)) =>
-        selectSectionForm(sectionNumber, section, appFormSection, answers, errs, app)
-      case None => NotFound
-    }
+    selectSectionForm(sectionNumber, section, formSection, answers, errs, app)
   }
 
   def redisplaySectionForm(id: ApplicationId, sectionNumber: Int, answers: JsObject, errs: FieldErrors = noErrors): Future[Result] = {
