@@ -5,7 +5,6 @@
         items: Seq[forms.validation.CostItem],
         errs: Seq[forms.validation.FieldError])
 
-
 @errorsFor(n: String) = @{
     errs.filter(_.path == n)
 }
@@ -16,7 +15,7 @@
     }
 }
 
-@errorBlock("items")
+@errorBlock("")
 
 <table class="spacious">
     <thead>
