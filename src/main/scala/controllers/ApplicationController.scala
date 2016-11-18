@@ -54,54 +54,60 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
 
   def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
     actionHandler.gatherSectionDetails(id, sectionNumber).flatMap {
-      case Some((app, appFormSection)) =>
-        applications.getSection(id, sectionNumber).flatMap { section =>
-          section.flatMap(_.completedAtText) match {
+      case Some((app, appFormSection)) => {
+        app.sections.find(_.sectionNumber == sectionNumber).map { s =>
+          s.completedAtText match {
             case None =>
-              val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List.empty)
-              actionHandler.renderSectionForm(id, sectionNumber, section, appFormSection.questionMap, noErrors, hints)
+              val hints = hinting(s.answers, checksFor(sectionNumber))
+              actionHandler.renderSectionForm(id, sectionNumber, Some(s), appFormSection.questionMap, noErrors, hints)
+
             case _ =>
               Future.successful(actionHandler.redirectToPreview(id, sectionNumber))
           }
         }
+      }.getOrElse(Future(NotFound))
       case None => Future(NotFound)
     }
+
   }
 
-  def postSection(id: ApplicationId, sectionNumber: Int) = Action.async(JsonForm.parser) { implicit request =>
-    request.body.action match {
-      case Complete => actionHandler.doComplete(id, sectionNumber, request.body.values)
-      case Save => actionHandler.doSave(id, sectionNumber, request.body.values)
-      case SaveItem => actionHandler.doSaveItem(id, sectionNumber, request.body.values)
-      case Preview => actionHandler.doPreview(id, sectionNumber, request.body.values)
-      case completeAndPreview => actionHandler.completeAndPreview(id, sectionNumber, request.body.values)
-    }
+  def postSection(id: ApplicationId, sectionNumber: Int) = Action.async(JsonForm.parser) {
+    implicit request =>
+      request.body.action match {
+        case Complete => actionHandler.doComplete(id, sectionNumber, request.body.values)
+        case Save => actionHandler.doSave(id, sectionNumber, request.body.values)
+        case SaveItem => actionHandler.doSaveItem(id, sectionNumber, request.body.values)
+        case Preview => actionHandler.doPreview(id, sectionNumber, request.body.values)
+        case completeAndPreview => actionHandler.completeAndPreview(id, sectionNumber, request.body.values)
+      }
   }
 
-  def submit(id: ApplicationId) = Action.async { request =>
-    gatherApplicationDetails(id).flatMap {
-      case Some(app) =>
-        val sectionErrors: Seq[SectionError] = app.applicationForm.sections.sortBy(_.sectionNumber).flatMap { fs =>
-          app.sections.find(_.sectionNumber == fs.sectionNumber) match {
-            case None => Some(SectionError(fs, "Not started"))
-            case Some(s) => checkSection(fs, s)
+  def submit(id: ApplicationId) = Action.async {
+    request =>
+      gatherApplicationDetails(id).flatMap {
+        case Some(app) =>
+          val sectionErrors: Seq[SectionError] = app.applicationForm.sections.sortBy(_.sectionNumber).flatMap {
+            fs =>
+              app.sections.find(_.sectionNumber == fs.sectionNumber) match {
+                case None => Some(SectionError(fs, "Not started"))
+                case Some(s) => checkSection(fs, s)
+              }
           }
-        }
-        if (sectionErrors.isEmpty) {
-          val emailto = "experiencederic@university.ac.uk"
-          val dtf = DateTimeFormat.forPattern("HH:mm:ss")
-          val appsubmittime = dtf.print(LocalDateTime.now()) //returns TimeZOne Europe/London
-          actionHandler.doSubmit(id).map {
-            case Some(e) =>
-              Ok(views.html.submitApplicationForm(e.applicationRef, emailto, appsubmittime))
-            case None => NotFound
+          if (sectionErrors.isEmpty) {
+            val emailto = "experiencederic@university.ac.uk"
+            val dtf = DateTimeFormat.forPattern("HH:mm:ss")
+            val appsubmittime = dtf.print(LocalDateTime.now()) //returns TimeZOne Europe/London
+            actionHandler.doSubmit(id).map {
+              case Some(e) =>
+                Ok(views.html.submitApplicationForm(e.applicationRef, emailto, appsubmittime))
+              case None => NotFound
+            }
           }
-        }
-        else
-          Future.successful(Ok(views.html.showApplicationForm(app, sectionErrors)))
+          else
+            Future.successful(Ok(views.html.showApplicationForm(app, sectionErrors)))
 
-      case None => Future.successful(NotFound)
-    }
+        case None => Future.successful(NotFound)
+      }
   }
 
   def checkSection(appFormSection: ApplicationFormSection, appSection: ApplicationSection): Option[SectionError] = {
