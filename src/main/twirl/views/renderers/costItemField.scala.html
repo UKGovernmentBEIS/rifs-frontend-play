@@ -53,14 +53,14 @@
     @defining(field.costField) { f =>
         <div class="column-half no-lr-padding">
             <div class="form-group @errorClassFor(f)">
-                <span class="pull-right-lg-only">
+                <div class="pull-right-lg-only">
                     <label for="@f.name">@f.label</label>
                     @errorBlock(f)
                     <div class="input-icon">
                         <i>£</i>
                         <input type="text" id="@f.name" class="form-control text-field currency" title="@f.name" name="@f.name" value='@answers.get(f.name)'>
                     </div>
-                </span>
+                </div>
             </div>
         </div>
     }
