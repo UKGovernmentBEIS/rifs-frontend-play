@@ -142,6 +142,19 @@ $path: '/assets/stylesheets/images/';
   line-height: 2.2;
 }
 
+.rifs-confirmation-container {
+  color: $white;
+  background-color: $turquoise;
+  padding: 1.5em;
+  margin-top: 1.5em;
+  margin-bottom: 2em;
+  text-align: center;
+}
+
+a[href^="tel:"] {
+  color: $black;
+  text-decoration: none;
+}
 
 // Definition Lists
 .definition-list dl dd {
@@ -329,6 +342,10 @@ hr {
 .no-lr-padding {
   padding-left: 0;
   padding-right: 0;
+}
+
+.no-l-padding {
+  padding-left: 0;
 }
 
 .no-r-padding {

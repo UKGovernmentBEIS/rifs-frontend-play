@@ -8,7 +8,7 @@ case class DateWithDaysValues(date: Option[DateValues], days: Option[String])
 
 case class DateWithDays(date: LocalDate, days: Int)
 
-case class DateWithDaysValidator(allowPast: Boolean, minValue: Int = Int.MinValue, maxValue: Int = Int.MaxValue) extends FieldValidator[DateWithDaysValues, DateWithDays] {
+case class DateWithDaysValidator(allowPast: Boolean, minValue: Int, maxValue: Int) extends FieldValidator[DateWithDaysValues, DateWithDays] {
 
   val dateValidator = DateFieldValidator(allowPast)
   val daysValidator = IntValidator(minValue, maxValue)

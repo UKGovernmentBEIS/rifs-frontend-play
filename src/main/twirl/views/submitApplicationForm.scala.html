@@ -1,0 +1,39 @@
+@(apprefno: Long, emailto: String, submittime: String)
+
+@main(s"Overview") {
+<div id="global-header-status" class="contain-floats">
+    <div class="float-right">
+        <span>Experienced Eric</span>
+    </div>
+</div>
+
+<!-- main content -->
+    <div>
+        <div class="rifs-confirmation-container" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+            <h1 class="heading-xlarge"> Application submitted @submittime</h1>
+            <p class="bold-medium"> Your reference number is</p>
+            <p class="bold-xlarge"> @("%04d".format(apprefno))</p>
+        </div>
+
+        <div class="text">
+            <p>
+                We have sent a confirmation email to <span class="nobreak bold-small">@emailto</span>
+            </p>
+
+            <h2 class="heading-medium">What happens next? </h2>
+            <p>
+                It usually takes us about four weeks to process your application and make a decision.
+            </p>
+
+            <h2 class="heading-medium">Contact </h2>
+
+            <p>
+                Email: <a href="mailto:fundingteam@@example.com">fundingteam@@example.com</a><br/>
+                Phone: <a href="tel:+44-08081-570000">08081 570000</a> (Example)<br>
+                    <a href="https://www.gov.uk/call-charges">Find out about call charges</a>
+            </p>
+        </div>
+    </div>
+
+</div>
+}
