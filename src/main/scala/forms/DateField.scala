@@ -10,7 +10,7 @@ import play.twirl.api.Html
 
 case class DateValues(day: Option[String], month: Option[String], year: Option[String])
 
-case class DateField(name: String, validator: DateFieldValidator) extends Field {
+case class DateField(name: String) extends Field {
 
   override def renderFormInput(app: ApplicationOverview, formSection: ApplicationFormSection, questions: Map[String, Question], answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]): Html = {
     views.html.renderers.dateField(this, questions, JsonHelpers.flatten(answers), errs)
@@ -25,10 +25,10 @@ case class DateField(name: String, validator: DateFieldValidator) extends Field 
 }
 
 case class AccessibleDateTimeFormat() {
-  val inner = DateTimeFormat.forPattern("MMMM yyyy");
+  val inner = DateTimeFormat.forPattern("MMMM yyyy")
 
   def print(date: LocalDate): String = {
-    val x = (date.getDayOfMonth) match {
+    val x = date.getDayOfMonth match {
       case n if Seq(11, 12, 13) contains n => n+"th"
       case n if n%10 == 1 => n+"st"
       case n if n%10 == 2 => n+"nd"
