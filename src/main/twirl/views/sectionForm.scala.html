@@ -1,11 +1,7 @@
 @(
-        appOverview: ApplicationOverview,
-        appForm: ApplicationForm,
+        app: ApplicationDetail,
         section: Option[ApplicationSection],
         formSection: ApplicationFormSection,
-        opportunity: Opportunity,
-        fields: Seq[forms.Field],
-        questions: Map[String, Question],
         answers: play.api.libs.json.JsObject,
         errs: List[forms.validation.FieldError],
         hints:List[forms.validation.FieldHint]
@@ -16,16 +12,16 @@
     f"RIFS$id%05d"
 }
 
-@main(formSection.title, backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(appOverview.id).url))) {
+@main(formSection.title, backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(app.id).url))) {
     <div class="grid-row">
         <div class="column-two-thirds">
             <h1 class="heading-xlarge">
-                <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
+                <span class="heading-secondary">@formatId(app.opportunity.id.id): @app.opportunity.title</span>
                 @formSection.title
             </h1>
 
             <form method="POST"
-                  action="@controllers.routes.ApplicationController.postSection(appOverview.id, formSection.sectionNumber)"
+                  action="@controllers.routes.ApplicationController.postSection(app.id, formSection.sectionNumber)"
                   novalidate="novalidate">
                 @if(errs.nonEmpty) {
                 <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
@@ -39,7 +35,7 @@
                     </p>
                 </div>
                 }
-                @fields.map(_.renderFormInput(appOverview, formSection, questions, answers, errs, hints))
+                @formSection.fields.map(_.renderFormInput(app, formSection, answers, errs, hints))
 
                 <label for="complete-checkbox" class="form-checkbox font-normal" style="width: 16em">
                     <input id="complete-checkbox" type="checkbox" name="_complete_checkbox"/>
@@ -53,7 +49,7 @@
             </form>
         </div>
         <div id="support-column" class="column-third">
-            @sidebar(appOverview, appForm)
+            @sidebar(app)
         </div>
     </div>
 }

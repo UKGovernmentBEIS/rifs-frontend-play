@@ -2,14 +2,10 @@ package controllers
 
 import javax.inject.Inject
 
-import cats.data.OptionT
-import cats.instances.future._
 import forms.validation.SectionError
 import models._
-import org.joda.time.format.DateTimeFormat
 import org.joda.time.LocalDateTime
-
-
+import org.joda.time.format.DateTimeFormat
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
 
@@ -27,7 +23,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
 
   def show(id: ApplicationId) = Action.async {
     gatherApplicationDetails(id).map {
-      case Some((overview, form, opp)) => Ok(views.html.showApplicationForm(form, overview, opp, List.empty))
+      case Some(app) => Ok(views.html.showApplicationForm(app, List.empty))
       case None => NotFound
     }
   }
@@ -41,7 +37,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
 
   def editSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
     actionHandler.gatherSectionDetails(id, sectionNumber).flatMap {
-      case Some((app, appForm, appFormSection, opp)) =>
+      case Some((app, appFormSection)) =>
         applications.getSection(id, sectionNumber).flatMap { section =>
           val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List.empty)
           actionHandler.renderSectionForm(id, sectionNumber, section, appFormSection.questionMap, noErrors, hints)
@@ -58,7 +54,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
 
   def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
     actionHandler.gatherSectionDetails(id, sectionNumber).flatMap {
-      case Some((app, appForm, appFormSection, opp)) =>
+      case Some((app, appFormSection)) =>
         applications.getSection(id, sectionNumber).flatMap { section =>
           section.flatMap(_.completedAtText) match {
             case None =>
@@ -84,14 +80,14 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
 
   def submit(id: ApplicationId) = Action.async { request =>
     gatherApplicationDetails(id).flatMap {
-      case Some((overview, form, opp)) =>
-        val sectionErrors: Seq[SectionError] = form.sections.sortBy(_.sectionNumber).flatMap { fs =>
-          overview.sections.find(_.sectionNumber == fs.sectionNumber) match {
+      case Some(app) =>
+        val sectionErrors: Seq[SectionError] = app.applicationForm.sections.sortBy(_.sectionNumber).flatMap { fs =>
+          app.sections.find(_.sectionNumber == fs.sectionNumber) match {
             case None => Some(SectionError(fs, "Not started"))
             case Some(s) => checkSection(fs, s)
           }
         }
-        if(sectionErrors.isEmpty){
+        if (sectionErrors.isEmpty) {
           val emailto = "experiencederic@university.ac.uk"
           val dtf = DateTimeFormat.forPattern("HH:mm:ss")
           val appsubmittime = dtf.print(LocalDateTime.now()) //returns TimeZOne Europe/London
@@ -102,25 +98,19 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
           }
         }
         else
-          Future.successful( Ok(views.html.showApplicationForm(form, overview, opp, sectionErrors)) )
+          Future.successful(Ok(views.html.showApplicationForm(app, sectionErrors)))
 
-      case None => Future.successful( NotFound )
+      case None => Future.successful(NotFound)
     }
   }
 
-  def checkSection(appFormSection: ApplicationFormSection, appSection: ApplicationSectionOverview): Option[SectionError] = {
+  def checkSection(appFormSection: ApplicationFormSection, appSection: ApplicationSection): Option[SectionError] = {
     appSection.completedAt match {
       case Some(_) => None
       case None => Some(SectionError(appFormSection, "In progress"))
     }
   }
 
-  def gatherApplicationDetails(id: ApplicationId): Future[Option[(ApplicationOverview, ApplicationForm, Opportunity)]] = {
-    for {
-      a <- OptionT(applications.overview(id))
-      af <- OptionT(forms.byId(a.applicationFormId))
-      o <- OptionT(opps.byId(af.opportunityId))
-    } yield (a, af, o)
-  }.value
+  def gatherApplicationDetails(id: ApplicationId): Future[Option[ApplicationDetail]] = applications.detail(id)
 
 }

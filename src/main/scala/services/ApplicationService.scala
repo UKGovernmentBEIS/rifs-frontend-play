@@ -14,11 +14,20 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionContext)
   extends ApplicationOps with JodaFormats with RestService with ValueClassFormats {
+  implicit val fieldReads = fields.FieldReads.fieldReads
   implicit val appSectionReads = Json.reads[ApplicationSection]
   implicit val appReads = Json.reads[Application]
   implicit val appSecOvRead = Json.reads[ApplicationSectionOverview]
   implicit val appOvRead = Json.reads[ApplicationOverview]
   implicit val saRefReads = Json.reads[SubmittedApplicationRef]
+  implicit val oppSecReads = Json.reads[OpportunityDescriptionSection]
+  implicit val oppValueReads = Json.reads[OpportunityValue]
+  implicit val oppDurReads = Json.reads[OpportunityDuration]
+  implicit val oppReads = Json.reads[Opportunity]
+  implicit val appFormQReads = Json.reads[ApplicationFormQuestion]
+  implicit val appFormSecReads = Json.reads[ApplicationFormSection]
+  implicit val appFormReads = Json.reads[ApplicationForm]
+  implicit val appDetailReads = Json.reads[ApplicationDetail]
 
   val baseUrl = Config.config.business.baseUrl
 
@@ -86,6 +95,11 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     getOpt[ApplicationOverview](url)
   }
 
+  override def detail(id: ApplicationId): Future[Option[ApplicationDetail]] = {
+    val url = s"$baseUrl/application/${id.id}/detail"
+    getOpt[ApplicationDetail](url)
+  }
+
   override def deleteAll(): Future[Unit] = {
     val url = s"$baseUrl/application"
     delete(url)
@@ -103,6 +117,6 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
 
   override def submit(id: ApplicationId): Future[Option[SubmittedApplicationRef]] = {
     val url = s"$baseUrl/application/${id.id}/submit"
-    postWithResult[SubmittedApplicationRef,String](url, "")
+    postWithResult[SubmittedApplicationRef, String](url, "")
   }
 }

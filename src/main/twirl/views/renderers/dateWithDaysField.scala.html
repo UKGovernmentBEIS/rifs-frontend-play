@@ -1,10 +1,9 @@
 @(field: forms.DateWithDaysField,
-        app: ApplicationOverview,
+        app: ApplicationDetail,
         formSection: ApplicationFormSection,
-        questions: Map[String, Question],
         answers: play.api.libs.json.JsObject,
         errs: Seq[forms.validation.FieldError],
         hints: Seq[forms.validation.FieldHint])
 
-@field.dateField.renderFormInput(app, formSection, questions, answers, errs, hints)
-@field.daysField.renderFormInput(app, formSection, questions, answers, errs, hints)
+@field.dateField.renderFormInput(app, formSection, answers, errs, hints)
+@field.daysField.renderFormInput(app, formSection, answers, errs, hints)

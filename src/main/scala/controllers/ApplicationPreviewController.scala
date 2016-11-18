@@ -2,8 +2,6 @@ package controllers
 
 import javax.inject.Inject
 
-import cats.data.OptionT
-import cats.instances.future._
 import forms.Field
 import models._
 import play.api.libs.json.JsObject
@@ -20,7 +18,7 @@ class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, appli
     val ft = actionHandler.gatherSectionDetails(id, sectionNumber)
 
     ft.flatMap {
-      case Some((app, appForm, appFormSection, opp)) =>
+      case Some((app, appFormSection)) =>
         applications.getSection(id, sectionNumber).flatMap { section =>
           section.map(_.isComplete) match {
             case Some(true) => renderSectionPreviewCompleted(id, sectionNumber, section, appFormSection.fields)
@@ -33,29 +31,35 @@ class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, appli
   }
 
   def renderSectionPreviewCompleted(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], fields: Seq[Field]) = {
-    val ft = gatherApplicationDetails(id)
+    val ft = actionHandler.gatherSectionDetails(id, sectionNumber)
     val answers = section.map { s => s.answers }.getOrElse(JsObject(List.empty))
 
     ft.map {
-      case Some((app, appForm, opp)) =>
-        Ok(views.html.sectionPreview(app, section, appForm.sections.find(_.sectionNumber == sectionNumber).get,
-          opp, fields, answers, controllers.routes.ApplicationController.show(app.id).url, Option(controllers.routes.ApplicationController.resetAndEditSection(app.id, sectionNumber).url)))
+      case Some((app, formSection)) =>
+        Ok(views.html.sectionPreview(
+          app,
+          section,
+          formSection,
+          fields,
+          answers,
+          controllers.routes.ApplicationController.show(app.id).url,
+          Some(controllers.routes.ApplicationController.resetAndEditSection(app.id, sectionNumber).url)))
       case None => NotFound
     }
   }
 
   def renderSectionPreviewInProgress(id: ApplicationId, sectionNumber: Int, section: Option[ApplicationSection], fields: Seq[Field]) = {
-    val ft = gatherApplicationDetails(id)
+    val ft = actionHandler.gatherSectionDetails(id, sectionNumber)
     val answers = section.map { s => s.answers }.getOrElse(JsObject(List.empty))
 
     ft.map {
-      case Some((app, appForm, opp)) =>
-        Ok(views.html.sectionPreview(app, section, appForm.sections.find(_.sectionNumber == sectionNumber).get, opp, fields, answers, controllers.routes.ApplicationController.editSectionForm(app.id, sectionNumber).url, None))
+      case Some((app, formSection)) =>
+        Ok(views.html.sectionPreview(app, section, formSection, fields, answers, controllers.routes.ApplicationController.editSectionForm(app.id, sectionNumber).url, None))
       case None => NotFound
     }
   }
 
-  type PreviewFunction = (ApplicationOverview, ApplicationForm, Opportunity, Seq[ApplicationSection], Option[String], Map[Int, Seq[forms.Field]]) => Html
+  type PreviewFunction = (ApplicationDetail, Seq[ApplicationSection], Option[String], Map[Int, Seq[forms.Field]]) => Html
 
   def renderApplicationPreview(id: ApplicationId, preview: PreviewFunction) = {
     val ft = gatherApplicationDetails(id)
@@ -67,9 +71,9 @@ class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, appli
     } yield (appDetails, sections)
 
     details.map {
-      case (Some((app, appForm, opp)), scs) =>
+      case (Some(app), scs) =>
         val title = scs.find(_.sectionNumber == 1).flatMap(s => (s.answers \ "title").validate[String].asOpt)
-        Ok(preview(app, appForm, opp, scs.sortBy(_.sectionNumber), title, getFieldMap(appForm)))
+        Ok(preview(app, scs.sortBy(_.sectionNumber), title, getFieldMap(app.applicationForm)))
 
       case _ => NotFound
     }
@@ -83,13 +87,7 @@ class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, appli
     renderApplicationPreview(id, views.html.applicationPreview.apply)
   }
 
-  def gatherApplicationDetails(id: ApplicationId): Future[Option[(ApplicationOverview, ApplicationForm, Opportunity)]] = {
-    for {
-      a <- OptionT(applications.overview(id))
-      af <- OptionT(appForms.byId(a.applicationFormId))
-      o <- OptionT(opps.byId(af.opportunityId))
-    } yield (a, af, o)
-  }.value
+  def gatherApplicationDetails(id: ApplicationId): Future[Option[ApplicationDetail]] = applications.detail(id)
 
 }
 

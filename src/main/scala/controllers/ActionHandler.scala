@@ -111,8 +111,8 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     val answers = section.map { s => s.answers }.getOrElse(JsObject(List.empty))
 
     gatherSectionDetails(id, sectionNumber).map {
-      case Some((app, appForm, appFormSection, opp)) =>
-        selectSectionForm(sectionNumber, section, appFormSection, answers, errs, app, appForm, opp)
+      case Some((app, appFormSection)) =>
+        selectSectionForm(sectionNumber, section, appFormSection, answers, errs, app)
       case None => NotFound
     }
   }
@@ -122,7 +122,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     val sectionF = applications.getSection(id, sectionNumber)
 
     for (appDetails <- ft; section <- sectionF) yield (appDetails, section) match {
-      case (Some((app, appForm, appFormSection, opp)), s) => selectSectionForm(sectionNumber, s, appFormSection, answers, errs, app, appForm, opp)
+      case (Some((app, appFormSection)), s) => selectSectionForm(sectionNumber, s, appFormSection, answers, errs, app)
       case (None, _) => NotFound
     }
   }
@@ -132,27 +132,23 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
                         appFormSection: ApplicationFormSection,
                         answers: JsObject,
                         errs: FieldErrors,
-                        app: ApplicationOverview,
-                        appForm: ApplicationForm,
-                        opp: Opportunity): Result = {
+                        app: ApplicationDetail): Result = {
     val hints = hinting(answers, checksFor(sectionNumber))
 
     sectionTypeFor(sectionNumber) match {
-      case VanillaSection => Ok(views.html.sectionForm(app, appForm, section, appFormSection, opp, appFormSection.fields, appFormSection.questionMap, answers, errs, hints))
+      case VanillaSection => Ok(views.html.sectionForm(app, section, appFormSection, answers, errs, hints))
       case ItemSection =>
         answers \ "items" match {
-          case JsDefined(JsArray(is)) if is.nonEmpty => Ok(views.html.sectionForm(app, appForm, section, appFormSection, opp, appFormSection.fields, appFormSection.questionMap, answers, errs, hints))
+          case JsDefined(JsArray(is)) if is.nonEmpty => Ok(views.html.sectionForm(app, section, appFormSection, answers, errs, hints))
           case _ => Redirect(controllers.routes.CostController.addItem(app.id, sectionNumber))
         }
     }
   }
 
-  def gatherSectionDetails(id: ApplicationId, sectionNumber: Int): Future[Option[(ApplicationOverview, ApplicationForm, ApplicationFormSection, Opportunity)]] = {
+  def gatherSectionDetails(id: ApplicationId, sectionNumber: Int): Future[Option[(ApplicationDetail, ApplicationFormSection)]] = {
     for {
-      a <- OptionT(applications.overview(id))
-      af <- OptionT(applicationForms.byId(a.applicationFormId))
-      fs <- OptionT.fromOption(af.sections.find(_.sectionNumber == sectionNumber))
-      o <- OptionT(opportunities.byId(af.opportunityId))
-    } yield (a, af, fs, o)
+      a <- OptionT(applications.detail(id))
+      fs <- OptionT.fromOption(a.applicationForm.sections.find(_.sectionNumber == sectionNumber))
+    } yield (a, fs)
   }.value
 }

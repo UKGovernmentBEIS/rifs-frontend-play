@@ -1,8 +1,7 @@
 @(
-        appOverview: ApplicationOverview,
+        app: ApplicationDetail,
         section: Option[ApplicationSection],
         formSection: ApplicationFormSection,
-        opportunity: Opportunity,
         fields: Seq[forms.Field],
         answers: play.api.libs.json.JsObject,
         closeButton: String,
@@ -13,15 +12,15 @@
     f"RIFS$id%05d"
 }
 
-@main(s"Event title", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(appOverview.id).url))) {
+@main(s"Event title", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(app.id).url))) {
     <div class="grid-row">
         <div class="column-full">
             <h1 class="heading-xlarge">
-                <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
+                <span class="heading-secondary">@formatId(app.opportunity.id.id): @app.opportunity.title</span>
                 @formSection.title
             </h1>
 
-            @fields.map(_.renderPreview(appOverview, formSection, answers))
+            @fields.map(_.renderPreview(app, formSection, answers))
 
             @if(editButton.isDefined){
                 @section.flatMap(_.completedAtText)
