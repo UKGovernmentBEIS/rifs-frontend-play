@@ -1,0 +1,50 @@
+table.spacious {
+  margin-bottom: 2em;
+}
+
+table.spacious td {
+  padding-bottom: 15px;
+  padding-top: 15px;
+}
+
+.table-style-heading-small {
+  // Small bold heading with a line underneath (See: showOpportunities.scala.html)
+  @extend .heading-small;
+  margin-bottom: 0;
+}
+
+table.spacious th {
+  border-bottom: solid 2px $black;
+}
+
+table.spacious tfoot > tr > td {
+  border-bottom: 2px solid $black;
+  border-top: 2px solid $black;
+}
+
+.rifs-costs-table {
+  margin-bottom: 2em;
+
+  td {
+    border-bottom: 0;
+    padding-bottom: 15px;
+    padding-top: 15px;
+  }
+
+  .line td {
+    border-bottom: 1px solid $black;
+  }
+
+  thead {
+    border-bottom: 2px solid $black;
+  }
+
+  tfoot {
+    border-bottom: 2px solid $black;
+    border-top: 2px solid $black;
+  }
+}
+
+.footer-two-light td {
+  border-bottom: 1px solid $black !important;
+}
