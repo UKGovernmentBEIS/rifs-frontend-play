@@ -20,9 +20,7 @@ trait RestService {
       response.status match {
         case 200 => response.json.validate[A] match {
           case JsSuccess(a, _) => Some(a)
-          case JsError(errs) =>
-            Logger.debug(errs.toString())
-            throw JsonParseException("GET", request, response, errs)
+          case JsError(errs) => throw JsonParseException("GET", request, response, errs)
         }
         case 404 => None
         case _ => throw RestFailure("GET", request, response)
@@ -64,19 +62,14 @@ trait RestService {
       response.status match {
         case 200 => response.json.validate[A] match {
           case JsSuccess(a, _) =>  Some(a)
-          case JsError(errs) =>
-            Logger.debug(errs.toString())
-            throw JsonParseException("POST", request, response, errs)
+          case JsError(errs) => throw JsonParseException("POST", request, response, errs)
         }
-        case 404 =>
-          None
+        case 404 => None
         case _ => throw RestFailure("POST", request, response)
       }
     }
   }
-
 }
-
 
 object RestService {
 

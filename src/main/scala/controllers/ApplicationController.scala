@@ -76,7 +76,6 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
                   actionHandler.renderSectionForm(id, sectionNumber, section, afs.questionMap, fields, noErrors, hints)
                 case _ =>
                   Future.successful(actionHandler.redirectToPreview(id, sectionNumber))
-
               }
             }
           case None => Future(NotFound)
@@ -109,7 +108,7 @@ class ApplicationController @Inject()(actionHandler: ActionHandler, applications
           val dtf = DateTimeFormat.forPattern("HH:mm:ss")
           val appsubmittime = dtf.print(LocalDateTime.now()) //returns TimeZOne Europe/London
           actionHandler.doSubmit(id).map {
-            case Some((e)) =>
+            case Some(e) =>
               Ok(views.html.submitApplicationForm(e.applicationRef, emailto, appsubmittime))
             case None => NotFound
           }
