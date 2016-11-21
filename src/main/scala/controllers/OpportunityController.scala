@@ -5,7 +5,6 @@ import javax.inject.Inject
 import cats.data.OptionT
 import cats.instances.future._
 import models.OpportunityId
-import play.Logger
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, OpportunityOps}
 
@@ -32,6 +31,10 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
 
   def createOpportunity () = Action {
     Ok(views.html.showNewOpportunityForm())
+  }
+
+  def showOpportunityLibrary = Action.async {
+    opportunities.getOpenOpportunitySummaries.map { os => Ok(views.html.showOpportunityLibrary(os)) }
   }
 
   def showGuidancePage(id: OpportunityId) = Action {

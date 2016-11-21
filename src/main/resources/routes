@@ -7,6 +7,8 @@ GET         /assets/*file                                             controller
 
 GET         /                                                         controllers.StartPageController.startPage
 GET         /opportunities                                            controllers.OpportunityController.showOpportunities
+GET         /opportunities/library                                    controllers.OpportunityController.showOpportunityLibrary
+
 GET         /opportunities/guidance/:opportunityId                    controllers.OpportunityController.showGuidancePage(opportunityId:OpportunityId)
 GET         /opportunity/new                                          controllers.OpportunityController.createOpportunity
 GET         /opportunity/:opportunityId                               controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
