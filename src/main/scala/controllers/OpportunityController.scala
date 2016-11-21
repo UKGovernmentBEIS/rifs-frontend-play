@@ -5,6 +5,7 @@ import javax.inject.Inject
 import cats.data.OptionT
 import cats.instances.future._
 import models.OpportunityId
+import play.Logger
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, OpportunityOps}
 
@@ -27,6 +28,10 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
       case Some((o, a)) => Ok(views.html.showOpportunity(a.id, o, sectionNumber.getOrElse(1)))
       case None => NotFound
     }
+  }
+
+  def createOpportunity () = Action {
+    Ok(views.html.showNewOpportunityForm())
   }
 
   def showGuidancePage(id: OpportunityId) = Action {
