@@ -8,7 +8,7 @@
 
         <table class="spacious">
             <tr>
-                <th>Opportunity title</th>
+                <th role="presentation">Opportunity title</th>
             </tr>
             @for((o,i) <- os.zipWithIndex) {
                 <tr><td>@{i+1}. <a href="/opportunity/@o.id.id">@o.title</a></td></tr>

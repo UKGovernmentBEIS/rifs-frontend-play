@@ -5,15 +5,19 @@
 }
 
 @errorClass = @{if(errors.nonEmpty) "error" else ""}
+@invalidTrueFalse = @{if(errors.nonEmpty) "true" else "false"}
 
 <div class='form-group @errorClass'>
     @questions.get(field.name).map { q => <p class="question">@q.text</p> }
     @errors.map { e =>
-        <span class="error-message">@e.err</span>
+        <span class="error-message" role="alert">@e.err</span>
     }
 
     <fieldset>
-        <legend class="visuallyhidden">Enter the day, month and year as numeric digits</legend>
+        <legend>
+            <span class="visually-hidden">Enter the day, month and year as numeric digits</span>
+            <span class="form-hint" id="@(field.name)_hint_text">For example 31 3 2017</span>
+        </legend>
         <div class='date-selector'>
             <div>
                 <label for="@(field.name).day">Day</label>
@@ -28,7 +32,7 @@
                 <input type="text" title="4 digit year" id="@(field.name).year" name="@(field.name).year" value='@answers.get(s"${field.name}.year")' class="form-control year" maxlength="4" pattern="[0-9]+">
             </div>
         </div>
-        <div class="hint-text" id="@(field.name)_hint_text">For example 31 3 2017</div>
+
     </fieldset>
 
 </div>
