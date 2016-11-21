@@ -1,9 +1,7 @@
 @(
-        appOverview: ApplicationOverview,
-        appForm: ApplicationForm,
+        app: ApplicationDetail,
         section: Option[ApplicationSection],
         formSection: ApplicationFormSection,
-        opportunity: Opportunity,
         items: List[forms.validation.CostItem],
         questions: Map[String, Question],
         errs: List[forms.validation.FieldError]
@@ -15,11 +13,11 @@
     f"RIFS$id%05d"
 }
 
-@main(s"${formSection.title} - RIFS", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(appOverview.id).url))) {
+@main(s"${formSection.title} - RIFS", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(app.id).url))) {
     <div class="grid-row">
         <div class="column-two-thirds">
             <h1 class="heading-xlarge">
-                <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
+                <span class="heading-secondary">@formatId(app.opportunity.id.id): @app.opportunity.title</span>
                 @formSection.title
             </h1>
             @if(errs.nonEmpty) {
@@ -61,7 +59,7 @@
                     </tr>
                     <tr class="footer-two-light">
                         <td colspan="3">
-                            <a href="@controllers.routes.CostController.addItem(appOverview.id, formSection.sectionNumber)">
+                            <a href="@controllers.routes.CostController.addItem(app.id, formSection.sectionNumber)">
                                 Add item</a>
                         </td>
                     </tr>
@@ -73,13 +71,13 @@
                     <tr>
                         <td>
                             @item.itemNumber.map { num =>
-                            <a href="@controllers.routes.CostController.editItem(appOverview.id, formSection.sectionNumber, num)">@item.itemName</a>
+                            <a href="@controllers.routes.CostController.editItem(app.id, formSection.sectionNumber, num)">@item.itemName</a>
                             }.getOrElse(item.itemName)
                         </td>
                         <td class="currency">@item.cost.setScale(2, BigDecimal.RoundingMode.HALF_UP)</td>
                         <td class="align-right">
                         @item.itemNumber.map { num =>
-                            <a href="@controllers.routes.CostController.deleteItem(appOverview.id, formSection.sectionNumber, num)">
+                            <a href="@controllers.routes.CostController.deleteItem(app.id, formSection.sectionNumber, num)">
                                 Delete</a>
                         }</td>
                     </tr>
@@ -89,7 +87,7 @@
             </table>
 
 
-            <form method="POST" action="@controllers.routes.ApplicationController.postSection(appOverview.id, formSection.sectionNumber)">
+            <form method="POST" action="@controllers.routes.ApplicationController.postSection(app.id, formSection.sectionNumber)">
                 <fieldset>
                     <p>
                     @section.flatMap(_.completedAtText).getOrElse(
@@ -109,7 +107,7 @@
         </div>
 
         <div id="support-column" class="column-third">
-        @sidebar(appOverview, appForm)
+        @sidebar(app)
         </div>
 
     </div>

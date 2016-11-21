@@ -13,7 +13,7 @@ resolvers += "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releas
 
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.5")
 
-addSbtPlugin("com.codacy" % "sbt-codacy-coverage" % "1.3.0")
+addSbtPlugin("com.codacy" % "sbt-codacy-coverage" % "1.3.7")
 
 addSbtPlugin("org.irundaia.sbt" % "sbt-sassify" % "1.4.2")
 

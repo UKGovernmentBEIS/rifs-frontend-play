@@ -24,19 +24,22 @@ class EventAudienceFormSpec extends WordSpecLike with Matchers with OptionValues
   }
 
   def generatePage(values: Option[JsObject]): Html = {
-    val section = values.map(vs => ApplicationSection(ApplicationSectionId(1), ApplicationId(1), 3, vs, None))
-    val q = Question("Who is the event's target audience?", Option(""), Option("Help Text"))
+    val section = values.map(vs => ApplicationSection(3, vs, None))
     val name = "eventAudience"
+    val q = ApplicationFormQuestion(name, "Who is the event's target audience?", Option(""), Option("Help Text"))
+    val fs: ApplicationFormSection = ApplicationFormSection(5, "Event Audience", Seq(q), Seq(TextAreaField(Some("label"), name)))
+
+    val app = ApplicationDetail(
+      ApplicationId(1),
+      Opportunity(OpportunityId(1), "Research priorities in health care", "", None, OpportunityValue(0, ""), Seq()),
+      ApplicationForm(ApplicationFormId(1), OpportunityId(1), Seq(fs)),
+      Seq())
 
     sectionForm(
-      ApplicationOverview(ApplicationId(1), ApplicationFormId(1), Seq()),
-      ApplicationForm(ApplicationFormId(1), OpportunityId(1), Seq(ApplicationFormSection(5, "Event Audience", Seq(), Seq()))),
+      app,
       section,
-      ApplicationFormSection(5, "Event Audience", Seq(), Seq()),
-      Opportunity(OpportunityId(1), "Research priorities in health care", "", None, OpportunityValue(0, ""), Seq()),
-      Seq(TextAreaField(Some("label"), name)),
-      Map(name -> q),
-      JsObject(Seq()),
+      fs,
+      JsObject(List.empty),
       List(),
       List(FieldHint(name, "500 words maximum"))
     )

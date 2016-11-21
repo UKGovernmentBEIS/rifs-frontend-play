@@ -1,17 +1,17 @@
-@(overview: ApplicationOverview, form: ApplicationForm)
+@(app: ApplicationDetail)
 <hr class="hr-blue">
 <h2 class="heading-medium no-top-margin">Support</h2>
 <ul class="list spacious">
     <li>
-        <a href="@controllers.routes.OpportunityController.showGuidancePage(form.opportunityId)" target="_blank">Guidance on seminars</a>
+        <a href="@controllers.routes.OpportunityController.showGuidancePage(app.applicationForm.opportunityId)" target="_blank">Guidance on seminars</a>
     </li>
     <li>
-        <a href="@controllers.routes.OpportunityController.showOpportunity(form.opportunityId, None)">View opportunity details</a>
+        <a href="@controllers.routes.OpportunityController.showOpportunity(app.applicationForm.opportunityId, None)">View opportunity details</a>
     </li>
 </ul>
 <div class="rifs-step-panel">
     <p class="rifs-step-content">
-        <span class="bold-xlarge"> @overview.sections.count(_.status == "Completed")/@form.sections.length </span>
+        <span class="bold-xlarge"> @app.sections.count(_.status == "Completed")/@app.applicationForm.sections.length </span>
         <br>
         Sections complete
     </p>

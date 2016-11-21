@@ -3,12 +3,11 @@ package controllers
 import javax.inject.Inject
 
 import cats.data.Validated.{Invalid, Valid}
-import cats.data.{OptionT, ValidatedNel}
-import cats.instances.future._
+import cats.data.ValidatedNel
 import cats.syntax.validated._
 import controllers.FieldCheckHelpers.FieldErrors
 import forms.validation.{CostItem, CostItemValidator, CostItemValues, FieldError}
-import models.{ApplicationId, ApplicationOverview}
+import models.{ApplicationDetail, ApplicationId}
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller, Result}
 import services.ApplicationOps
@@ -78,13 +77,6 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
   }
 
   def showItemForm(applicationId: ApplicationId, sectionNumber: Int, doc: JsObject, errs: FieldErrors, itemNumber:Option[Int] = None): Future[Result] = {
-    val details1 = actionHandler.gatherSectionDetails(applicationId, sectionNumber)
-
-    val details2 = for {
-      ds <- OptionT(details1)
-      fs <- OptionT.fromOption[Future](ds._2.sections.find(_.sectionNumber == sectionNumber))
-    } yield (ds, fs)
-
     import ApplicationData._
     import FieldCheckHelpers._
 
@@ -92,16 +84,16 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
     val checks = itemChecksFor(sectionNumber)
     val hints = hinting(doc, checks)
 
-    details2.value.map {
-      case Some(((overview, form, formSection, opp), fs)) =>
-        Ok(views.html.costItemForm(overview, form, fs, opp, fields, formSection.questionMap, doc, errs, hints, cancelLink(applicationId, overview, sectionNumber), itemNumber))
+    actionHandler.gatherSectionDetails(applicationId, sectionNumber).map {
+      case Some((app, formSection)) =>
+        Ok(views.html.costItemForm(app, formSection, app.opportunity, fields, formSection.questionMap, doc, errs, hints, cancelLink(app, sectionNumber), itemNumber))
       case None => NotFound
     }
   }
 
-  def cancelLink(applicationId: ApplicationId, overview: ApplicationOverview, sectionNumber: Int): String = {
-    val items = overview.sections.find(_.sectionNumber == sectionNumber).flatMap(s => (s.answers \ "items").validate[JsArray].asOpt).getOrElse(JsArray(List.empty)).value
-    if (items.isEmpty) controllers.routes.ApplicationController.show(applicationId).url
-    else sectionFormCall(applicationId, sectionNumber).url
+  def cancelLink(app: ApplicationDetail, sectionNumber: Int): String = {
+    val items = app.sections.find(_.sectionNumber == sectionNumber).flatMap(s => (s.answers \ "items").validate[JsArray].asOpt).getOrElse(JsArray(List.empty)).value
+    if (items.isEmpty) controllers.routes.ApplicationController.show(app.id).url
+    else sectionFormCall(app.id, sectionNumber).url
   }
 }

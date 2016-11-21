@@ -1,7 +1,5 @@
 @(
-        app: ApplicationOverview,
-        appForm: ApplicationForm,
-        opportunity: Opportunity,
+        app: ApplicationDetail,
         sections: Seq[ApplicationSection],
         title: Option[String],
         answers: Map[Int, Seq[forms.Field]]
@@ -17,7 +15,7 @@
 }
 
 @titleCols() = @{
-    val titles = appForm.sections.sortBy(_.sectionNumber).map(s => (s.title, s.sectionNumber))
+    val titles = app.applicationForm.sections.sortBy(_.sectionNumber).map(s => (s.title, s.sectionNumber))
     val midpoint: Int = Math.round(titles.length / 2.0).toInt
     val (leftCols, b) = titles.splitAt(midpoint)
     val rightCols = b.map(Some(_)) :+ None
@@ -28,12 +26,12 @@
     f"RIFS$id%05d"
 }
 
-@main(s"Opportunity ${opportunity.title} - RIFS", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(app.id).url))) {
+@main(s"Opportunity ${app.opportunity.title} - RIFS", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(app.id).url))) {
     <div class="grid-row">
         <div class="column-two-thirds">
 
             <h1 class="heading-xlarge">
-                <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
+                <span class="heading-secondary">@formatId(app.opportunity.id.id): @app.opportunity.title</span>
                <div class="no-print"> @title </div>
             </h1>
 
@@ -78,12 +76,12 @@
                 </aside>
             </div>
 
-            @appPreview(app, appForm, sections, answers)
+            @appPreview(app, sections, answers)
 
         </div>
 
         <div id="support-column" class="column-third">
-         @sidebar(app, appForm)
+         @sidebar(app)
         </div>
 
     </div>

@@ -2,7 +2,7 @@ package forms
 
 import controllers.JsonHelpers
 import forms.validation.{DateWithDaysValidator, DateWithDaysValues, FieldError, FieldHint}
-import models.{ApplicationFormSection, ApplicationOverview, Question}
+import models.{ApplicationDetail, ApplicationFormSection, ApplicationOverview, Question}
 import org.joda.time.format._
 import play.api.libs.json.JsObject
 import play.twirl.api.Html
@@ -16,10 +16,10 @@ case class DateWithDaysField(name: String, allowPast: Boolean, minValue: Int, ma
 
   val validator = DateWithDaysValidator(allowPast, minValue, maxValue)
 
-  override def renderFormInput(app: ApplicationOverview, formSection: ApplicationFormSection, questions: Map[String, Question], answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]): Html =
-    views.html.renderers.dateWithDaysField(this, app, formSection, questions, answers, errs, hints)
+  override def renderFormInput(app: ApplicationDetail, formSection: ApplicationFormSection, answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]): Html =
+    views.html.renderers.dateWithDaysField(this, app, formSection, answers, errs, hints)
 
-  override def renderPreview(app: ApplicationOverview, formSection: ApplicationFormSection, answers: JsObject): Html = {
+  override def renderPreview(app: ApplicationDetail, formSection: ApplicationFormSection, answers: JsObject): Html = {
     val flattenedAnswers = JsonHelpers.flatten("", answers)
     val day = flattenedAnswers.get(s"${dateField.name}.day")
     val month = flattenedAnswers.get(s"${dateField.name}.month")
