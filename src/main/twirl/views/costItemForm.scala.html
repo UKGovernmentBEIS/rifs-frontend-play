@@ -1,7 +1,6 @@
 @(
         app: ApplicationDetail,
         formSection: ApplicationFormSection,
-        opportunity: Opportunity,
         fields: Seq[forms.Field],
         questions: Map[String, Question],
         answers: play.api.libs.json.JsObject,
@@ -28,7 +27,7 @@
     <div class="grid-row">
         <div class="column-two-thirds">
             <h1 class="heading-xlarge">
-                <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
+                <span class="heading-secondary">@formatId(app.opportunity.id.id): @app.opportunity.title</span>
                 @formSection.title
             </h1>
 
@@ -52,7 +51,7 @@
             </form>
         </div>
         <div id="support-column" class="column-third">
-        @sidebar(app.opportunity.id, app.applicationForm.sections.length, app.sections.count(_.isComplete))
+        @sidebar(app.opportunity.id, app.sectionCount, app.sections.count(_.isComplete))
         </div>
     </div>
 }

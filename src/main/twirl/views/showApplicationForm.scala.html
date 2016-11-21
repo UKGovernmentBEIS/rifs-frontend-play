@@ -69,7 +69,7 @@ f"RIFS$id%05d"
         </div>
 
         <div id="support-column" class="column-third">
-            @sidebar(app.opportunity.id, app.applicationForm.sections.length, app.sections.count(_.isComplete))
+            @sidebar(app.opportunity.id, app.sectionCount, app.sections.count(_.isComplete))
         </div>
     </div>
 }

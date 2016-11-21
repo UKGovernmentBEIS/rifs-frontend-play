@@ -10,11 +10,16 @@ case class ApplicationSectionId(id: Long) extends AnyVal
 
 case class Application(id: ApplicationId, applicationFormId: ApplicationFormId)
 
-case class ApplicationDetail(id: ApplicationId, opportunity: Opportunity, applicationForm: ApplicationForm, sections: Seq[ApplicationSection])
+case class ApplicationDetail(
+                              id: ApplicationId,
+                              sectionCount: Int,
+                              opportunity: OpportunitySummary,
+                              applicationForm: ApplicationForm,
+                              sections: Seq[ApplicationSection])
 
 case class SubmittedApplicationRef(applicationRef: Long) extends AnyVal
 
-case class ApplicationSection( sectionNumber: Int, answers: JsObject, completedAt: Option[LocalDateTime]) {
+case class ApplicationSection(sectionNumber: Int, answers: JsObject, completedAt: Option[LocalDateTime]) {
   def isComplete: Boolean = completedAt.isDefined
 
   val dtf = DateTimeFormat.forPattern("d MMMM YYYY h:mma")

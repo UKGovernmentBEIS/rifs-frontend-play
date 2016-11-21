@@ -114,11 +114,10 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
 
   def redisplaySectionForm(id: ApplicationId, sectionNumber: Int, answers: JsObject, errs: FieldErrors = noErrors): Future[Result] = {
     val ft = gatherSectionDetails(id, sectionNumber)
-    val sectionF = applications.getSection(id, sectionNumber)
 
-    for (appDetails <- ft; section <- sectionF) yield (appDetails, section) match {
-      case (Some((app, appFormSection)), s) => selectSectionForm(sectionNumber, s, appFormSection, answers, errs, app)
-      case (None, _) => NotFound
+    ft.map {
+      case (Some((app, formSection, section))) => selectSectionForm(sectionNumber, section, formSection, answers, errs, app)
+      case (None) => NotFound
     }
   }
 
@@ -140,10 +139,10 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
   }
 
-  def gatherSectionDetails(id: ApplicationId, sectionNumber: Int): Future[Option[(ApplicationDetail, ApplicationFormSection)]] = {
+  def gatherSectionDetails(id: ApplicationId, sectionNumber: Int): Future[Option[(ApplicationDetail, ApplicationFormSection, Option[ApplicationSection])]] = {
     for {
-      a <- OptionT(applications.detail(id))
+      a <- OptionT(applications.sectionDetail(id, sectionNumber))
       fs <- OptionT.fromOption(a.applicationForm.sections.find(_.sectionNumber == sectionNumber))
-    } yield (a, fs)
+    } yield (a, fs, a.sections.find(_.sectionNumber == sectionNumber))
   }.value
 }

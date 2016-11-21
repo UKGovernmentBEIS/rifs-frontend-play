@@ -17,8 +17,7 @@ class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, appli
     val ft = actionHandler.gatherSectionDetails(id, sectionNumber)
 
     ft.map {
-      case Some((app, formSection)) =>
-        val section = app.sections.find(_.sectionNumber == sectionNumber)
+      case Some((app, formSection, section)) =>
         section.map(_.isComplete) match {
           case Some(true) => renderSectionPreviewCompleted(app, formSection, section, formSection.fields)
           case _ => renderSectionPreviewInProgress(app, formSection, section, formSection.fields)

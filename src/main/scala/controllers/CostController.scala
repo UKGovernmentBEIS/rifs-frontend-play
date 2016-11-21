@@ -85,8 +85,8 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
     val hints = hinting(doc, checks)
 
     actionHandler.gatherSectionDetails(applicationId, sectionNumber).map {
-      case Some((app, formSection)) =>
-        Ok(views.html.costItemForm(app, formSection, app.opportunity, fields, formSection.questionMap, doc, errs, hints, cancelLink(app, sectionNumber), itemNumber))
+      case Some((app, formSection, _)) =>
+        Ok(views.html.costItemForm(app, formSection, fields, formSection.questionMap, doc, errs, hints, cancelLink(app, sectionNumber), itemNumber))
       case None => NotFound
     }
   }

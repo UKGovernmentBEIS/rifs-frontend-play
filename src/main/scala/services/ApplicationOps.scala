@@ -18,6 +18,8 @@ trait ApplicationOps {
 
   def detail(id: ApplicationId): Future[Option[ApplicationDetail]]
 
+  def sectionDetail(id: ApplicationId, sectionNum:Int): Future[Option[ApplicationDetail]]
+
   def deleteAll(): Future[Unit]
 
   def saveSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[Unit]

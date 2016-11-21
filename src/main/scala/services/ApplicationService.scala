@@ -23,6 +23,7 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
   implicit val oppSecReads = Json.reads[OpportunityDescriptionSection]
   implicit val oppValueReads = Json.reads[OpportunityValue]
   implicit val oppDurReads = Json.reads[OpportunityDuration]
+  implicit val oppSummaryReads = Json.reads[OpportunitySummary]
   implicit val oppReads = Json.reads[Opportunity]
   implicit val appFormQReads = Json.reads[ApplicationFormQuestion]
   implicit val appFormSecReads = Json.reads[ApplicationFormSection]
@@ -97,6 +98,11 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
 
   override def detail(id: ApplicationId): Future[Option[ApplicationDetail]] = {
     val url = s"$baseUrl/application/${id.id}/detail"
+    getOpt[ApplicationDetail](url)
+  }
+
+  override def sectionDetail(id: ApplicationId, sectionNum: Int): Future[Option[ApplicationDetail]] = {
+    val url = s"$baseUrl/application/${id.id}/section/$sectionNum/detail"
     getOpt[ApplicationDetail](url)
   }
 

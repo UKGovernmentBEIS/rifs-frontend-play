@@ -31,7 +31,8 @@ class EventAudienceFormSpec extends WordSpecLike with Matchers with OptionValues
 
     val app = ApplicationDetail(
       ApplicationId(1),
-      Opportunity(OpportunityId(1), "Research priorities in health care", "", None, OpportunityValue(0, ""), Seq()),
+      1,
+      OpportunitySummary(OpportunityId(1), "Research priorities in health care", "", None, OpportunityValue(0, "")),
       ApplicationForm(ApplicationFormId(1), OpportunityId(1), Seq(fs)),
       Seq())
 
