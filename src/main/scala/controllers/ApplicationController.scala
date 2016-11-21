@@ -42,8 +42,7 @@ class ApplicationController @Inject()(
 
   def editSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
     actionHandler.gatherSectionDetails(id, sectionNumber).map {
-      case Some((app, formSection)) =>
-        val section = app.sections.find(_.sectionNumber == sectionNumber)
+      case Some((app, formSection, section)) =>
         val hints = section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List.empty)
         actionHandler.renderSectionForm(app, formSection, sectionNumber, section, noErrors, hints)
       case None => NotFound
@@ -58,8 +57,8 @@ class ApplicationController @Inject()(
 
   def showSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
     actionHandler.gatherSectionDetails(id, sectionNumber).map {
-      case Some((app, formSection)) =>
-        app.sections.find(_.sectionNumber == sectionNumber) match {
+      case Some((app, formSection, section)) =>
+        section match {
           case None =>
             val hints = hinting(JsObject(List.empty), checksFor(sectionNumber))
             actionHandler.renderSectionForm(app, formSection, sectionNumber, None, noErrors, hints)

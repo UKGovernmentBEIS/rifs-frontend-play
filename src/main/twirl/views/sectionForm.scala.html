@@ -49,7 +49,7 @@
             </form>
         </div>
         <div id="support-column" class="column-third">
-            @sidebar(app)
+            @sidebar(app.opportunity.id, app.sectionCount, app.sections.count(_.isComplete))
         </div>
     </div>
 }
