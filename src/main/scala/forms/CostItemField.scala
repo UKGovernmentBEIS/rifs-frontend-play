@@ -2,7 +2,7 @@ package forms
 
 import controllers.JsonHelpers
 import forms.validation.{FieldError, FieldHint}
-import models.{ApplicationFormSection, ApplicationOverview, Question}
+import models.{ApplicationDetail, ApplicationFormSection, ApplicationOverview, Question}
 import play.api.libs.json.JsObject
 import play.twirl.api.Html
 
@@ -12,8 +12,8 @@ case class CostItemField(name: String) extends Field {
   val costField = CurrencyField(Some("Cost"), s"$name.cost")
   val justificationField = TextAreaField(Some("Justification of item"), s"$name.justification")
 
-  override def renderFormInput(app: ApplicationOverview, formSection: ApplicationFormSection, questions: Map[String, Question], answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]): Html =
-    views.html.renderers.costItemField(this, questions, JsonHelpers.flatten(answers), errs, hints)
+  override def renderFormInput(app: ApplicationDetail, formSection: ApplicationFormSection, answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]): Html =
+    views.html.renderers.costItemField(this, formSection.questionMap, JsonHelpers.flatten(answers), errs, hints)
 
-  override def renderPreview(app: ApplicationOverview, formSection: ApplicationFormSection, answers: JsObject): Html = Html("")
+  override def renderPreview(app: ApplicationDetail, formSection: ApplicationFormSection, answers: JsObject): Html = Html("")
 }

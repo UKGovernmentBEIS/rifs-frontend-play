@@ -1,4 +1,4 @@
-@(overview: ApplicationOverview, sectionNumber: Int)
+@(overview: ApplicationDetail, sectionNumber: Int)
 <span class="bold">
     @overview.sections.find(_.sectionNumber == sectionNumber).map(os => os.status).getOrElse("Not started")
 </span>

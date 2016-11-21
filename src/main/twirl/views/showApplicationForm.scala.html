@@ -1,7 +1,7 @@
 @import models._
 @import partials._
 
-@(app: ApplicationForm, overview: ApplicationOverview, opportunity: Opportunity, errs: Seq[forms.validation.SectionError])
+@(app: ApplicationDetail, errs: Seq[forms.validation.SectionError])
 
 @formatId(id: Long) = @{
 f"RIFS$id%05d"
@@ -9,13 +9,13 @@ f"RIFS$id%05d"
 
 @errorClass = @{if(errs.nonEmpty) "rifs-error-panel" else ""}
 
-@main(s"Overview - RIFS", backLink=Some(BackLink("Return to my dashboard", controllers.routes.OpportunityController.wip(routes.ApplicationController.show(overview.id).url).url))) {
+@main(s"Overview - RIFS", backLink=Some(BackLink("Return to my dashboard", controllers.routes.OpportunityController.wip(routes.ApplicationController.show(app.id).url).url))) {
     <!-- main content -->
     <div class="grid-row">
         <div class="column-two-thirds">
             <div>
                 <h1 class="heading-xlarge">
-                    <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
+                    <span class="heading-secondary">@formatId(app.opportunity.id.id): @app.opportunity.title</span>
                     Application overview
                 </h1>
                 <p>Complete all application sections before submitting to RIFS.</p>
@@ -27,7 +27,7 @@ f"RIFS$id%05d"
                     <ul class="list list-bullet">
                         @errs.map { e =>
                             <li class="bold-small">
-                                <a href="@controllers.routes.ApplicationController.showSectionForm(overview.id, e.formSection.sectionNumber)">
+                                <a href="@controllers.routes.ApplicationController.showSectionForm(app.id, e.formSection.sectionNumber)">
                                 @e.formSection.title </a> &nbsp;
                                 @e.msg
                             </li>
@@ -37,7 +37,7 @@ f"RIFS$id%05d"
             }
 
             <form method="POST"
-            action="@controllers.routes.ApplicationController.submit(overview.id)">
+            action="@controllers.routes.ApplicationController.submit(app.id)">
                 <div>
                     <table class="spacious">
                         <thead>
@@ -47,13 +47,13 @@ f"RIFS$id%05d"
                             </tr>
                         </thead>
                         <tbody>
-                        @app.sections.sortBy(_.sectionNumber).map { s =>
+                        @app.applicationForm.sections.sortBy(_.sectionNumber).map { fs =>
                             <tr>
                                 <td>
-                                    @s.sectionNumber. <a id="section-@s.sectionNumber-link" href="@controllers.routes.ApplicationController.showSectionForm(overview.id, s.sectionNumber)"> @s.title</a>
+                                    @fs.sectionNumber. <a id="section-@fs.sectionNumber-link" href="@controllers.routes.ApplicationController.showSectionForm(app.id, fs.sectionNumber)"> @fs.title</a>
                                 </td>
                                 <td class="status-column">
-                                @statusText(overview, s.sectionNumber)
+                                @statusText(app, fs.sectionNumber)
                                 </td>
                             </tr>
                         }
@@ -61,7 +61,7 @@ f"RIFS$id%05d"
                     </table>
                     <p class="rifs-form-buttons">
                         <input type="submit" name="@Save.name" class="button button--start" value="Submit application to RIFS">
-                        <a href="@controllers.routes.ApplicationPreviewController.applicationPreview(overview.id)" class="flat nobreak">
+                        <a href="@controllers.routes.ApplicationPreviewController.applicationPreview(app.id)" class="flat nobreak">
                             Preview application</a>
                     </p>
                 </div>
@@ -69,7 +69,7 @@ f"RIFS$id%05d"
         </div>
 
         <div id="support-column" class="column-third">
-            @sidebar(overview, app)
+            @sidebar(app)
         </div>
     </div>
 }
