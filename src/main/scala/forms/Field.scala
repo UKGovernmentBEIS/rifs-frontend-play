@@ -11,5 +11,6 @@ trait Field {
   def renderPreview(app: ApplicationDetail, formSection: ApplicationFormSection, answers: JsObject): Html
 
   def name: String
+
 }
 
