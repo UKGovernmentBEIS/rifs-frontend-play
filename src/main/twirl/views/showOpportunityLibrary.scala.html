@@ -1,20 +1,25 @@
 @(os: Seq[Opportunity])
 
-@main("Opportunity list - RIFS") {
+@main("Opportunity list - RIFS", backLink=Some(BackLink("Create new opportunity", controllers.routes.OpportunityController.createOpportunity().url))) {
     <div>
-        <h1 class="heading-xlarge">Open opportunities</h1>
+        <h1 class="heading-xlarge">Opportunity library</h1>
 
-        <p class="lede">Links to all open opportunities in RIFS</p>
+        <p class="lede">You can open and reuse any template in this library.</p>
 
         <table class="spacious">
-            <tr>
-                <th role="presentation">Opportunity title</th>
+            <tr><th>Ref.</th><th>Title</th><th>Status</th><th>Structure</th>
+                <th role="presentation">
             </tr>
             @for((o,i) <- os.zipWithIndex) {
-                <tr><td>@{i+1}. <a href="/opportunity/@o.id.id">@o.title</a></td></tr>
+                <tr><td>@o.id.id</td>
+                <td><a href="/opportunity/@o.id.id">@o.title</a></td>
+                <td>Open</td>
+                <td>Responsive, claim, FEC</td>
+                </tr>
             }
         </table>
 
     </div>
 }
+
 
