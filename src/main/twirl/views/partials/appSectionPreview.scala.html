@@ -1,10 +1,8 @@
 @(
-        app: ApplicationDetail,
-        formSection: ApplicationFormSection,
-        fields: Seq[forms.Field],
+        app: ApplicationSectionDetail,
         answers: play.api.libs.json.JsObject
 )
 <div>
-    <h2 class="heading-medium">@formSection.sectionNumber . @formSection.title </h2>
-    @fields.map(_.renderPreview(app, formSection, answers))
+    <h2 class="heading-medium">@app.formSection.sectionNumber . @app.formSection.title </h2>
+    @app.formSection.fields.map(_.renderPreview(app, answers))
 </div>

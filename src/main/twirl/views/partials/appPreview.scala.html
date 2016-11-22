@@ -1,13 +1,12 @@
 @(
         app: ApplicationDetail,
-        sections: Seq[ApplicationSection],
         answers: Map[Int, Seq[forms.Field]]
 )
 
 <article>
     @app.applicationForm.sections.sortBy(_.sectionNumber).map { formSection =>
-        @sections.find(_.sectionNumber == formSection.sectionNumber).map { section =>
-            @appSectionPreview(app, formSection, answers.getOrElse(section.sectionNumber, Seq()), section.answers)
+        @app.sections.find(_.sectionNumber == formSection.sectionNumber).map { section =>
+            @appSectionPreview(app.sectionDetail(section.sectionNumber), section.answers)
         }.getOrElse {
             <div>
                 <p class="heading-medium">@formSection.sectionNumber. @formSection.title</p>
