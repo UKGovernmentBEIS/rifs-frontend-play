@@ -13,6 +13,7 @@ case class Application(id: ApplicationId, applicationFormId: ApplicationFormId)
 case class ApplicationDetail(
                               id: ApplicationId,
                               sectionCount: Int,
+                              completedSectionCount: Int,
                               opportunity: OpportunitySummary,
                               applicationForm: ApplicationForm,
                               sections: Seq[ApplicationSection])
