@@ -16,7 +16,27 @@ case class ApplicationDetail(
                               completedSectionCount: Int,
                               opportunity: OpportunitySummary,
                               applicationForm: ApplicationForm,
-                              sections: Seq[ApplicationSection])
+                              sections: Seq[ApplicationSection]) {
+  def sectionDetail(sectionNumber: Int): ApplicationSectionDetail =
+    ApplicationSectionDetail(
+      id,
+      sectionCount,
+      completedSectionCount,
+      opportunity,
+      // TODO: remove the naked get
+      applicationForm.sections.find(_.sectionNumber == sectionNumber).get,
+      sections.find(_.sectionNumber == sectionNumber)
+    )
+}
+
+case class ApplicationSectionDetail(
+                                     id: ApplicationId,
+                                     sectionCount: Int,
+                                     completedSectionCount: Int,
+                                     opportunity: OpportunitySummary,
+                                     formSection: ApplicationFormSection,
+                                     section: Option[ApplicationSection]
+                                   )
 
 case class SubmittedApplicationRef(applicationRef: Long) extends AnyVal
 
