@@ -16,7 +16,11 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
     opportunities.getOpenOpportunitySummaries.map { os => Ok(views.html.showOpportunities(os)) }
   }
 
-  def showOpportunity(id: OpportunityId, sectionNumber: Option[Int]) = Action.async {
+  def showOpportunity(id: OpportunityId, sectionNumber: Option[Int]) = showOpportunityAction(id, sectionNumber, "apply")
+
+  def showOpportunityPreview(id: OpportunityId, sectionNumber: Option[Int]) = showOpportunityAction(id, sectionNumber, "preview")
+
+  def showOpportunityAction(id: OpportunityId, sectionNumber: Option[Int], action: String) = Action.async {
     // Make the `Future` calls outside the `for` comprehension to allow them to run
     // concurrently. Could use `Cartesian` to give applicative behaviour (`(f1 |@| f2)`) but
     // IntelliJ doesn't handle it well at the moment.
@@ -24,7 +28,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
     val f2 = OptionT(applications.byOpportunityId(id))
 
     (for (o <- f1; a <- f2) yield (o, a)).value.map {
-      case Some((o, a)) => Ok(views.html.showOpportunity(a.id, o, sectionNumber.getOrElse(1)))
+      case Some((o, a)) => Ok(views.html.showOpportunity(a.id, o, sectionNumber.getOrElse(1), action))
       case None => NotFound
     }
   }

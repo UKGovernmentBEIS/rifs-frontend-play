@@ -1,7 +1,7 @@
-@(applicationId: ApplicationFormId, opportunity: Opportunity, sectionNumber: Int)
+@(applicationId: ApplicationFormId, opportunity: Opportunity, sectionNumber: Int, action: String)
 
 @sectionLink(title: String, sectionNum: Int) = {
-    <span class="part-number">@sectionNum.</span>
+    <span class="part-number">@sectionNum</span>
     @if(sectionNum == sectionNumber) {
         @title
     } else {
@@ -29,9 +29,21 @@
     opportunity.description.find(_.sectionNumber == sectionNumber)
 }
 
-@main(s"Opportunity: ${opportunity.title} - RIFS", backLink=Some(BackLink("Return to opportunity list", controllers.routes.OpportunityController.showOpportunities().url))) {
+
+
+@main(s"Opportunity: ${opportunity.title} - RIFS", backLink=if(action == "apply") {
+    Some(BackLink("Return to opportunity list", controllers.routes.OpportunityController.showOpportunities().url))
+} else {
+    Some(BackLink("Return to opportunity library", controllers.routes.OpportunityController.showOpportunityLibrary().url))
+}) {
 <div class="grid-row">
     <div class="column-two-thirds">
+
+        <div class="panel rifs-panel rifs-border-narrow">
+                <div class="column-half definition-list">
+                    <h2>RIFS @opportunity.id.id </h2> <a href="#">Template View</a>
+                </div>
+        </div>
 
         <header class="page-header">
             <h1 class="heading-xlarge">@opportunity.title</h1>
@@ -40,20 +52,20 @@
         <aside>
             <nav role="navigation" class="contain-floats page-navigation" aria-label="Navigation">
                 <ol>
-                    @titleCols.map { case ((col1, idx), _) =>
-                        <li id="title-@(idx + 1)">
-                            @sectionLink(col1._1, col1._2)
-                        </li>
-                    }
+                @titleCols.map { case ((col1, idx), _) =>
+                <li id="title-@(idx + 1)">
+                @sectionLink(col1._1, col1._2)
+                </li>
+                }
                 </ol>
                 <ol>
-                    @titleCols.map { case (_, col2) =>
-                        @col2.map { case (t, idx) =>
-                        <li id="title-@(idx + 1)">
-                             @sectionLink(t._1, t._2)
-                        </li>
-                       }.getOrElse("")
-                    }
+                @titleCols.map { case (_, col2) =>
+                    @col2.map { case (t, idx) =>
+                    <li id="title-@(idx + 1)">
+                    @sectionLink(t._1, t._2)
+                    </li>
+                    }.getOrElse("")
+                }
                 </ol>
             </nav>
         </aside>
