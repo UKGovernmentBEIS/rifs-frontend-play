@@ -7,7 +7,7 @@ import cats.data.ValidatedNel
 import cats.syntax.validated._
 import controllers.FieldCheckHelpers.FieldErrors
 import forms.validation.{CostItem, CostItemValidator, CostItemValues, FieldError}
-import models.{ApplicationDetail, ApplicationId, ApplicationSectionDetail}
+import models.{ApplicationId, ApplicationSectionDetail}
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller, Result}
 import services.ApplicationOps
