@@ -9,7 +9,8 @@ case class DateTimeRangeField(name: String, allowPast: Boolean, isEndDateMandato
   val startDateField = DateField(s"$name.startDate")
   val endDateField = DateField(s"$name.endDate")
 
-  override def renderFormInput(app: ApplicationSectionDetail, answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]): Html = ???
+  override def renderFormInput(app: ApplicationSectionDetail, answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]): Html =
+    views.html.renderers.dateTimeRangeField(this, app, answers, errs, hints)
 
   override def renderPreview(app: ApplicationSectionDetail, answers: JsObject): Html = ???
 
