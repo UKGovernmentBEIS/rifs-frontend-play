@@ -1,7 +1,7 @@
 @(applicationId: ApplicationFormId, opportunity: Opportunity, sectionNumber: Int, action: String)
 
 @sectionLink(title: String, sectionNum: Int) = {
-    <span class="part-number">@sectionNum</span>
+    <span class="part-number">@sectionNum.</span>
     @if(sectionNum == sectionNumber) {
         @title
     } else {
@@ -40,9 +40,7 @@
     <div class="column-two-thirds">
 
         <div class="panel rifs-panel rifs-border-narrow">
-                <div class="column-half definition-list">
-                    <h2>RIFS @opportunity.id.id </h2> <a href="#">Template View</a>
-                </div>
+            <p>RIFS @("%04d".format(opportunity.id.id)) <a href="#">Template View</a></p>
         </div>
 
         <header class="page-header">
