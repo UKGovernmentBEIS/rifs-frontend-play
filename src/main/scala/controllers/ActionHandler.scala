@@ -2,8 +2,6 @@ package controllers
 
 import javax.inject.Inject
 
-import cats.data.OptionT
-import cats.instances.future._
 import models._
 import play.api.libs.json.{JsArray, JsDefined, JsObject}
 import play.api.mvc.Result
@@ -102,47 +100,36 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
   def redirectToPreview(id: ApplicationId, sectionNumber: Int) =
     Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber))
 
-  def renderSectionForm(app: ApplicationDetail,
-                        formSection: ApplicationFormSection,
+  def renderSectionForm(app: ApplicationSectionDetail,
                         sectionNumber: Int,
-                        section: Option[ApplicationSection],
                         errs: FieldErrors,
                         hints: FieldHints): Result = {
-    val answers = section.map { s => s.answers }.getOrElse(JsObject(List.empty))
-    selectSectionForm(sectionNumber, section, formSection, answers, errs, app)
+    val answers = app.section.map { s => s.answers }.getOrElse(JsObject(List.empty))
+    selectSectionForm(app, sectionNumber, answers, errs)
   }
 
   def redisplaySectionForm(id: ApplicationId, sectionNumber: Int, answers: JsObject, errs: FieldErrors = noErrors): Future[Result] = {
     val ft = gatherSectionDetails(id, sectionNumber)
 
     ft.map {
-      case (Some((app, formSection, section))) => selectSectionForm(sectionNumber, section, formSection, answers, errs, app)
+      case (Some(app)) => selectSectionForm(app,sectionNumber, answers, errs)
       case (None) => NotFound
     }
   }
 
-  def selectSectionForm(sectionNumber: Int,
-                        section: Option[ApplicationSection],
-                        appFormSection: ApplicationFormSection,
-                        answers: JsObject,
-                        errs: FieldErrors,
-                        app: ApplicationDetail): Result = {
+  def selectSectionForm(app: ApplicationSectionDetail, sectionNumber: Int, answers: JsObject, errs: FieldErrors): Result = {
     val hints = hinting(answers, checksFor(sectionNumber))
 
     sectionTypeFor(sectionNumber) match {
-      case VanillaSection => Ok(views.html.sectionForm(app, section, appFormSection, answers, errs, hints))
+      case VanillaSection => Ok(views.html.sectionForm(app, answers, errs, hints))
       case ItemSection =>
         answers \ "items" match {
-          case JsDefined(JsArray(is)) if is.nonEmpty => Ok(views.html.sectionForm(app, section, appFormSection, answers, errs, hints))
+          case JsDefined(JsArray(is)) if is.nonEmpty => Ok(views.html.sectionForm(app, answers, errs, hints))
           case _ => Redirect(controllers.routes.CostController.addItem(app.id, sectionNumber))
         }
     }
   }
 
-  def gatherSectionDetails(id: ApplicationId, sectionNumber: Int): Future[Option[(ApplicationDetail, ApplicationFormSection, Option[ApplicationSection])]] = {
-    for {
-      a <- OptionT(applications.sectionDetail(id, sectionNumber))
-      fs <- OptionT.fromOption(a.applicationForm.sections.find(_.sectionNumber == sectionNumber))
-    } yield (a, fs, a.sections.find(_.sectionNumber == sectionNumber))
-  }.value
+  def gatherSectionDetails(id: ApplicationId, sectionNumber: Int): Future[Option[ApplicationSectionDetail]] =
+    applications.sectionDetail(id, sectionNumber)
 }
