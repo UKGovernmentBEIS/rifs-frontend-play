@@ -9,7 +9,7 @@ GET         /                                                         controller
 GET         /opportunities                                            controllers.OpportunityController.showOpportunities
 
 GET         /opportunities/guidance/:opportunityId                    controllers.OpportunityController.showGuidancePage(opportunityId:OpportunityId)
-GET         /opportunities/guidancePM/:opportunityId                  controllers.OpportunityController.showPMGuidancePage(opportunityId:OpportunityId)
+GET         /manage/opportunities/guidancePM/:opportunityId           controllers.OpportunityController.showPMGuidancePage(opportunityId:OpportunityId)
 
 GET         /opportunity/:opportunityId                               controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
 
