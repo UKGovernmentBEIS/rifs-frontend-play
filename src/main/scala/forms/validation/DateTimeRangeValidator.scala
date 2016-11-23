@@ -12,7 +12,7 @@ import org.joda.time.LocalDate
   *                        they are entering a closing date. This lets us distinguish between the user saying
   *                        that they are not providing a date, vs. saying they are but leaving it blank.
   */
-case class DateTimeRangeValues(startDate: Option[DateValues], endDate: Option[DateValues], endDateProvided: Boolean)
+case class DateTimeRangeValues(startDate: Option[DateValues], endDate: Option[DateValues], endDateProvided: Option[Boolean])
 
 case class DateTimeRange(startDate: LocalDate, endDate: Option[LocalDate])
 

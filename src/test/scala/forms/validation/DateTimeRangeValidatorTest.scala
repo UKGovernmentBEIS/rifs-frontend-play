@@ -11,21 +11,22 @@ class DateTimeRangeValidatorTest extends WordSpecLike with Matchers with OptionV
   "validate" should {
     val validator = DateTimeRangeValidator(allowPast = true, isEndDateMandatory = true)
     "succeed if both start and end dates are supplied and are valid" in {
-      val values = DateTimeRangeValues(validDateValues1, validDateValues2, endDateProvided = true)
+      val values = DateTimeRangeValues(validDateValues1, validDateValues2, None)
 
-      validator.validate("", values) shouldBe a[Valid[_]]
+      validator.validate("dates", values) shouldBe a[Valid[_]]
     }
 
     "fail if the start date is not provided" in {
-      val values = DateTimeRangeValues(None, validDateValues2, endDateProvided = true)
+      val values = DateTimeRangeValues(None, validDateValues2, None)
 
-      validator.validate("", values) shouldBe a[Invalid[_]]
+      validator.validate("dates", values) shouldBe a[Invalid[_]]
     }
 
     "fail if the end date is before the start date" in {
-      val values = DateTimeRangeValues(validDateValues2, validDateValues1, endDateProvided = true)
+      val values = DateTimeRangeValues(validDateValues2, validDateValues1, None)
 
-      validator.validate("", values) shouldBe a[Invalid[_]]
+      val v = validator.validate("dates", values)
+      v shouldBe a[Invalid[_]]
     }
   }
 

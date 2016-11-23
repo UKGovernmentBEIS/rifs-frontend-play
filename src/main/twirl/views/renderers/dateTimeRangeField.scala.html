@@ -4,6 +4,14 @@
         errs: Seq[forms.validation.FieldError],
         hints: Seq[forms.validation.FieldHint])
 
+@errors = @{
+    errs.filter(p => p.path == field.name)
+}
+
+@errors.map { e =>
+    <span class="error-message" role="alert">@e.err</span>
+}
+
 @field.startDateField.renderFormInput(app, answers, errs, hints)
 
 @if(!field.isEndDateMandatory)  {
