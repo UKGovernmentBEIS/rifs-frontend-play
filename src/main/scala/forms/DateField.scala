@@ -8,7 +8,7 @@ import play.twirl.api.Html
 
 case class DateValues(day: Option[String], month: Option[String], year: Option[String])
 
-case class DateField(name: String) extends Field with DateFormats {
+case class DateField(name: String) extends Field with DateTimeFormats {
 
   override def renderFormInput(app: ApplicationSectionDetail, answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]): Html = {
     views.html.renderers.dateField(this, app.formSection.questionMap, JsonHelpers.flatten(answers), errs)

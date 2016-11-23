@@ -6,7 +6,7 @@ import models._
 import play.api.libs.json.JsObject
 import play.twirl.api.Html
 
-case class DateWithDaysField(name: String, allowPast: Boolean, minValue: Int, maxValue: Int) extends Field with DateFormats {
+case class DateWithDaysField(name: String, allowPast: Boolean, minValue: Int, maxValue: Int) extends Field with DateTimeFormats {
 
   val dateField = DateField(s"$name.date")
   val daysField = TextField(Some("Days"), s"$name.days", isNumeric = true)

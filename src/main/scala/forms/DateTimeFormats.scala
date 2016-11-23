@@ -3,7 +3,7 @@ package forms
 import org.joda.time.LocalDate
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 
-trait DateFormats {
+trait DateTimeFormats {
   val fmt: DateTimeFormatter = DateTimeFormat.forPattern("d MMMM yyyy")
   val accessFmt: AccessibleDateTimeFormat = AccessibleDateTimeFormat()
 }
