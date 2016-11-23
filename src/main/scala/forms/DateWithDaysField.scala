@@ -27,7 +27,6 @@ case class DateWithDaysField(name: String, allowPast: Boolean, minValue: Int, ma
       val endDate = dwd.date.plusDays(dwd.days - 1)
       views.html.renderers.preview.dateWithDaysField(this, fmt.print(dwd.date), dwd.days, fmt.print(endDate), accessFmt.print(dwd.date), accessFmt.print(endDate))
     }.leftMap { errs =>
-      // TODO: we rely on only being called with valid answers, but what if they're not?
       views.html.renderers.preview.dateWithDaysField(this, "", 0, "", "", "")
     }.fold(identity, identity)
   }
