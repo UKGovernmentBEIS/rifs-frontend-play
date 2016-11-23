@@ -29,6 +29,7 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
   implicit val appFormSecReads = Json.reads[ApplicationFormSection]
   implicit val appFormReads = Json.reads[ApplicationForm]
   implicit val appDetailReads = Json.reads[ApplicationDetail]
+  implicit val appSecDetailReads = Json.reads[ApplicationSectionDetail]
 
   val baseUrl = Config.config.business.baseUrl
 
@@ -101,9 +102,9 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     getOpt[ApplicationDetail](url)
   }
 
-  override def sectionDetail(id: ApplicationId, sectionNum: Int): Future[Option[ApplicationDetail]] = {
+  override def sectionDetail(id: ApplicationId, sectionNum: Int): Future[Option[ApplicationSectionDetail]] = {
     val url = s"$baseUrl/application/${id.id}/section/$sectionNum/detail"
-    getOpt[ApplicationDetail](url)
+    getOpt[ApplicationSectionDetail](url)
   }
 
   override def deleteAll(): Future[Unit] = {
