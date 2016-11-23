@@ -25,9 +25,9 @@ case class DateTimeRangeField(name: String, allowPast: Boolean, isEndDateMandato
     val endMonth = flattenedAnswers.get(s"${endDateField.name}.month")
     val endYear = flattenedAnswers.get(s"${endDateField.name}.year")
 
-    val hasClosingDate = flattenedAnswers.get(s"$name.has_closing_date")
+    val hasClosingDate = flattenedAnswers.get(s"$name.has_closing_date").exists(_.trim == "yes")
 
-    val vs = DateTimeRangeValues(Some(DateValues(startDay, startMonth, startYear)), Some(DateValues(endDay, endMonth, endYear)), hasClosingDate)
+    val vs = DateTimeRangeValues(Some(DateValues(startDay, startMonth, startYear)), Some(DateValues(endDay, endMonth, endYear)), endDateProvided = hasClosingDate)
 
     validator.validate("", vs).map { dtr =>
       views.html.renderers.preview.dateTimeRangeField(
