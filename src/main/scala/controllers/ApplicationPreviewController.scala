@@ -17,37 +17,33 @@ class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, appli
     val ft = actionHandler.gatherSectionDetails(id, sectionNumber)
 
     ft.map {
-      case Some((app, formSection, section)) =>
-        section.map(_.isComplete) match {
-          case Some(true) => renderSectionPreviewCompleted(app, formSection, section, formSection.fields)
-          case _ => renderSectionPreviewInProgress(app, formSection, section, formSection.fields)
+      case Some(app) =>
+        app.section.map(_.isComplete) match {
+          case Some(true) => renderSectionPreviewCompleted(app, app.formSection.fields)
+          case _ => renderSectionPreviewInProgress(app, app.formSection.fields)
         }
       case None => NotFound
     }
   }
 
-  def renderSectionPreviewCompleted(app: ApplicationDetail, formSection: ApplicationFormSection, section: Option[ApplicationSection], fields: Seq[Field]) = {
-    val answers = section.map { s => s.answers }.getOrElse(JsObject(List.empty))
+  def renderSectionPreviewCompleted(app: ApplicationSectionDetail, fields: Seq[Field]) = {
+    val answers = app.section.map { s => s.answers }.getOrElse(JsObject(List.empty))
 
     Ok(views.html.sectionPreview(
       app,
-      section,
-      formSection,
       fields,
       answers,
       controllers.routes.ApplicationController.show(app.id).url,
-      Some(controllers.routes.ApplicationController.resetAndEditSection(app.id, formSection.sectionNumber).url)))
+      Some(controllers.routes.ApplicationController.resetAndEditSection(app.id, app.formSection.sectionNumber).url)))
   }
 
-  def renderSectionPreviewInProgress(app: ApplicationDetail, formSection: ApplicationFormSection, section: Option[ApplicationSection], fields: Seq[Field]) = {
-    val answers = section.map { s => s.answers }.getOrElse(JsObject(List.empty))
+  def renderSectionPreviewInProgress(app: ApplicationSectionDetail, fields: Seq[Field]) = {
+    val answers = app.section.map { s => s.answers }.getOrElse(JsObject(List.empty))
     Ok(views.html.sectionPreview(
       app,
-      section,
-      formSection,
       fields,
       answers,
-      controllers.routes.ApplicationController.editSectionForm(app.id, formSection.sectionNumber).url,
+      controllers.routes.ApplicationController.editSectionForm(app.id, app.formSection.sectionNumber).url,
       None))
   }
 

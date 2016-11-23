@@ -18,7 +18,7 @@ trait ApplicationOps {
 
   def detail(id: ApplicationId): Future[Option[ApplicationDetail]]
 
-  def sectionDetail(id: ApplicationId, sectionNum:Int): Future[Option[ApplicationDetail]]
+  def sectionDetail(id: ApplicationId, sectionNum:Int): Future[Option[ApplicationSectionDetail]]
 
   def deleteAll(): Future[Unit]
 

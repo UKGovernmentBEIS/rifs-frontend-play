@@ -7,7 +7,7 @@ import cats.data.ValidatedNel
 import cats.syntax.validated._
 import controllers.FieldCheckHelpers.FieldErrors
 import forms.validation.{CostItem, CostItemValidator, CostItemValues, FieldError}
-import models.{ApplicationDetail, ApplicationId}
+import models.{ApplicationId, ApplicationSectionDetail}
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller, Result}
 import services.ApplicationOps
@@ -85,14 +85,14 @@ class CostController @Inject()(actionHandler: ActionHandler, applications: Appli
     val hints = hinting(doc, checks)
 
     actionHandler.gatherSectionDetails(applicationId, sectionNumber).map {
-      case Some((app, formSection, _)) =>
-        Ok(views.html.costItemForm(app, formSection, fields, formSection.questionMap, doc, errs, hints, cancelLink(app, sectionNumber), itemNumber))
+      case Some(app) =>
+        Ok(views.html.costItemForm(app, fields, app.formSection.questionMap, doc, errs, hints, cancelLink(app, sectionNumber), itemNumber))
       case None => NotFound
     }
   }
 
-  def cancelLink(app: ApplicationDetail, sectionNumber: Int): String = {
-    val items = app.sections.find(_.sectionNumber == sectionNumber).flatMap(s => (s.answers \ "items").validate[JsArray].asOpt).getOrElse(JsArray(List.empty)).value
+  def cancelLink(app: ApplicationSectionDetail, sectionNumber: Int): String = {
+    val items = app.section.flatMap(s => (s.answers \ "items").validate[JsArray].asOpt).getOrElse(JsArray(List.empty)).value
     if (items.isEmpty) controllers.routes.ApplicationController.show(app.id).url
     else sectionFormCall(app.id, sectionNumber).url
   }
