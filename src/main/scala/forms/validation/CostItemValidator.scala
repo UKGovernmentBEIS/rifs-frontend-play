@@ -1,7 +1,8 @@
 package forms.validation
 
 import cats.data.ValidatedNel
-import cats.implicits._
+import cats.syntax.cartesian._
+import cats.syntax.validated._
 import play.api.libs.json.{JsString, JsValue}
 
 case class CostItemValues(itemName: Option[String], cost: Option[String], justification: Option[String], itemNumber: Option[Int])
@@ -27,7 +28,6 @@ case object CostItemValidator extends FieldValidator[CostItemValues, CostItem] {
     val just = (jv \ "justification").validate[JsString].asOpt.getOrElse(JsString(""))
     justificationValidator.hintText(s"$path.justification", just)
   }
-
 }
 
 case class CostSectionValidator(maxValue: BigDecimal) extends FieldValidator[List[CostItem], List[CostItem]] {

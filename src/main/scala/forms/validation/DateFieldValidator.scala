@@ -1,7 +1,8 @@
 package forms.validation
 
 import cats.data.ValidatedNel
-import cats.implicits._
+import cats.syntax.cartesian._
+import cats.syntax.validated._
 import forms.DateValues
 import org.joda.time.LocalDate
 

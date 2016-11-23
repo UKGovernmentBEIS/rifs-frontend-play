@@ -2,38 +2,19 @@ package forms
 
 import controllers.JsonHelpers
 import forms.validation.{FieldError, FieldHint}
-import models.{ApplicationDetail, ApplicationFormSection, ApplicationSectionDetail}
-import org.joda.time.LocalDate
-import org.joda.time.format._
+import models.ApplicationSectionDetail
 import play.api.libs.json.JsObject
 import play.twirl.api.Html
 
 case class DateValues(day: Option[String], month: Option[String], year: Option[String])
 
-case class DateField(name: String) extends Field {
+case class DateField(name: String) extends Field with DateFormats {
 
   override def renderFormInput(app: ApplicationSectionDetail, answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]): Html = {
     views.html.renderers.dateField(this, app.formSection.questionMap, JsonHelpers.flatten(answers), errs)
   }
-  
-  val fmt = DateTimeFormat.forPattern("d MMMM yyyy")
-  val accessFmt = AccessibleDateTimeFormat()
 
   override def renderPreview(app: ApplicationSectionDetail, answers: JsObject): Html =
     views.html.renderers.preview.dateField(this, JsonHelpers.flatten(answers))
 }
 
-case class AccessibleDateTimeFormat() {
-  val inner = DateTimeFormat.forPattern("MMMM yyyy")
-
-  def print(date: LocalDate): String = {
-    val x = date.getDayOfMonth match {
-      case n if Seq(11, 12, 13) contains n => n+"th"
-      case n if n%10 == 1 => n+"st"
-      case n if n%10 == 2 => n+"nd"
-      case n if n%10 == 3 => n+"rd"
-      case n => n+"th"
-    }
-    s"$x of ${inner.print(date)}"
-  }
-}

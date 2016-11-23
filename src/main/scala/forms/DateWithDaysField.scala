@@ -3,17 +3,13 @@ package forms
 import controllers.JsonHelpers
 import forms.validation.{DateWithDaysValidator, DateWithDaysValues, FieldError, FieldHint}
 import models._
-import org.joda.time.format._
 import play.api.libs.json.JsObject
 import play.twirl.api.Html
 
-case class DateWithDaysField(name: String, allowPast: Boolean, minValue: Int, maxValue: Int) extends Field {
+case class DateWithDaysField(name: String, allowPast: Boolean, minValue: Int, maxValue: Int) extends Field with DateFormats {
 
   val dateField = DateField(s"$name.date")
   val daysField = TextField(Some("Days"), s"$name.days", isNumeric = true)
-
-  val fmt = DateTimeFormat.forPattern("d MMMM yyyy")
-  val accessFmt = AccessibleDateTimeFormat()
 
   val validator = DateWithDaysValidator(allowPast, minValue, maxValue)
 
