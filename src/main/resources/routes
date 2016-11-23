@@ -9,7 +9,6 @@ GET         /                                                         controller
 GET         /opportunities                                            controllers.OpportunityController.showOpportunities
 
 GET         /opportunities/guidance/:opportunityId                    controllers.OpportunityController.showGuidancePage(opportunityId:OpportunityId)
-GET         /manage/opportunities/guidancePM/:opportunityId           controllers.OpportunityController.showPMGuidancePage(opportunityId:OpportunityId)
 
 GET         /opportunity/:opportunityId                               controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
 
@@ -35,6 +34,9 @@ GET         /application/:id/section/:num/item/:itemNum/edit          controller
 
 GET         /reset                                                    controllers.ApplicationController.reset
 GET         /wip                                                      controllers.OpportunityController.wip(backUrl: String)
+
+# Manage Views
+GET         /manage/opportunities/guidance/:opportunityId           controllers.OpportunityController.showPMGuidancePage(opportunityId:OpportunityId)
 
 # Health check
 GET         /ping                                                     controllers.HealthCheckController.ping()
