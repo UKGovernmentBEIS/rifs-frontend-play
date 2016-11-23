@@ -2,7 +2,7 @@ package forms
 
 import controllers.JsonHelpers
 import forms.validation.{FieldError, FieldHint}
-import models.{ApplicationDetail, ApplicationFormSection}
+import models.{ApplicationDetail, ApplicationFormSection, ApplicationSectionDetail}
 import org.joda.time.LocalDate
 import org.joda.time.format._
 import play.api.libs.json.JsObject
@@ -12,14 +12,14 @@ case class DateValues(day: Option[String], month: Option[String], year: Option[S
 
 case class DateField(name: String) extends Field {
 
-  override def renderFormInput(app: ApplicationDetail, formSection: ApplicationFormSection, answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]): Html = {
-    views.html.renderers.dateField(this, formSection.questionMap, JsonHelpers.flatten(answers), errs)
+  override def renderFormInput(app: ApplicationSectionDetail, answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]): Html = {
+    views.html.renderers.dateField(this, app.formSection.questionMap, JsonHelpers.flatten(answers), errs)
   }
   
   val fmt = DateTimeFormat.forPattern("d MMMM yyyy")
   val accessFmt = AccessibleDateTimeFormat()
 
-  override def renderPreview(app: ApplicationDetail, formSection: ApplicationFormSection, answers: JsObject): Html =
+  override def renderPreview(app: ApplicationSectionDetail, answers: JsObject): Html =
     views.html.renderers.preview.dateField(this, JsonHelpers.flatten(answers))
 }
 

@@ -1,7 +1,5 @@
 @(
-        app: ApplicationDetail,
-        section: Option[ApplicationSection],
-        formSection: ApplicationFormSection,
+        app: ApplicationSectionDetail,
         answers: play.api.libs.json.JsObject,
         errs: List[forms.validation.FieldError],
         hints:List[forms.validation.FieldHint]
@@ -12,16 +10,16 @@
     f"RIFS$id%05d"
 }
 
-@main(s"${formSection.title} - RIFS", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(app.id).url))) {
+@main(s"${app.formSection.title} - RIFS", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(app.id).url))) {
     <div class="grid-row">
         <div class="column-two-thirds">
             <h1 class="heading-xlarge">
                 <span class="heading-secondary">@formatId(app.opportunity.id.id): @app.opportunity.title</span>
-                @formSection.title
+                @app.formSection.title
             </h1>
 
             <form method="POST"
-                  action="@controllers.routes.ApplicationController.postSection(app.id, formSection.sectionNumber)"
+                  action="@controllers.routes.ApplicationController.postSection(app.id, app.formSection.sectionNumber)"
                   novalidate="novalidate">
                 @if(errs.nonEmpty) {
                 <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
@@ -35,7 +33,7 @@
                     </p>
                 </div>
                 }
-                @formSection.fields.map(_.renderFormInput(app, formSection, answers, errs, hints))
+                @app.formSection.fields.map(_.renderFormInput(app, answers, errs, hints))
 
                 <label for="complete-checkbox" class="form-checkbox font-normal" style="width: 16em">
                     <input id="complete-checkbox" type="checkbox" name="_complete_checkbox"/>
