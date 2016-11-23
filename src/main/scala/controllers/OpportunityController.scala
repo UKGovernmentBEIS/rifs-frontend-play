@@ -37,4 +37,22 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
     Ok(views.html.wip(backUrl))
   }
 
+  def showOverviewPage(opportunityId: OpportunityId) = Action.async {
+    (for {
+      op <- OptionT(opportunities.byId(opportunityId))
+      app <- OptionT(applications.byOpportunityId(opportunityId))
+    } yield (op, app)
+      ).value.map {
+        case Some((op, app)) => Ok(views.html.manage.previewOpportunity(op, app) )
+        case None => NotFound
+      }
+  }
+
+  def duplicate(opportunityId: OpportunityId) = Action.async {
+      OptionT(opportunities.byId(opportunityId)).value.map {
+        case Some(op) => Ok(views.html.wip( controllers.routes.OpportunityController.showOverviewPage(opportunityId).url ) )
+        case None => NotFound
+    }
+  }
+
 }

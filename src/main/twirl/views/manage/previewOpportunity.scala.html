@@ -1,0 +1,146 @@
+@import models._
+@import partials._
+
+@(opportunity: Opportunity, app: ApplicationForm, tabNumber: Option[Int] = None)
+
+@formatId(id: Long) = @{
+f"RIFS$id%05d"
+}
+
+@main(s"Overview - RIFS", userName="Portfolio Manager",
+backLink=Some(BackLink("Library", controllers.routes.OpportunityController.wip(routes.OpportunityController.showOverviewPage(opportunity.id).url).url))) {
+    <!-- main content -->
+    <div class="grid-row">
+        <div class="column-two-thirds">
+            <div>
+                <h1 class="heading-xlarge">
+                    <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
+                    Opportunity template
+                </h1>
+            </div>
+
+            <form method="POST"
+            action="@controllers.routes.OpportunityController.duplicate(opportunity.id)">
+                <div>
+                    <p>This opportunity can be duplicated for reuse.</p>
+                    <table class="spacious">
+                        <thead>
+                            <tr>
+                                <th scope="col">Opportunity set-up</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    1. <a id="op-setup-link1" href="todo"> Opportunity title</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    2. <a id="op-setup-link2" href="todo"> Opportunity deadlines</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    3. <a id="op-setup-link3" href="todo"> Opportunity description</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    4. <a id="op-setup-link4" href="todo"> Maximum grant value</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    5. <a id="op-setup-link5" href="todo"> Assessment criteria</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    6. <a id="op-setup-link6" href="todo"> Eligibility</a>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                </div>
+                <div>
+                    <p>These applicant questions are pre-set for this opportunity.</p>
+                    <table class="spacious">
+                        <thead>
+                        <tr>
+                            <th scope="col">Applicant questions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @app.sections.sortBy(_.sectionNumber).map { fs =>
+                        <tr>
+                            <td>
+                                @fs.sectionNumber. <a id="section-@fs.sectionNumber-link" href="todo"> @fs.title</a>
+                            </td>
+                        </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <p>These options are pre-selected for this opportunity.</p>
+                    <table class="spacious">
+                        <thead>
+                        <tr>
+                            <th scope="col">Opportunity variables</th>
+                            <th scope="col">Selected</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Grant type</td><td>Seminar</td>
+                        </tr>
+                        <tr>
+                            <td>Grant type</td><td>Seminar</td>
+                        </tr>
+                        <tr>
+                            <td>Grant mode</td><td>Responsive</td>
+                        </tr>
+                        <tr>
+                            <td>Pre-review check</td><td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Peer review</td><td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Peer review sift</td><td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Application response</td><td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Panel</td><td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Payment</td><td>Claim</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="rifs-form-buttons">
+                    <input type="submit" name="@Save.name" class="button button--start" value="Duplicate opportunity">
+                    <a href="todo" class="flat nobreak">
+                        Applicant view</a>
+                </p>
+            </form>
+        </div>
+
+        <div id="support-column" class="column-third">
+            <hr class="hr-blue">
+            <h2 class="heading-medium no-top-margin">Support</h2>
+            <ul class="list spacious">
+                <li>
+                    <a href="todo" target="_blank">
+                        Guidance on opportunity set-up</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+}
