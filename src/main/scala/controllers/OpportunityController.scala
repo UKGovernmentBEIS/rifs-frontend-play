@@ -35,8 +35,12 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
   def chooseHowToCreateOpportunity(choiceText: Option[String]) = Action { implicit request =>
     CreateOpportunityChoice(choiceText).map {
       case NewOpportunityChoice => Ok(views.html.wip(routes.OpportunityController.showNewOpportunityForm().url))
-      case ReuseOpportunityChoice => Ok(views.html.wip(routes.OpportunityController.showNewOpportunityForm().url))
+      case ReuseOpportunityChoice => Redirect(controllers.routes.OpportunityController.showOpportunityLibrary)
     }.getOrElse(Redirect(controllers.routes.OpportunityController.showNewOpportunityForm()))
+  }
+
+  def showOpportunityLibrary = Action.async {
+    opportunities.getOpenOpportunitySummaries.map { os => Ok(views.html.showOpportunityLibrary(os)) }
   }
 
   def showGuidancePage(id: OpportunityId) = Action {

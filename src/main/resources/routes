@@ -13,6 +13,7 @@ GET         /opportunity/:opportunityId                               controller
 
 GET         /manage/opportunity/new                                   controllers.OpportunityController.showNewOpportunityForm
 GET         /manage/opportunity/choose                                controllers.OpportunityController.chooseHowToCreateOpportunity(choice:Option[String])
+GET         /manage/opportunities/library                             controllers.OpportunityController.showOpportunityLibrary
 
 GET         /application_form/:id/apply                               controllers.ApplicationController.showOrCreateForForm(id: ApplicationFormId)
 
