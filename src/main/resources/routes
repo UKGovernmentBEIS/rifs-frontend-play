@@ -9,8 +9,10 @@ GET         /                                                         controller
 GET         /opportunities                                            controllers.OpportunityController.showOpportunities
 
 GET         /opportunities/guidance/:opportunityId                    controllers.OpportunityController.showGuidancePage(opportunityId:OpportunityId)
-
 GET         /opportunity/:opportunityId                               controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
+
+GET         /manage/opportunity/new                                   controllers.OpportunityController.showNewOpportunityForm
+GET         /manage/opportunity/choose                                controllers.OpportunityController.chooseHowToCreateOpportunity(choice:Option[String])
 
 GET         /application_form/:id/apply                               controllers.ApplicationController.showOrCreateForForm(id: ApplicationFormId)
 
