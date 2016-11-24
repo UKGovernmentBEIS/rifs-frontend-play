@@ -7,6 +7,8 @@ import play.api.libs.json.{JsString, JsValue}
 
 case class CostItemValues(itemName: Option[String], cost: Option[String], justification: Option[String], itemNumber: Option[Int])
 
+case class CostList(items: List[CostItem])
+
 case class CostItem(itemName: String, cost: BigDecimal, justification: String, itemNumber: Option[Int] = None) {
   val costText: String = cost.setScale(2, BigDecimal.RoundingMode.HALF_UP).toString
 }
@@ -30,7 +32,7 @@ case object CostItemValidator extends FieldValidator[CostItemValues, CostItem] {
   }
 }
 
-case class CostSectionValidator(maxValue: BigDecimal) extends FieldValidator[List[CostItem], List[CostItem]] {
+case class CostSectionValidator(maxValue: BigDecimal) extends FieldValidator[CostList, List[CostItem]] {
   val nonEmptyV = new FieldValidator[List[CostItem], List[CostItem]] {
     override def validate(path: String, items: List[CostItem]): ValidatedNel[FieldError, List[CostItem]] =
       if (items.isEmpty) FieldError(path, s"Must provide at least one item.").invalidNel
@@ -43,7 +45,7 @@ case class CostSectionValidator(maxValue: BigDecimal) extends FieldValidator[Lis
       else items.validNel
   }
 
-  override def validate(path: String, items: List[CostItem]): ValidatedNel[FieldError, List[CostItem]] = {
-    (nonEmptyV.validate("", items) |@| notTooCostlyV.validate("", items)).tupled.map(_ => items)
+  override def validate(path: String, cvs: CostList): ValidatedNel[FieldError, List[CostItem]] = {
+    nonEmptyV.andThen(notTooCostlyV).validate("", cvs.items)
   }
 }

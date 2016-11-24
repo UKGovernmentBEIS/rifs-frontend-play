@@ -6,7 +6,6 @@ import forms.validation.SectionError
 import models._
 import org.joda.time.LocalDateTime
 import org.joda.time.format.DateTimeFormat
-import play.api.Logger
 import play.api.libs.json.JsObject
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
@@ -76,7 +75,6 @@ class ApplicationController @Inject()(
 
   def postSection(id: ApplicationId, sectionNumber: Int) = Action.async(JsonForm.parser) {
     implicit request =>
-      Logger.debug(s"post section values ${request.body.values}")
       request.body.action match {
         case Complete => actionHandler.doComplete(id, sectionNumber, request.body.values)
         case Save => actionHandler.doSave(id, sectionNumber, request.body.values)

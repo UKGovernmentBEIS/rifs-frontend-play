@@ -43,13 +43,16 @@ object FieldChecks {
   def fromValidator[T: Reads](v: FieldValidator[T, _]): FieldCheck = new FieldCheck {
     override def toString: String = s"check from validator $v"
 
-    override def apply(path: String, jv: JsValue) = jv.validate[T].map { x =>
-      v.validate(path, x).fold(_.toList, _ => List())
-    } match {
-      case JsSuccess(msgs, _) => msgs
-      case JsError(errs) =>
-        Logger.debug(s"could not decode form values from $jv with validator $v on path $path")
-        List(FieldError(path, "Could not decode form values!"))
+    override def apply(path: String, jv: JsValue) = {
+      jv.validate[T].map { x =>
+        v.validate(path, x).fold(_.toList, _ => List())
+      } match {
+        case JsSuccess(msgs, _) => msgs
+        case JsError(errs) =>
+          Logger.debug(s"could not decode form values from $jv with validator $v on path $path")
+          Logger.debug(s"$errs")
+          List(FieldError(path, "Could not decode form values!"))
+      }
     }
 
     override def hint(path: String, jv: JsValue): List[FieldHint] = v.hintText(path, jv)

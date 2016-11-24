@@ -37,10 +37,11 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
 
     answersF.flatMap {
-      case Some(answers) => applications.completeSection(id, sectionNumber, answers).flatMap {
-        case Nil => Future.successful(redirectToOverview(id))
-        case errs => redisplaySectionForm(id, sectionNumber, answers, errs)
-      }
+      case Some(answers) =>
+        applications.completeSection(id, sectionNumber, answers).flatMap {
+          case Nil => Future.successful(redirectToOverview(id))
+          case errs => redisplaySectionForm(id, sectionNumber, answers, errs)
+        }
       case None => Future.successful(NotFound)
     }
   }

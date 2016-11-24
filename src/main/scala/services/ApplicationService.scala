@@ -45,7 +45,6 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
   }
 
   override def completeSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors] = {
-    Logger.debug(s"checking doc $doc")
     sectionDetail(id, sectionNumber).flatMap {
       case Some(app) =>
         FieldCheckHelpers.check(doc, checksFor(app.formSection)) match {

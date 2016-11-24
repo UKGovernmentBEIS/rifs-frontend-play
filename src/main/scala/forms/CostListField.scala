@@ -1,13 +1,15 @@
 package forms
 
 import controllers.{FieldCheck, FieldChecks}
-import forms.validation.{CostItem, CostSectionValidator, FieldError, FieldHint}
+import forms.validation._
 import models._
 import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 import play.twirl.api.Html
 
 case class CostListField(name: String) extends Field {
   implicit val ciReads = Json.reads[CostItem]
+  implicit val civReads = Json.reads[CostItemValues]
+  implicit val clReads = Json.reads[CostList]
 
   // TODO: Remove hard-coded 2000
   override val check: FieldCheck = FieldChecks.fromValidator(CostSectionValidator(2000))
