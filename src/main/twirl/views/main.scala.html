@@ -29,9 +29,11 @@
                 @backLink.get.label</a>
                 </div>
             }
-            <div class="username-container">
-                <span><span class="visually-hidden">Signed in as </span>Experienced Eric</span>
-            </div>
+            @if(displayUserName.isDefined) {
+                <div class="username-container">
+                    <span><span class="visually-hidden">Signed in as </span>@displayUserName.getOrElse("")</span>
+                </div>
+            }
         </div>
 
         @content
