@@ -26,7 +26,7 @@
     f"RIFS$id%05d"
 }
 
-@main(s"Opportunity ${app.opportunity.title} - RIFS", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(app.id).url))) {
+@main(s"Opportunity ${app.opportunity.title} - RIFS", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(app.id).url)), displayUserName=Some("Experienced Eric")) {
     <div class="grid-row">
         <div class="column-two-thirds">
 
