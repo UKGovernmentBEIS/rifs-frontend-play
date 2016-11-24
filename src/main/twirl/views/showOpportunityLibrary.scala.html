@@ -1,6 +1,6 @@
 @(os: Seq[Opportunity])
 
-@main("Opportunity list - RIFS", backLink=Some(BackLink("Create new opportunity", controllers.routes.OpportunityController.createOpportunity().url))) {
+@main("Opportunity list - RIFS", backLink=Some(BackLink("Create new opportunity", controllers.routes.OpportunityController.showNewOpportunityForm().url))) {
     <div>
         <h1 class="heading-xlarge">Opportunity library</h1>
 
@@ -30,7 +30,7 @@
 
         <div class="rifs-form-buttons">
             <p>
-                <a href="@controllers.routes.OpportunityController.createOpportunity()"
+                <a href="@controllers.routes.OpportunityController.showNewOpportunityForm()"
                 class="button"
                 >Cancel</a>
             </p>
