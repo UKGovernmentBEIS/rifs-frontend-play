@@ -36,7 +36,7 @@ GET         /reset                                                    controller
 GET         /wip                                                      controllers.OpportunityController.wip(backUrl: String)
 
 # Manage Views
-GET         /manage/opportunities/guidance/:opportunityId           controllers.OpportunityController.showPMGuidancePage(opportunityId:OpportunityId)
+GET         /manage/opportunities/guidance                            controllers.OpportunityController.showPMGuidancePage
 
 # Health check
 GET         /ping                                                     controllers.HealthCheckController.ping()

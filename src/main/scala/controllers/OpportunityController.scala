@@ -33,8 +33,8 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
     Ok(views.html.guidance(id))
   }
 
-  def showPMGuidancePage(id: OpportunityId) = Action {
-    Ok(views.html.manage.guidance(id))
+  def showPMGuidancePage = Action {
+    Ok(views.html.manage.guidance())
   }
 
   def wip(backUrl: String) = Action {
