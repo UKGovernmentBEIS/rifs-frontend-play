@@ -17,5 +17,5 @@
 @if(!field.isEndDateMandatory)  {
     <input type="radio" name="has_closing_date" value="yes">Yes
     <input type="radio" name="has_closing_date" value="no" selected>No
-} else {}
+}
 @field.endDateField.renderFormInput(app, answers, errs, hints)
