@@ -142,5 +142,5 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     applications.sectionDetail(id, sectionNumber)
 
   def previewChecksFor(formSection: ApplicationFormSection): Map[String, FieldCheck] =
-    formSection.fields.map(f => f.name -> f.check).toMap
+    formSection.fields.map(f => f.name -> f.previewCheck).toMap
 }
