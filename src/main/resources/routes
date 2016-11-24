@@ -3,14 +3,19 @@
 # ~~~~
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                                controllers.Assets.at(path="/public", file)
+GET         /assets/*file                                             controllers.Assets.at(path="/public", file)
 
-GET         /                                            controllers.StartPageController.startPage
-GET         /opportunities                               controllers.OpportunityController.showOpportunities
-GET         /opportunities/guidance/:opportunityId                      controllers.OpportunityController.showGuidancePage(opportunityId:OpportunityId)
-GET         /opportunity/:opportunityId                  controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
+GET         /                                                         controllers.StartPageController.startPage
+GET         /opportunities                                            controllers.OpportunityController.showOpportunities
 
-GET         /application_form/:id/apply                  controllers.ApplicationController.showOrCreateForForm(id: ApplicationFormId)
+GET         /opportunities/guidance/:opportunityId                    controllers.OpportunityController.showGuidancePage(opportunityId:OpportunityId)
+GET         /opportunity/:opportunityId                               controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
+
+GET         /manage/opportunity/new                                   controllers.OpportunityController.showNewOpportunityForm
+GET         /manage/opportunity/choose                                controllers.OpportunityController.chooseHowToCreateOpportunity(choice:Option[String])
+GET         /manage/opportunities/library                             controllers.OpportunityController.showOpportunityLibrary
+
+GET         /application_form/:id/apply                               controllers.ApplicationController.showOrCreateForForm(id: ApplicationFormId)
 
 GET         /application/:id                                          controllers.ApplicationController.show(id: ApplicationId)
 POST        /application/:id                                          controllers.ApplicationController.submit(id: ApplicationId)
@@ -32,6 +37,9 @@ GET         /application/:id/section/:num/item/:itemNum/edit          controller
 
 GET         /reset                                                    controllers.ApplicationController.reset
 GET         /wip                                                      controllers.OpportunityController.wip(backUrl: String)
+
+# Manage Views
+GET         /manage/opportunities/guidance                            controllers.OpportunityController.showPMGuidancePage
 
 # Health check
 GET         /ping                                                     controllers.HealthCheckController.ping()
