@@ -38,6 +38,9 @@ GET         /application/:id/section/:num/item/:itemNum/edit          controller
 GET         /reset                                                    controllers.ApplicationController.reset
 GET         /wip                                                      controllers.OpportunityController.wip(backUrl: String)
 
+# Manage Views
+GET         /manage/opportunities/guidance                            controllers.OpportunityController.showPMGuidancePage
+
 # Health check
 GET         /ping                                                     controllers.HealthCheckController.ping()
 GET         /version                                                  controllers.HealthCheckController.version
