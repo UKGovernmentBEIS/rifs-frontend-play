@@ -18,7 +18,7 @@ f"RIFS$id%05d"
 }
 
 @main(s"Overview - RIFS", displayUserName=Some("Portfolio Manager"), headExtra = headEx,
-backLink=Some(BackLink("Library", controllers.routes.OpportunityController.wip(routes.OpportunityController.showOverviewPage(opportunity.id).url).url))) {
+backLink=Some(BackLink("Library", controllers.routes.OpportunityController.showOpportunityLibrary().url)) ) {
 
 <!-- main content -->
     <div class="grid-row">
@@ -155,7 +155,7 @@ backLink=Some(BackLink("Library", controllers.routes.OpportunityController.wip(r
             <h2 class="heading-medium no-top-margin">Support</h2>
             <ul class="list spacious">
                 <li>
-                    <a href="todo" target="_blank">
+                    <a href="@controllers.routes.OpportunityController.showOpportunitySetupGuidance(opportunity.id)" target="_blank">
                         Guidance on opportunity set-up</a>
                 </li>
             </ul>
