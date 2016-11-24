@@ -17,7 +17,7 @@ f"RIFS$id%05d"
     <link href="@routes.Assets.at("stylesheets/tabs.css")" rel="stylesheet" type="text/css" />
 }
 
-@main(s"Overview - RIFS", userName="Portfolio Manager", headExtra = headEx,
+@main(s"Overview - RIFS", displayUserName=Some("Portfolio Manager"), headExtra = headEx,
 backLink=Some(BackLink("Library", controllers.routes.OpportunityController.wip(routes.OpportunityController.showOverviewPage(opportunity.id).url).url))) {
 
 <!-- main content -->

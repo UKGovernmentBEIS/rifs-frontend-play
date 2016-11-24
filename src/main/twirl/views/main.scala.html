@@ -1,6 +1,7 @@
 @(title: String, mainClass: Option[String] = None, bodyEnd: Html = Html(""), headExtra: Html = Html(""),
         insideHeader: Html = Html(""), links: Html = Html(""),
-        backLink:Option[BackLink] = None, userName: String = "Experienced Eric")(content: Html)
+        backLink:Option[BackLink] = None,
+        displayUserName:Option[String]=None)(content: Html)
 
 @head = {
 @headExtra
@@ -29,7 +30,7 @@
                 </div>
             }
             <div class="username-container">
-                <span><span class="visually-hidden">Signed in as </span>@userName</span>
+                <span><span class="visually-hidden">Signed in as </span>Experienced Eric</span>
             </div>
         </div>
 
