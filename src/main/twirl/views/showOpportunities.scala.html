@@ -1,6 +1,6 @@
 @(os: Seq[Opportunity])
 
-@main("Opportunity list - RIFS", backLink=Some(BackLink("Return to dashboard", controllers.routes.StartPageController.startPage().url))) {
+@main("Opportunity list - RIFS", backLink=Some(BackLink("Return to dashboard", controllers.routes.StartPageController.startPage().url)), displayUserName=Some("Experienced Eric")) {
     <div>
         <h1 class="heading-xlarge">Open opportunities</h1>
 

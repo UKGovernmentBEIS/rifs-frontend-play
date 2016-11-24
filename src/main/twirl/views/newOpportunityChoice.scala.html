@@ -1,0 +1,55 @@
+@import models._
+@import partials._
+
+@main(s"Create new opportunity - RIFS", backLink = Some(BackLink("Home page", routes.StartPageController.startPage().url)), displayUserName=Some("Portfolio Peter")) {
+    <!-- main content -->
+    <div class="grid-row">
+        <div class="column-two-thirds">
+
+            <h1 class="heading-xlarge">
+                Create a new opportunity
+            </h1>
+
+            <div>
+                <p class="lede">What do you want to do?</p>
+                <form method="GET" action="@controllers.routes.OpportunityController.chooseHowToCreateOpportunity(None)">
+                    <div class="form-group">
+                        <fieldset class="">
+                            <legend class="visually-hidden">
+                                You can create an entirely new opportunity or reuse an existing one.</legend>
+
+                            <label class="block-label font-normal selection-button-radio" for="opportunity-reuse">
+                                <input id="opportunity-reuse" name="choice" type="radio" value="@controllers.ReuseOpportunityChoice.name">
+                                Reuse an existing opportunity
+                            </label>
+
+                            <label class="block-label font-normal selection-button-radio" for="opportunity-new">
+                                <input id="opportunity-new" name="choice" type="radio" value="@controllers.NewOpportunityChoice.name">
+                                Create new opportunity
+                            </label>
+                        </fieldset>
+                    </div>
+
+                    <div class="rifs-form-buttons">
+                        <input type="submit" class="button button--start" value="Continue">
+                        <a class="button--link-style" href=@controllers.routes.StartPageController.startPage()>Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="support-column" class="column-third">
+            <aside role="complementary">
+                <hr class="hr-blue">
+                <h3 class="heading-medium">Support</h3>
+                <ul class="list spacious">
+
+                    <li>
+                        <a href="@controllers.routes.OpportunityController.showPMGuidancePage()" target="_blank">Guidance for Portfolio Managers</a>
+                    </li>
+
+                </ul>
+            </aside>
+        </div>
+    </div>
+}

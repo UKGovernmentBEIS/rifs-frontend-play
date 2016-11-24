@@ -1,6 +1,7 @@
 @(title: String, mainClass: Option[String] = None, bodyEnd: Html = Html(""), headExtra: Html = Html(""),
         insideHeader: Html = Html(""), links: Html = Html(""),
-        backLink:Option[BackLink] = None)(content: Html)
+        backLink:Option[BackLink] = None,
+        displayUserName:Option[String]=None)(content: Html)
 
 @head = {
 @headExtra
@@ -28,9 +29,11 @@
                 @backLink.get.label</a>
                 </div>
             }
-            <div class="username-container">
-                <span><span class="visually-hidden">Signed in as </span>Experienced Eric</span>
-            </div>
+            @if(displayUserName.isDefined) {
+                <div class="username-container">
+                    <span><span class="visually-hidden">Signed in as </span>@displayUserName.getOrElse("")</span>
+                </div>
+            }
         </div>
 
         @content
