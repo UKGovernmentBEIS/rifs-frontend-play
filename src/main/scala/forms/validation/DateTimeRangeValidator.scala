@@ -51,6 +51,6 @@ case class DateTimeRangeValidator(allowPast: Boolean, isEndDateMandatory: Boolea
   }
 
   override def validate(path: String, vs: DateTimeRangeValues): ValidatedNel[FieldError, DateTimeRange] = {
-    fieldLevelV.andThen(startDateBeforeEndDateV).validate(path, vs)
+    (fieldLevelV andThen startDateBeforeEndDateV).validate(path, vs)
   }
 }

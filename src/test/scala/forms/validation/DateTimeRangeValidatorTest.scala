@@ -2,6 +2,7 @@ package forms.validation
 
 import cats.data.Validated.{Invalid, Valid}
 import forms.DateValues
+import org.joda.time.LocalDate
 import org.scalatest.{Matchers, OptionValues, WordSpecLike}
 
 class DateTimeRangeValidatorTest extends WordSpecLike with Matchers with OptionValues {
@@ -11,6 +12,7 @@ class DateTimeRangeValidatorTest extends WordSpecLike with Matchers with OptionV
 
   "validate" should {
     val validator = DateTimeRangeValidator(allowPast = true, isEndDateMandatory = true)
+
     "succeed if both start and end " + path + " are supplied and are valid" in {
       val values = DateTimeRangeValues(validDateValues1, validDateValues2, None)
       validator.validate(path, values) shouldBe a[Valid[_]]
@@ -22,7 +24,7 @@ class DateTimeRangeValidatorTest extends WordSpecLike with Matchers with OptionV
       result shouldBe a[Invalid[_]]
       result.leftMap { errs =>
         errs.tail.length shouldBe 2
-        errs.map(_.path should startWith(s"$path.startDate"))
+        errs.map(_.path should startWith(s"$path.startDate."))
       }
     }
 
@@ -35,6 +37,18 @@ class DateTimeRangeValidatorTest extends WordSpecLike with Matchers with OptionV
         errs.head.path shouldBe path
       }
     }
-  }
 
+    "fail if the start date is before today" in {
+      val today = new LocalDate()
+      val yesterdayValues = DateValues(Some((today.getDayOfMonth - 1).toString), Some(today.getMonthOfYear.toString), Some(today.getYear.toString))
+
+      val values = DateTimeRangeValues(Some(yesterdayValues), None, None)
+      val result = DateTimeRangeValidator(allowPast = false, isEndDateMandatory = false).validate(path, values)
+      result shouldBe an[Invalid[_]]
+      result.leftMap { errs =>
+        errs.tail.length shouldBe 0
+        errs.head.path shouldBe s"$path.startDate"
+      }
+    }
+  }
 }
