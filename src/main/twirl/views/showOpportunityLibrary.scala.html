@@ -6,17 +6,26 @@
 
         <p class="lede">You can open and reuse any template in this library.</p>
 
-        <table class="spacious">
-            <tr><th>Ref.</th><th>Title</th><th>Status</th><th>Structure</th>
-                <th role="presentation">
-            </tr>
-            @for((o,i) <- os.zipWithIndex) {
-                <tr><td>@o.id.id</td>
-                <td><a href="/opportunity/@o.id.id">@o.title</a></td>
-                <td>Open</td>
-                <td>Responsive, claim, FEC</td>
+        <table class="spacious mobile-one-column">
+            <thead>
+                <tr>
+                    <th>Ref.</th>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th>Structure</th>
+                    <th role="presentation">
                 </tr>
-            }
+            </thead>
+            <tbody>
+                @for((o, i) <- os.zipWithIndex) {
+                    <tr>
+                        <td data-label="Ref.">@("%04d".format(o.id.id))</td>
+                        <td data-label="Title"><a href="/opportunity/@o.id.id">@o.title</a></td>
+                        <td data-label="Status">Open</td>
+                        <td data-label="Structure">Responsive, claim, FEC</td>
+                    </tr>
+                }
+            </tbody>
         </table>
 
         <div class="rifs-form-buttons">
