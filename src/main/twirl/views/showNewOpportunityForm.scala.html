@@ -1,7 +1,7 @@
 @import models._
 @import partials._
 
-@main(s"Create new opportunity - RIFS", backLink=Some(BackLink("Return to my dashboard", routes.StartPageController.startPage().url))) {
+@main(s"Create new opportunity - RIFS", backLink = Some(BackLink("Return to my dashboard", routes.StartPageController.startPage().url))) {
     <!-- main content -->
     <div class="grid-row">
         <div class="column-two-thirds">
@@ -12,27 +12,28 @@
 
             <div>
                 <p class="lede">What do you want to do?</p>
-                <form>
+                <form method="GET">
                     <div class="form-group">
                         <fieldset class="">
                             <legend class="visually-hidden">
                                 You can create an entirely new opportunity or reuse an existing one.</legend>
 
                             <label class="block-label font-normal selection-button-radio" for="opportunity-reuse">
-                                <input id="opportunity-reuse" name="opportunity-radio-group" type="radio" value="reuse">
+                                <input id="opportunity-reuse" name="type" type="radio" value="reuse">
                                 Reuse an existing opportunity
                             </label>
 
                             <label class="block-label font-normal selection-button-radio" for="opportunity-new">
-                                <input id="opportunity-new" name="opportunity-radio-group" type="radio" value="new">
+                                <input id="opportunity-new" name="type" type="radio" value="new">
                                 Create new opportunity
                             </label>
                         </fieldset>
                     </div>
 
                     <div class="rifs-form-buttons">
-                        <input type="submit" name="" class="button button--start" value="Continue">
-                        <input type="submit" name="" class="button--link-style" value="Cancel"/>
+                        <input type="submit" class="button button--start">
+                        <a href=@controllers.routes.StartPageController.startPage()>Cancel</a>
+
                     </div>
 
                 </form>

@@ -9,7 +9,7 @@ import play.Logger
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, OpportunityOps}
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class OpportunityController @Inject()(opportunities: OpportunityOps, applications: ApplicationFormOps)(implicit ec: ExecutionContext) extends Controller {
 
@@ -30,8 +30,15 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
     }
   }
 
-  def createOpportunity () = Action {
-    Ok(views.html.showNewOpportunityForm())
+  def createOpportunity () = Action { implicit request =>
+    request.getQueryString("type").getOrElse("") match {
+      case "new" =>
+        Ok(views.html.wip(routes.OpportunityController.createOpportunity().url))
+      case "reuse" =>
+        Ok(views.html.wip(routes.OpportunityController.createOpportunity().url))
+      case "" =>
+        Ok(views.html.showNewOpportunityForm())
+      }
   }
 
   def showGuidancePage(id: OpportunityId) = Action {
