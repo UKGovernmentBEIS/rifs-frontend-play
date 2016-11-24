@@ -17,17 +17,10 @@ case class DateTimeRangeField(name: String, allowPast: Boolean, isEndDateMandato
 
   override def renderPreview(app: ApplicationSectionDetail, answers: JsObject): Html = {
     val flattenedAnswers = JsonHelpers.flatten("", answers)
-    val startDay = flattenedAnswers.get(s"${startDateField.name}.day")
-    val startMonth = flattenedAnswers.get(s"${startDateField.name}.month")
-    val startYear = flattenedAnswers.get(s"${startDateField.name}.year")
-
-    val endDay = flattenedAnswers.get(s"${endDateField.name}.day")
-    val endMonth = flattenedAnswers.get(s"${endDateField.name}.month")
-    val endYear = flattenedAnswers.get(s"${endDateField.name}.year")
-
+    val startDateValues = dateValuesFor(s"${startDateField.name}", flattenedAnswers)
+    val endDateValues = dateValuesFor(s"${endDateField.name}", flattenedAnswers)
     val hasClosingDate = flattenedAnswers.get(s"$name.has_closing_date").exists(_.trim == "yes")
-
-    val vs = DateTimeRangeValues(Some(DateValues(startDay, startMonth, startYear)), Some(DateValues(endDay, endMonth, endYear)), endDateProvided = Some(hasClosingDate))
+    val vs = DateTimeRangeValues(Some(startDateValues), Some(endDateValues), endDateProvided = Some(hasClosingDate))
 
     validator.validate("", vs).map { dtr =>
       views.html.renderers.preview.dateTimeRangeField(
@@ -40,5 +33,8 @@ case class DateTimeRangeField(name: String, allowPast: Boolean, isEndDateMandato
       views.html.renderers.preview.dateTimeRangeField(this, "None", "None", None, None)
     }.fold(identity, identity)
   }
+
+  def dateValuesFor(name:String, answers:Map[String, String]):DateValues =
+    DateValues(answers.get(s"$name.day"), answers.get(s"$name.month"), answers.get(s"$name.year"))
 
 }
