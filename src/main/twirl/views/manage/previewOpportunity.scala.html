@@ -7,9 +7,20 @@
 f"RIFS$id%05d"
 }
 
-@main(s"Overview - RIFS", userName="Portfolio Manager",
+@headEx() = {
+    <script src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
+    <script src="@routes.Assets.at("js/jQuery.tabs.js")"></script>
+    <script>$(function(){
+	            $('#form_tabs').tabs();
+        });
+    </script>
+    <link href="@routes.Assets.at("stylesheets/tabs.css")" rel="stylesheet" type="text/css" />
+}
+
+@main(s"Overview - RIFS", userName="Portfolio Manager", headExtra = headEx,
 backLink=Some(BackLink("Library", controllers.routes.OpportunityController.wip(routes.OpportunityController.showOverviewPage(opportunity.id).url).url))) {
-    <!-- main content -->
+
+<!-- main content -->
     <div class="grid-row">
         <div class="column-two-thirds">
             <div>
@@ -21,7 +32,13 @@ backLink=Some(BackLink("Library", controllers.routes.OpportunityController.wip(r
 
             <form method="POST"
             action="@controllers.routes.OpportunityController.duplicate(opportunity.id)">
-                <div>
+                <div id="form_tabs">
+                    <ul id="form_tabs-links">
+                        <li><a href="#opp-setup">Set up</a></li>
+                        <li><a href="#opp-questions">Questions</a></li>
+                        <li><a href="#opp-options">Options</a></li>
+                    </ul>
+                <div id="opp-setup">
                     <p>This opportunity can be duplicated for reuse.</p>
                     <table class="spacious">
                         <thead>
@@ -63,9 +80,8 @@ backLink=Some(BackLink("Library", controllers.routes.OpportunityController.wip(r
 
                         </tbody>
                     </table>
-
                 </div>
-                <div>
+                <div id="opp-questions">
                     <p>These applicant questions are pre-set for this opportunity.</p>
                     <table class="spacious">
                         <thead>
@@ -84,7 +100,7 @@ backLink=Some(BackLink("Library", controllers.routes.OpportunityController.wip(r
                         </tbody>
                     </table>
                 </div>
-                <div>
+                <div id="opp-options">
                     <p>These options are pre-selected for this opportunity.</p>
                     <table class="spacious">
                         <thead>
@@ -123,6 +139,8 @@ backLink=Some(BackLink("Library", controllers.routes.OpportunityController.wip(r
                         </tr>
                         </tbody>
                     </table>
+                </div>
+
                 </div>
                 <p class="rifs-form-buttons">
                     <input type="submit" name="@Save.name" class="button button--start" value="Duplicate opportunity">
