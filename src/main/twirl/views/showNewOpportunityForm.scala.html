@@ -1,7 +1,7 @@
 @import models._
 @import partials._
 
-@main(s"Create new opportunity - RIFS", backLink = Some(BackLink("Return to my dashboard", routes.StartPageController.startPage().url))) {
+@main(s"Create new opportunity - RIFS", backLink = Some(BackLink("Home page", routes.StartPageController.startPage().url)), displayUserName=Some("Portfolio Pete")) {
     <!-- main content -->
     <div class="grid-row">
         <div class="column-two-thirds">
@@ -31,11 +31,9 @@
                     </div>
 
                     <div class="rifs-form-buttons">
-                        <input type="submit" class="button button--start">
-                        <a href=@controllers.routes.StartPageController.startPage()>Cancel</a>
-
+                        <input type="submit" class="button button--start" value="Continue">
+                        <a class="button--link-style" href=@controllers.routes.StartPageController.startPage()>Cancel</a>
                     </div>
-
                 </form>
             </div>
         </div>
