@@ -18,6 +18,12 @@ object FieldChecks {
     override def hint(path: String, value: JsValue): List[FieldHint] = List()
   }
 
+  val noCheck = new FieldCheck {
+    override def hint(path: String, value: JsValue) = List.empty
+
+    override def apply(path: String, value: JsValue) = List.empty
+  }
+
   trait OptionalFieldCheck[T] extends FieldCheck {
     def validator: FieldValidator[Option[String], T]
 

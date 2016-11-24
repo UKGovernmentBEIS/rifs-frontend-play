@@ -16,7 +16,6 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
   import ApplicationData._
   import FieldCheckHelpers._
 
-
   def doSave(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
     sectionTypeFor(sectionNumber) match {
       case VanillaSection =>
@@ -57,16 +56,20 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
   }
 
   def doPreview(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
-    sectionTypeFor(sectionNumber) match {
-      case VanillaSection =>
-        val errs = check(fieldValues, previewChecksFor(sectionNumber))
-        if (errs.isEmpty) {
-          applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
-            redirectToPreview(id, sectionNumber)
-          }
-        } else redisplaySectionForm(id, sectionNumber, fieldValues, errs)
+    gatherSectionDetails(id, sectionNumber).flatMap {
+      case Some(app) =>
+        sectionTypeFor(sectionNumber) match {
+          case VanillaSection =>
+            val errs = check(fieldValues, previewChecksFor(app.formSection))
+            if (errs.isEmpty) {
+              applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
+                redirectToPreview(id, sectionNumber)
+              }
+            } else redisplaySectionForm(id, sectionNumber, fieldValues, errs)
 
-      case ItemSection => Future.successful(redirectToPreview(id, sectionNumber))
+          case ItemSection => Future.successful(redirectToPreview(id, sectionNumber))
+        }
+      case None => Future.successful(NotFound)
     }
   }
 
@@ -75,24 +78,28 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
   }
 
   def completeAndPreview(id: ApplicationId, sectionNumber: Int, fieldValues: JsObject): Future[Result] = {
-    val answersF: Future[Option[JsObject]] = sectionTypeFor(sectionNumber) match {
-      case VanillaSection => Future.successful(Some(fieldValues))
-      case ItemSection => applications.getSection(id, sectionNumber).map(_.map(_.answers))
-    }
+    gatherSectionDetails(id, sectionNumber).flatMap {
+      case Some(app) =>
+        val answersF: Future[Option[JsObject]] = sectionTypeFor(sectionNumber) match {
+          case VanillaSection => Future.successful(Some(fieldValues))
+          case ItemSection => applications.getSection(id, sectionNumber).map(_.map(_.answers))
+        }
 
-    answersF.flatMap {
-      case Some(answers) =>
-        val previewCheckErrs = check(answers, previewChecksFor(sectionNumber))
-        if (previewCheckErrs.isEmpty) {
-          JsonHelpers.allFieldsEmpty(answers) match {
-            case true => applications.deleteSection(id, sectionNumber).map(_ => redirectToOverview(id))
-            case false => applications.completeSection(id, sectionNumber, answers).flatMap {
-              case Nil => Future.successful(redirectToPreview(id, sectionNumber))
-              case errs => redisplaySectionForm(id, sectionNumber, answers, errs)
-            }
-          }
-        } else redisplaySectionForm(id, sectionNumber, answers, previewCheckErrs)
+        answersF.flatMap {
+          case Some(answers) =>
+            val previewCheckErrs = check(answers, previewChecksFor(app.formSection))
+            if (previewCheckErrs.isEmpty) {
+              JsonHelpers.allFieldsEmpty(answers) match {
+                case true => applications.deleteSection(id, sectionNumber).map(_ => redirectToOverview(id))
+                case false => applications.completeSection(id, sectionNumber, answers).flatMap {
+                  case Nil => Future.successful(redirectToPreview(id, sectionNumber))
+                  case errs => redisplaySectionForm(id, sectionNumber, answers, errs)
+                }
+              }
+            } else redisplaySectionForm(id, sectionNumber, answers, previewCheckErrs)
 
+          case None => Future.successful(NotFound)
+        }
       case None => Future.successful(NotFound)
     }
   }
@@ -112,13 +119,14 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     val ft = gatherSectionDetails(id, sectionNumber)
 
     ft.map {
-      case (Some(app)) => selectSectionForm(app,sectionNumber, answers, errs)
+      case (Some(app)) => selectSectionForm(app, sectionNumber, answers, errs)
       case (None) => NotFound
     }
   }
 
   def selectSectionForm(app: ApplicationSectionDetail, sectionNumber: Int, answers: JsObject, errs: FieldErrors): Result = {
-    val hints = hinting(answers, checksFor(sectionNumber))
+    val checks = app.formSection.fields.map(f => f.name -> f.check).toMap
+    val hints = hinting(answers, checks)
 
     sectionTypeFor(sectionNumber) match {
       case VanillaSection => Ok(views.html.sectionForm(app, answers, errs, hints))
@@ -132,4 +140,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
 
   def gatherSectionDetails(id: ApplicationId, sectionNumber: Int): Future[Option[ApplicationSectionDetail]] =
     applications.sectionDetail(id, sectionNumber)
+
+  def previewChecksFor(formSection: ApplicationFormSection): Map[String, FieldCheck] =
+    formSection.fields.map(f => f.name -> f.check).toMap
 }

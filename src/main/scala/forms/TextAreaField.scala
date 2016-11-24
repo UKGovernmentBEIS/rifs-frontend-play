@@ -1,12 +1,16 @@
 package forms
 
-import controllers.JsonHelpers
+import controllers.{FieldCheck, FieldChecks, JsonHelpers}
 import forms.validation.{FieldError, FieldHint}
 import models._
 import play.api.libs.json.JsObject
 import play.twirl.api.Html
 
-case class TextAreaField(label: Option[String], name: String) extends Field {
+case class TextAreaField(label: Option[String], name: String, maxWords: Int) extends Field {
+
+  override val check: FieldCheck = FieldChecks.mandatoryText(maxWords)
+
+  override def previewCheck: FieldCheck = FieldChecks.mandatoryCheck
 
   override def renderPreview(app: ApplicationSectionDetail, answers: JsObject): Html =
     views.html.renderers.preview.textAreaField(this, JsonHelpers.flatten(answers))

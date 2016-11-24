@@ -1,17 +1,21 @@
 package forms
 
-import controllers.JsonHelpers
-import forms.validation.{DateWithDaysValidator, DateWithDaysValues, FieldError, FieldHint}
+import controllers.{FieldCheck, FieldChecks, JsonHelpers}
+import forms.validation._
 import models._
-import play.api.libs.json.JsObject
+import play.api.libs.json.{JsObject, Json}
 import play.twirl.api.Html
 
 case class DateWithDaysField(name: String, allowPast: Boolean, minValue: Int, maxValue: Int) extends Field with DateTimeFormats {
+  implicit val dvReads = Json.reads[DateValues]
+  implicit val dtrReads = Json.reads[DateWithDaysValues]
 
-  val dateField = DateField(s"$name.date")
-  val daysField = TextField(Some("Days"), s"$name.days", isNumeric = true)
+  val dateField = DateField(s"$name.date", allowPast)
+  val daysField = TextField(Some("Days"), s"$name.days", isNumeric = true, 1)
 
   val validator = DateWithDaysValidator(allowPast, minValue, maxValue)
+
+  override val check: FieldCheck = FieldChecks.fromValidator(validator)
 
   override def renderFormInput(app: ApplicationSectionDetail, answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]): Html =
     views.html.renderers.dateWithDaysField(this, app, answers, errs, hints)

@@ -3,8 +3,9 @@ package services
 import com.google.inject.Inject
 import com.wellfactored.playbindings.ValueClassFormats
 import config.Config
-import controllers.FieldCheckHelpers
 import controllers.FieldCheckHelpers.FieldErrors
+import controllers.{FieldCheck, FieldCheckHelpers}
+import forms.validation.FieldError
 import models._
 import play.api.Logger
 import play.api.libs.json._
@@ -43,17 +44,23 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     post(url, doc)
   }
 
-  import controllers.ApplicationData._
-
   override def completeSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors] = {
     Logger.debug(s"checking doc $doc")
-    FieldCheckHelpers.check(doc, checksFor(sectionNumber)) match {
-      case Nil =>
-        val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/complete"
-        post(url, doc).map(_ => List())
-      case errs => Future.successful(errs)
+    sectionDetail(id, sectionNumber).flatMap {
+      case Some(app) =>
+        FieldCheckHelpers.check(doc, checksFor(app.formSection)) match {
+          case Nil =>
+            val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/complete"
+            post(url, doc).map(_ => List())
+          case errs => Future.successful(errs)
+        }
+        // TODO: Need better error handling here
+      case None => Future.successful(List(FieldError("", s"tried to save a non-existent section number $sectionNumber in application ${id.id}")))
     }
   }
+
+  def checksFor(formSection: ApplicationFormSection): Map[String, FieldCheck] =
+    formSection.fields.map(f => f.name -> f.check).toMap
 
   override def saveItem(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors] = {
     val item = (doc \ "item").toOption.flatMap(_.validate[JsObject].asOpt).getOrElse(JsObject(Seq()))

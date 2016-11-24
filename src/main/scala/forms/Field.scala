@@ -1,5 +1,6 @@
 package forms
 
+import controllers.FieldCheck
 import forms.validation.{FieldError, FieldHint}
 import models._
 import play.api.libs.json.JsObject
@@ -11,6 +12,13 @@ trait Field {
   def renderPreview(app: ApplicationSectionDetail, answers: JsObject): Html
 
   def name: String
+
+  def check: FieldCheck
+
+  /**
+    * Allow for more relaxed checks on preview if needed
+    */
+  def previewCheck: FieldCheck = check
 
 }
 
