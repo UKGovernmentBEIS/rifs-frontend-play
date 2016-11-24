@@ -12,19 +12,19 @@
 
             <div>
                 <p class="lede">What do you want to do?</p>
-                <form method="GET">
+                <form method="GET" action="@controllers.routes.OpportunityController.chooseHowToCreateOpportunity(None)">
                     <div class="form-group">
                         <fieldset class="">
                             <legend class="visually-hidden">
                                 You can create an entirely new opportunity or reuse an existing one.</legend>
 
                             <label class="block-label font-normal selection-button-radio" for="opportunity-reuse">
-                                <input id="opportunity-reuse" name="type" type="radio" value="reuse">
+                                <input id="opportunity-reuse" name="choice" type="radio" value="@controllers.ReuseOpportunityChoice.name">
                                 Reuse an existing opportunity
                             </label>
 
                             <label class="block-label font-normal selection-button-radio" for="opportunity-new">
-                                <input id="opportunity-new" name="type" type="radio" value="new">
+                                <input id="opportunity-new" name="choice" type="radio" value="@controllers.NewOpportunityChoice.name">
                                 Create new opportunity
                             </label>
                         </fieldset>
