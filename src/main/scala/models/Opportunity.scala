@@ -12,7 +12,6 @@ case class Opportunity(
                         id: OpportunityId,
                         title: String,
                         startDate: String,
-                        duration: Option[OpportunityDuration],
                         value: OpportunityValue,
                         description: Seq[OpportunityDescriptionSection]
                       )
@@ -21,6 +20,5 @@ case class OpportunitySummary(
                                id: OpportunityId,
                                title: String,
                                startDate: String,
-                               duration: Option[OpportunityDuration],
                                value: OpportunityValue
                              )
