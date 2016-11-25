@@ -29,18 +29,21 @@
     opportunity.description.find(_.sectionNumber == sectionNumber)
 }
 
-@main(s"Opportunity: ${opportunity.title} - RIFS", backLink=
-    Some(BackLink("Return to opportunity list", controllers.routes.OpportunityController.showOpportunities().url)), displayUserName=Some("Experienced Eric")) {
+@main(s"Opportunity: ${opportunity.title} - RIFS", backLink=Some(BackLink("Return to opportunity library", controllers.routes.OpportunityController.showOpportunityLibrary().url)), displayUserName=Some("Portfolio Peter")) {
 
 <div class="grid-row">
     <div class="column-two-thirds">
 
-     <header class="page-header">
+        <div class="panel rifs-panel rifs-border-narrow">
+            <p>RIFS @("%04d".format(opportunity.id.id)) <a href="@controllers.routes.OpportunityController.wip(routes.OpportunityController.showOpportunityLibrary().url))">Template View</a></p>
+        </div>
+
+        <header class="page-header">
             <h1 class="heading-xlarge">@opportunity.title</h1>
         </header>
 
         <aside>
-            <nav role="navigation" class="contain-floats page-navigation" aria-label="Navigation">
+            <nav role="navigation" class="page-navigation" aria-label="Navigation">
                 <ol>
                 @titleCols.map { case ((col1, idx), _) =>
                 <li id="title-@(idx + 1)">
@@ -77,32 +80,16 @@
                         <dd>&pound;@("%,.0f".format(opportunity.value.amount)) @opportunity.value.unit</dd>
                     </dl>
                 </div>
-                <div class="column-full rifs-form-buttons">
-                    <p>
-                        <a href="@controllers.routes.ApplicationController.showOrCreateForForm(applicationId)"
-                            class="button">
-                        Apply now</a>
-                    </p>
-                </div>
             </aside>
         </div>
 
         <article>
-        <h2 class="heading-large">@s.sectionNumber. @s.title</h2>
-        @s.text.map(_.split("\n\n")).map { ps =>
-            @ps.map { p =>
-            <p class="text">@p</p>
+            <h2 class="heading-large">@s.sectionNumber. @s.title</h2>
+            @s.text.map(_.split("\n\n")).map { ps =>
+                @ps.map { p =>
+                <p class="text">@p</p>
+                }
             }
-        }
-
-            <div class="rifs-form-buttons">
-                <p>
-                    <a href="@controllers.routes.ApplicationController.showOrCreateForForm(applicationId)"
-                       class="button"
-                    >Apply now</a>
-                </p>
-            </div>
-
         </article>
 
         <footer>
@@ -110,7 +97,7 @@
                 <ul class="group">
                         @prevSection.map { s =>
                             <li class="previous-page">
-                                <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(s.sectionNumber))"
+                                <a href="@controllers.routes.OpportunityController.showOpportunityPreview(opportunity.id, Some(s.sectionNumber))"
                                    title="Navigate to the previous page."
                                    rel="previous">
                                     <span class="pagination-part-title">Previous</span>
@@ -123,7 +110,7 @@
 
                         @nextSection.map { s =>
                             <li class="next-page">
-                                <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(s.sectionNumber))"
+                                <a href="@controllers.routes.OpportunityController.showOpportunityPreview(opportunity.id, Some(s.sectionNumber))"
                                    title="Navigate to the next page."
                                    rel="next">
                                     <span class="pagination-part-title">Next</span>
