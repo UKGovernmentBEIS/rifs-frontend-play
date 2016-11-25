@@ -1,6 +1,6 @@
 package forms.validation
 
-import cats.data.ValidatedNel
+import cats.data.{NonEmptyList, ValidatedNel}
 import cats.syntax.cartesian._
 import cats.syntax.validated._
 import forms.DateValues
@@ -37,6 +37,7 @@ case class DateTimeRange(startDate: LocalDate, endDate: Option[LocalDate])
 case class DateTimeRangeValidator(allowPast: Boolean, isEndDateMandatory: Boolean) extends FieldValidator[DateTimeRangeValues, DateTimeRange] {
   val dateValidator = DateFieldValidator(allowPast)
 
+  val mustProvideValidStartDateMessage = "You must provide a valid start date"
   val mustProvideValidEndDateMessage = "You must provide a valid end date"
   val endMustBeLaterThanStartMessage = "End date must be later than the start date"
 
@@ -49,7 +50,9 @@ case class DateTimeRangeValidator(allowPast: Boolean, isEndDateMandatory: Boolea
       val sdv: DateValues = vs.startDate.getOrElse(DateValues(None, None, None))
       val edv: Option[DateValues] = vs.endDate
 
-      val startDateV = dateValidator.validate(s"$path.startDate", sdv)
+      val startDateV = dateValidator.validate(s"$path.startDate", sdv).leftMap {
+        v => NonEmptyList.of(FieldError(s"$path.startDate", mustProvideValidStartDateMessage))
+      }
       // First check that the end date is valid if it's present
       val endDateValid = edv.map(dateValidator.validate(s"$path.endDate", _).map(Some(_))).getOrElse(None.valid)
       // And then check if it's present if the `endDateProvided` flag is set
