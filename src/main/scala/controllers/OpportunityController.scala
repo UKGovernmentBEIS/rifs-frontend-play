@@ -29,9 +29,6 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
   }
 
   def showOpportunityPreview(id: OpportunityId, sectionNumber: Option[Int]) = Action.async {
-    // Make the `Future` calls outside the `for` comprehension to allow them to run
-    // concurrently. Could use `Cartesian` to give applicative behaviour (`(f1 |@| f2)`) but
-    // IntelliJ doesn't handle it well at the moment.
     val f1 = OptionT(opportunities.byId(id))
     val f2 = OptionT(applications.byOpportunityId(id))
 
