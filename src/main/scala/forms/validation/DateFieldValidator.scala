@@ -9,6 +9,8 @@ import org.joda.time.LocalDate
 import scala.util.Try
 
 case class DateFieldValidator(allowPast: Boolean) extends FieldValidator[DateValues, LocalDate] {
+  val mustProvideAValidDateMsg = "Must provide a valid date"
+  val mustBeTodayOrLaterMsg = "Must be today or later"
 
   override def normalise(vs: DateValues): DateValues = vs.copy(
     day = vs.day.map(_.trim()),
@@ -20,9 +22,9 @@ case class DateFieldValidator(allowPast: Boolean) extends FieldValidator[DateVal
 
   def validateDate(path: String, d: Int, m: Int, y: Int): ValidatedNel[FieldError, LocalDate] =
     Try(new LocalDate(y, m, d)).toOption match {
-      case Some(ld) if !allowPast && ld.isBefore(LocalDate.now()) => FieldError(path, "Must be today or later").invalidNel
+      case Some(ld) if !allowPast && ld.isBefore(LocalDate.now()) => FieldError(path, mustBeTodayOrLaterMsg).invalidNel
       case Some(ld) => ld.valid
-      case None => FieldError(path, "Must provide a valid date").invalidNel
+      case None => FieldError(path, mustProvideAValidDateMsg).invalidNel
     }
 
   override def validate(path: String, vs: DateValues): ValidatedNel[FieldError, LocalDate] = {
