@@ -28,12 +28,12 @@
                 @Opportunity deadlines
             </h1>
 
-            <form>
+            <form method="POST" action="@controllers.routes.OpportunityController.saveDeadlines(opp.id)">
                 @renderers.dateField(field.startDateField, questions, answers, errs)
 
                 @if(!field.isEndDateMandatory) {
-                    <input type="radio" name="has_closing_date" value="yes">Yes
-                    <input type="radio" name="has_closing_date" value="no" checked>No
+                    <input type="radio" name="endDateProvided" value="yes">Yes
+                    <input type="radio" name="endDateProvided" value="no" checked>No
                 }
 
                 @renderers.dateField(field.endDateField, questions, answers, errs)

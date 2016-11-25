@@ -30,7 +30,7 @@ import org.joda.time.LocalDate
   *                        they are entering a closing date. This lets us distinguish between the user saying
   *                        that they are not providing a date, vs. saying they are but leaving it blank.
   */
-case class DateTimeRangeValues(startDate: Option[DateValues], endDate: Option[DateValues], endDateProvided: Option[Boolean])
+case class DateTimeRangeValues(startDate: Option[DateValues], endDate: Option[DateValues], endDateProvided: Option[String])
 
 case class DateTimeRange(startDate: LocalDate, endDate: Option[LocalDate])
 
@@ -53,7 +53,7 @@ case class DateTimeRangeValidator(allowPast: Boolean, isEndDateMandatory: Boolea
       // First check that the end date is valid if it's present
       val endDateValid = edv.map(dateValidator.validate(s"$path.endDate", _).map(Some(_))).getOrElse(None.valid)
       // And then check if it's present if the `endDateProvided` flag is set
-      val endDateV = endDateValid.map(od => (od, vs.endDateProvided.getOrElse(false))).andThen(endDateIsPresentIfSupplied.validate(path, _))
+      val endDateV = endDateValid.map(od => (od, vs.endDateProvided.exists(_.trim == "yes"))).andThen(endDateIsPresentIfSupplied.validate(path, _))
 
       (startDateV |@| endDateV).map(DateTimeRange.apply)
     }
@@ -66,9 +66,7 @@ case class DateTimeRangeValidator(allowPast: Boolean, isEndDateMandatory: Boolea
   lazy val endDateIsPresentIfMandatory = new FieldValidator[DateTimeRange, DateTimeRange] {
     override def validate(path: String, vs: DateTimeRange): ValidatedNel[FieldError, DateTimeRange] = {
       (isEndDateMandatory, vs.endDate) match {
-        case (true, None) =>
-
-          FieldError(path, mustProvideValidEndDateMessage).invalidNel
+        case (true, None) => FieldError(s"$path.endDate", mustProvideValidEndDateMessage).invalidNel
         case _ => vs.valid
       }
     }
@@ -81,7 +79,7 @@ case class DateTimeRangeValidator(allowPast: Boolean, isEndDateMandatory: Boolea
   lazy val endDateIsPresentIfSupplied = new FieldValidator[(Option[LocalDate], Boolean), Option[LocalDate]] {
     override def validate(path: String, vs: (Option[LocalDate], Boolean)) = {
       vs match {
-        case (None, true) => FieldError(path, mustProvideValidEndDateMessage).invalidNel
+        case (None, true) => FieldError(s"$path.endDate", mustProvideValidEndDateMessage).invalidNel
         case _ => vs._1.valid
       }
     }

@@ -3,9 +3,13 @@ package controllers
 import javax.inject.Inject
 
 import cats.data.OptionT
+import cats.data.Validated._
 import cats.instances.future._
-import forms.DateTimeRangeField
+import forms.validation.DateTimeRangeValues
+import forms.{DateTimeRangeField, DateValues}
 import models.{OpportunityId, Question}
+import play.api.Logger
+import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, OpportunityOps}
 
@@ -66,16 +70,37 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
     Ok(views.html.wip(backUrl))
   }
 
+  val deadlinesField = DateTimeRangeField("deadlines", allowPast = false, isEndDateMandatory = false)
+  val deadlineQuestions = Map(
+    "deadlines.startDate" -> Question("When does the opportunity open?"),
+    "deadlines.endDate" -> Question("What is the closing date?")
+  )
+
   def editDeadlines(id: OpportunityId) = Action.async {
     opportunities.byId(id).map {
       case Some(opp) =>
-        val field = DateTimeRangeField("deadlines", allowPast = false, isEndDateMandatory = false)
-        val questions = Map(
-          "deadlines.startDate" -> Question("When does the opportunity open?"),
-          "deadlines.endDate" -> Question("What is the closing date?")
-        )
-        Ok(views.html.manage.editDeadlinesForm(field, opp, questions, Map(), Seq(), Seq()))
 
+        Ok(views.html.manage.editDeadlinesForm(deadlinesField, opp, deadlineQuestions, Map(), Seq(), Seq()))
+
+      case None => NotFound
+    }
+  }
+
+  implicit val dvReads = Json.reads[DateValues]
+  implicit val dtrReads = Json.reads[DateTimeRangeValues]
+
+  def saveDeadlines(id: OpportunityId) = Action.async(JsonForm.parser) { implicit request =>
+    opportunities.byId(id).map {
+      case Some(opp) =>
+        request.body.values.validate[DateTimeRangeValues] match {
+          case JsSuccess(vs, _) => deadlinesField.validator.validate(deadlinesField.name, vs) match {
+            case Valid(v) => ???
+            case Invalid(errors) =>
+              Logger.debug(errors.toString())
+              Ok(views.html.manage.editDeadlinesForm(deadlinesField, opp, deadlineQuestions, Map(), errors.toList, Seq()))
+          }
+          case JsError(errors) => BadRequest(errors.toString)
+        }
       case None => NotFound
     }
   }

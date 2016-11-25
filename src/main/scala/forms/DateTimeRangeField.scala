@@ -24,8 +24,7 @@ case class DateTimeRangeField(name: String, allowPast: Boolean, isEndDateMandato
     val flattenedAnswers = JsonHelpers.flatten("", answers)
     val startDateValues = dateValuesFor(s"${startDateField.name}", flattenedAnswers)
     val endDateValues = dateValuesFor(s"${endDateField.name}", flattenedAnswers)
-    val hasClosingDate = flattenedAnswers.get(s"$name.has_closing_date").exists(_.trim == "yes")
-    val vs = DateTimeRangeValues(Some(startDateValues), Some(endDateValues), endDateProvided = Some(hasClosingDate))
+    val vs = DateTimeRangeValues(Some(startDateValues), Some(endDateValues), endDateProvided = None)
 
     validator.validate("", vs).map { dtr =>
       views.html.renderers.preview.dateTimeRangeField(
