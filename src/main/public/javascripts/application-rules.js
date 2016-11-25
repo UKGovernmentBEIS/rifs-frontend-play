@@ -50,14 +50,12 @@
 
     rifsHelperText();
 
-    // use GOVUK.SelectionButtons
-    // var selectionButtons = new GOVUK.SelectionButtons("label input[type='radio'], label input[type='checkbox']");
 }());
 
 $(document).ready(function () {
     jQuery.fx.off = true;
-
     var selectionButtons = new GOVUK.SelectionButtons($("label input[type='radio'], label input[type='checkbox']"));
-
+    var e = $("section.more");
+    e.find(".js-tabs").length && e.tabs();
     // $('details').details();
 });

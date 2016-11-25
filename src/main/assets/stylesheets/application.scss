@@ -39,8 +39,8 @@ $path: '/assets/stylesheets/images/';
 @import 'elements/shame';
 
 // Taken from alphagov/static
-// https://github.com/alphagov/static/blob/master/app/assets/stylesheets/govuk-component/_previous-and-next-navigation.scss
 @import 'static/previous-and-next-navigation';
+@import 'static/tabs';
 
 // Rifs imports
 @import 'rifs/buttons';
