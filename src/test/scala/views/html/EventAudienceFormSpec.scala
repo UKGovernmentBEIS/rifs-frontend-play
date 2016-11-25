@@ -3,6 +3,7 @@ package views.html
 import forms.TextAreaField
 import forms.validation.FieldHint
 import models._
+import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.scalatest.{Matchers, OptionValues, WordSpecLike}
 import play.api.libs.json.JsObject
@@ -33,7 +34,7 @@ class EventAudienceFormSpec extends WordSpecLike with Matchers with OptionValues
       ApplicationId(1),
       1,
       1,
-      OpportunitySummary(OpportunityId(1), "Research priorities in health care", "", None, OpportunityValue(0, "")),
+      OpportunitySummary(OpportunityId(1), "Research priorities in health care", new LocalDate(), None, OpportunityValue(0, "")),
       fs,
       None)
 

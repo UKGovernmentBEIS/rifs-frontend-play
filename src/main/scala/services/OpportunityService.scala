@@ -5,12 +5,13 @@ import javax.inject.Inject
 import com.wellfactored.playbindings.ValueClassFormats
 import config.Config
 import models._
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, Reads}
 import play.api.libs.ws.WSClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class OpportunityService @Inject()(val ws: WSClient)(implicit val ec: ExecutionContext) extends OpportunityOps with RestService with ValueClassFormats {
+  implicit val jldReads = Reads.jodaLocalDateReads("d MMM yyyy")
   implicit val odsRead = Json.reads[OpportunityDescriptionSection]
   implicit val ovRead = Json.reads[OpportunityValue]
   implicit val odRead = Json.reads[OpportunityDuration]
