@@ -84,13 +84,12 @@
         </div>
 
         <article>
-        <h2 class="heading-large">@s.sectionNumber. @s.title</h2>
-        @s.text.map(_.split("\n\n")).map { ps =>
-            @ps.map { p =>
-            <p class="text">@p</p>
+            <h2 class="heading-large">@s.sectionNumber. @s.title</h2>
+            @s.text.map(_.split("\n\n")).map { ps =>
+                @ps.map { p =>
+                <p class="text">@p</p>
+                }
             }
-        }
-
         </article>
 
         <footer>
