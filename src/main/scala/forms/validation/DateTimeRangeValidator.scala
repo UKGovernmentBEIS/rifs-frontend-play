@@ -8,6 +8,24 @@ import org.joda.time.LocalDate
 
 /**
   *
+  * This is a pretty complex set of validations as we need to not only validate the dates themselves, but
+  * also check two different flags that indicate whether an end date should be present. One is the flag
+  * on the field itself to day whether the end date is mandatory. The other is a flag that comes from the
+  * form input. In the case where the end date is optional then the user can select a radio button to
+  * say if they are supplying it.
+  *
+  * The validations are built up in two layers. The first layer is checking the contents of the
+  * `DateTimeRangeValues` structure, which represents the values that have come from the form. So,
+  * do the supplied values for the date fields represent valid dates and if the flag to say the end date is
+  * supplied is true, then is the end date actually present. If these validations pass then we get
+  * a `DateTimeRange` structure out of it where the date fields have been converted to `LocalDate`s
+  *
+  * Then we apply validations to check that the end date is present if it is marked as mandatory, and that
+  * the start date is before the end date.
+  *
+  * Despite the name (`DateTimeRangeValidator`) it doesn't currently handle time fields because we're not
+  * sure how that's going to look yet.
+  *
   * @param endDateProvided corresponds to the checkbox on the field renderer where the user selects whether
   *                        they are entering a closing date. This lets us distinguish between the user saying
   *                        that they are not providing a date, vs. saying they are but leaving it blank.
@@ -26,7 +44,7 @@ case class DateTimeRangeValidator(allowPast: Boolean, isEndDateMandatory: Boolea
     * Check that the individual form values are valid and build up a `DateTimeRange` instance that
     * can be further validated.
     */
-  val fieldLevelValidations = new FieldValidator[DateTimeRangeValues, DateTimeRange] {
+  lazy val fieldLevelValidations = new FieldValidator[DateTimeRangeValues, DateTimeRange] {
     override def validate(path: String, vs: DateTimeRangeValues): ValidatedNel[FieldError, DateTimeRange] = {
       val sdv: DateValues = vs.startDate.getOrElse(DateValues(None, None, None))
       val edv: Option[DateValues] = vs.endDate
@@ -45,7 +63,7 @@ case class DateTimeRangeValidator(allowPast: Boolean, isEndDateMandatory: Boolea
     * Check that if the `isEndDateMandatory` flag is `true` that an end date is present on the form. This is
     * irrespective of the value of `endDateProvided`.
     */
-  val endDateIsPresentIfMandatory = new FieldValidator[DateTimeRange, DateTimeRange] {
+  lazy val endDateIsPresentIfMandatory = new FieldValidator[DateTimeRange, DateTimeRange] {
     override def validate(path: String, vs: DateTimeRange): ValidatedNel[FieldError, DateTimeRange] = {
       (isEndDateMandatory, vs.endDate) match {
         case (true, None) =>
@@ -60,7 +78,7 @@ case class DateTimeRangeValidator(allowPast: Boolean, isEndDateMandatory: Boolea
     * Check that, if the form values indicate that the user has said they're providing an end date,
     * then the user has actually provided values for the end date.
     */
-  val endDateIsPresentIfSupplied = new FieldValidator[(Option[LocalDate], Boolean), Option[LocalDate]] {
+  lazy val endDateIsPresentIfSupplied = new FieldValidator[(Option[LocalDate], Boolean), Option[LocalDate]] {
     override def validate(path: String, vs: (Option[LocalDate], Boolean)) = {
       vs match {
         case (None, true) => FieldError(path, mustProvideValidEndDateMessage).invalidNel
@@ -69,7 +87,7 @@ case class DateTimeRangeValidator(allowPast: Boolean, isEndDateMandatory: Boolea
     }
   }
 
-  val startDateIsBeforeEndDate = new FieldValidator[DateTimeRange, DateTimeRange] {
+  lazy val startDateIsBeforeEndDate = new FieldValidator[DateTimeRange, DateTimeRange] {
     override def validate(path: String, dtr: DateTimeRange): ValidatedNel[FieldError, DateTimeRange] = {
       dtr.endDate.map(_.isAfter(dtr.startDate)) match {
         case Some(false) =>
