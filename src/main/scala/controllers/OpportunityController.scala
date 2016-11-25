@@ -28,6 +28,16 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
     }
   }
 
+  def showOpportunityPreview(id: OpportunityId, sectionNumber: Option[Int]) = Action.async {
+    val f1 = OptionT(opportunities.byId(id))
+    val f2 = OptionT(applications.byOpportunityId(id))
+
+    (for (o <- f1; a <- f2) yield (o, a)).value.map {
+      case Some((o, a)) => Ok(views.html.opportunityPreview(a.id, o, sectionNumber.getOrElse(1)))
+      case None => NotFound
+    }
+  }
+
   def showNewOpportunityForm = Action {
     Ok(views.html.newOpportunityChoice())
   }
@@ -35,7 +45,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
   def chooseHowToCreateOpportunity(choiceText: Option[String]) = Action { implicit request =>
     CreateOpportunityChoice(choiceText).map {
       case NewOpportunityChoice => Ok(views.html.wip(routes.OpportunityController.showNewOpportunityForm().url))
-      case ReuseOpportunityChoice => Ok(views.html.wip(routes.OpportunityController.showNewOpportunityForm().url))
+      case ReuseOpportunityChoice => Redirect(controllers.routes.OpportunityController.showOpportunityLibrary)
     }.getOrElse(Redirect(controllers.routes.OpportunityController.showNewOpportunityForm()))
   }
 
@@ -84,6 +94,10 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
         Ok(views.html.manage.viewOppSection(opp, oppSection))
       case None => NotFound
     }
+  }
+
+  def showOpportunityLibrary = Action.async {
+    opportunities.getOpenOpportunitySummaries.map { os => Ok(views.html.showOpportunityLibrary(os)) }
   }
 
   def showGuidancePage(id: OpportunityId) = Action {

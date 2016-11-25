@@ -48,3 +48,42 @@ table.spacious tfoot > tr > td {
 .footer-two-light td {
   border-bottom: 1px solid $black !important;
 }
+
+@media screen and (max-width: 560px) {
+  .mobile-one-column {
+    table, thead, tbody, th, td, tr { display: block; }
+
+    // Visually hide table headers, but leave them in for accessibility
+    thead tr {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+
+    td {
+      // Behave like a row
+      position: relative;
+      padding-left: 37%;
+    }
+
+    td:before {
+      // This is the label
+      position: absolute;
+      // mimic some padding, set the Label text flush left (after the gutter)
+      top: 15px;
+      left: 0;
+      width: 33.33%;
+      padding-right: 2em;
+      white-space: nowrap;
+      font-weight: bold;
+      content: ' 'attr(data-label)' ';
+    }
+
+    tr:not(:last-of-type) {
+      border-bottom: 2px solid $black;
+    }
+
+  }
+
+}
+
