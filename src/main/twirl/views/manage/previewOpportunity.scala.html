@@ -52,32 +52,42 @@ backLink=Some(BackLink("Opportunity library", controllers.routes.OpportunityCont
                             <tbody>
                                 <tr>
                                     <td>
-                                        1. <a id="op-setup-link1" href="todo"> Opportunity title</a>
+                                        1. <a id="op-setup-link1"
+                                              href="@controllers.routes.OpportunityController.viewTitle(opportunity.id)"
+                                            > Opportunity title</a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        2. <a id="op-setup-link2" href="todo"> Opportunity deadlines</a>
+                                        2. <a id="op-setup-link2"
+                                              href="@controllers.routes.OpportunityController.viewDeadlines(opportunity.id)"
+                                            > Opportunity deadlines</a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        3. <a id="op-setup-link3" href="todo"> Opportunity description</a>
+                                        3. <a id="op-setup-link3"
+                                              href="@controllers.routes.OpportunityController.viewDescription(opportunity.id)"
+                                            > Opportunity description</a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        4. <a id="op-setup-link4" href="todo"> Maximum grant value</a>
+                                        4. <a id="op-setup-link4"
+                                              href="@controllers.routes.OpportunityController.viewGrantValue(opportunity.id)"
+                                            > Maximum grant value</a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        5. <a id="op-setup-link5" href="todo"> Assessment criteria</a>
+                                        5. <a id="op-setup-link5"
+                                              href="http://todo"
+                                            > Assessment criteria</a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        6. <a id="op-setup-link6" href="todo"> Eligibility</a>
+                                        6. <a id="op-setup-link6" href="http://todo"> Eligibility</a>
                                     </td>
                                 </tr>
 
@@ -98,7 +108,9 @@ backLink=Some(BackLink("Opportunity library", controllers.routes.OpportunityCont
                             @app.sections.sortBy(_.sectionNumber).map { fs =>
                                 <tr>
                                     <td>
-                                        @fs.sectionNumber. <a id="section-@fs.sectionNumber-link" href="todo"> @fs.title</a>
+                                        @fs.sectionNumber. <a id="section-@fs.sectionNumber-link"
+                                                              href="@controllers.routes.OpportunityController.viewOppSection(opportunity.id, fs.sectionNumber)"
+                                                            > @fs.title</a>
                                     </td>
                                 </tr>
                             }
