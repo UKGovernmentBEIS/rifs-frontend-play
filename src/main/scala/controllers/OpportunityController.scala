@@ -4,7 +4,8 @@ import javax.inject.Inject
 
 import cats.data.OptionT
 import cats.instances.future._
-import models.OpportunityId
+import forms.DateTimeRangeField
+import models.{OpportunityId, Question}
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, OpportunityOps}
 
@@ -35,7 +36,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
   def chooseHowToCreateOpportunity(choiceText: Option[String]) = Action { implicit request =>
     CreateOpportunityChoice(choiceText).map {
       case NewOpportunityChoice => Ok(views.html.wip(routes.OpportunityController.showNewOpportunityForm().url))
-      case ReuseOpportunityChoice => Redirect(controllers.routes.OpportunityController.showOpportunityLibrary)
+      case ReuseOpportunityChoice => Redirect(controllers.routes.OpportunityController.showOpportunityLibrary())
     }.getOrElse(Redirect(controllers.routes.OpportunityController.showNewOpportunityForm()))
   }
 
@@ -53,6 +54,20 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
 
   def wip(backUrl: String) = Action {
     Ok(views.html.wip(backUrl))
+  }
+
+  def editDeadlines(id: OpportunityId) = Action.async {
+    opportunities.byId(id).map {
+      case Some(opp) =>
+        val field = DateTimeRangeField("deadlines", allowPast = false, isEndDateMandatory = false)
+        val questions = Map(
+          "deadlines.startDate" -> Question("When does the opportunity open?"),
+          "deadlines.endDate" -> Question("What is the closing date?")
+        )
+        Ok(views.html.manage.editDeadlinesForm(field, opp, questions, Map(), Seq(), Seq()))
+
+      case None => NotFound
+    }
   }
 }
 

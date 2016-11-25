@@ -40,6 +40,7 @@ GET         /wip                                                      controller
 
 # Manage Views
 GET         /manage/opportunities/guidance                            controllers.OpportunityController.showPMGuidancePage
+GET         /manage/opportunity/:id/deadlines/edit                    controllers.OpportunityController.editDeadlines(id: OpportunityId)
 
 # Health check
 GET         /ping                                                     controllers.HealthCheckController.ping()
