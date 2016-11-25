@@ -34,14 +34,16 @@ POST        /application/:id/section/:num/item/:itemNum               controller
 GET         /application/:id/section/:num/item/:itemNum/delete        controllers.CostController.deleteItem(id:ApplicationId, num: Int, itemNum: Int)
 GET         /application/:id/section/:num/item/:itemNum/edit          controllers.CostController.editItem(id:ApplicationId, num: Int, itemNum: Int)
 
-GET         /opportunity/:opportunityId/overview                      controllers.OpportunityController.showOverviewPage(opportunityId:OpportunityId)
-POST        /opportunity/:opportunityId/duplicate                     controllers.OpportunityController.duplicate(opportunityId:OpportunityId)
 
 GET         /reset                                                    controllers.ApplicationController.reset
 GET         /wip                                                      controllers.OpportunityController.wip(backUrl: String)
 
 # Manage Views
 GET         /manage/opportunities/guidance                            controllers.OpportunityController.showPMGuidancePage
+GET         /manage/opportunity/:opportunityId/overview               controllers.OpportunityController.showOverviewPage(opportunityId:OpportunityId)
+POST        /manage/opportunity/:opportunityId/duplicate              controllers.OpportunityController.duplicate(opportunityId:OpportunityId)
+GET         /manage/opportunity/:opportunityId/setup-guidance         controllers.OpportunityController.showOpportunitySetupGuidance(opportunityId:OpportunityId)
+
 
 # Health check
 GET         /ping                                                     controllers.HealthCheckController.ping()
