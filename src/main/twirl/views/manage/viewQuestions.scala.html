@@ -1,0 +1,27 @@
+@(
+        app: ApplicationSectionDetail,
+        fields: Seq[forms.Field],
+        answers: play.api.libs.json.JsObject
+)
+
+@formatId(id: Long) = @{
+    f"RIFS$id%05d"
+}
+
+@main(s"${app.formSection.title} - RIFS", backLink=Some(BackLink("Opportunity Template",controllers.routes.OpportunityController.showOpportunity(app.opportunity.id, None).url))) {
+    <div class="grid-row">
+        <div class="column-full">
+            <h1 class="heading-xlarge">
+                <span class="heading-secondary">@formatId(app.opportunity.id.id): @app.opportunity.title</span>
+                @app.formSection.title
+            </h1>
+
+            @fields.map(_.renderFormInput(app, answers, List(), List()))
+            <div class="rifs-form-buttons">
+                <a href="@controllers.routes.OpportunityController.showOpportunity(app.opportunity.id, None)" class="button">
+                   Continue</a>
+            </div>
+
+        </div>
+    </div>
+}

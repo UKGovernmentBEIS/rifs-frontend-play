@@ -1,0 +1,25 @@
+@(
+  opp: Opportunity
+)
+
+@formatId(id: Long) = @{
+    f"RIFS$id%05d"
+}
+
+@main(s"${opp.title} - RIFS", backLink=Some(BackLink("Opportunity overview",controllers.routes.OpportunityController.showOpportunity(opp.id, None).url))) {
+    <div class="grid-row">
+        <div class="column-full">
+            <h1 class="heading-xlarge">
+                <span class="heading-secondary">@formatId(opp.id.id): @opp.title</span>
+                Opportunity deadlines
+            </h1>
+
+            <span class="heading-secondary">WIP</span>
+            <div class="rifs-form-buttons">
+                <a href="@controllers.routes.OpportunityController.showOpportunity(opp.id, None)" class="button">
+                   Continue</a>
+            </div>
+
+        </div>
+    </div>
+}

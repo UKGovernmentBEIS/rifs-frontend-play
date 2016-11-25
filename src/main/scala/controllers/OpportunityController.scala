@@ -39,6 +39,53 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
     }.getOrElse(Redirect(controllers.routes.OpportunityController.showNewOpportunityForm()))
   }
 
+  def viewTitle(id:OpportunityId) = Action.async { request =>
+    val fopp = opportunities.byId(id)
+    fopp.map {
+      case Some(opp) =>
+        Ok(views.html.manage.viewTitle(opp))
+      case None => NotFound
+    }
+  }
+
+
+  def viewDeadlines(id:OpportunityId) = Action.async { request =>
+    val fopp = opportunities.byId(id)
+    fopp.map {
+      case Some(opp) =>
+        Ok(views.html.manage.viewDeadlines(opp))
+      case None => NotFound
+    }
+  }
+
+
+  def viewDescription(id:OpportunityId) = Action.async { request =>
+    val fopp = opportunities.byId(id)
+    fopp.map {
+      case Some(opp) =>
+        Ok(views.html.manage.viewDescription(opp))
+      case None => NotFound
+    }
+  }
+
+  def viewGrantValue(id:OpportunityId) = Action.async { request =>
+    val fopp = opportunities.byId(id)
+    fopp.map {
+      case Some(opp) =>
+        Ok(views.html.manage.viewGrantValue(opp))
+      case None => NotFound
+    }
+  }
+
+  def viewOppSection(id:OpportunityId, oppSection:Int) = Action.async { request =>
+    val fopp = opportunities.byId(id)
+    fopp.map {
+      case Some(opp) =>
+        Ok(views.html.manage.viewOppSection(opp, oppSection))
+      case None => NotFound
+    }
+  }
+
   def showGuidancePage(id: OpportunityId) = Action {
     Ok(views.html.guidance(id))
   }

@@ -39,6 +39,13 @@ GET         /wip                                                      controller
 
 # Manage Views
 GET         /manage/opportunities/guidance                            controllers.OpportunityController.showPMGuidancePage
+GET         /manage/application/:id/section/:num/questions        controllers.ApplicationPreviewController.viewQuestions(id: ApplicationId, num:Int)
+GET         /manage/opportunity/:opportunityId/title                  controllers.OpportunityController.viewTitle(opportunityId:OpportunityId)
+GET         /manage/opportunity/:opportunityId/deadlines              controllers.OpportunityController.viewDeadlines(opportunityId:OpportunityId)
+GET         /manage/opportunity/:opportunityId/description            controllers.OpportunityController.viewDescription(opportunityId:OpportunityId)
+GET         /manage/opportunity/:opportunityId/grantvalue             controllers.OpportunityController.viewGrantValue(opportunityId:OpportunityId)
+GET         /manage/opportunity/:opportunityId/oppsection/:sectionid  controllers.OpportunityController.viewOppSection(opportunityId:OpportunityId, sectionid:Int)
+
 
 # Health check
 GET         /ping                                                     controllers.HealthCheckController.ping()
