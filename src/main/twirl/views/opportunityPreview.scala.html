@@ -29,8 +29,7 @@
     opportunity.description.find(_.sectionNumber == sectionNumber)
 }
 
-@main(s"Opportunity: ${opportunity.title} - RIFS", backLink=
-    Some(BackLink("Return to opportunity list", controllers.routes.OpportunityController.showOpportunities().url)), displayUserName=Some("Portfolio Peter/Experienced Eric")) {
+@main(s"Opportunity: ${opportunity.title} - RIFS", backLink=Some(BackLink("Return to opportunity library", controllers.routes.OpportunityController.showOpportunityLibrary().url)), displayUserName=Some("Portfolio Peter/Experienced Eric")) {
 
 <div class="grid-row">
     <div class="column-two-thirds">

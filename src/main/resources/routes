@@ -10,12 +10,11 @@ GET         /opportunities                                            controller
 
 GET         /opportunities/guidance/:opportunityId                    controllers.OpportunityController.showGuidancePage(opportunityId:OpportunityId)
 GET         /opportunity/:opportunityId                               controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
-GET         /opportunity/preview/:opportunityId                       controllers.OpportunityController.showOpportunityPreview(opportunityId:OpportunityId, section:Option[Int])
-
 
 GET         /manage/opportunity/new                                   controllers.OpportunityController.showNewOpportunityForm
 GET         /manage/opportunity/choose                                controllers.OpportunityController.chooseHowToCreateOpportunity(choice:Option[String])
 GET         /manage/opportunities/library                             controllers.OpportunityController.showOpportunityLibrary
+GET         /manage/opportunity/:opportunityId                         controllers.OpportunityController.showOpportunityPreview(opportunityId:OpportunityId, section:Option[Int])
 
 GET         /application_form/:id/apply                               controllers.ApplicationController.showOrCreateForForm(id: ApplicationFormId)
 
