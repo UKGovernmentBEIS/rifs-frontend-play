@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import cats.data.OptionT
 import cats.instances.future._
-import models.OpportunityId
+import models.{ApplicationId, OpportunityId}
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, OpportunityOps}
 
@@ -115,12 +115,14 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
   def showOpportunitySetupGuidance(id: OpportunityId) = showPMGuidancePage
 
   def showOverviewPage(opportunityId: OpportunityId) = Action.async {
+    val appId = ApplicationId(1)  //we take 1st Application as sample
+
     (for {
       op <- OptionT(opportunities.byId(opportunityId))
       app <- OptionT(applications.byOpportunityId(opportunityId))
     } yield (op, app)
       ).value.map {
-        case Some((op, app)) => Ok(views.html.manage.previewOpportunity(op, app) )
+        case Some((op, app)) => Ok(views.html.manage.previewOpportunity(appId, op, app) )
         case None => NotFound
       }
   }

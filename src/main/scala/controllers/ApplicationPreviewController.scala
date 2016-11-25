@@ -63,7 +63,7 @@ class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, appli
 
   def gatherApplicationDetails(id: ApplicationId): Future[Option[ApplicationDetail]] = applications.detail(id)
 
-  def viewQuestions(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
+    def viewQuestions(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
     val ft = actionHandler.gatherSectionDetails(id, sectionNumber)
 
     ft.map {

@@ -1,7 +1,7 @@
 @import models._
 @import partials._
 
-@(opportunity: Opportunity, app: ApplicationForm, tabNumber: Option[Int] = None)
+@(appId: ApplicationId, opportunity: Opportunity, app: ApplicationForm, tabNumber: Option[Int] = None)
 
 @username() = @{
     Some("Portfolio Pete")
@@ -10,6 +10,11 @@
 @formatId(id: Long) = @{
 f"RIFS$id%05d"
 }
+
+@addnumbers(n1: Int, n2: Int) = @{
+s"${n1 + n2 +1}"
+}
+
 
 @headEx() = {
 }
@@ -78,7 +83,7 @@ backLink=Some(BackLink("Opportunity library", controllers.routes.OpportunityCont
                                             > Maximum grant value</a>
                                     </td>
                                 </tr>
-                                <tr>
+                                <!-- <tr>
                                     <td>
                                         5. <a id="op-setup-link5"
                                               href="http://todo"
@@ -89,8 +94,18 @@ backLink=Some(BackLink("Opportunity library", controllers.routes.OpportunityCont
                                     <td>
                                         6. <a id="op-setup-link6" href="http://todo"> Eligibility</a>
                                     </td>
-                                </tr>
+                                </tr> -->
 
+                                @opportunity.description.zipWithIndex.map {opd =>
+                                <tr>
+                                    <td>
+                                        @addnumbers(opd._2, 4) .
+                                        <a href="@controllers.routes.OpportunityController.viewOppSection(opportunity.id, opd._1.sectionNumber)">
+                                            @opd._1.title
+                                        </a>
+                                    </td>
+                                </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -109,8 +124,9 @@ backLink=Some(BackLink("Opportunity library", controllers.routes.OpportunityCont
                                 <tr>
                                     <td>
                                         @fs.sectionNumber. <a id="section-@fs.sectionNumber-link"
-                                                              href="@controllers.routes.OpportunityController.viewOppSection(opportunity.id, fs.sectionNumber)"
+                                                              href="@controllers.routes.ApplicationPreviewController.viewQuestions(appId, fs.sectionNumber)"
                                                             > @fs.title</a>
+
                                     </td>
                                 </tr>
                             }

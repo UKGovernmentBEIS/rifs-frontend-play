@@ -6,7 +6,7 @@
     f"RIFS$id%05d"
 }
 
-@main(s"${opp.title} - RIFS", backLink=Some(BackLink("Opportunity overview",controllers.routes.OpportunityController.showOpportunity(opp.id, None).url))) {
+@main(s"${opp.title} - RIFS", backLink=Some(BackLink("Opportunity template",controllers.routes.OpportunityController.showOverviewPage(opp.id).url))) {
     <div class="grid-row">
         <div class="column-full">
             <h1 class="heading-xlarge">
@@ -18,7 +18,7 @@
             }
 
             <div class="rifs-form-buttons">
-                <a href="@controllers.routes.OpportunityController.showOpportunity(opp.id, None)" class="button">
+                <a href="@controllers.routes.OpportunityController.showOverviewPage(opp.id)" class="button">
                    Continue</a>
             </div>
 

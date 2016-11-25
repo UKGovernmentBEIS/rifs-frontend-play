@@ -8,7 +8,7 @@
     f"RIFS$id%05d"
 }
 
-@main(s"${app.formSection.title} - RIFS", backLink=Some(BackLink("Opportunity Template",controllers.routes.OpportunityController.showOpportunity(app.opportunity.id, None).url))) {
+@main(s"${app.formSection.title} - RIFS", backLink=Some(BackLink("Opportunity Template",controllers.routes.OpportunityController.showOverviewPage(app.opportunity.id).url))) {
     <div class="grid-row">
         <div class="column-full">
             <h1 class="heading-xlarge">
@@ -18,7 +18,7 @@
 
             @fields.map(_.renderFormInput(app, answers, List(), List()))
             <div class="rifs-form-buttons">
-                <a href="@controllers.routes.OpportunityController.showOpportunity(app.opportunity.id, None)" class="button">
+                <a href="@controllers.routes.OpportunityController.showOverviewPage(app.opportunity.id)" class="button">
                    Continue</a>
             </div>
 
