@@ -56,7 +56,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
   }
 
   def showOpportunitySetupGuidance(id: OpportunityId) = Action {
-    Ok(views.html.guidance(id))
+    Ok(views.html.manage.opportunitySetupGuidance(id))
   }
 
   def showOverviewPage(opportunityId: OpportunityId) = Action.async {

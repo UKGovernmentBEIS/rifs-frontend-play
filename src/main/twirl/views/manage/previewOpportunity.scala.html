@@ -3,6 +3,10 @@
 
 @(opportunity: Opportunity, app: ApplicationForm, tabNumber: Option[Int] = None)
 
+@username() = @{
+    Some("Portfolio Manager")
+}
+
 @formatId(id: Long) = @{
 f"RIFS$id%05d"
 }
@@ -17,7 +21,7 @@ f"RIFS$id%05d"
     <link href="@routes.Assets.at("stylesheets/tabs.css")" rel="stylesheet" type="text/css" />
 }
 
-@main(s"Overview - RIFS", displayUserName=Some("Portfolio Manager"), headExtra = headEx,
+@main(s"Overview - RIFS", displayUserName = username(), headExtra = headEx,
 backLink=Some(BackLink("Library", controllers.routes.OpportunityController.showOpportunityLibrary().url)) ) {
 
 <!-- main content -->
