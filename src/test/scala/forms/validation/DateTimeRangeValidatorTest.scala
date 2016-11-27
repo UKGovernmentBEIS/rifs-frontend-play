@@ -24,7 +24,7 @@ class DateTimeRangeValidatorTest extends WordSpecLike with Matchers with OptionV
       result shouldBe a[Invalid[_]]
       result.leftMap { errs =>
         errs.tail.length shouldBe 0
-        errs.map(_.path should startWith(s"$path.startDate."))
+        errs.head.path shouldBe s"$path.startDate"
       }
     }
 
