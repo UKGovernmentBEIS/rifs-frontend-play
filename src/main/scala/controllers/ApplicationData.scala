@@ -17,11 +17,6 @@ object ApplicationData {
   implicit val civReads = Json.reads[CostItemValues]
   implicit val ciReads = Json.reads[CostItem]
 
-  def sectionTypeFor(sectionNumber: Int): SectionType = sectionNumber match {
-    case 6 => ItemSection
-    case _ => VanillaSection
-  }
-
   def itemChecksFor(sectionNumber: Int): Map[String, FieldCheck] = sectionNumber match {
     case 6 => Map("item" -> fromValidator(CostItemValidator))
     case _ => Map()

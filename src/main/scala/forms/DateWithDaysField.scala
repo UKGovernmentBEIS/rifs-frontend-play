@@ -17,10 +17,10 @@ case class DateWithDaysField(name: String, allowPast: Boolean, minValue: Int, ma
 
   override val check: FieldCheck = FieldChecks.fromValidator(validator)
 
-  override def renderFormInput(app: ApplicationSectionDetail, answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]): Html =
-    views.html.renderers.dateWithDaysField(this, app, answers, errs, hints)
+  override def renderFormInput(questions: Map[String, Question], answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]) =
+    views.html.renderers.dateWithDaysField(this, questions, answers, errs, hints)
 
-  override def renderPreview(app: ApplicationSectionDetail, answers: JsObject): Html = {
+  override def renderPreview(questions: Map[String, Question], answers: JsObject) = {
     val flattenedAnswers = JsonHelpers.flatten("", answers)
     val day = flattenedAnswers.get(s"${dateField.name}.day")
     val month = flattenedAnswers.get(s"${dateField.name}.month")

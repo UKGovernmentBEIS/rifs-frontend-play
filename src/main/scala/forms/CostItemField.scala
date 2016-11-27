@@ -15,8 +15,8 @@ case class CostItemField(name: String) extends Field {
 
   override def check: FieldCheck = FieldChecks.fromValidator(CostItemValidator)
 
-  override def renderFormInput(app: ApplicationSectionDetail, answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]): Html =
-    views.html.renderers.costItemField(this, app.formSection.questionMap, JsonHelpers.flatten(answers), errs, hints)
+  override def renderFormInput(questions: Map[String, Question], answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]) =
+    views.html.renderers.costItemField(this, questions, JsonHelpers.flatten(answers), errs, hints)
 
-  override def renderPreview(app: ApplicationSectionDetail, answers: JsObject): Html = Html("")
+  override def renderPreview(questions: Map[String, Question], answers: JsObject) = Html("")
 }

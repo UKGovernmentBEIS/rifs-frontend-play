@@ -1,7 +1,7 @@
 @(field: forms.DateTimeRangeField,
         opp: Opportunity,
         questions: Map[String, Question],
-        answers: Map[String, String],
+        answers: play.api.libs.json.JsObject,
         errs: Seq[forms.validation.FieldError],
         hints: Seq[forms.validation.FieldHint])
 
@@ -29,14 +29,7 @@
             </h1>
 
             <form method="POST" action="@controllers.routes.OpportunityController.saveDeadlines(opp.id)">
-                @renderers.dateField(field.startDateField, questions, answers, errs)
-
-                @if(!field.isEndDateMandatory) {
-                    <input type="radio" name="endDateProvided" value="yes">Yes
-                    <input type="radio" name="endDateProvided" value="no" checked>No
-                }
-
-                @renderers.dateField(field.endDateField, questions, answers, errs)
+                @field.renderFormInput(questions, answers, errs, hints)
 
                 <label for="complete-checkbox" class="form-checkbox font-normal" style="width: 16em">
                     <input id="complete-checkbox" type="checkbox" name="_complete_checkbox"/>

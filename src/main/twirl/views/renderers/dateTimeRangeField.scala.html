@@ -1,5 +1,5 @@
 @(field: forms.DateTimeRangeField,
-        app: ApplicationSectionDetail,
+        questions:Map[String, Question],
         answers: play.api.libs.json.JsObject,
         errs: Seq[forms.validation.FieldError],
         hints: Seq[forms.validation.FieldHint])
@@ -12,10 +12,10 @@
     <span class="error-message" role="alert">@e.err</span>
 }
 
-@field.startDateField.renderFormInput(app, answers, errs, hints)
+@field.startDateField.renderFormInput(questions, answers, errs, hints)
 
 @if(!field.isEndDateMandatory)  {
     <input type="radio" name="has_closing_date" value="yes">Yes
     <input type="radio" name="has_closing_date" value="no" checked>No
 }
-@field.endDateField.renderFormInput(app, answers, errs, hints)
+@field.endDateField.renderFormInput(questions, answers, errs, hints)

@@ -17,9 +17,9 @@ case class CurrencyField(label: Option[String], name: String) extends Field {
 
   override val check: FieldCheck = FieldChecks.fromValidator(CurrencyValidator)
 
-  override def renderFormInput(app: ApplicationSectionDetail, answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]): Html =
-    views.html.renderers.currencyField(this, app.formSection.questionMap, JsonHelpers.flatten(answers), errs, hints)
+  override def renderFormInput(questions: Map[String, Question], answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]) =
+    views.html.renderers.currencyField(this, questions, JsonHelpers.flatten(answers), errs, hints)
 
-  override def renderPreview(app: ApplicationSectionDetail, answers: JsObject): Html =
+  override def renderPreview(questions: Map[String, Question], answers: JsObject) =
     views.html.renderers.preview.currencyField(this, JsonHelpers.flatten(answers))
 }

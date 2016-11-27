@@ -9,7 +9,7 @@ import forms.validation.DateTimeRangeValues
 import forms.{DateTimeRangeField, DateValues}
 import models.{OpportunityId, Question}
 import play.api.Logger
-import play.api.libs.json.{JsError, JsSuccess, Json}
+import play.api.libs.json.{JsError, JsObject, JsSuccess, Json}
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, OpportunityOps}
 
@@ -80,7 +80,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
     opportunities.byId(id).map {
       case Some(opp) =>
 
-        Ok(views.html.manage.editDeadlinesForm(deadlinesField, opp, deadlineQuestions, Map(), Seq(), Seq()))
+        Ok(views.html.manage.editDeadlinesForm(deadlinesField, opp, deadlineQuestions, JsObject(Seq()), Seq(), Seq()))
 
       case None => NotFound
     }
@@ -97,7 +97,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
             case Valid(v) => ???
             case Invalid(errors) =>
               Logger.debug(errors.toString())
-              Ok(views.html.manage.editDeadlinesForm(deadlinesField, opp, deadlineQuestions, Map(), errors.toList, Seq()))
+              Ok(views.html.manage.editDeadlinesForm(deadlinesField, opp, deadlineQuestions, JsObject(Seq()), errors.toList, Seq()))
           }
           case JsError(errors) => BadRequest(errors.toString)
         }

@@ -2,7 +2,7 @@ package forms
 
 import controllers.{FieldCheck, FieldChecks, JsonHelpers}
 import forms.validation.{DateFieldValidator, FieldError, FieldHint}
-import models.ApplicationSectionDetail
+import models.{ApplicationSectionDetail, Question}
 import play.api.libs.json.{JsObject, Json}
 import play.twirl.api.Html
 
@@ -13,11 +13,11 @@ case class DateField(name: String, allowPast: Boolean) extends Field with DateTi
 
   override val check: FieldCheck = FieldChecks.fromValidator(DateFieldValidator(allowPast))
 
-  override def renderFormInput(app: ApplicationSectionDetail, answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]): Html = {
-    views.html.renderers.dateField(this, app.formSection.questionMap, JsonHelpers.flatten(answers), errs)
+  override def renderFormInput(questions: Map[String, Question], answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]) = {
+    views.html.renderers.dateField(this, questions, JsonHelpers.flatten(answers), errs)
   }
 
-  override def renderPreview(app: ApplicationSectionDetail, answers: JsObject): Html =
+  override def renderPreview(questions: Map[String, Question], answers: JsObject) =
     views.html.renderers.preview.dateField(this, JsonHelpers.flatten(answers))
 
 }

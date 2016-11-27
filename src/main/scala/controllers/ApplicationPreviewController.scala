@@ -18,9 +18,15 @@ class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, appli
 
     ft.map {
       case Some(app) =>
-        app.section.map(_.isComplete) match {
-          case Some(true) => renderSectionPreviewCompleted(app, app.formSection.fields)
-          case _ => renderSectionPreviewInProgress(app, app.formSection.fields)
+        app.formSection.sectionType match {
+          case "form" =>
+            app.section.map(_.isComplete) match {
+              case Some(true) => renderSectionPreviewCompleted(app, app.formSection.fields)
+              case _ => renderSectionPreviewInProgress(app, app.formSection.fields)
+            }
+          case "list" =>
+            // TODO: show the cost list preview
+            Ok(views.html.wip(controllers.routes.ApplicationController.show(id).url))
         }
       case None => NotFound
     }
@@ -28,7 +34,6 @@ class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, appli
 
   def renderSectionPreviewCompleted(app: ApplicationSectionDetail, fields: Seq[Field]) = {
     val answers = app.section.map { s => s.answers }.getOrElse(JsObject(List.empty))
-
     Ok(views.html.sectionPreview(
       app,
       fields,

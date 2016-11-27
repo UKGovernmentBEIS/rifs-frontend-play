@@ -18,12 +18,12 @@ class DateTimeRangeValidatorTest extends WordSpecLike with Matchers with OptionV
       validator.validate(path, values) shouldBe a[Valid[_]]
     }
 
-    "fail with three startDate errors if the start date is not provided" in {
+    "fail with a single error if the start date is not provided" in {
       val values = DateTimeRangeValues(None, validDateValues2, None)
       val result = validator.validate(path, values)
       result shouldBe a[Invalid[_]]
       result.leftMap { errs =>
-        errs.tail.length shouldBe 2
+        errs.tail.length shouldBe 0
         errs.map(_.path should startWith(s"$path.startDate."))
       }
     }

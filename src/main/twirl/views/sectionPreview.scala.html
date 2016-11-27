@@ -18,7 +18,7 @@
                 @app.formSection.title
             </h1>
 
-            @fields.map(_.renderPreview(app, answers))
+            @fields.map(_.renderPreview(app.formSection.questionMap, answers))
 
             @if(editButton.isDefined){
                 @app.section.flatMap(_.completedAtText)

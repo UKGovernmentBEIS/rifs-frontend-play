@@ -4,10 +4,9 @@ import com.google.inject.Inject
 import com.wellfactored.playbindings.ValueClassFormats
 import config.Config
 import controllers.FieldCheckHelpers.FieldErrors
-import controllers.{FieldCheck, FieldCheckHelpers}
-import forms.validation.FieldError
+import controllers.{FieldCheck, FieldCheckHelpers, FieldChecks}
+import forms.validation.{CostItem, CostItemValues, CostSectionValidator, FieldError}
 import models._
-import play.api.Logger
 import play.api.libs.json._
 import play.api.libs.ws.WSClient
 
@@ -15,6 +14,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionContext)
   extends ApplicationOps with JodaFormats with RestService with ValueClassFormats {
+  implicit val jldReads = Reads.jodaLocalDateReads("d MMM yyyy")
   implicit val fieldReads = fields.FieldReads.fieldReads
   implicit val appSectionReads = Json.reads[ApplicationSection]
   implicit val appReads = Json.reads[Application]
@@ -53,13 +53,20 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
             post(url, doc).map(_ => List())
           case errs => Future.successful(errs)
         }
-        // TODO: Need better error handling here
+      // TODO: Need better error handling here
       case None => Future.successful(List(FieldError("", s"tried to save a non-existent section number $sectionNumber in application ${id.id}")))
     }
   }
 
+  implicit val civReads = Json.reads[CostItemValues]
+  implicit val ciReads = Json.reads[CostItem]
+
   def checksFor(formSection: ApplicationFormSection): Map[String, FieldCheck] =
-    formSection.fields.map(f => f.name -> f.check).toMap
+    formSection.sectionType match {
+      case "form" => formSection.fields.map(f => f.name -> f.check).toMap
+      case "list" => Map("items" -> FieldChecks.fromValidator(CostSectionValidator(2000)))
+    }
+
 
   override def saveItem(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors] = {
     val item = (doc \ "item").toOption.flatMap(_.validate[JsObject].asOpt).getOrElse(JsObject(Seq()))

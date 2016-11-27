@@ -2,9 +2,8 @@ package forms
 
 import controllers.{FieldCheck, FieldChecks, JsonHelpers}
 import forms.validation._
-import models.ApplicationSectionDetail
+import models.Question
 import play.api.libs.json.{JsObject, Json}
-import play.twirl.api.Html
 
 case class DateTimeRangeField(name: String, allowPast: Boolean, isEndDateMandatory: Boolean) extends Field with DateTimeFormats {
   implicit val dvReads = Json.reads[DateValues]
@@ -17,10 +16,10 @@ case class DateTimeRangeField(name: String, allowPast: Boolean, isEndDateMandato
 
   override val check: FieldCheck = FieldChecks.fromValidator(validator)
 
-  override def renderFormInput(app: ApplicationSectionDetail, answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]): Html =
-    views.html.renderers.dateTimeRangeField(this, app, answers, errs, hints)
+  override def renderFormInput(questions: Map[String, Question], answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]) =
+    views.html.renderers.dateTimeRangeField(this, questions, answers, errs, hints)
 
-  override def renderPreview(app: ApplicationSectionDetail, answers: JsObject): Html = {
+  override def renderPreview(questions: Map[String, Question], answers: JsObject) = {
     val flattenedAnswers = JsonHelpers.flatten("", answers)
     val startDateValues = dateValuesFor(s"${startDateField.name}", flattenedAnswers)
     val endDateValues = dateValuesFor(s"${endDateField.name}", flattenedAnswers)
