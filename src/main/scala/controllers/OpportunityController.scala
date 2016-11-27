@@ -29,9 +29,8 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
   }
 
   def showOpportunityPreview(id: OpportunityId, sectionNumber: Option[Int]) = Action.async {
-    val f1 = OptionT(opportunities.byId(id))
 
-    (for (o <- f1) yield o).value.map {
+    opportunities.byId(id).map {
       case Some(o) => Ok(views.html.opportunityPreview(o, sectionNumber.getOrElse(1)))
       case None => NotFound
     }
