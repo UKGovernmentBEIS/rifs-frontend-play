@@ -27,7 +27,7 @@ case class ApplicationFormSection(sectionNumber: Int, title: String, questions: 
 
 case class ApplicationForm(id: ApplicationFormId, opportunityId: OpportunityId, sections: Seq[ApplicationFormSection])
 
-trait ApplicationFormSectionType {
+sealed trait ApplicationFormSectionType {
   def name: String
 }
 
@@ -52,7 +52,7 @@ object ApplicationFormSectionType {
 }
 
 case object SectionTypeForm extends ApplicationFormSectionType {
-  override val name: String = "list"
+  override val name: String = "form"
 }
 
 case object SectionTypeList extends ApplicationFormSectionType {

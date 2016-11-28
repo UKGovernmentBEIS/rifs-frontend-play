@@ -71,11 +71,8 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
         app.formSection.sectionType match {
           case SectionTypeForm =>
             val errs = check(fieldValues, previewChecksFor(app.formSection))
-            if (errs.isEmpty) {
-              applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
-                redirectToPreview(id, sectionNumber)
-              }
-            } else redisplaySectionForm(id, sectionNumber, fieldValues, errs)
+            if (errs.isEmpty) applications.saveSection(id, sectionNumber, fieldValues).map(_ => redirectToPreview(id, sectionNumber))
+            else redisplaySectionForm(id, sectionNumber, fieldValues, errs)
 
           case SectionTypeList => Future.successful(redirectToPreview(id, sectionNumber))
         }
