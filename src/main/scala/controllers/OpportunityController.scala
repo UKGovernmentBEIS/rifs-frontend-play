@@ -108,7 +108,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
                 val summary = opp.summary.copy(startDate = v.startDate, endDate = v.endDate)
                 opportunities.saveSummary(summary).map(_ => Ok(views.html.wip("")))
               case Invalid(errors) =>
-                Future.successful(Ok(views.html.manage.editDeadlinesForm(deadlinesField, opp, deadlineQuestions, JsObject(Seq()), errors.toList, Seq())))
+                Future.successful(Ok(views.html.manage.editDeadlinesForm(deadlinesField, opp, deadlineQuestions, request.body.values, errors.toList, Seq())))
             }
           case JsError(errors) => Future.successful(BadRequest(errors.toString))
         }
