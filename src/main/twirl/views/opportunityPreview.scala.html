@@ -1,11 +1,11 @@
-@(applicationId: ApplicationFormId, opportunity: Opportunity, sectionNumber: Int)
+@(opportunity: Opportunity, sectionNumber: Int)
 
 @sectionLink(title: String, sectionNum: Int) = {
     <span class="part-number">@sectionNum.</span>
     @if(sectionNum == sectionNumber) {
         @title
     } else {
-        <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(sectionNum))">@title</a>
+        <a href="@controllers.routes.OpportunityController.showOpportunityPreview(opportunity.id, Some(sectionNum))">@title</a>
     }
 }
 
@@ -35,7 +35,7 @@
     <div class="column-two-thirds">
 
         <div class="panel rifs-panel rifs-border-narrow">
-            <p>RIFS @("%04d".format(opportunity.id.id)) <a href="@controllers.routes.OpportunityController.wip(routes.OpportunityController.showOpportunityLibrary().url))">Template View</a></p>
+            <p>RIFS @("%04d".format(opportunity.id.id)) <a href="@controllers.routes.OpportunityController.wip(routes.OpportunityController.showOpportunityLibrary().url)">Template View</a></p>
         </div>
 
         <header class="page-header">
