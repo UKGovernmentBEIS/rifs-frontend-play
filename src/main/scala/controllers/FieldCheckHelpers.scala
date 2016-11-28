@@ -20,6 +20,7 @@ object FieldCheckHelpers {
 
   def checkList(fieldValues: JsObject, checks: Map[String, FieldCheck]): List[(String, JsValue, FieldCheck)] = {
     checks.toList.map {
+      case ("", check) => ("", fieldValues, check)
       case (fieldName, check) =>
         fieldValues \ fieldName match {
           case JsDefined(jv) => (fieldName, jv, check)

@@ -41,7 +41,7 @@
                 }
                 <fieldset>
                     @itemNumber.map { i => <input type="hidden" name="itemNumber" value="@i"> }
-                    @fields.map(_.renderFormInput(app, answers, errs, hints))
+                    @fields.map(_.renderFormInput(app.formSection.questionMap, answers, errs, hints))
                 </fieldset>
                 <div class="rifs-form-buttons">
                     <input type="submit" name="@SaveItem.name" class="button" value="Save item">

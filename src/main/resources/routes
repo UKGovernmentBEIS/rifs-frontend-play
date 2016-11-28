@@ -51,6 +51,8 @@ GET         /manage/opportunity/:opportunityId/overview               controller
 POST        /manage/opportunity/:opportunityId/duplicate              controllers.OpportunityController.duplicate(opportunityId:OpportunityId)
 GET         /manage/opportunity/:opportunityId/setup-guidance         controllers.OpportunityController.showOpportunitySetupGuidance(opportunityId:OpportunityId)
 
+GET         /manage/opportunity/:id/deadlines/edit                    controllers.OpportunityController.editDeadlines(id: OpportunityId)
+POST        /manage/opportunity/:id/deadlines                         controllers.OpportunityController.saveDeadlines(id: OpportunityId)
 
 # Health check
 GET         /ping                                                     controllers.HealthCheckController.ping()

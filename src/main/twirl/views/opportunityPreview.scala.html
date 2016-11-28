@@ -1,11 +1,11 @@
-@(applicationId: ApplicationFormId, opportunity: Opportunity, sectionNumber: Int)
+@(opportunity: Opportunity, sectionNumber: Int)
 
 @sectionLink(title: String, sectionNum: Int) = {
     <span class="part-number">@sectionNum.</span>
     @if(sectionNum == sectionNumber) {
         @title
     } else {
-        <a href="@controllers.routes.OpportunityController.showOpportunity(opportunity.id, Some(sectionNum))">@title</a>
+        <a href="@controllers.routes.OpportunityController.showOpportunityPreview(opportunity.id, Some(sectionNum))">@title</a>
     }
 }
 
