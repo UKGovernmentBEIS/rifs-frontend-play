@@ -7,7 +7,8 @@ import cats.data.Validated._
 import cats.instances.future._
 import forms.validation.DateTimeRangeValues
 import forms.{DateTimeRangeField, DateValues}
-import models.{OpportunityId, Question}
+import models.{Opportunity, OpportunityId, Question}
+import org.joda.time.LocalDate
 import play.api.libs.json.{JsError, JsObject, JsSuccess, Json}
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, OpportunityOps}
@@ -75,18 +76,27 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
     "deadlines.endDate" -> Question("What is the closing date?")
   )
 
+
+  implicit val dvFmt = Json.format[DateValues]
+  implicit val dtrFmt = Json.format[DateTimeRangeValues]
+
   def editDeadlines(id: OpportunityId) = Action.async {
     opportunities.byId(id).map {
       case Some(opp) =>
-
-        Ok(views.html.manage.editDeadlinesForm(deadlinesField, opp, deadlineQuestions, JsObject(Seq()), Seq(), Seq()))
-
+        val answers = JsObject(Seq("deadlines" -> Json.toJson(dateTimeRangeValuesFor(opp))))
+        Ok(views.html.manage.editDeadlinesForm(deadlinesField, opp, deadlineQuestions, answers, Seq(), Seq()))
       case None => NotFound
     }
   }
 
-  implicit val dvReads = Json.reads[DateValues]
-  implicit val dtrReads = Json.reads[DateTimeRangeValues]
+  private def dateTimeRangeValuesFor(opp: Opportunity) = {
+    val sdv = dateValuesFor(opp.startDate)
+    val edv = opp.endDate.map(dateValuesFor)
+    DateTimeRangeValues(Some(sdv), edv, edv.map(_ => "yes").orElse(Some("no")))
+  }
+
+  private def dateValuesFor(ld: LocalDate) =
+    DateValues(Some(ld.getDayOfMonth.toString), Some(ld.getMonthOfYear.toString), Some(ld.getYear.toString))
 
   def saveDeadlines(id: OpportunityId) = Action.async(JsonForm.parser) { implicit request =>
     opportunities.byId(id).flatMap {
@@ -94,12 +104,12 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
         (request.body.values \ "deadlines").validate[DateTimeRangeValues] match {
           case JsSuccess(vs, _) =>
             deadlinesField.validator.validate(deadlinesField.name, vs) match {
-            case Valid(v) =>
-              val summary = opp.summary.copy(startDate = v.startDate, endDate = v.endDate)
-              opportunities.saveSummary(summary).map(_ => Ok(views.html.wip("")))
-            case Invalid(errors) =>
-              Future.successful(Ok(views.html.manage.editDeadlinesForm(deadlinesField, opp, deadlineQuestions, JsObject(Seq()), errors.toList, Seq())))
-          }
+              case Valid(v) =>
+                val summary = opp.summary.copy(startDate = v.startDate, endDate = v.endDate)
+                opportunities.saveSummary(summary).map(_ => Ok(views.html.wip("")))
+              case Invalid(errors) =>
+                Future.successful(Ok(views.html.manage.editDeadlinesForm(deadlinesField, opp, deadlineQuestions, JsObject(Seq()), errors.toList, Seq())))
+            }
           case JsError(errors) => Future.successful(BadRequest(errors.toString))
         }
       case None => Future.successful(NotFound)

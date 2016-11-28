@@ -12,11 +12,19 @@
     <span class="error-message" role="alert">@e.err</span>
 }
 
+@yesChecked = @{
+    if (JsonHelpers.flatten(answers).get("deadlines.endDateProvided").contains("yes")) "checked" else ""
+}
+
+@noChecked = @{
+    if (!JsonHelpers.flatten(answers).get("deadlines.endDateProvided").contains("yes")) "checked" else ""
+}
+
 @field.startDateField.renderFormInput(questions, answers, errs, hints)
 
 @if(!field.isEndDateMandatory)  {
-    <input type="radio" name="@(field.name).endDateProvided" value="yes">Yes
-    <input type="radio" name="@(field.name).endDateProvided" value="no" checked>No
+    <input type="radio" name="@(field.name).endDateProvided" value="yes" @yesChecked >Yes
+    <input type="radio" name="@(field.name).endDateProvided" value="no" @noChecked >No
 }
 
 @field.endDateField.renderFormInput(questions, answers, errs, hints)
