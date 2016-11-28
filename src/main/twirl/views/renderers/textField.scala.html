@@ -8,20 +8,34 @@
     errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}."))
 }
 
-@errorClass = @{if(errors.nonEmpty) "error" else ""}
-@invalidTrueFalse = @{if(errors.nonEmpty) "true" else "false"}
-@numberClass = @{if(field.isNumeric) "number" else ""}
+@errorClass = @{
+    if(errors.nonEmpty) "error" else ""
+}
+@invalidTrueFalse = @{
+    if(errors.nonEmpty) "true" else "false"
+}
+@numberClass = @{
+    if(field.isNumeric) "number" else ""
+}
 
 <div class='form-group @errorClass'>
-    @questions.get(field.name).map { q => <p class="question">@q.text</p> }
+    @questions.get(field.name).map { q => <label for="@field.name" class="question">@q.text</label> }
     @errors.map { e =>
         <span class="error-message" role="alert">@e.err</span>
     }
-    <label for="@field.name">@field.label</label>
-    <input type="text" id="@field.name" class='form-control text-field @numberClass' title="@field.name" name="@field.name" value='@answers.get(field.name)' aria-label="@questions.get(field.name).map(_.text) @field.label" aria-invalid="@invalidTrueFalse">
+    <input
+    type="text"
+    id="@field.name"
+    class='form-control text-field @numberClass'
+    title="@field.name"
+    name="@field.name"
+    value='@answers.get(field.name)'
+    aria-label="@questions.get(field.name).map(_.text) @field.label"
+    aria-invalid="@invalidTrueFalse"
+        @if(field.isNumeric) { pattern="[0-9]*" } >
     <div class="inline right-align hint-text" id="@(field.name)_hint_text">
-        @for(hint <- hints.find(_.path == field.name)) {
-            <span class="js__hint" data-for="@field.name" data-rule="@hint.matchingJsType" data-ruleconfig="@hint.matchingJsConfig">@hint.hint</span>
-        }
+    @for(hint <- hints.find(_.path == field.name)) {
+        <span class="js__hint" data-for="@field.name" data-rule="@hint.matchingJsType" data-ruleconfig="@hint.matchingJsConfig">@hint.hint</span>
+    }
     </div>
 </div>
