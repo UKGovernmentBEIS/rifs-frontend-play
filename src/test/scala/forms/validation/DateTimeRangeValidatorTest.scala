@@ -4,6 +4,7 @@ import cats.data.Validated.{Invalid, Valid}
 import forms.DateValues
 import org.joda.time.LocalDate
 import org.scalatest.{Matchers, OptionValues, WordSpecLike}
+import play.api.libs.json.Json
 
 class DateTimeRangeValidatorTest extends WordSpecLike with Matchers with OptionValues {
   val validDateValues1 = Some(DateValues(Some("31"), Some("1"), Some("2017")))
@@ -48,6 +49,17 @@ class DateTimeRangeValidatorTest extends WordSpecLike with Matchers with OptionV
       result.leftMap { errs =>
         errs.tail.length shouldBe 0
         errs.head.path shouldBe s"$path.startDate"
+      }
+    }
+
+    "fail with one error if endDateProvided is 'yes' but end date fields are blank strings" in {
+      val values = DateTimeRangeValues(validDateValues2, Some(DateValues(Some(""), Some(""), Some(""))), Some("yes"))
+      val result = validator.validate(path, values)
+      result shouldBe a[Invalid[_]]
+      result.leftMap { errs =>
+        errs.tail.length shouldBe 0
+        errs.head.path shouldBe s"$path.endDate"
+        errs.head.err shouldBe validator.mustProvideValidEndDateMessage
       }
     }
   }

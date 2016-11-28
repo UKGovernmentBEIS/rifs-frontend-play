@@ -8,12 +8,11 @@ import cats.instances.future._
 import forms.validation.DateTimeRangeValues
 import forms.{DateTimeRangeField, DateValues}
 import models.{OpportunityId, Question}
-import play.api.Logger
 import play.api.libs.json.{JsError, JsObject, JsSuccess, Json}
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, OpportunityOps}
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class OpportunityController @Inject()(opportunities: OpportunityOps, applications: ApplicationFormOps)(implicit ec: ExecutionContext) extends Controller {
   def showOpportunities = Action.async {
@@ -90,18 +89,20 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
   implicit val dtrReads = Json.reads[DateTimeRangeValues]
 
   def saveDeadlines(id: OpportunityId) = Action.async(JsonForm.parser) { implicit request =>
-    opportunities.byId(id).map {
+    opportunities.byId(id).flatMap {
       case Some(opp) =>
-        request.body.values.validate[DateTimeRangeValues] match {
-          case JsSuccess(vs, _) => deadlinesField.validator.validate(deadlinesField.name, vs) match {
-            case Valid(v) => ???
+        (request.body.values \ "deadlines").validate[DateTimeRangeValues] match {
+          case JsSuccess(vs, _) =>
+            deadlinesField.validator.validate(deadlinesField.name, vs) match {
+            case Valid(v) =>
+              val summary = opp.summary.copy(startDate = v.startDate, endDate = v.endDate)
+              opportunities.saveSummary(summary).map(_ => Ok(views.html.wip("")))
             case Invalid(errors) =>
-              Logger.debug(errors.toString())
-              Ok(views.html.manage.editDeadlinesForm(deadlinesField, opp, deadlineQuestions, JsObject(Seq()), errors.toList, Seq()))
+              Future.successful(Ok(views.html.manage.editDeadlinesForm(deadlinesField, opp, deadlineQuestions, JsObject(Seq()), errors.toList, Seq())))
           }
-          case JsError(errors) => BadRequest(errors.toString)
+          case JsError(errors) => Future.successful(BadRequest(errors.toString))
         }
-      case None => NotFound
+      case None => Future.successful(NotFound)
     }
   }
 }

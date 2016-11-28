@@ -17,7 +17,9 @@ case class Opportunity(
                         endDate: Option[LocalDate],
                         value: OpportunityValue,
                         description: Seq[OpportunityDescriptionSection]
-                      )
+                      ) {
+  lazy val summary: OpportunitySummary = OpportunitySummary(id, title, startDate, endDate, value)
+}
 
 case class OpportunitySummary(
                                id: OpportunityId,

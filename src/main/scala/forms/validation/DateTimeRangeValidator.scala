@@ -48,13 +48,22 @@ case class DateTimeRangeValidator(allowPast: Boolean, isEndDateMandatory: Boolea
   lazy val fieldLevelValidations = new FieldValidator[DateTimeRangeValues, DateTimeRange] {
     override def validate(path: String, vs: DateTimeRangeValues): ValidatedNel[FieldError, DateTimeRange] = {
       val sdv: DateValues = vs.startDate.getOrElse(DateValues(None, None, None))
-      val edv: Option[DateValues] = vs.endDate
 
-      val startDateV = dateValidator.validate(s"$path.startDate", sdv).leftMap {
+      // If no text values are provided for day/month/year of end date then treat it as
+      // if no end date was provided at all.
+      val edvo: Option[DateValues] = vs.endDate match {
+        case Some(DateValues(Some(""), Some(""), Some(""))) | Some(DateValues(None, None, None)) => None
+        case v => v
+      }
+
+      val startDateV: ValidatedNel[FieldError, LocalDate] = dateValidator.validate(s"$path.startDate", sdv).leftMap {
         v => NonEmptyList.of(FieldError(s"$path.startDate", mustProvideValidStartDateMessage))
       }
       // First check that the end date is valid if it's present
-      val endDateValid = edv.map(dateValidator.validate(s"$path.endDate", _).map(Some(_))).getOrElse(None.valid)
+      val endDateValid = edvo.map(dateValidator.validate(s"$path.endDate", _).map(Some(_))).getOrElse(None.valid).leftMap {
+        v => NonEmptyList.of(FieldError(s"$path.endDate", mustProvideValidEndDateMessage))
+      }
+
       // And then check if it's present if the `endDateProvided` flag is set
       val endDateV = endDateValid.map(od => (od, vs.endDateProvided.exists(_.trim == "yes"))).andThen(endDateIsPresentIfSupplied.validate(path, _))
 
