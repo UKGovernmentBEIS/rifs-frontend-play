@@ -8,6 +8,17 @@
 .rifs-panel {
   background-color: $panel-colour;
   margin-top: 15px;
+
+  dl {
+    padding-top: 0.75em;
+    padding-bottom: 1em;
+  }
+
+  .rifs-form-buttons {
+    margin-top: 1em;
+    margin-bottom: 1em;
+  }
+
 }
 
 .rifs-error-panel {
