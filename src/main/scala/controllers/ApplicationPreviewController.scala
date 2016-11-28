@@ -19,12 +19,12 @@ class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, appli
     ft.map {
       case Some(app) =>
         app.formSection.sectionType match {
-          case "form" =>
+          case SectionTypeForm =>
             app.section.map(_.isComplete) match {
               case Some(true) => renderSectionPreviewCompleted(app, app.formSection.fields)
               case _ => renderSectionPreviewInProgress(app, app.formSection.fields)
             }
-          case "list" =>
+          case SectionTypeList =>
             // TODO: show the cost list preview
             Ok(views.html.wip(controllers.routes.ApplicationController.show(id).url))
         }

@@ -63,8 +63,8 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
 
   def checksFor(formSection: ApplicationFormSection): Map[String, FieldCheck] =
     formSection.sectionType match {
-      case "form" => formSection.fields.map(f => f.name -> f.check).toMap
-      case "list" => Map("items" -> FieldChecks.fromValidator(CostSectionValidator(2000)))
+      case SectionTypeForm => formSection.fields.map(f => f.name -> f.check).toMap
+      case SectionTypeList => Map("items" -> FieldChecks.fromValidator(CostSectionValidator(2000)))
     }
 
 

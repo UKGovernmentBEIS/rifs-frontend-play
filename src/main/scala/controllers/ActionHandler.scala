@@ -21,12 +21,12 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     gatherSectionDetails(id, sectionNumber).flatMap {
       case Some(app) =>
         app.formSection.sectionType match {
-          case "form" =>
+          case SectionTypeForm =>
             JsonHelpers.allFieldsEmpty(fieldValues) match {
               case true => applications.deleteSection(id, sectionNumber).map(_ => redirectToOverview(id))
               case false => applications.saveSection(id, sectionNumber, fieldValues).map(_ => redirectToOverview(id))
             }
-          case "list" => Future.successful(redirectToOverview(id))
+          case SectionTypeList => Future.successful(redirectToOverview(id))
         }
       case None => Future.successful(NotFound)
     }
@@ -36,11 +36,11 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     gatherSectionDetails(id, sectionNumber).flatMap {
       case Some(app) =>
         val answersF: Future[Option[JsObject]] = app.formSection.sectionType match {
-          case "form" => Future.successful(Some(fieldValues))
+          case SectionTypeForm => Future.successful(Some(fieldValues))
           // Instead of using the values that were passed in from the form we'll use the values that
           // have already been saved against the item list, since these were created by the add-item
           // form.
-          case "list" => applications.getSection(id, sectionNumber).map(_.map(_.answers))
+          case SectionTypeList => applications.getSection(id, sectionNumber).map(_.map(_.answers))
         }
 
         answersF.flatMap {
@@ -69,7 +69,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     gatherSectionDetails(id, sectionNumber).flatMap {
       case Some(app) =>
         app.formSection.sectionType match {
-          case "form" =>
+          case SectionTypeForm =>
             val errs = check(fieldValues, previewChecksFor(app.formSection))
             if (errs.isEmpty) {
               applications.saveSection(id, sectionNumber, fieldValues).map { _ =>
@@ -77,7 +77,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
               }
             } else redisplaySectionForm(id, sectionNumber, fieldValues, errs)
 
-          case "list" => Future.successful(redirectToPreview(id, sectionNumber))
+          case SectionTypeList => Future.successful(redirectToPreview(id, sectionNumber))
         }
       case None => Future.successful(NotFound)
     }
@@ -91,8 +91,8 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     gatherSectionDetails(id, sectionNumber).flatMap {
       case Some(app) =>
         val answersF: Future[Option[JsObject]] = app.formSection.sectionType match {
-          case "form" => Future.successful(Some(fieldValues))
-          case "list" => applications.getSection(id, sectionNumber).map(_.map(_.answers))
+          case SectionTypeForm => Future.successful(Some(fieldValues))
+          case SectionTypeList => applications.getSection(id, sectionNumber).map(_.map(_.answers))
         }
 
         answersF.flatMap {
@@ -139,8 +139,8 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     val hints = hinting(answers, checks)
 
     app.formSection.sectionType match {
-      case "form" => Ok(views.html.sectionForm(app, answers, errs, hints))
-      case "list" =>
+      case SectionTypeForm => Ok(views.html.sectionForm(app, answers, errs, hints))
+      case SectionTypeList =>
         answers \ "items" match {
           case JsDefined(JsArray(is)) if is.nonEmpty =>
             val itemValues: Seq[JsValue] = (answers \ "items").validate[JsArray].asOpt.map(_.value).getOrElse(Seq())
