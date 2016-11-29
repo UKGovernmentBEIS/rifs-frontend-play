@@ -1,5 +1,6 @@
 @(
-        app: ApplicationSectionDetail,
+        app:ApplicationSectionDetail,
+        items: Seq[forms.validation.CostItem],
         answers: play.api.libs.json.JsObject,
         errs: List[forms.validation.FieldError],
         hints:List[forms.validation.FieldHint]
@@ -33,7 +34,7 @@
                     </p>
                 </div>
                 }
-                @app.formSection.fields.map(_.renderFormInput(app.formSection.questionMap, answers, errs, hints))
+                @views.html.renderers.costListField(app, items, errs)
 
                 <label for="complete-checkbox" class="form-checkbox font-normal" style="width: 16em">
                     <input id="complete-checkbox" type="checkbox" name="_complete_checkbox"/>

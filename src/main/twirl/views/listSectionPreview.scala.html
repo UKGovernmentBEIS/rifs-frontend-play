@@ -1,6 +1,6 @@
 @(
         app: ApplicationSectionDetail,
-        fields: Seq[forms.Field],
+        items: Seq[forms.validation.CostItem],
         answers: play.api.libs.json.JsObject,
         closeButton: String,
         editButton: Option[String]
@@ -18,7 +18,7 @@
                 @app.formSection.title
             </h1>
 
-            @fields.map(_.renderPreview(app.formSection.questionMap, answers))
+            @renderers.preview.costListField(items)
 
             @if(editButton.isDefined){
                 @app.section.flatMap(_.completedAtText)

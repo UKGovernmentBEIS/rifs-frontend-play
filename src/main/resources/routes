@@ -40,6 +40,8 @@ GET         /wip                                                      controller
 
 # Manage Views
 GET         /manage/opportunities/guidance                            controllers.OpportunityController.showPMGuidancePage
+GET         /manage/opportunity/:id/deadlines/edit                    controllers.OpportunityController.editDeadlines(id: OpportunityId)
+POST        /manage/opportunity/:id/deadlines                         controllers.OpportunityController.saveDeadlines(id: OpportunityId)
 GET         /manage/application/:id/section/:num/questions            controllers.ApplicationPreviewController.viewQuestions(id: ApplicationId, num:Int)
 GET         /manage/opportunity/:opportunityId/title                  controllers.OpportunityController.viewTitle(opportunityId:OpportunityId)
 GET         /manage/opportunity/:opportunityId/deadlines              controllers.OpportunityController.viewDeadlines(opportunityId:OpportunityId)
