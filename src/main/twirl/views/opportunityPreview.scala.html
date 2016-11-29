@@ -35,7 +35,9 @@
     <div class="column-two-thirds">
 
         <div class="panel rifs-panel rifs-border-narrow">
-            <p>RIFS @("%04d".format(opportunity.id.id)) <a href="@controllers.routes.OpportunityController.wip(routes.OpportunityController.showOpportunityLibrary().url)">Template View</a></p>
+            <p>RIFS @("%04d".format(opportunity.id.id))
+                <a href="@controllers.routes.OpportunityController.showOverviewPage(opportunity.id)">
+                Template View</a></p>
         </div>
 
         <header class="page-header">

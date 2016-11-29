@@ -57,7 +57,7 @@ backLink=Some(BackLink("Opportunity library", controllers.routes.OpportunityCont
                                 <tr>
                                     <td>
                                         2. <a id="op-setup-link2"
-                                              href="@controllers.routes.OpportunityController.viewDeadlines(opportunity.id)"
+                                              href="@controllers.routes.OpportunityController.editDeadlines(opportunity.id)"
                                             > Opportunity deadlines</a>
                                     </td>
                                 </tr>
@@ -104,7 +104,7 @@ backLink=Some(BackLink("Opportunity library", controllers.routes.OpportunityCont
                                 <tr>
                                     <td>
                                         @fs.sectionNumber. <a id="section-@fs.sectionNumber-link"
-                                                              href="@controllers.routes.OpportunityController.viewOppSection(opportunity.id, fs.sectionNumber)"
+                                                              href="@controllers.routes.OpportunityController.viewQuestions(opportunity.id, fs.sectionNumber)"
                                                             > @fs.title</a>
                                     </td>
                                 </tr>
