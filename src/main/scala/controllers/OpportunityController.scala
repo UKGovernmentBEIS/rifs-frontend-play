@@ -158,9 +158,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
       case None => Future.successful(NotFound)
     }
   }
-
-  def showOpportunitySetupGuidance(id: OpportunityId) = showPMGuidancePage
-
+  
   def showOverviewPage(opportunityId: OpportunityId) = Action.async {
     val ft1 = OptionT(opportunities.byId(opportunityId))
     val ft2 = OptionT(appForms.byOpportunityId(opportunityId))

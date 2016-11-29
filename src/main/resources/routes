@@ -53,7 +53,6 @@ GET         /manage/opportunity/:opportunityId/oppsection/:sectionid  controller
 
 GET         /manage/opportunity/:opportunityId/overview               controllers.OpportunityController.showOverviewPage(opportunityId:OpportunityId)
 POST        /manage/opportunity/:opportunityId/duplicate              controllers.OpportunityController.duplicate(opportunityId:OpportunityId)
-GET         /manage/opportunity/:opportunityId/setup-guidance         controllers.OpportunityController.showOpportunitySetupGuidance(opportunityId:OpportunityId)
 
 
 # Health check
