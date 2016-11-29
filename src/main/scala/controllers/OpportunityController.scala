@@ -62,14 +62,6 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   }
 
 
-  def viewDeadlines(id: OpportunityId) = Action.async { request =>
-    val fopp = opportunities.byId(id)
-    fopp.map {
-      case Some(opp) =>
-        Ok(views.html.manage.viewDeadlines(opp))
-      case None => NotFound
-    }
-  }
 
 
   def viewDescription(id: OpportunityId) = Action.async { request =>
@@ -125,6 +117,13 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   implicit val dvFmt = Json.format[DateValues]
   implicit val dtrFmt = Json.format[DateTimeRangeValues]
 
+  def viewDeadlines(id: OpportunityId) = Action.async { request =>
+    opportunities.byId(id).map {
+      case Some(opp) => Ok(views.html.manage.viewDeadlines(opp))
+      case None => NotFound
+    }
+  }
+
   def editDeadlines(id: OpportunityId) = Action.async {
     opportunities.byId(id).map {
       case Some(opp) =>
@@ -151,7 +150,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
             deadlinesField.validator.validate(deadlinesField.name, vs) match {
               case Valid(v) =>
                 val summary = opp.summary.copy(startDate = v.startDate, endDate = v.endDate)
-                opportunities.saveSummary(summary).map(_ => Ok(views.html.wip("")))
+                opportunities.saveSummary(summary).map(_ => Redirect(controllers.routes.OpportunityController.showOverviewPage(id)))
               case Invalid(errors) =>
                 Future.successful(Ok(views.html.manage.editDeadlinesForm(deadlinesField, opp, deadlineQuestions, request.body.values, errors.toList, Seq())))
             }

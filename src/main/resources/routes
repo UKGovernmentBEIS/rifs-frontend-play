@@ -42,7 +42,11 @@ GET         /wip                                                      controller
 GET         /manage/opportunities/guidance                            controllers.OpportunityController.showPMGuidancePage
 GET         /manage/opportunity/:id/section/:num/questions            controllers.OpportunityController.viewQuestions(id: OpportunityId, num:Int)
 GET         /manage/opportunity/:opportunityId/title                  controllers.OpportunityController.viewTitle(opportunityId:OpportunityId)
-GET         /manage/opportunity/:opportunityId/deadlines              controllers.OpportunityController.viewDeadlines(opportunityId:OpportunityId)
+
+GET         /manage/opportunity/:id/deadlines/edit                    controllers.OpportunityController.editDeadlines(id: OpportunityId)
+GET         /manage/opportunity/:id/deadlines                         controllers.OpportunityController.viewDeadlines(id: OpportunityId)
+POST        /manage/opportunity/:id/deadlines                         controllers.OpportunityController.saveDeadlines(id: OpportunityId)
+
 GET         /manage/opportunity/:opportunityId/description            controllers.OpportunityController.viewDescription(opportunityId:OpportunityId)
 GET         /manage/opportunity/:opportunityId/grantvalue             controllers.OpportunityController.viewGrantValue(opportunityId:OpportunityId)
 GET         /manage/opportunity/:opportunityId/oppsection/:sectionid  controllers.OpportunityController.viewOppSection(opportunityId:OpportunityId, sectionid:Int)
@@ -51,8 +55,6 @@ GET         /manage/opportunity/:opportunityId/overview               controller
 POST        /manage/opportunity/:opportunityId/duplicate              controllers.OpportunityController.duplicate(opportunityId:OpportunityId)
 GET         /manage/opportunity/:opportunityId/setup-guidance         controllers.OpportunityController.showOpportunitySetupGuidance(opportunityId:OpportunityId)
 
-GET         /manage/opportunity/:id/deadlines/edit                    controllers.OpportunityController.editDeadlines(id: OpportunityId)
-POST        /manage/opportunity/:id/deadlines                         controllers.OpportunityController.saveDeadlines(id: OpportunityId)
 
 # Health check
 GET         /ping                                                     controllers.HealthCheckController.ping()
