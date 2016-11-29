@@ -116,11 +116,14 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     }
   }
 
-  def showOpportunitySetupGuidance(id: OpportunityId) = showPMGuidancePage
+  def showOverviewPage(opportunityId: OpportunityId) = Action.async {
+    val ft1 = OptionT(opportunities.byId(opportunityId))
+    val ft2 = OptionT(appForms.byOpportunityId(opportunityId))
 
-  def showOverviewPage(opportunityId: OpportunityId) = OpportunityAction(opportunityId).async { request =>
-    appForms.byOpportunityId(opportunityId).map {
-      case Some(appForm) => Ok(views.html.manage.previewOpportunity(request.opportunity, appForm))
+    val ft = for {op <- ft1; appForm <- ft2} yield (op, appForm)
+
+    ft.value.map {
+      case Some((opp, appForm)) => Ok(views.html.manage.previewOpportunity(opp, appForm))
       case None => NotFound
     }
   }
