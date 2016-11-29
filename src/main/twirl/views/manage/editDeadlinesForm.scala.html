@@ -1,0 +1,41 @@
+@(field: forms.DateTimeRangeField,
+        opp: Opportunity,
+        questions: Map[String, Question],
+        answers: play.api.libs.json.JsObject,
+        errs: Seq[forms.validation.FieldError],
+        hints: Seq[forms.validation.FieldHint])
+
+
+@errors = @{
+    errs.filter(p => p.path == field.name)
+}
+
+@errors.map { e =>
+    <span class="error-message" role="alert">@e.err</span>
+}
+
+@formatId(id: Long) = @{
+    f"RIFS$id%05d"
+}
+
+@main("RIFS - Edit Deadline", displayUserName = Some("Portfolio Peter")) {
+
+    <div class="grid-row">
+        <div class="column-two-thirds">
+            <h1 class="heading-xlarge">
+                <span class="heading-secondary">@formatId(opp.id.id): @opp.title</span>
+                @Opportunity deadlines
+            </h1>
+
+            <form method="POST" action="@controllers.routes.OpportunityController.saveDeadlines(opp.id)">
+                @field.renderFormInput(questions, answers, errs, hints)
+
+                <div class="rifs-form-buttons">
+                    <input type="submit" name="@Save.name" class="button button--start" value="Save">
+                    <input type="submit" name="@Preview.name" class="button--link-style" value="Preview this page"/>
+                </div>
+            </form>
+        </div>
+    </div>
+
+}

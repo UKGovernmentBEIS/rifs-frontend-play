@@ -12,7 +12,7 @@
 @errorClass = @{if(errors.nonEmpty) "error" else ""}
 @invalidTrueFalse = @{if(errors.nonEmpty) "true" else "false"}
 
-@questions.get(field.name).map { q => <p class="question text">@q.text</p>
+@questions.get(field.name).map { q => <label for="@field.name" class="question">@q.text</label>
     <p class="text">@q.longDescription</p>
     <details>
         <summary role="button"><span class="summary">Help with this section</span></summary>

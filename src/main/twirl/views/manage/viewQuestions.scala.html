@@ -16,7 +16,7 @@
                 @app.formSection.title
             </h1>
 
-            @fields.map(_.renderFormInput(app, answers, List(), List()))
+            @fields.map(_.renderFormInput(app.formSection.questionMap, answers, List(), List()))
             <div class="rifs-form-buttons">
                 <a href="@controllers.routes.OpportunityController.showOpportunity(app.opportunity.id, None)" class="button">
                    Continue</a>
