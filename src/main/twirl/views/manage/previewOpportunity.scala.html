@@ -11,10 +11,7 @@
 f"RIFS$id%05d"
 }
 
-@headEx() = {
-}
-
-@main(s"Opportunity template setup - RIFS", displayUserName=username(), headExtra = headEx,
+@main(s"Opportunity template setup - RIFS", displayUserName=username(),
 backLink=Some(BackLink("Opportunity library", controllers.routes.OpportunityController.showOpportunityLibrary().url))) {
 
 <!-- main content -->
@@ -78,19 +75,17 @@ backLink=Some(BackLink("Opportunity library", controllers.routes.OpportunityCont
                                             > Maximum grant value</a>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                        5. <a id="op-setup-link5"
-                                              href="http://todo"
-                                            > Assessment criteria</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        6. <a id="op-setup-link6" href="http://todo"> Eligibility</a>
-                                    </td>
-                                </tr>
 
+                                @opportunity.description.zipWithIndex.map { case (oppDesc, num) =>
+                                <tr>
+                                    <td>
+                                        @(s"${num + 5}").
+                                        <a href="@controllers.routes.OpportunityController.viewOppSection(opportunity.id, oppDesc.sectionNumber)">
+                                            @oppDesc.title
+                                        </a>
+                                    </td>
+                                </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
