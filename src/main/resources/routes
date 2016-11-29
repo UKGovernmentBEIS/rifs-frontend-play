@@ -14,6 +14,7 @@ GET         /opportunity/:opportunityId                               controller
 GET         /manage/opportunity/new                                   controllers.OpportunityController.showNewOpportunityForm
 GET         /manage/opportunity/choose                                controllers.OpportunityController.chooseHowToCreateOpportunity(choice:Option[String])
 GET         /manage/opportunities/library                             controllers.OpportunityController.showOpportunityLibrary
+GET         /manage/opportunity/:opportunityId                        controllers.OpportunityController.showOpportunityPreview(opportunityId:OpportunityId, section:Option[Int])
 
 GET         /application_form/:id/apply                               controllers.ApplicationController.showOrCreateForForm(id: ApplicationFormId)
 
@@ -34,12 +35,13 @@ POST        /application/:id/section/:num/item/:itemNum               controller
 GET         /application/:id/section/:num/item/:itemNum/delete        controllers.CostController.deleteItem(id:ApplicationId, num: Int, itemNum: Int)
 GET         /application/:id/section/:num/item/:itemNum/edit          controllers.CostController.editItem(id:ApplicationId, num: Int, itemNum: Int)
 
-
 GET         /reset                                                    controllers.ApplicationController.reset
 GET         /wip                                                      controllers.OpportunityController.wip(backUrl: String)
 
 # Manage Views
 GET         /manage/opportunities/guidance                            controllers.OpportunityController.showPMGuidancePage
+GET         /manage/opportunity/:id/deadlines/edit                    controllers.OpportunityController.editDeadlines(id: OpportunityId)
+POST        /manage/opportunity/:id/deadlines                         controllers.OpportunityController.saveDeadlines(id: OpportunityId)
 
 # Health check
 GET         /ping                                                     controllers.HealthCheckController.ping()

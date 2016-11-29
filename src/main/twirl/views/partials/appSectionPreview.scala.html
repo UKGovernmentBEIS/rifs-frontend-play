@@ -4,5 +4,5 @@
 )
 <div>
     <h2 class="heading-medium">@app.formSection.sectionNumber . @app.formSection.title </h2>
-    @app.formSection.fields.map(_.renderPreview(app, answers))
+    @app.formSection.fields.map(_.renderPreview(app.formSection.questionMap, answers))
 </div>
