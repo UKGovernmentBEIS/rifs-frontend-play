@@ -159,7 +159,9 @@ backLink=Some(BackLink("Opportunity library", controllers.routes.OpportunityCont
 
             <p class="rifs-form-buttons">
                 <input type="submit" name="@Save.name" class="button button--start" value="Duplicate opportunity">
-                <a href="todo" class="flat nobreak">
+                <a href="@controllers.routes.OpportunityController.wip(controllers.routes.OpportunityController.showOverviewPage(opportunity.id).url)"
+                   class="flat nobreak"
+                >
                     Applicant view</a>
             </p>
         </form>
