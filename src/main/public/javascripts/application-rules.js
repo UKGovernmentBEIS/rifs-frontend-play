@@ -1,5 +1,5 @@
 (function() {
-    "use strict";
+    'use strict';
 
     Array.prototype.clean = function(deleteValue) {
         for (var i = 0; i < this.length; i++) {
@@ -15,12 +15,12 @@
 
     var rules = {
         WordCount: function WordCount(value, config) {
-             var w = value.split(/\s+/).clean("").length;
-             var words = function(count) {return count === 1 ? "word" : "words";};
+             var w = value.split(/\s+/).clean('').length;
+             var words = function(count) {return count === 1 ? 'word' : 'words';};
 
-             return w === 0  ? "" + config.maxWords + " " + words(config.maxWords) + " maximum"
-                  : w <= config.maxWords ? "Words remaining: " + (config.maxWords - w)
-                  : "" + (w - config.maxWords) + " " + words(w - config.maxWords) + " over limit";
+             return w === 0  ? '' + config.maxWords + ' ' + words(config.maxWords) + ' maximum'
+                  : w <= config.maxWords ? 'Words remaining: ' + (config.maxWords - w)
+                  : '' + (w - config.maxWords) + ' ' + words(w - config.maxWords) + ' over limit';
         }
     };
 
@@ -28,19 +28,19 @@
         // TODO: get this working in IE8
         if (!input || !rule) {return;}
 
-        input.addEventListener("keyup", function() {
+        input.addEventListener('keyup', function() {
             var output = rule(input.value, config);
             helper.innerHTML = output;
         });
     }
 
     function rifsHelperText() {
-        var helpers = document.getElementsByClassName("js__hint");
+        var helpers = document.getElementsByClassName('js__hint');
         for (var i = 0; i < helpers.length; i++) {
             var helper = helpers[i];
-            var input = document.getElementById(helper.getAttribute("data-for")),
-                rule = rules[helper.getAttribute("data-rule")] || null,
-                config = JSON.parse(helper.getAttribute("data-ruleconfig") || "{}");
+            var input = document.getElementById(helper.getAttribute('data-for')),
+                rule = rules[helper.getAttribute('data-rule')] || null,
+                config = JSON.parse(helper.getAttribute('data-ruleconfig') || '{}');
 
             addInputListener(input, helper, rule, config);
         }
@@ -61,8 +61,8 @@ $(document).ready(function () {
     }
 
     // Turn the tabs on if the correct structures exist in the page
-    var e = $("section.more");
-    e.find(".js-tabs").length && e.tabs();
+    var e = $('section.more');
+    e.find('.js-tabs').length && e.tabs();
 
     // $('details').details();
 });
