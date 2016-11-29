@@ -1,25 +1,24 @@
 @(
-        app: ApplicationSectionDetail,
-        fields: Seq[forms.Field],
-        answers: play.api.libs.json.JsObject
+        opp: Opportunity,
+        formSection: ApplicationFormSection
 )
 
 @formatId(id: Long) = @{
     f"RIFS$id%05d"
 }
 
-@main(s"${app.formSection.title} - RIFS", backLink=Some(BackLink("Opportunity Template",controllers.routes.OpportunityController.showOverviewPage(app.opportunity.id).url))) {
+@main(s"${formSection.title} - RIFS", backLink = Some(BackLink("Opportunity Template", controllers.routes.OpportunityController.showOverviewPage(opp.id).url))) {
     <div class="grid-row">
         <div class="column-full">
             <h1 class="heading-xlarge">
-                <span class="heading-secondary">@formatId(app.opportunity.id.id): @app.opportunity.title</span>
-                @app.formSection.title
+                <span class="heading-secondary">@formatId(opp.id.id): @opp.title</span>
+                @formSection.title
             </h1>
 
-            @fields.map(_.renderFormInput(app, answers, List(), List()))
+            @formSection.fields.map(_.renderFormInput(formSection.questionMap, play.api.libs.json.JsObject(Seq()), List(), List()))
             <div class="rifs-form-buttons">
-                <a href="@controllers.routes.OpportunityController.showOverviewPage(app.opportunity.id)" class="button">
-                   Continue</a>
+                <a href="@controllers.routes.OpportunityController.showOverviewPage(opp.id)" class="button">
+                    Continue</a>
             </div>
 
         </div>

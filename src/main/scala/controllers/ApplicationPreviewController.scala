@@ -65,25 +65,7 @@ class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, appli
 
   def gatherApplicationDetails(id: ApplicationId): Future[Option[ApplicationDetail]] = applications.detail(id)
 
-    def viewQuestions(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
-    val ft = actionHandler.gatherSectionDetails(id, sectionNumber)
 
-    ft.map {
-      case Some(app) =>
-        renderviewQuestions(app, app.formSection.fields)
-      case None => NotFound
-    }
-  }
-
-
-  def renderviewQuestions(app: ApplicationSectionDetail, fields: Seq[Field]) = {
-    val answers = app.section.map { s => s.answers }.getOrElse(JsObject(List.empty))
-
-    Ok(views.html.manage.viewQuestions(
-      app,
-      fields,
-      answers))
-  }
 
 }
 

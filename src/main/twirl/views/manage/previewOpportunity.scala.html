@@ -1,7 +1,7 @@
 @import models._
 @import partials._
 
-@(appId: ApplicationId, opportunity: Opportunity, app: ApplicationForm, tabNumber: Option[Int] = None)
+@(opportunity: Opportunity, app: ApplicationForm, tabNumber: Option[Int] = None)
 
 @username() = @{
     Some("Portfolio Pete")
@@ -124,7 +124,7 @@ backLink=Some(BackLink("Opportunity library", controllers.routes.OpportunityCont
                                 <tr>
                                     <td>
                                         @fs.sectionNumber. <a id="section-@fs.sectionNumber-link"
-                                                              href="@controllers.routes.ApplicationPreviewController.viewQuestions(appId, fs.sectionNumber)"
+                                                              href="@controllers.routes.OpportunityController.viewQuestions(opportunity.id, fs.sectionNumber)"
                                                             > @fs.title</a>
 
                                     </td>

@@ -7,16 +7,15 @@ import cats.data.Validated._
 import cats.instances.future._
 import forms.validation.DateTimeRangeValues
 import forms.{DateTimeRangeField, DateValues}
-import models.{Opportunity, OpportunityId, Question}
+import models._
 import org.joda.time.LocalDate
 import play.api.libs.json.{JsError, JsObject, JsSuccess, Json}
-import models.{ApplicationId, OpportunityId}
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, OpportunityOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class OpportunityController @Inject()(opportunities: OpportunityOps, applications: ApplicationFormOps)(implicit ec: ExecutionContext) extends Controller {
+class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: ApplicationFormOps)(implicit ec: ExecutionContext) extends Controller {
   def showOpportunities = Action.async {
     opportunities.getOpenOpportunitySummaries.map { os => Ok(views.html.showOpportunities(os)) }
   }
@@ -26,7 +25,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
     // concurrently. Could use `Cartesian` to give applicative behaviour (`(f1 |@| f2)`) but
     // IntelliJ doesn't handle it well at the moment.
     val f1 = OptionT(opportunities.byId(id))
-    val f2 = OptionT(applications.byOpportunityId(id))
+    val f2 = OptionT(appForms.byOpportunityId(id))
 
     (for (o <- f1; a <- f2) yield (o, a)).value.map {
       case Some((o, a)) => Ok(views.html.showOpportunity(a.id, o, sectionNumber.getOrElse(1)))
@@ -53,7 +52,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
     }.getOrElse(Redirect(controllers.routes.OpportunityController.showNewOpportunityForm()))
   }
 
-  def viewTitle(id:OpportunityId) = Action.async { request =>
+  def viewTitle(id: OpportunityId) = Action.async { request =>
     val fopp = opportunities.byId(id)
     fopp.map {
       case Some(opp) =>
@@ -63,7 +62,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
   }
 
 
-  def viewDeadlines(id:OpportunityId) = Action.async { request =>
+  def viewDeadlines(id: OpportunityId) = Action.async { request =>
     val fopp = opportunities.byId(id)
     fopp.map {
       case Some(opp) =>
@@ -73,7 +72,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
   }
 
 
-  def viewDescription(id:OpportunityId) = Action.async { request =>
+  def viewDescription(id: OpportunityId) = Action.async { request =>
     val fopp = opportunities.byId(id)
     fopp.map {
       case Some(opp) =>
@@ -82,7 +81,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
     }
   }
 
-  def viewGrantValue(id:OpportunityId) = Action.async { request =>
+  def viewGrantValue(id: OpportunityId) = Action.async { request =>
     val fopp = opportunities.byId(id)
     fopp.map {
       case Some(opp) =>
@@ -91,7 +90,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
     }
   }
 
-  def viewOppSection(id:OpportunityId, oppSection:Int) = Action.async { request =>
+  def viewOppSection(id: OpportunityId, oppSection: Int) = Action.async { request =>
     val fopp = opportunities.byId(id)
     fopp.map {
       case Some(opp) =>
@@ -165,22 +164,37 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, application
   def showOpportunitySetupGuidance(id: OpportunityId) = showPMGuidancePage
 
   def showOverviewPage(opportunityId: OpportunityId) = Action.async {
-    val appId = ApplicationId(1)  //we take 1st Application as sample
+    val ft1 = OptionT(opportunities.byId(opportunityId))
+    val ft2 = OptionT(appForms.byOpportunityId(opportunityId))
 
-    (for {
-      op <- OptionT(opportunities.byId(opportunityId))
-      app <- OptionT(applications.byOpportunityId(opportunityId))
-    } yield (op, app)
-      ).value.map {
-        case Some((op, app)) => Ok(views.html.manage.previewOpportunity(appId, op, app) )
-        case None => NotFound
-      }
+    val ft = for {op <- ft1; appForm <- ft2} yield (op, appForm)
+
+    ft.value.map {
+      case Some((opp, appForm)) => Ok(views.html.manage.previewOpportunity(opp, appForm))
+      case None => NotFound
+    }
   }
 
   def duplicate(opportunityId: OpportunityId) = Action.async {
-      OptionT(opportunities.byId(opportunityId)).value.map {
-        case Some(op) => Ok(views.html.wip( controllers.routes.OpportunityController.showOverviewPage(opportunityId).url ) )
-        case None => NotFound
+    OptionT(opportunities.byId(opportunityId)).value.map {
+      case Some(op) => Ok(views.html.wip(controllers.routes.OpportunityController.showOverviewPage(opportunityId).url))
+      case None => NotFound
+    }
+  }
+
+  def viewQuestions(id: OpportunityId, sectionNumber: Int) = Action.async { request =>
+    // Kick these off in parallel
+    val ft1 = OptionT(opportunities.byId(id))
+    val ft2 = OptionT(appForms.byOpportunityId(id))
+    val ft = for (opp <- ft1; appForm <- ft2) yield (opp, appForm)
+
+    ft.value.map {
+      case Some((opp, appForm)) =>
+        appForm.sections.find(_.sectionNumber == sectionNumber) match {
+          case Some(formSection) => Ok(views.html.manage.viewQuestions(opp, formSection))
+          case None => NotFound
+        }
+      case None => NotFound
     }
   }
 }
