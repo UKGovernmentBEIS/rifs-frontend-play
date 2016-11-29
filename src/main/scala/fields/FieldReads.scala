@@ -12,6 +12,7 @@ object FieldReads {
   implicit val textAreaFieldReads = Json.reads[TextAreaField]
   implicit val dateWithDaysReads = Json.reads[DateWithDaysField]
   implicit val dateTimeRangeReads = Json.reads[DateTimeRangeField]
+  implicit val costItemReads = Json.reads[CostItemField]
 
   implicit object fieldReads extends Reads[Field] {
     override def reads(json: JsValue): JsResult[Field] = {
@@ -21,6 +22,7 @@ object FieldReads {
           case "textArea" => json.validate[TextAreaField]
           case "dateWithDays" => json.validate[DateWithDaysField]
           case "dateTimeRange" => json.validate[DateTimeRangeField]
+          case "costItem" => json.validate[CostItemField]
           case t => JsError(s"unknown field type $t")
         }
       }
