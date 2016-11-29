@@ -117,7 +117,8 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   def viewDeadlines(id: OpportunityId) = Action.async { request =>
     opportunities.byId(id).map {
       case Some(opp) =>
-        Ok(views.html.manage.viewDeadlines(deadlinesField, opp, deadlineQuestions))
+        val answers = JsObject(Seq("deadlines" -> Json.toJson(dateTimeRangeValuesFor(opp))))
+        Ok(views.html.manage.viewDeadlines(deadlinesField, opp, deadlineQuestions, answers))
       case None => NotFound
     }
   }
