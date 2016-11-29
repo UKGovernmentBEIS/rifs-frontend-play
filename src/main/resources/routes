@@ -40,11 +40,13 @@ GET         /wip                                                      controller
 
 # Manage Views
 GET         /manage/opportunities/guidance                            controllers.OpportunityController.showPMGuidancePage
-GET         /manage/opportunity/:id/deadlines/edit                    controllers.OpportunityController.editDeadlines(id: OpportunityId)
-POST        /manage/opportunity/:id/deadlines                         controllers.OpportunityController.saveDeadlines(id: OpportunityId)
-GET         /manage/application/:id/section/:num/questions            controllers.ApplicationPreviewController.viewQuestions(id: ApplicationId, num:Int)
+GET         /manage/opportunity/:id/section/:num/questions            controllers.OpportunityController.viewQuestions(id: OpportunityId, num:Int)
 GET         /manage/opportunity/:opportunityId/title                  controllers.OpportunityController.viewTitle(opportunityId:OpportunityId)
-GET         /manage/opportunity/:opportunityId/deadlines              controllers.OpportunityController.viewDeadlines(opportunityId:OpportunityId)
+
+GET         /manage/opportunity/:id/deadlines/edit                    controllers.OpportunityController.editDeadlines(id: OpportunityId)
+GET         /manage/opportunity/:id/deadlines                         controllers.OpportunityController.viewDeadlines(id: OpportunityId)
+POST        /manage/opportunity/:id/deadlines                         controllers.OpportunityController.saveDeadlines(id: OpportunityId)
+
 GET         /manage/opportunity/:opportunityId/description            controllers.OpportunityController.viewDescription(opportunityId:OpportunityId)
 GET         /manage/opportunity/:opportunityId/grantvalue             controllers.OpportunityController.viewGrantValue(opportunityId:OpportunityId)
 GET         /manage/opportunity/:opportunityId/oppsection/:sectionid  controllers.OpportunityController.viewOppSection(opportunityId:OpportunityId, sectionid:Int)
