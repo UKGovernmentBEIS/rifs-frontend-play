@@ -5,8 +5,9 @@ import javax.inject.Inject
 import cats.data.OptionT
 import cats.instances.future._
 import forms.Field
+import forms.validation.CostItem
 import models._
-import play.api.libs.json.JsObject
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
 
@@ -15,43 +16,39 @@ import scala.concurrent.{ExecutionContext, Future}
 class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, applications: ApplicationOps, appForms: ApplicationFormOps, opps: OpportunityOps)(implicit ec: ExecutionContext)
   extends Controller {
 
+  implicit val ciReads = Json.reads[CostItem]
+
   def previewSection(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
     val ft = actionHandler.gatherSectionDetails(id, sectionNumber)
 
     ft.map {
       case Some(app) =>
+        val (backLink, editLink) = app.section.map(_.isComplete) match {
+          case Some(true) =>
+            (controllers.routes.ApplicationController.show(app.id).url,
+              Some(controllers.routes.ApplicationController.resetAndEditSection(app.id, app.formSection.sectionNumber).url))
+          case _ =>
+            (controllers.routes.ApplicationController.editSectionForm(app.id, app.formSection.sectionNumber).url, None)
+        }
+        val answers = app.section.map { s => s.answers }.getOrElse(JsObject(List.empty))
+
         app.formSection.sectionType match {
           case SectionTypeForm =>
-            app.section.map(_.isComplete) match {
-              case Some(true) => renderSectionPreviewCompleted(app, app.formSection.fields)
-              case _ => renderSectionPreviewInProgress(app, app.formSection.fields)
-            }
+            renderSectionPreview(app, app.formSection.fields, answers, backLink, editLink)
           case SectionTypeList =>
-            // TODO: show the cost list preview
-            Ok(views.html.wip(controllers.routes.ApplicationController.show(id).url))
+            val costItems = app.section.flatMap(s => (s.answers \ "items").validate[List[CostItem]].asOpt).getOrElse(List.empty)
+            renderListPreview(app, costItems, answers, backLink, editLink)
         }
       case None => NotFound
     }
   }
 
-  def renderSectionPreviewCompleted(app: ApplicationSectionDetail, fields: Seq[Field]) = {
-    val answers = app.section.map { s => s.answers }.getOrElse(JsObject(List.empty))
-    Ok(views.html.sectionPreview(
-      app,
-      fields,
-      answers,
-      controllers.routes.ApplicationController.show(app.id).url,
-      Some(controllers.routes.ApplicationController.resetAndEditSection(app.id, app.formSection.sectionNumber).url)))
+  def renderSectionPreview(app: ApplicationSectionDetail, fields: Seq[Field], answers: JsObject, backLink: String, editLink: Option[String]) = {
+    Ok(views.html.sectionPreview(app, fields, answers, backLink, editLink))
   }
 
-  def renderSectionPreviewInProgress(app: ApplicationSectionDetail, fields: Seq[Field]) = {
-    val answers = app.section.map { s => s.answers }.getOrElse(JsObject(List.empty))
-    Ok(views.html.sectionPreview(
-      app,
-      fields,
-      answers,
-      controllers.routes.ApplicationController.editSectionForm(app.id, app.formSection.sectionNumber).url,
-      None))
+  def renderListPreview(app: ApplicationSectionDetail, items: Seq[CostItem], answers: JsObject, backLink: String, editLink: Option[String]) = {
+    Ok(views.html.listSectionPreview(app, items, answers, backLink, editLink))
   }
 
   def getFieldMap(form: ApplicationForm): Map[Int, Seq[Field]] = {
