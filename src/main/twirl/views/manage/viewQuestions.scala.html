@@ -17,7 +17,7 @@
 
             @formSection.fields.map(_.renderFormInput(formSection.questionMap, play.api.libs.json.JsObject(Seq()), List(), List()))
             <div class="rifs-form-buttons">
-                <a href="@controllers.routes.OpportunityController.showOverviewPage(opp.id)" class="button">
+                <a href="@controllers.routes.OpportunityController.showOverviewPage(opp.id)#opportunity-questions" class="button">
                     Continue</a>
             </div>
 
