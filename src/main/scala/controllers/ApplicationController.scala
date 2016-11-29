@@ -37,13 +37,12 @@ class ApplicationController @Inject()(
     applications.deleteAll().map(_ => Redirect(controllers.routes.StartPageController.startPage()))
   }
 
-  import ApplicationData._
   import FieldCheckHelpers._
 
   def editSectionForm(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
     actionHandler.gatherSectionDetails(id, sectionNumber).map {
       case Some(app) =>
-        val hints = app.section.map(s => hinting(s.answers, checksFor(sectionNumber))).getOrElse(List.empty)
+        val hints = app.section.map(s => hinting(s.answers, checksFor(app.formSection))).getOrElse(List.empty)
         actionHandler.renderSectionForm(app, sectionNumber, noErrors, hints)
       case None => NotFound
     }
@@ -60,13 +59,13 @@ class ApplicationController @Inject()(
       case Some(app) =>
         app.section match {
           case None =>
-            val hints = hinting(JsObject(List.empty), checksFor(sectionNumber))
+            val hints = hinting(JsObject(List.empty), checksFor(app.formSection))
             actionHandler.renderSectionForm(app, sectionNumber, noErrors, hints)
 
           case Some(s) =>
             if (s.isComplete) actionHandler.redirectToPreview(id, sectionNumber)
             else {
-              val hints = hinting(s.answers, checksFor(sectionNumber))
+              val hints = hinting(s.answers, checksFor(app.formSection))
               actionHandler.renderSectionForm(app, sectionNumber, noErrors, hints)
             }
         }
@@ -119,5 +118,8 @@ class ApplicationController @Inject()(
   }
 
   def gatherApplicationDetails(id: ApplicationId): Future[Option[ApplicationDetail]] = applications.detail(id)
+
+  def checksFor(formSection: ApplicationFormSection): Map[String, FieldCheck] =
+    formSection.fields.map(f => f.name -> f.check).toMap
 
 }
