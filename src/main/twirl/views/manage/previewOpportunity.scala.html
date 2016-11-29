@@ -57,7 +57,7 @@ backLink=Some(BackLink("Opportunity library", controllers.routes.OpportunityCont
                                 <tr>
                                     <td>
                                         2. <a id="op-setup-link2"
-                                              href="@controllers.routes.OpportunityController.editDeadlines(opportunity.id)"
+                                              href="@controllers.routes.OpportunityController.viewDeadlines(opportunity.id)"
                                             > Opportunity deadlines</a>
                                     </td>
                                 </tr>
@@ -159,7 +159,7 @@ backLink=Some(BackLink("Opportunity library", controllers.routes.OpportunityCont
 
             <p class="rifs-form-buttons">
                 <input type="submit" name="@Save.name" class="button button--start" value="Duplicate opportunity">
-                <a href="@controllers.routes.OpportunityController.wip(controllers.routes.OpportunityController.showOverviewPage(opportunity.id).url)"
+                <a href="@controllers.routes.OpportunityController.showOpportunityPreview(opportunity.id, None)"
                    class="flat nobreak"
                 >
                     Applicant view</a>

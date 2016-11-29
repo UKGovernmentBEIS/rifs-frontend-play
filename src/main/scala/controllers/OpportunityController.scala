@@ -61,7 +61,6 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     }
   }
 
-
   def viewDescription(id: OpportunityId) = Action.async { request =>
     val fopp = opportunities.byId(id)
     fopp.map {
