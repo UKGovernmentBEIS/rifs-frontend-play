@@ -39,7 +39,7 @@ GET         /reset                                                    controller
 GET         /wip                                                      controllers.OpportunityController.wip(backUrl: String)
 
 # Manage Views
-GET         /manage/opportunities/guidance                            controllers.OpportunityController.showPMGuidancePage
+GET         /manage/opportunities/guidance                            controllers.OpportunityController.showPMGuidancePage(backUrl: String)
 GET         /manage/opportunity/:id/section/:num/questions            controllers.OpportunityController.viewQuestions(id: OpportunityId, num:Int)
 GET         /manage/opportunity/:opportunityId/title                  controllers.OpportunityController.viewTitle(opportunityId:OpportunityId)
 

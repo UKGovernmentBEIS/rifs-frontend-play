@@ -30,8 +30,8 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     Ok(views.html.opportunityPreview(request.opportunity, sectionNumber.getOrElse(1)))
   }
 
-  def showNewOpportunityForm = Action {
-    Ok(views.html.newOpportunityChoice())
+  def showNewOpportunityForm()= Action {request =>
+    Ok(views.html.newOpportunityChoice(request.uri))
   }
 
   def chooseHowToCreateOpportunity(choiceText: Option[String]) = Action { implicit request =>
@@ -65,8 +65,8 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     Ok(views.html.guidance(id))
   }
 
-  def showPMGuidancePage = Action {
-    Ok(views.html.manage.guidance())
+  def showPMGuidancePage(backUrl:String) = Action { request =>
+    Ok(views.html.manage.guidance(backUrl))
   }
 
   def wip(backUrl: String) = Action {
@@ -118,7 +118,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
 
   def showOverviewPage(id: OpportunityId) = OpportunityAction(id).async { request =>
     appForms.byOpportunityId(id).map {
-      case Some(appForm) => Ok(views.html.manage.previewOpportunity(request.opportunity, appForm))
+      case Some(appForm) => Ok(views.html.manage.previewOpportunity(request.uri, request.opportunity, appForm))
       case None => NotFound
     }
   }
