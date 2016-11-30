@@ -110,7 +110,6 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, Opportunity
   private def dateValuesFor(ld: LocalDate) =
     DateValues(Some(ld.getDayOfMonth.toString), Some(ld.getMonthOfYear.toString), Some(ld.getYear.toString))
 
-
   def saveDeadlines(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
     (request.body.values \ "deadlines").validate[DateTimeRangeValues] match {
       case JsSuccess(vs, _) =>

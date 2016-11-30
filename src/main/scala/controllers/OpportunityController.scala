@@ -3,6 +3,8 @@ package controllers
 import javax.inject.Inject
 
 import actions.OpportunityAction
+import controllers.manage.CreateOpportunityChoice
+import forms.DateTimeRangeField
 import models.OpportunityId
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, OpportunityOps}
@@ -22,6 +24,20 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     }
   }
 
+  def showGuidancePage(id: OpportunityId) = Action {
+    Ok(views.html.guidance(id))
+  }
+
+  def wip(backUrl: String) = Action {
+    Ok(views.html.wip(backUrl))
+  }
+
+  def showOverviewPage(id: OpportunityId) = OpportunityAction(id).async { request =>
+    appForms.byOpportunityId(id).map {
+      case Some(appForm) => Ok(views.html.manage.previewOpportunity(request.uri, request.opportunity, appForm))
+      case None => NotFound
+    }
+  }
 
   def viewQuestions(id: OpportunityId, sectionNumber: Int) = OpportunityAction(id).async { request =>
     appForms.byOpportunityId(id).map {
@@ -34,24 +50,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     }
   }
 
-  def wip(backUrl: String) = Action {
-    Ok(views.html.wip(backUrl))
-  }
 
-
-
-
-
-  def showGuidancePage(id: OpportunityId) = Action {
-    Ok(views.html.guidance(id))
-  }
-
-  def showOverviewPage(id: OpportunityId) = OpportunityAction(id).async { request =>
-    appForms.byOpportunityId(id).map {
-      case Some(appForm) => Ok(views.html.manage.previewOpportunity(request.uri, request.opportunity, appForm))
-      case None => NotFound
-    }
-  }
 }
 
 
