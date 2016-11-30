@@ -1,6 +1,8 @@
 @import models._
 @import partials._
 
+@(backUrl:String)
+
 @main(s"Create new opportunity - RIFS", backLink = Some(BackLink("Home page", routes.StartPageController.startPage().url)), displayUserName=Some("Portfolio Peter")) {
     <!-- main content -->
     <div class="grid-row">
@@ -45,7 +47,7 @@
                 <ul class="list spacious">
 
                     <li>
-                        <a href="@controllers.routes.OpportunityController.showPMGuidancePage()" target="_blank">Guidance for Portfolio Managers</a>
+                        <a href="@controllers.routes.OpportunityController.showPMGuidancePage(backUrl)">Guidance for Portfolio Managers</a>
                     </li>
 
                 </ul>
