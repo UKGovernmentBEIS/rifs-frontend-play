@@ -23,7 +23,7 @@ backLink=Some(BackLink("Opportunity library", controllers.manage.routes.Opportun
         </h1>
 
         <form method="POST"
-        action="@controllers.routes.OpportunityController.duplicate(opportunity.id)">
+        action="@controllers.manage.routes.OpportunityController.duplicate(opportunity.id)">
 
             <section class="more">
 
@@ -50,7 +50,7 @@ backLink=Some(BackLink("Opportunity library", controllers.manage.routes.Opportun
                                 <tr>
                                     <td>
                                         1. <a id="op-setup-link1"
-                                              href="@controllers.routes.OpportunityController.viewTitle(opportunity.id)"
+                                              href="@controllers.manage.routes.OpportunityController.viewTitle(opportunity.id)"
                                             > Opportunity title</a>
                                     </td>
                                 </tr>
@@ -64,14 +64,14 @@ backLink=Some(BackLink("Opportunity library", controllers.manage.routes.Opportun
                                 <tr>
                                     <td>
                                         3. <a id="op-setup-link3"
-                                              href="@controllers.routes.OpportunityController.viewDescription(opportunity.id)"
+                                              href="@controllers.manage.routes.OpportunityController.viewDescription(opportunity.id)"
                                             > Opportunity description</a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
                                         4. <a id="op-setup-link4"
-                                              href="@controllers.routes.OpportunityController.viewGrantValue(opportunity.id)"
+                                              href="@controllers.manage.routes.OpportunityController.viewGrantValue(opportunity.id)"
                                             > Maximum grant value</a>
                                     </td>
                                 </tr>
@@ -80,7 +80,7 @@ backLink=Some(BackLink("Opportunity library", controllers.manage.routes.Opportun
                                 <tr>
                                     <td>
                                         @(s"${num + 5}").
-                                        <a href="@controllers.routes.OpportunityController.viewOppSection(opportunity.id, oppDesc.sectionNumber)">
+                                        <a href="@controllers.manage.routes.OpportunityController.viewOppSection(opportunity.id, oppDesc.sectionNumber)">
                                             @oppDesc.title
                                         </a>
                                     </td>

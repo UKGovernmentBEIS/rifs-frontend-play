@@ -22,29 +22,6 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     }
   }
 
-  def viewTitle(id: OpportunityId) = OpportunityAction(id) { request =>
-    Ok(views.html.manage.viewTitle(request.opportunity))
-  }
-
-  def viewDescription(id: OpportunityId) = OpportunityAction(id) { request =>
-    Ok(views.html.manage.viewDescription(request.opportunity))
-  }
-
-  def viewGrantValue(id: OpportunityId) = OpportunityAction(id) { request =>
-    Ok(views.html.manage.viewGrantValue(request.opportunity))
-  }
-
-  def viewOppSection(id: OpportunityId, sectionNum: Int) = OpportunityAction(id) { request =>
-    Ok(views.html.manage.viewOppSection(request.opportunity, sectionNum))
-  }
-
-  def wip(backUrl: String) = Action {
-    Ok(views.html.wip(backUrl))
-  }
-
-  def duplicate(opportunityId: OpportunityId) = OpportunityAction(opportunityId) { request =>
-    Ok(views.html.wip(controllers.routes.OpportunityController.showOverviewPage(opportunityId).url))
-  }
 
   def viewQuestions(id: OpportunityId, sectionNumber: Int) = OpportunityAction(id).async { request =>
     appForms.byOpportunityId(id).map {
@@ -56,6 +33,14 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
       case None => NotFound
     }
   }
+
+  def wip(backUrl: String) = Action {
+    Ok(views.html.wip(backUrl))
+  }
+
+
+
+
 
   def showGuidancePage(id: OpportunityId) = Action {
     Ok(views.html.guidance(id))
