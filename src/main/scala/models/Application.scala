@@ -36,7 +36,9 @@ case class ApplicationSectionDetail(
                                      opportunity: OpportunitySummary,
                                      formSection: ApplicationFormSection,
                                      section: Option[ApplicationSection]
-                                   )
+                                   ){
+  val sectionNumber = formSection.sectionNumber
+}
 
 case class SubmittedApplicationRef(applicationRef: Long) extends AnyVal
 

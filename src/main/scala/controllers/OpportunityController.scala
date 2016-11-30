@@ -3,18 +3,14 @@ package controllers
 import javax.inject.Inject
 
 import actions.OpportunityAction
-import cats.data.Validated._
-import forms.validation.DateTimeRangeValues
-import forms.{DateTimeRangeField, DateValues}
-import models._
-import org.joda.time.LocalDate
-import play.api.libs.json.{JsError, JsObject, JsSuccess, Json}
+import models.OpportunityId
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, OpportunityOps}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: ApplicationFormOps, OpportunityAction: OpportunityAction)(implicit ec: ExecutionContext) extends Controller {
+
   def showOpportunities = Action.async {
     opportunities.getOpenOpportunitySummaries.map { os => Ok(views.html.showOpportunities(os)) }
   }
@@ -139,22 +135,5 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   }
 }
 
-sealed trait CreateOpportunityChoice {
-  def name: String
-}
 
-object CreateOpportunityChoice {
-  def apply(s: Option[String]): Option[CreateOpportunityChoice] = s match {
-    case Some(NewOpportunityChoice.name) => Some(NewOpportunityChoice)
-    case Some(ReuseOpportunityChoice.name) => Some(ReuseOpportunityChoice)
-    case _ => None
-  }
-}
 
-case object NewOpportunityChoice extends CreateOpportunityChoice {
-  val name = "new"
-}
-
-case object ReuseOpportunityChoice extends CreateOpportunityChoice {
-  val name = "reuse"
-}

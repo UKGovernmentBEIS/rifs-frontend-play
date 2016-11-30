@@ -1,6 +1,6 @@
 @(os: Seq[Opportunity])
 
-@main("Opportunity list - RIFS", backLink=Some(BackLink("Create new opportunity", controllers.routes.OpportunityController.showNewOpportunityForm().url)), displayUserName=Some("Portfolio Peter")) {
+@main("Opportunity list - RIFS", backLink=Some(BackLink("Create new opportunity", controllers.manage.routes.OpportunityController.showNewOpportunityForm().url)), displayUserName=Some("Portfolio Peter")) {
     <div>
         <h1 class="heading-xlarge">Opportunity library</h1>
 
@@ -20,7 +20,7 @@
                 @for((o, i) <- os.zipWithIndex) {
                     <tr>
                         <td data-label="Ref.">@("%04d".format(o.id.id))</td>
-                        <td data-label="Title"><a href=@controllers.routes.OpportunityController.showOpportunityPreview(o.id, None).url>@o.title</a></td>
+                        <td data-label="Title"><a href=@controllers.manage.routes.OpportunityController.showOpportunityPreview(o.id, None).url>@o.title</a></td>
                         <td data-label="Status">Open</td>
                         <td data-label="Structure">Responsive, claim, FEC</td>
                     </tr>
@@ -30,7 +30,7 @@
 
         <div class="rifs-form-buttons">
             <p>
-                <a href="@controllers.routes.OpportunityController.showNewOpportunityForm()"
+                <a href="@controllers.manage.routes.OpportunityController.showNewOpportunityForm()"
                 class="button"
                 >Cancel</a>
             </p>
