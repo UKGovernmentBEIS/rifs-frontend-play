@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.Inject
 
-import actions.AppSectionAction
+import actions.{AppDetailAction, AppSectionAction}
 import forms.validation.SectionError
 import models._
 import org.joda.time.LocalDateTime
@@ -18,6 +18,7 @@ class ApplicationController @Inject()(
                                        applications: ApplicationOps,
                                        forms: ApplicationFormOps,
                                        opps: OpportunityOps,
+                                       AppDetailAction: AppDetailAction,
                                        AppSectionAction: AppSectionAction
                                      )(implicit ec: ExecutionContext)
   extends Controller with ApplicationResults {
@@ -29,11 +30,8 @@ class ApplicationController @Inject()(
     }
   }
 
-  def show(id: ApplicationId) = Action.async {
-    gatherApplicationDetails(id).map {
-      case Some(app) => Ok(views.html.showApplicationForm(app, List.empty))
-      case None => NotFound
-    }
+  def show(id: ApplicationId) = AppDetailAction(id) { request =>
+    Ok(views.html.showApplicationForm(request.appDetail, List.empty))
   }
 
   def reset = Action.async {
@@ -79,29 +77,25 @@ class ApplicationController @Inject()(
       }
   }
 
-  def submit(id: ApplicationId) = Action.async { request =>
-    gatherApplicationDetails(id).flatMap {
-      case Some(app) =>
-        val sectionErrors: Seq[SectionError] = app.applicationForm.sections.sortBy(_.sectionNumber).flatMap { fs =>
-          app.sections.find(_.sectionNumber == fs.sectionNumber) match {
-            case None => Some(SectionError(fs, "Not started"))
-            case Some(s) => checkSection(fs, s)
-          }
-        }
-
-        if (sectionErrors.isEmpty) {
-          val emailto = "experiencederic@university.ac.uk"
-          val dtf = DateTimeFormat.forPattern("HH:mm:ss")
-          val appsubmittime = dtf.print(LocalDateTime.now()) //returns TimeZOne Europe/London
-          actionHandler.doSubmit(id).map {
-            case Some(e) =>
-              Ok(views.html.submitApplicationForm(e.applicationRef, emailto, appsubmittime))
-            case None => NotFound
-          }
-        } else Future.successful(Ok(views.html.showApplicationForm(app, sectionErrors)))
-
-      case None => Future.successful(NotFound)
+  def submit(id: ApplicationId) = AppDetailAction(id).async { request =>
+    val sectionErrors: Seq[SectionError] = request.appDetail.applicationForm.sections.sortBy(_.sectionNumber).flatMap { fs =>
+      request.appDetail.sections.find(_.sectionNumber == fs.sectionNumber) match {
+        case None => Some(SectionError(fs, "Not started"))
+        case Some(s) => checkSection(fs, s)
+      }
     }
+
+    if (sectionErrors.isEmpty) {
+      val emailto = "experiencederic@university.ac.uk"
+      val dtf = DateTimeFormat.forPattern("HH:mm:ss")
+      val appsubmittime = dtf.print(LocalDateTime.now()) //returns TimeZOne Europe/London
+      actionHandler.doSubmit(id).map {
+        case Some(e) =>
+          Ok(views.html.submitApplicationForm(e.applicationRef, emailto, appsubmittime))
+        case None => NotFound
+      }
+    } else Future.successful(Ok(views.html.showApplicationForm(request.appDetail, sectionErrors)))
+
   }
 
   def checkSection(appFormSection: ApplicationFormSection, appSection: ApplicationSection): Option[SectionError] = {
@@ -110,8 +104,6 @@ class ApplicationController @Inject()(
       case None => Some(SectionError(appFormSection, "In progress"))
     }
   }
-
-  def gatherApplicationDetails(id: ApplicationId): Future[Option[ApplicationDetail]] = applications.detail(id)
 
   def checksFor(formSection: ApplicationFormSection): Map[String, FieldCheck] =
     formSection.fields.map(f => f.name -> f.check).toMap
