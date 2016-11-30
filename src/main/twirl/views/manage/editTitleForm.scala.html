@@ -10,10 +10,6 @@
     errs.filter(p => p.path == field.name)
 }
 
-@errors.map { e =>
-    <span class="error-message" role="alert">@e.err</span>
-}
-
 @formatId(id: Long) = @{
     f"RIFS $id%04d"
 }

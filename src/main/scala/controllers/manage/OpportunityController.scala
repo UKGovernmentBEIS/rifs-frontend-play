@@ -65,6 +65,25 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, Opportunity
     }
   }
 
+  def duplicate(opportunityId: OpportunityId) = OpportunityAction(opportunityId) { request =>
+    Ok(views.html.wip(controllers.routes.OpportunityController.showOverviewPage(opportunityId).url))
+  }
+
+  def viewTitle(id: OpportunityId) = OpportunityAction(id) { request =>
+    Ok(views.html.manage.viewTitle(request.opportunity))
+  }
+
+  def viewDescription(id: OpportunityId) = OpportunityAction(id) { request =>
+    Ok(views.html.manage.viewDescription(request.opportunity))
+  }
+  def viewGrantValue(id: OpportunityId) = OpportunityAction(id) { request =>
+    Ok(views.html.manage.viewGrantValue(request.opportunity))
+  }
+
+  def viewOppSection(id: OpportunityId, sectionNum: Int) = OpportunityAction(id) { request =>
+    Ok(views.html.manage.viewOppSection(request.opportunity, sectionNum))
+  }
+
   def showPMGuidancePage(backUrl: String) = Action { request =>
     Ok(views.html.manage.guidance(backUrl))
   }
@@ -91,7 +110,6 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, Opportunity
   private def dateValuesFor(ld: LocalDate) =
     DateValues(Some(ld.getDayOfMonth.toString), Some(ld.getMonthOfYear.toString), Some(ld.getYear.toString))
 
-
   def saveDeadlines(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
     (request.body.values \ "deadlines").validate[DateTimeRangeValues] match {
       case JsSuccess(vs, _) =>
@@ -105,6 +123,8 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, Opportunity
       case JsError(errors) => Future.successful(BadRequest(errors.toString))
     }
   }
+
+
 }
 
 sealed trait CreateOpportunityChoice {

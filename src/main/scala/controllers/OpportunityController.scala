@@ -3,6 +3,8 @@ package controllers
 import javax.inject.Inject
 
 import actions.OpportunityAction
+import controllers.manage.CreateOpportunityChoice
+import forms.DateTimeRangeField
 import models.OpportunityId
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, OpportunityOps}
@@ -22,28 +24,19 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     }
   }
 
-  def viewTitle(id: OpportunityId) = OpportunityAction(id) { request =>
-    Ok(views.html.manage.viewTitle(request.opportunity))
-  }
-
-  def viewDescription(id: OpportunityId) = OpportunityAction(id) { request =>
-    Ok(views.html.manage.viewDescription(request.opportunity))
-  }
-
-  def viewGrantValue(id: OpportunityId) = OpportunityAction(id) { request =>
-    Ok(views.html.manage.viewGrantValue(request.opportunity))
-  }
-
-  def viewOppSection(id: OpportunityId, sectionNum: Int) = OpportunityAction(id) { request =>
-    Ok(views.html.manage.viewOppSection(request.opportunity, sectionNum))
+  def showGuidancePage(id: OpportunityId) = Action {
+    Ok(views.html.guidance(id))
   }
 
   def wip(backUrl: String) = Action {
     Ok(views.html.wip(backUrl))
   }
 
-  def duplicate(opportunityId: OpportunityId) = OpportunityAction(opportunityId) { request =>
-    Ok(views.html.wip(controllers.routes.OpportunityController.showOverviewPage(opportunityId).url))
+  def showOverviewPage(id: OpportunityId) = OpportunityAction(id).async { request =>
+    appForms.byOpportunityId(id).map {
+      case Some(appForm) => Ok(views.html.manage.previewOpportunity(request.uri, request.opportunity, appForm))
+      case None => NotFound
+    }
   }
 
   def viewQuestions(id: OpportunityId, sectionNumber: Int) = OpportunityAction(id).async { request =>
@@ -57,16 +50,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     }
   }
 
-  def showGuidancePage(id: OpportunityId) = Action {
-    Ok(views.html.guidance(id))
-  }
 
-  def showOverviewPage(id: OpportunityId) = OpportunityAction(id).async { request =>
-    appForms.byOpportunityId(id).map {
-      case Some(appForm) => Ok(views.html.manage.previewOpportunity(request.uri, request.opportunity, appForm))
-      case None => NotFound
-    }
-  }
 }
 
 

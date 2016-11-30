@@ -11,7 +11,7 @@ sectionNumber: Int
 opp.description.find(_.sectionNumber == sectionNumber)
 }
 
-@main(s"${opp.title} - RIFS", backLink=Some(BackLink("Opportunity template",controllers.routes.OpportunityController.showOverviewPage(opp.id).url))) {
+@main(s"${opp.title} - RIFS", backLink=Some(BackLink("Opportunity template",controllers.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName=Some("Portfolio Peter")) {
     <div class="grid-row">
         <div class="column-full">
             <h1 class="heading-xlarge">

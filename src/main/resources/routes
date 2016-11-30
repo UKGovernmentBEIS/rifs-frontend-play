@@ -47,14 +47,14 @@ GET         /manage/opportunity/:id/title/edit                        controller
 POST        /manage/opportunity/:id/title                             controllers.manage.OpportunityController.saveTitle(id: OpportunityId)
 
 GET         /manage/opportunity/:id/section/:num/questions            controllers.OpportunityController.viewQuestions(id: OpportunityId, num:Int)
-GET         /manage/opportunity/:opportunityId/title                  controllers.OpportunityController.viewTitle(opportunityId:OpportunityId)
+GET         /manage/opportunity/:opportunityId/title                  controllers.manage.OpportunityController.viewTitle(opportunityId:OpportunityId)
 
-GET         /manage/opportunity/:opportunityId/description            controllers.OpportunityController.viewDescription(opportunityId:OpportunityId)
-GET         /manage/opportunity/:opportunityId/grantvalue             controllers.OpportunityController.viewGrantValue(opportunityId:OpportunityId)
-GET         /manage/opportunity/:opportunityId/oppsection/:sectionid  controllers.OpportunityController.viewOppSection(opportunityId:OpportunityId, sectionid:Int)
+GET         /manage/opportunity/:opportunityId/description            controllers.manage.OpportunityController.viewDescription(opportunityId:OpportunityId)
+GET         /manage/opportunity/:opportunityId/grantvalue             controllers.manage.OpportunityController.viewGrantValue(opportunityId:OpportunityId)
+GET         /manage/opportunity/:opportunityId/oppsection/:sectionid  controllers.manage.OpportunityController.viewOppSection(opportunityId:OpportunityId, sectionid:Int)
 
 GET         /manage/opportunity/:opportunityId/overview               controllers.OpportunityController.showOverviewPage(opportunityId:OpportunityId)
-POST        /manage/opportunity/:opportunityId/duplicate              controllers.OpportunityController.duplicate(opportunityId:OpportunityId)
+POST        /manage/opportunity/:opportunityId/duplicate              controllers.manage.OpportunityController.duplicate(opportunityId:OpportunityId)
 
 
 # Health check
