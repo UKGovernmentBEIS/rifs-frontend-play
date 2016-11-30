@@ -2,7 +2,7 @@ package config
 
 case class BusinessConfig(baseUrl: String)
 
-case class Config(logRequests: Boolean, business: BusinessConfig)
+case class Config(logAssets: Option[Boolean], logRequests: Boolean, business: BusinessConfig)
 
 object Config {
 
