@@ -41,7 +41,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta property="og:image" content="@routes.Assets.at("images/opengraph-image.png")">
 
-    <link href="@routes.Assets.at("stylesheets/application.css")" media="all" rel="stylesheet" />
+    <!--[if IE 7]><link href="@routes.Assets.at("stylesheets/application-ie7.css")" media="screen" rel="stylesheet" /><![endif]-->
+    <!--[if IE 8]><link href="@routes.Assets.at("stylesheets/application-ie8.css")" media="screen" rel="stylesheet" /><![endif]-->
+    <!--[if gt IE 8]><!--><link href="@routes.Assets.at("stylesheets/application.css")" media="all" rel="stylesheet" /><<!--<![endif]-->
     <link href="@routes.Assets.at("stylesheets/application-print.css")" media="print" rel="stylesheet" />
     @head
   </head>
