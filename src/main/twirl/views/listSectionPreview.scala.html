@@ -7,7 +7,7 @@
 )
 
 @formatId(id: Long) = @{
-    f"RIFS$id%05d"
+    f"RIFS $id%04d"
 }
 
 @main(s"${app.formSection.title} - RIFS", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(app.id).url)), displayUserName=Some("Experienced Eric")) {

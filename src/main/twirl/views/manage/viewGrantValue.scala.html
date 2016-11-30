@@ -3,7 +3,7 @@
 )
 
 @formatId(id: Long) = @{
-    f"RIFS$id%05d"
+    f"RIFS $id%04d"
 }
 
 @main(s"${opp.title} - RIFS", backLink=Some(BackLink("Opportunity template",controllers.routes.OpportunityController.showOverviewPage(opp.id).url))) {

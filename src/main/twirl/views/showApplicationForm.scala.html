@@ -4,7 +4,7 @@
 @(app: ApplicationDetail, errs: Seq[forms.validation.SectionError])
 
 @formatId(id: Long) = @{
-f"RIFS$id%05d"
+f"RIFS $id%04d"
 }
 
 @errorClass = @{if(errs.nonEmpty) "rifs-error-panel" else ""}
