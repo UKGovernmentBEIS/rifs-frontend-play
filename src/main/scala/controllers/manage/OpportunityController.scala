@@ -22,20 +22,9 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, Opportunity
     Ok(views.html.manage.opportunityPreview(request.uri, request.opportunity, sectionNumber.getOrElse(1)))
   }
 
-  //  def showOpportunityPreview(id: OpportunityId, sectionNumber: Option[Int]) = Action.async {
-  //    opportunities.byId(id).map {
-  //      case Some(o) => Ok(views.html.manage.opportunityPreview(o, sectionNumber.getOrElse(1)))
-  //      case None => NotFound
-  //    }
-  //  }
-
   def showNewOpportunityForm() = Action { request =>
     Ok(views.html.manage.newOpportunityChoice(request.uri))
   }
-
-  //  def showNewOpportunityForm = Action {
-  //    Ok(views.html.manage.newOpportunityChoice())
-  //  }
 
   def chooseHowToCreateOpportunity(choiceText: Option[String]) = Action { implicit request =>
     CreateOpportunityChoice(choiceText).map {
@@ -69,9 +58,9 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, Opportunity
   //Refactor - move this to a service or action handler ?
   def saveTextField(opp: Opportunity, answers: Map[String, String], sectionFieldName: String, fieldValues: JsObject): Future[Result] = {
     answers match {
-      case _ => titleField.check(titleField.name, Json.toJson(answers.get(sectionFieldName).getOrElse(""))) match {
-        case Nil => opportunities.saveSummary(opp.summary.copy(title = (answers.get(sectionFieldName).getOrElse("")))).map(_ => Ok(views.html.wip("")))
-        case errs => Future.successful(Ok(views.html.manage.editTitleForm(titleField, opp, titleQuestion, fieldValues, errs.toList, Seq())))
+      case _ => titleField.check(titleField.name, Json.toJson(answers.getOrElse(sectionFieldName, ""))) match {
+        case Nil => opportunities.saveSummary(opp.summary.copy(title = answers.getOrElse(sectionFieldName, ""))).map(_ => Ok(views.html.wip("")))
+        case errs => Future.successful(Ok(views.html.manage.editTitleForm(titleField, opp, titleQuestion, fieldValues, errs, Seq())))
       }
     }
   }
@@ -116,8 +105,6 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, Opportunity
       case JsError(errors) => Future.successful(BadRequest(errors.toString))
     }
   }
-
-
 }
 
 sealed trait CreateOpportunityChoice {
