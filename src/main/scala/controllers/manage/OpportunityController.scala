@@ -2,20 +2,16 @@ package controllers.manage
 
 import javax.inject.Inject
 
+import actions.OpportunityAction
 import cats.data.Validated._
-import controllers.FieldCheckHelpers.FieldErrors
 import controllers._
-import forms.validation.{DateTimeRangeValues, FieldError, MandatoryValidator}
+import forms.validation.DateTimeRangeValues
 import forms.{DateTimeRangeField, DateValues, TextField}
 import models._
 import org.joda.time.LocalDate
-import play.Logger
-import play.api.libs.iteratee.Input.Empty
 import play.api.libs.json._
-import play.api.mvc.Results.NotFound
 import play.api.mvc.{Action, Controller, Result}
 import services.OpportunityOps
-import actions.OpportunityAction
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -26,20 +22,20 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, Opportunity
     Ok(views.html.manage.opportunityPreview(request.uri, request.opportunity, sectionNumber.getOrElse(1)))
   }
 
-//  def showOpportunityPreview(id: OpportunityId, sectionNumber: Option[Int]) = Action.async {
-//    opportunities.byId(id).map {
-//      case Some(o) => Ok(views.html.manage.opportunityPreview(o, sectionNumber.getOrElse(1)))
-//      case None => NotFound
-//    }
-//  }
+  //  def showOpportunityPreview(id: OpportunityId, sectionNumber: Option[Int]) = Action.async {
+  //    opportunities.byId(id).map {
+  //      case Some(o) => Ok(views.html.manage.opportunityPreview(o, sectionNumber.getOrElse(1)))
+  //      case None => NotFound
+  //    }
+  //  }
 
-  def showNewOpportunityForm()= Action {request =>
+  def showNewOpportunityForm() = Action { request =>
     Ok(views.html.manage.newOpportunityChoice(request.uri))
   }
 
-//  def showNewOpportunityForm = Action {
-//    Ok(views.html.manage.newOpportunityChoice())
-//  }
+  //  def showNewOpportunityForm = Action {
+  //    Ok(views.html.manage.newOpportunityChoice())
+  //  }
 
   def chooseHowToCreateOpportunity(choiceText: Option[String]) = Action { implicit request =>
     CreateOpportunityChoice(choiceText).map {
@@ -58,41 +54,31 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, Opportunity
     "deadlines.endDate" -> Question("What is the closing date?")
   )
 
-  val titleField = TextField(label=Some("title"), name="title", isNumeric=false, maxWords=20)
-  val titleQuestion = Map("title" -> Question ("What is your opportunity called ?"))
+  val titleField = TextField(label = Some("title"), name = "title", isNumeric = false, maxWords = 20)
+  val titleQuestion = Map("title" -> Question("What is your opportunity called ?"))
 
-  def editTitle(id: OpportunityId) = Action.async {
-    opportunities.byId(id).map {
-      case Some(opp) =>
-        val answers = JsObject(Seq("title" -> Json.toJson(opp.title)))
-        Ok(views.html.manage.editTitleForm(titleField, opp, titleQuestion, answers, Seq(), Seq()))
-      case None => NotFound
-    }
+  def editTitle(id: OpportunityId) = OpportunityAction(id) { request =>
+    val answers = JsObject(Seq("title" -> Json.toJson(request.opportunity.title)))
+    Ok(views.html.manage.editTitleForm(titleField, request.opportunity, titleQuestion, answers, Seq(), Seq()))
   }
 
-  def saveTitle(id: OpportunityId) = Action.async(JsonForm.parser) { implicit request =>
-    SaveTextField (id, JsonHelpers.flatten (request.body.values), "title", request.body.values)
+  def saveTitle(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
+    saveTextField(request.opportunity, JsonHelpers.flatten(request.body.values), "title", request.body.values)
   }
 
   //Refactor - move this to a service or action handler ?
-  def SaveTextField (id: OpportunityId, answers: Map[String, String], sectionFieldName: String, fieldValues: JsObject): Future[Result] =  {
-    opportunities.byId(id).flatMap {
-      case Some(opp) =>
-        answers match {
-          case _ => titleField.check(titleField.name, Json.toJson(answers.get(sectionFieldName).getOrElse(""))) match {
-            case Nil => opportunities.saveSummary(opp.summary.copy(title = (answers.get(sectionFieldName).getOrElse("")))).map(_ => Ok(views.html.wip("")))
-            case errs => Future.successful(Ok(views.html.manage.editTitleForm(titleField, opp, titleQuestion, fieldValues, errs.toList, Seq())))
-          }
-        }
-      case None => Future.successful(NotFound)
+  def saveTextField(opp: Opportunity, answers: Map[String, String], sectionFieldName: String, fieldValues: JsObject): Future[Result] = {
+    answers match {
+      case _ => titleField.check(titleField.name, Json.toJson(answers.get(sectionFieldName).getOrElse(""))) match {
+        case Nil => opportunities.saveSummary(opp.summary.copy(title = (answers.get(sectionFieldName).getOrElse("")))).map(_ => Ok(views.html.wip("")))
+        case errs => Future.successful(Ok(views.html.manage.editTitleForm(titleField, opp, titleQuestion, fieldValues, errs.toList, Seq())))
+      }
     }
   }
 
-
-  def showPMGuidancePage(backUrl:String) = Action { request =>
+  def showPMGuidancePage(backUrl: String) = Action { request =>
     Ok(views.html.manage.guidance(backUrl))
   }
-
 
   implicit val dvFmt = Json.format[DateValues]
   implicit val dtrFmt = Json.format[DateTimeRangeValues]
