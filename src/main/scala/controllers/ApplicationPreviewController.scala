@@ -65,6 +65,8 @@ class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, appli
 
   def gatherApplicationDetails(id: ApplicationId): Future[Option[ApplicationDetail]] = applications.detail(id)
 
+
+
 }
 
 

@@ -38,12 +38,24 @@ GET         /manage/opportunity/new                                   controller
 GET         /manage/opportunity/choose                                controllers.manage.OpportunityController.chooseHowToCreateOpportunity(choice:Option[String])
 GET         /manage/opportunities/library                             controllers.manage.OpportunityController.showOpportunityLibrary
 GET         /manage/opportunity/:opportunityId                        controllers.manage.OpportunityController.showOpportunityPreview(opportunityId:OpportunityId, section:Option[Int])
-GET         /manage/opportunities/guidance                            controllers.manage.OpportunityController.showPMGuidancePage
+GET         /manage/opportunities/guidance                            controllers.manage.OpportunityController.showPMGuidancePage(backUrl: String)
 
 GET         /manage/opportunity/:id/deadlines/edit                    controllers.manage.OpportunityController.editDeadlines(id: OpportunityId)
+GET         /manage/opportunity/:id/deadlines                         controllers.manage.OpportunityController.viewDeadlines(id: OpportunityId)
 POST        /manage/opportunity/:id/deadlines                         controllers.manage.OpportunityController.saveDeadlines(id: OpportunityId)
 GET         /manage/opportunity/:id/title/edit                        controllers.manage.OpportunityController.editTitle(id: OpportunityId)
 POST        /manage/opportunity/:id/title                             controllers.manage.OpportunityController.saveTitle(id: OpportunityId)
+
+GET         /manage/opportunity/:id/section/:num/questions            controllers.OpportunityController.viewQuestions(id: OpportunityId, num:Int)
+GET         /manage/opportunity/:opportunityId/title                  controllers.OpportunityController.viewTitle(opportunityId:OpportunityId)
+
+GET         /manage/opportunity/:opportunityId/description            controllers.OpportunityController.viewDescription(opportunityId:OpportunityId)
+GET         /manage/opportunity/:opportunityId/grantvalue             controllers.OpportunityController.viewGrantValue(opportunityId:OpportunityId)
+GET         /manage/opportunity/:opportunityId/oppsection/:sectionid  controllers.OpportunityController.viewOppSection(opportunityId:OpportunityId, sectionid:Int)
+
+GET         /manage/opportunity/:opportunityId/overview               controllers.OpportunityController.showOverviewPage(opportunityId:OpportunityId)
+POST        /manage/opportunity/:opportunityId/duplicate              controllers.OpportunityController.duplicate(opportunityId:OpportunityId)
+
 
 # Health check
 GET         /ping                                                     controllers.HealthCheckController.ping()

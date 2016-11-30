@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import cats.data.Validated._
 import controllers.FieldCheckHelpers.FieldErrors
-import controllers.{Complete, FieldCheckHelpers, JsonForm, JsonHelpers}
+import controllers._
 import forms.validation.{DateTimeRangeValues, FieldError, MandatoryValidator}
 import forms.{DateTimeRangeField, DateValues, TextField}
 import models._
@@ -15,23 +15,31 @@ import play.api.libs.json._
 import play.api.mvc.Results.NotFound
 import play.api.mvc.{Action, Controller, Result}
 import services.OpportunityOps
+import actions.OpportunityAction
 
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class OpportunityController @Inject()(opportunities: OpportunityOps)(implicit ec: ExecutionContext) extends Controller {
+class OpportunityController @Inject()(opportunities: OpportunityOps, OpportunityAction: OpportunityAction)(implicit ec: ExecutionContext) extends Controller {
 
-
-  def showOpportunityPreview(id: OpportunityId, sectionNumber: Option[Int]) = Action.async {
-    opportunities.byId(id).map {
-      case Some(o) => Ok(views.html.manage.opportunityPreview(o, sectionNumber.getOrElse(1)))
-      case None => NotFound
-    }
+  def showOpportunityPreview(id: OpportunityId, sectionNumber: Option[Int]) = OpportunityAction(id) { implicit request =>
+    Ok(views.html.manage.opportunityPreview(request.uri, request.opportunity, sectionNumber.getOrElse(1)))
   }
 
-  def showNewOpportunityForm = Action {
-    Ok(views.html.manage.newOpportunityChoice())
+//  def showOpportunityPreview(id: OpportunityId, sectionNumber: Option[Int]) = Action.async {
+//    opportunities.byId(id).map {
+//      case Some(o) => Ok(views.html.manage.opportunityPreview(o, sectionNumber.getOrElse(1)))
+//      case None => NotFound
+//    }
+//  }
+
+  def showNewOpportunityForm()= Action {request =>
+    Ok(views.html.manage.newOpportunityChoice(request.uri))
   }
+
+//  def showNewOpportunityForm = Action {
+//    Ok(views.html.manage.newOpportunityChoice())
+//  }
 
   def chooseHowToCreateOpportunity(choiceText: Option[String]) = Action { implicit request =>
     CreateOpportunityChoice(choiceText).map {
@@ -42,10 +50,6 @@ class OpportunityController @Inject()(opportunities: OpportunityOps)(implicit ec
 
   def showOpportunityLibrary = Action.async {
     opportunities.getOpenOpportunitySummaries.map { os => Ok(views.html.manage.showOpportunityLibrary(os)) }
-  }
-
-  def showPMGuidancePage = Action {
-    Ok(views.html.manage.guidance())
   }
 
   val deadlinesField = DateTimeRangeField("deadlines", allowPast = false, isEndDateMandatory = false)
@@ -85,16 +89,22 @@ class OpportunityController @Inject()(opportunities: OpportunityOps)(implicit ec
   }
 
 
+  def showPMGuidancePage(backUrl:String) = Action { request =>
+    Ok(views.html.manage.guidance(backUrl))
+  }
+
+
   implicit val dvFmt = Json.format[DateValues]
   implicit val dtrFmt = Json.format[DateTimeRangeValues]
 
-  def editDeadlines(id: OpportunityId) = Action.async {
-    opportunities.byId(id).map {
-      case Some(opp) =>
-        val answers = JsObject(Seq("title" -> Json.toJson(dateTimeRangeValuesFor(opp))))
-        Ok(views.html.manage.editDeadlinesForm(deadlinesField, opp, deadlineQuestions, answers, Seq(), Seq()))
-      case None => NotFound
-    }
+  def viewDeadlines(id: OpportunityId) = OpportunityAction(id) { request =>
+    val answers = JsObject(Seq("deadlines" -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
+    Ok(views.html.manage.viewDeadlines(deadlinesField, request.opportunity, deadlineQuestions, answers))
+  }
+
+  def editDeadlines(id: OpportunityId) = OpportunityAction(id) { request =>
+    val answers = JsObject(Seq("deadlines" -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
+    Ok(views.html.manage.editDeadlinesForm(deadlinesField, request.opportunity, deadlineQuestions, answers, Seq(), Seq()))
   }
 
   private def dateTimeRangeValuesFor(opp: Opportunity) = {
@@ -106,23 +116,21 @@ class OpportunityController @Inject()(opportunities: OpportunityOps)(implicit ec
   private def dateValuesFor(ld: LocalDate) =
     DateValues(Some(ld.getDayOfMonth.toString), Some(ld.getMonthOfYear.toString), Some(ld.getYear.toString))
 
-  def saveDeadlines(id: OpportunityId) = Action.async(JsonForm.parser) { implicit request =>
-    opportunities.byId(id).flatMap {
-      case Some(opp) =>
-        (request.body.values \ "deadlines").validate[DateTimeRangeValues] match {
-          case JsSuccess(vs, _) =>
-            deadlinesField.validator.validate(deadlinesField.name, vs) match {
-              case Valid(v) =>
-                val summary = opp.summary.copy(startDate = v.startDate, endDate = v.endDate)
-                opportunities.saveSummary(summary).map(_ => Ok(views.html.wip("")))
-              case Invalid(errors) =>
-                Future.successful(Ok(views.html.manage.editDeadlinesForm(deadlinesField, opp, deadlineQuestions, request.body.values, errors.toList, Seq())))
-            }
-          case JsError(errors) => Future.successful(BadRequest(errors.toString))
+
+  def saveDeadlines(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
+    (request.body.values \ "deadlines").validate[DateTimeRangeValues] match {
+      case JsSuccess(vs, _) =>
+        deadlinesField.validator.validate(deadlinesField.name, vs) match {
+          case Valid(v) =>
+            val summary = request.opportunity.summary.copy(startDate = v.startDate, endDate = v.endDate)
+            opportunities.saveSummary(summary).map(_ => Redirect(controllers.routes.OpportunityController.showOverviewPage(id)))
+          case Invalid(errors) =>
+            Future.successful(Ok(views.html.manage.editDeadlinesForm(deadlinesField, request.opportunity, deadlineQuestions, request.body.values, errors.toList, Seq())))
         }
-      case None => Future.successful(NotFound)
+      case JsError(errors) => Future.successful(BadRequest(errors.toString))
     }
   }
+
 
 }
 
