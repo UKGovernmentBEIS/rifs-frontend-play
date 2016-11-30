@@ -2,6 +2,7 @@ package controllers
 
 import javax.inject.Inject
 
+import actions.AppSectionAction
 import forms.Field
 import forms.validation.CostItem
 import models._
@@ -11,33 +12,33 @@ import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, applications: ApplicationOps, appForms: ApplicationFormOps, opps: OpportunityOps)(implicit ec: ExecutionContext)
+class ApplicationPreviewController @Inject()(
+                                              actionHandler: ActionHandler,
+                                              applications: ApplicationOps,
+                                              appForms: ApplicationFormOps,
+                                              opps: OpportunityOps,
+                                              AppSectionAction: AppSectionAction
+                                            )(implicit ec: ExecutionContext)
   extends Controller {
 
   implicit val ciReads = Json.reads[CostItem]
 
-  def previewSection(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
-    val ft = actionHandler.gatherSectionDetails(id, sectionNumber)
+  def previewSection(id: ApplicationId, sectionNumber: Int) = AppSectionAction(id, sectionNumber) { request =>
+    val (backLink, editLink) = request.appSection.section.map(_.isComplete) match {
+      case Some(true) =>
+        (controllers.routes.ApplicationController.show(request.appSection.id).url,
+          Some(controllers.routes.ApplicationController.resetAndEditSection(request.appSection.id, request.appSection.sectionNumber).url))
+      case _ =>
+        (controllers.routes.ApplicationController.editSectionForm(request.appSection.id, request.appSection.sectionNumber).url, None)
+    }
+    val answers = request.appSection.section.map { s => s.answers }.getOrElse(JsObject(List.empty))
 
-    ft.map {
-      case Some(app) =>
-        val (backLink, editLink) = app.section.map(_.isComplete) match {
-          case Some(true) =>
-            (controllers.routes.ApplicationController.show(app.id).url,
-              Some(controllers.routes.ApplicationController.resetAndEditSection(app.id, app.formSection.sectionNumber).url))
-          case _ =>
-            (controllers.routes.ApplicationController.editSectionForm(app.id, app.formSection.sectionNumber).url, None)
-        }
-        val answers = app.section.map { s => s.answers }.getOrElse(JsObject(List.empty))
-
-        app.formSection.sectionType match {
-          case SectionTypeForm =>
-            renderSectionPreview(app, app.formSection.fields, answers, backLink, editLink)
-          case SectionTypeList =>
-            val costItems = app.section.flatMap(s => (s.answers \ "items").validate[List[CostItem]].asOpt).getOrElse(List.empty)
-            renderListPreview(app, costItems, answers, backLink, editLink)
-        }
-      case None => NotFound
+    request.appSection.formSection.sectionType match {
+      case SectionTypeForm =>
+        renderSectionPreview(request.appSection, request.appSection.formSection.fields, answers, backLink, editLink)
+      case SectionTypeList =>
+        val costItems = request.appSection.section.flatMap(s => (s.answers \ "items").validate[List[CostItem]].asOpt).getOrElse(List.empty)
+        renderListPreview(request.appSection, costItems, answers, backLink, editLink)
     }
   }
 
@@ -64,7 +65,6 @@ class ApplicationPreviewController @Inject()(actionHandler: ActionHandler, appli
   }
 
   def gatherApplicationDetails(id: ApplicationId): Future[Option[ApplicationDetail]] = applications.detail(id)
-
 
 
 }
