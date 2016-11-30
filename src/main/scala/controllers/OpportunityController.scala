@@ -27,7 +27,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   }
 
   def showOpportunityPreview(id: OpportunityId, sectionNumber: Option[Int]) = OpportunityAction(id) { implicit request =>
-    Ok(views.html.opportunityPreview(request.opportunity, sectionNumber.getOrElse(1)))
+    Ok(views.html.opportunityPreview(request.uri, request.opportunity, sectionNumber.getOrElse(1)))
   }
 
   def showNewOpportunityForm()= Action {request =>

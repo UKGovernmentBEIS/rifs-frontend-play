@@ -8,7 +8,7 @@
     f"RIFS$id%05d"
 }
 
-@main(s"${opp.title} - RIFS", backLink = Some(BackLink("Opportunity template", controllers.routes.OpportunityController.showOverviewPage(opp.id).url))) {
+@main(s"${opp.title} - RIFS", backLink = Some(BackLink("Opportunity template", controllers.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName=Some("Portfolio Manager")) {
     <div class="grid-row">
         <div class="column-two-thirds">
             <h1 class="heading-xlarge">

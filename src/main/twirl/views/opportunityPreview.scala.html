@@ -1,4 +1,4 @@
-@(opportunity: Opportunity, sectionNumber: Int)
+@(backUrl:String, opportunity: Opportunity, sectionNumber: Int)
 
 @sectionLink(title: String, sectionNum: Int) = {
     <span class="part-number">@sectionNum.</span>
@@ -135,8 +135,9 @@
             <ul class="list spacious">
 
                 <li>
-                    <a href="@controllers.routes.OpportunityController.showGuidancePage(opportunity.id)">Guidance on
-                        seminars</a>
+                    <a href="@controllers.routes.OpportunityController.showPMGuidancePage(backUrl)">
+                        Guidance on opportunity set-up
+                       </a>
                 </li>
 
             </ul>
