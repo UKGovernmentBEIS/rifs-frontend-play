@@ -4,9 +4,7 @@
         questions: Map[String, Question],
         answers: play.api.libs.json.JsObject)
 
-@formatId(id: Long) = @{
-    f"RIFS$id%05d"
-}
+@import views.html.partials._
 
 @main(s"${opp.title} - RIFS", backLink = Some(BackLink("Opportunity template", controllers.manage.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName=Some("Portfolio Peter")) {
     <div class="grid-row">

@@ -54,10 +54,11 @@
 
 $(document).ready(function () {
     jQuery.fx.off = true;
+    var GOVUK = window.GOVUK || {};
 
     // Don't enhance the selection buttons on IE8 as it can't handle the javascript.
     if (navigator.appVersion.indexOf('MSIE 8.') === -1) {
-        var selectionButtons = new GOVUK.SelectionButtons($("label input[type='radio'], label input[type='checkbox']"));
+        var selectionButtons = new GOVUK.SelectionButtons($('.block-label input[type="radio"], .block-label input[type="checkbox"]'));
     }
 
     // Turn the tabs on if the correct structures exist in the page

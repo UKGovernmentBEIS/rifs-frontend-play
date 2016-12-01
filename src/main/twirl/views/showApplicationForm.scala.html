@@ -3,10 +3,6 @@
 
 @(app: ApplicationDetail, errs: Seq[forms.validation.SectionError])
 
-@formatId(id: Long) = @{
-f"RIFS$id%05d"
-}
-
 @errorClass = @{if(errs.nonEmpty) "rifs-error-panel" else ""}
 
 @main(s"Overview - RIFS", backLink=Some(BackLink("Return to my dashboard", controllers.routes.OpportunityController.wip(routes.StartPageController.startPage().url).url)), displayUserName=Some("Experienced Eric")) {

@@ -10,9 +10,7 @@
     errs.filter(p => p.path == field.name)
 }
 
-@formatId(id: Long) = @{
-    f"RIFS$id%05d"
-}
+@import views.html.partials._
 
 @main("RIFS - Edit Title", displayUserName = Some("Portfolio Peter")) {
 
