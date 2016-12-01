@@ -72,20 +72,12 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   }
 
   def saveTitle(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
-    saveTextField(request.opportunity, JsonHelpers.flatten(request.body.values), "title", request.body.values)
-  }
-
-  //Refactor - move this to a service or action handler ?
-  def saveTextField(opp: Opportunity, answers: Map[String, String], sectionFieldName: String, fieldValues: JsObject): Future[Result] = {
-    //This is on hold to see how it unfolds. As the titlefield, titlequestion and titletemplate need to be passed in or dealt with separately
-    //it is worth waiting to see if there is any value on actually making this more generic, how we store questions in the long term etc.
-    //As such this function is very much half a job and either the guts need to be moved back to SaveTitle or we need to pass more info un / add a new switch case
-    answers match {
-      case _ => titleField.check(titleField.name, Json.toJson(answers.getOrElse(sectionFieldName, ""))) match {
-        case Nil => opportunities.saveSummary(opp.summary.copy(title = answers.getOrElse(sectionFieldName, ""))).map(_ => Ok(views.html.wip("")))
+    JsonHelpers.flatten(request.body.values) match {
+      case _ => titleField.check(titleField.name, Json.toJson(JsonHelpers.flatten(request.body.values).getOrElse("title", ""))) match {
+        case Nil => opportunities.saveSummary(request.opportunity.summary.copy(title = JsonHelpers.flatten(request.body.values).getOrElse("title", ""))).map(_ => Ok(views.html.wip("")))
         case errs =>
-          val hints = hinting (fieldValues, Map(titleField.name -> titleField.check))
-          Future.successful(Ok(views.html.manage.editTitleForm(titleField, opp, titleQuestion, fieldValues, errs, hints)))  //hints
+          val hints = hinting(request.body.values, Map(titleField.name -> titleField.check))
+          Future.successful(Ok(views.html.manage.editTitleForm(titleField, request.opportunity, titleQuestion, request.body.values, errs, hints))) //hints
       }
     }
   }
