@@ -97,31 +97,35 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
       " This will help ensure that applications meet the criteria and objectives.")
   )
 
-  def editDescription(id: OpportunityId) = OpportunityAction(id) { request =>
-    request.opportunity.description.find(_.sectionNumber == OpportunityDefs.ABOUT_SECTION_NO ) match {
+  def doEditDescription(opp: Opportunity, section: Int, initial: JsObject, errs: Seq[forms.validation.FieldError] = Nil) = {
+    val hints = FieldCheckHelpers.hinting(initial, Map(DESCRIPTION -> descriptionField.check))
+    Ok(views.html.manage.editDescriptionForm(descriptionField, opp, section,
+      routes.OpportunityController.editDescription(opp.id, section).url,
+      descriptionQuestions, initial, errs, hints ))
+  }
+
+  def editDescription(id: OpportunityId, section: Int) = OpportunityAction(id) { request =>
+    request.opportunity.description.find(_.sectionNumber == section ) match {
       case Some(sect) =>
         val answers = JsObject (Seq (DESCRIPTION -> Json.toJson(sect.text) ) )
-        val hints = FieldCheckHelpers.hinting(answers, Map(DESCRIPTION -> descriptionField.check))
-        Ok(views.html.manage.editDescriptionForm(descriptionField, request.opportunity,
-          routes.OpportunityController.editDescription(id).url,
-          descriptionQuestions, answers, Seq (), hints ) )
+        doEditDescription(request.opportunity, section, answers)
       case None => NotFound
     }
   }
 
-  def saveDescription(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
-    // TODO: check the value of request.body.action
+  def saveDescription(id: OpportunityId, section: Int) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
     (request.body.values \ DESCRIPTION).toOption.map { fValue =>
       descriptionField.check(DESCRIPTION, fValue) match {
         case Nil =>
-          Future {
-            opportunities.saveDescriptionSectionText(id, OpportunityDefs.ABOUT_SECTION_NO, Some(fValue.as[String]))
-          }.map(_ => Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id)))
+            opportunities.saveDescriptionSectionText(id, section, Some(fValue.as[String])).map { _ =>
+              Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id))
+            }.recover {
+              case e =>
+                val errs = Seq(forms.validation.FieldError("", e.getMessage))
+                doEditDescription(request.opportunity, section, request.body.values, errs)
+            }
         case errors =>
-          val hints = FieldCheckHelpers.hinting(request.body.values, Map(DESCRIPTION -> descriptionField.check))
-          Future.successful(Ok(views.html.manage.editDescriptionForm(descriptionField, request.opportunity,
-            routes.OpportunityController.editDescription(id).url,
-            descriptionQuestions, request.body.values, errors, hints)))
+          Future { doEditDescription(request.opportunity, section, request.body.values, errors) }
       }
     }.getOrElse( Future.successful(BadRequest) )
   }

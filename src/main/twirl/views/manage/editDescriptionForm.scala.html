@@ -1,5 +1,6 @@
 @(field: forms.TextAreaField,
         opp: Opportunity,
+        sectionNo: Int,
         backUrl: String,
         questions: Map[String, Question],
         answers: play.api.libs.json.JsObject,
@@ -10,8 +11,6 @@
 @errors = @{
     errs.filter(p => p.path == field.name)
 }
-
-@errors.map { e => <!-- <span class="error-message" role="alert">@e.err</span> -->}
 
 @formatId(id: Long) = @{
     f"RIFS$id%05d"
@@ -26,7 +25,7 @@
                 @Opportunity description
             </h1>
 
-            <form method="POST" action="@controllers.manage.routes.OpportunityController.saveDescription(opp.id)">
+            <form method="POST" action="@controllers.manage.routes.OpportunityController.saveDescription(opp.id, sectionNo)">
 
                 @if(errors.nonEmpty) {
                 <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">

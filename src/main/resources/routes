@@ -53,8 +53,8 @@ GET         /manage/opportunity/:opportunityId/description            controller
 GET         /manage/opportunity/:opportunityId/grantvalue             controllers.manage.OpportunityController.viewGrantValue(opportunityId:OpportunityId)
 GET         /manage/opportunity/:opportunityId/oppsection/:sectionid  controllers.manage.OpportunityController.viewOppSection(opportunityId:OpportunityId, sectionid:Int)
 
-GET         /manage/opportunity/:id/description/edit                  controllers.manage.OpportunityController.editDescription(id: OpportunityId)
-POST        /manage/opportunity/:id/description                       controllers.manage.OpportunityController.saveDescription(id: OpportunityId)
+GET         /manage/opportunity/:id/description/:section/edit         controllers.manage.OpportunityController.editDescription(id: OpportunityId, section: Int)
+POST        /manage/opportunity/:id/description/:section              controllers.manage.OpportunityController.saveDescription(id: OpportunityId, section: Int)
 
 GET         /manage/opportunity/:opportunityId/overview               controllers.manage.OpportunityController.showOverviewPage(opportunityId:OpportunityId)
 POST        /manage/opportunity/:opportunityId/duplicate              controllers.manage.OpportunityController.duplicate(opportunityId:OpportunityId)
