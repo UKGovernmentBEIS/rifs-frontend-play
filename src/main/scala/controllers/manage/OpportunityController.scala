@@ -6,7 +6,7 @@ import actions.OpportunityAction
 import cats.data.Validated._
 import controllers._
 import forms.validation.DateTimeRangeValues
-import forms.{DateTimeRangeField, DateValues, TextField}
+import forms.{DateTimeRangeField, DateValues, TextAreaField, TextField}
 import models._
 import org.joda.time.LocalDate
 import play.api.libs.json._

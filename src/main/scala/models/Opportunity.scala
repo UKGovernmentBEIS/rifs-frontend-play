@@ -2,6 +2,12 @@ package models
 
 import org.joda.time.LocalDate
 
+object OpportunityDefs {
+  val ABOUT_SECTION_NO = 1
+  val QUESTIONS_SECTION_NO = 2
+  val CRITERIA_SECTION_NO = 3
+}
+
 case class OpportunityId(id: Long) extends AnyVal
 
 case class OpportunityDescriptionSection(sectionNumber: Int, title: String, text: Option[String])
