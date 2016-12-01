@@ -125,6 +125,19 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, Opportunity
   }
 
 
+  def previewTitle(id: OpportunityId) = OpportunityAction(id) { request =>
+    Ok(views.html.manage.previewTitle(request.opportunity))
+  }
+
+  def previewDescription(id: OpportunityId) = OpportunityAction(id) { request =>
+    Ok(views.html.manage.previewDescription(request.opportunity))
+  }
+
+  def previewDeadlines(id: OpportunityId) = OpportunityAction(id) { request =>
+    val answers = JsObject(Seq("deadlines" -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
+    Ok(views.html.manage.previewDeadlines(deadlinesField, request.opportunity, deadlineQuestions, answers))
+  }
+
 }
 
 sealed trait CreateOpportunityChoice {
