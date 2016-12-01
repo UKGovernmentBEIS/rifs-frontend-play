@@ -37,8 +37,7 @@ class OpportunityService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
   }
 
   override def saveDescriptionSectionText(id: OpportunityId, sectionNo: Int, descSect: Option[String]): Future[Unit] = {
-    val url = s"$baseUrl/manage/opportunity/${id.id}/description"
-    implicit val wr = Json.format[(Int, Option[String])]
-    post(url, (sectionNo, descSect))
+    val url = s"$baseUrl/manage/opportunity/${id.id}/description/$sectionNo"
+    post(url, descSect.getOrElse(""))
   }
 }
