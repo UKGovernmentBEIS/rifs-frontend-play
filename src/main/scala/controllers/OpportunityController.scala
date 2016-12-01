@@ -32,25 +32,6 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     Ok(views.html.wip(backUrl))
   }
 
-  def showOverviewPage(id: OpportunityId) = OpportunityAction(id).async { request =>
-    appForms.byOpportunityId(id).map {
-      case Some(appForm) => Ok(views.html.manage.previewOpportunity(request.uri, request.opportunity, appForm))
-      case None => NotFound
-    }
-  }
-
-  def viewQuestions(id: OpportunityId, sectionNumber: Int) = OpportunityAction(id).async { request =>
-    appForms.byOpportunityId(id).map {
-      case Some(appForm) =>
-        appForm.sections.find(_.sectionNumber == sectionNumber) match {
-          case Some(formSection) => Ok(views.html.manage.viewQuestions(request.opportunity, formSection))
-          case None => NotFound
-        }
-      case None => NotFound
-    }
-  }
-
-
 }
 
 

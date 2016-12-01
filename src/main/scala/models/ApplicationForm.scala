@@ -48,7 +48,6 @@ object ApplicationFormSectionType {
         }
       }
   }
-
 }
 
 case object SectionTypeForm extends ApplicationFormSectionType {
