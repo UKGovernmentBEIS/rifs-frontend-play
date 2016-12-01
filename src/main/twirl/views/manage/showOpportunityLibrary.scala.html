@@ -1,4 +1,4 @@
-@(os: Seq[Opportunity])
+@(backUrl:String, os: Seq[Opportunity])
 
 @main("Opportunity list - RIFS", backLink=Some(BackLink("Create new opportunity", controllers.manage.routes.OpportunityController.showNewOpportunityForm().url)), displayUserName=Some("Portfolio Peter")) {
     <div>
@@ -37,6 +37,7 @@
         </div>
 
     </div>
+
 }
 
 

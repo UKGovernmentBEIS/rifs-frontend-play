@@ -33,8 +33,8 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, Opportunity
     }.getOrElse(Redirect(controllers.manage.routes.OpportunityController.showNewOpportunityForm()))
   }
 
-  def showOpportunityLibrary = Action.async {
-    opportunities.getOpenOpportunitySummaries.map { os => Ok(views.html.manage.showOpportunityLibrary(os)) }
+  def showOpportunityLibrary = Action.async { request =>
+    opportunities.getOpenOpportunitySummaries.map { os => Ok(views.html.manage.showOpportunityLibrary(request.uri, os)) }
   }
 
   val deadlinesField = DateTimeRangeField("deadlines", allowPast = false, isEndDateMandatory = false)

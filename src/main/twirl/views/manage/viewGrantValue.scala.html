@@ -13,8 +13,8 @@
                 <span class="heading-secondary">@formatId(opp.id.id): @opp.title</span>
                  Grant Value
             </h1>
-
-            <p class="heading-secondary">&pound;@("%,.0f".format(opp.value.amount)) @opp.value.unit</p>
+            <dt class="heading-small">Value</dt>
+            <p class="heading-secondary"> Up to &pound;@("%,.0f".format(opp.value.amount)) per event</p>
             <div class="rifs-form-buttons">
                 <a href="@controllers.routes.OpportunityController.showOverviewPage(opp.id)" class="button">
                    Continue</a>
