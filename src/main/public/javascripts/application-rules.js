@@ -54,6 +54,7 @@
 
 $(document).ready(function () {
     jQuery.fx.off = true;
+    var GOVUK = window.GOVUK || {};
 
     // Don't enhance the selection buttons on IE8 as it can't handle the javascript.
     if (navigator.appVersion.indexOf('MSIE 8.') === -1) {
