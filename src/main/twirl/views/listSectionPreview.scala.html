@@ -6,9 +6,7 @@
         editButton: Option[String]
 )
 
-@formatId(id: Long) = @{
-    f"RIFS $id%04d"
-}
+@import partials._
 
 @main(s"${app.formSection.title} - RIFS", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(app.id).url)), displayUserName=Some("Experienced Eric")) {
     <div class="grid-row">

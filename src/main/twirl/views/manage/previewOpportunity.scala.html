@@ -7,9 +7,7 @@
     Some("Portfolio Peter")
 }
 
-@formatId(id: Long) = @{
-f"RIFS $id%04d"
-}
+@import views.html.partials._
 
 @main(s"Opportunity template setup - RIFS", displayUserName=username(),
 backLink=Some(BackLink("Opportunity library", controllers.manage.routes.OpportunityController.showOpportunityLibrary().url))) {

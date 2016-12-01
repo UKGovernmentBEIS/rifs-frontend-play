@@ -14,9 +14,7 @@
     <span class="error-message" role="alert">@e.err</span>
 }
 
-@formatId(id: Long) = @{
-    f"RIFS $id%04d"
-}
+@import views.html.partials._
 
 @main("RIFS - Edit Deadline", displayUserName = Some("Portfolio Peter")) {
 

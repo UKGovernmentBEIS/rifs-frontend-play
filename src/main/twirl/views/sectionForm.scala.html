@@ -6,10 +6,6 @@
 )
 @import partials._
 
-@formatId(id: Long) = @{
-    f"RIFS $id%04d"
-}
-
 @main(s"${app.formSection.title} - RIFS", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(app.id).url)), displayUserName=Some("Experienced Eric")) {
     <div class="grid-row">
         <div class="column-two-thirds">

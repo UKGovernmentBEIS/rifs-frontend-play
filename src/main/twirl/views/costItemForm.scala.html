@@ -10,11 +10,6 @@
 )
     @import partials._
 
-
-@formatId(id: Long) = @{
-    f"RIFS $id%04d"
-}
-
 @createOrSave = @{
     itemNumber match {
         case Some(n) => controllers.routes.CostController.saveItem(app.id, app.formSection.sectionNumber, n)
