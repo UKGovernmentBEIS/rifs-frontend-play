@@ -65,6 +65,42 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, Opportunity
     }
   }
 
+  val DESCRIPTION = "description"
+  val descriptionField = TextAreaField(Some(DESCRIPTION), DESCRIPTION, 501)
+  val descriptionQuestions = Map (DESCRIPTION ->
+    Question("Be as specific as possible so that applicants fully understand the aim of the opportunity." +
+      " This will help ensure that applications meet the criteria and objectives.")
+  )
+
+  def editDescription(id: OpportunityId) = OpportunityAction(id) { request =>
+    request.opportunity.description.find(_.sectionNumber == OpportunityDefs.ABOUT_SECTION_NO ) match {
+      case Some(sect) =>
+        val answers = JsObject (Seq (DESCRIPTION -> Json.toJson(sect.text) ) )
+        val hints = FieldCheckHelpers.hinting(answers, Map(DESCRIPTION -> descriptionField.check))
+        Ok(views.html.manage.editDescriptionForm(descriptionField, request.opportunity,
+          routes.OpportunityController.editDescription(id).url,
+          descriptionQuestions, answers, Seq (), hints ) )
+      case None => NotFound
+    }
+  }
+
+  def saveDescription(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
+    // TODO: check the value of request.body.action
+    (request.body.values \ DESCRIPTION).toOption.map { fValue =>
+      descriptionField.check(DESCRIPTION, fValue) match {
+        case Nil =>
+          Future {
+            opportunities.saveDescriptionSectionText(id, OpportunityDefs.ABOUT_SECTION_NO, Some(fValue.as[String]))
+          }.map(_ => Redirect(controllers.routes.OpportunityController.showOverviewPage(id)))
+        case errors =>
+          val hints = FieldCheckHelpers.hinting(request.body.values, Map(DESCRIPTION -> descriptionField.check))
+          Future.successful(Ok(views.html.manage.editDescriptionForm(descriptionField, request.opportunity,
+            routes.OpportunityController.editDescription(id).url,
+            descriptionQuestions, request.body.values, errors, hints)))
+      }
+    }.getOrElse( Future.successful(BadRequest) )
+  }
+
   def duplicate(opportunityId: OpportunityId) = OpportunityAction(opportunityId) { request =>
     Ok(views.html.wip(controllers.routes.OpportunityController.showOverviewPage(opportunityId).url))
   }
