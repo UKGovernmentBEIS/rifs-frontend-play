@@ -2,12 +2,10 @@
         opp: Opportunity,
         formSection: ApplicationFormSection
 )
+@import views.html.partials._
 
-@formatId(id: Long) = @{
-    f"RIFS$id%05d"
-}
 
-@main(s"${formSection.title} - RIFS", backLink = Some(BackLink("Opportunity Template", controllers.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName=Some("Portfolio Peter")) {
+@main(s"${formSection.title} - RIFS", backLink = Some(BackLink("Opportunity Template", controllers.manage.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName=Some("Portfolio Peter")) {
     <div class="grid-row">
         <div class="column-full">
             <h1 class="heading-xlarge">
@@ -17,7 +15,7 @@
 
             @formSection.fields.map(_.renderFormInput(formSection.questionMap, play.api.libs.json.JsObject(Seq()), List(), List()))
             <div class="rifs-form-buttons">
-                <a href="@controllers.routes.OpportunityController.showOverviewPage(opp.id)#opportunity-questions" class="button">
+                <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(opp.id)#opportunity-questions" class="button">
                     Continue</a>
             </div>
 

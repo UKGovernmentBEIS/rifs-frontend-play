@@ -95,7 +95,6 @@ class ApplicationController @Inject()(
         case None => NotFound
       }
     } else Future.successful(Ok(views.html.showApplicationForm(request.appDetail, sectionErrors)))
-
   }
 
   def checkSection(appFormSection: ApplicationFormSection, appSection: ApplicationSection): Option[SectionError] = {
