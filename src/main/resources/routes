@@ -56,6 +56,7 @@ GET         /manage/opportunity/:opportunityId/oppsection/:sectionid  controller
 GET         /manage/opportunity/:opportunityId/overview               controllers.manage.OpportunityController.showOverviewPage(opportunityId:OpportunityId)
 POST        /manage/opportunity/:opportunityId/duplicate              controllers.manage.OpportunityController.duplicate(opportunityId:OpportunityId)
 
+GET         /manage/opportunity/:id/section/:sectionid/preview        controllers.manage.OpportunityController.previewOppSection(id: OpportunityId, sectionid:Int)
 
 # Health check
 GET         /ping                                                     controllers.HealthCheckController.ping()

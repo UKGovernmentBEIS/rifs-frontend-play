@@ -132,6 +132,10 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     Ok(views.html.manage.guidance(backUrl))
   }
 
+  def previewOppSection(id: OpportunityId, sectionid: Int) = OpportunityAction(id) { request =>
+    Ok(views.html.manage.previewOppSection(request.opportunity, sectionid))
+  }
+
   private def dateTimeRangeValuesFor(opp: Opportunity) = {
     val sdv = dateValuesFor(opp.startDate)
     val edv = opp.endDate.map(dateValuesFor)
