@@ -118,7 +118,12 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
       descriptionField.check(DESCRIPTION, fValue) match {
         case Nil =>
             opportunities.saveDescriptionSectionText(id, section, Some(fValue.as[String])).map { _ =>
-              Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id))
+              request.body.action match {
+                case Save =>
+                  Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id))
+                case Preview =>
+                  Redirect(controllers.manage.routes.OpportunityController.viewOppSection(id, section))
+              }
             }.recover {
               case e =>
                 val errs = Seq(forms.validation.FieldError("", e.getMessage))
