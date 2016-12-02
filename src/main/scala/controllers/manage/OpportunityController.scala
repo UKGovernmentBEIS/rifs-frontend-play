@@ -105,6 +105,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     }
   }
 
+  val VIEW_OPP_SECTION_FLASH = "VIEW_OPP_SECTION_BACK_URL"
   def saveDescription(id: OpportunityId, section: Int) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
     (request.body.values \ DESCRIPTION).toOption.map { fValue =>
       descriptionField.check(DESCRIPTION, fValue) match {
@@ -115,6 +116,8 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
                   Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id))
                 case Preview =>
                   Redirect(controllers.manage.routes.OpportunityController.viewOppSection(id, section))
+                    .flashing(VIEW_OPP_SECTION_FLASH ->
+                              controllers.manage.routes.OpportunityController.editDescription(id,section).url)
               }
             }.recover {
               case e =>
@@ -139,7 +142,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   }
 
   def viewOppSection(id: OpportunityId, sectionNum: Int) = OpportunityAction(id) { request =>
-    Ok(views.html.manage.viewOppSection(request.opportunity, sectionNum))
+    Ok(views.html.manage.viewOppSection(request.opportunity, sectionNum, request.flash.get(VIEW_OPP_SECTION_FLASH)))
   }
 
   def duplicate(opportunityId: OpportunityId) = OpportunityAction(opportunityId) { request =>
