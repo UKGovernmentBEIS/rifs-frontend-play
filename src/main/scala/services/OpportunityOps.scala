@@ -13,7 +13,7 @@ trait OpportunityOps {
 
   def saveSummary(opp: OpportunitySummary): Future[Unit]
 
-  def saveDescriptionSection(id: OpportunityId, descSect: OpportunityDescriptionSection): Future[Unit]
+  def saveDescriptionSectionText(id: OpportunityId, sectionNo: Int, descSect: Option[String]): Future[Unit]
 }
 
 
