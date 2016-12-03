@@ -66,4 +66,19 @@ $(document).ready(function () {
     e.find('.js-tabs').length && e.tabs();
 
     // $('details').details();
+
+    $('.js-hide-on-load').hide();
+
+    // Trigger Show/Hide events
+    $('.js-show').click(function(){
+       var selector = $(this).attr('data-for');
+       var el = $(selector);
+       el.show();
+    });
+
+    $('.js-hide').click(function(){
+        var selector = $(this).attr('data-for');
+        var el = $(selector);
+        el.hide();
+    });
 });
