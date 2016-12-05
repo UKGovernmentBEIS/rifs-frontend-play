@@ -3,9 +3,7 @@ opp: Opportunity,
 sectionNumber: Int
 )
 
-@formatId(id: Long) = @{
-f"RIFS$id%05d"
-}
+@import views.html.partials._
 
 @currentSection = @{
 opp.description.find(_.sectionNumber == sectionNumber)
