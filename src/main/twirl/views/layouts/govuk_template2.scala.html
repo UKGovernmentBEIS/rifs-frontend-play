@@ -18,14 +18,10 @@
 
     <!--[if IE 8]><link href="@routes.Assets.at("stylesheets/fonts-ie8.css")" media="all" rel="stylesheet" /><![endif]-->
     <!--[if lt IE 9]><script src="@routes.Assets.at("javascripts/ie.js")"></script><![endif]-->
-
     <!--[if gte IE 9]><!-->
       <link href="@routes.Assets.at("stylesheets/fonts.css")" media="all" rel="stylesheet" />
     <!--<![endif]-->
 
-    <!--[if lt IE 9]>
-      <script src="@routes.Assets.at("javascripts/ie.js")" type="text/javascript"></script>
-    <![endif]-->
 
     <link rel="shortcut icon" href="@routes.Assets.at("images/favicon.ico")" type="image/x-icon" />
     <link rel="mask-icon" href="@routes.Assets.at("images/gov.uk_logotype_crown.svg")" color="#0b0c0c">
@@ -42,7 +38,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta property="og:image" content="@routes.Assets.at("images/opengraph-image.png")">
 
-    <link href="@routes.Assets.at("stylesheets/application.css")" media="all" rel="stylesheet" />
+    <!--[if IE 7]><link href="@routes.Assets.at("stylesheets/application-ie7.css")" media="screen" rel="stylesheet" /><![endif]-->
+    <!--[if IE 8]><link href="@routes.Assets.at("stylesheets/application-ie8.css")" media="screen" rel="stylesheet" /><![endif]-->
+    <!--[if gt IE 8]><!--><link href="@routes.Assets.at("stylesheets/application.css")" media="all" rel="stylesheet" /><!--<![endif]-->
     <link href="@routes.Assets.at("stylesheets/application-print.css")" media="print" rel="stylesheet" />
     @head
   </head>
