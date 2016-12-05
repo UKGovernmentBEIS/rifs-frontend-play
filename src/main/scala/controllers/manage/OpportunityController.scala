@@ -4,18 +4,19 @@ import javax.inject.Inject
 
 import actions.OpportunityAction
 import cats.data.Validated._
-import controllers.FieldCheckHelpers.{FieldHints, hinting, noErrors}
+import controllers.FieldCheckHelpers.hinting
 import controllers._
 import forms.validation.DateTimeRangeValues
 import forms.{DateTimeRangeField, DateValues, TextAreaField, TextField}
 import models._
 import org.joda.time.LocalDate
 import play.api.libs.json._
-import play.api.mvc.{Action, Controller, Result}
+import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, OpportunityOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
+case class OpportunityLibraryEntry(id: OpportunityId, title: String, status: String, structure: String)
 
 class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: ApplicationFormOps, OpportunityAction: OpportunityAction)(implicit ec: ExecutionContext) extends Controller {
 
@@ -34,8 +35,14 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     }.getOrElse(Redirect(controllers.manage.routes.OpportunityController.showNewOpportunityForm()))
   }
 
+
+  private def libraryEntry(o: Opportunity): OpportunityLibraryEntry = {
+    val status = o.publishedAt.map(_ => "Open").getOrElse("Unpublished")
+    OpportunityLibraryEntry(o.id, o.title, status, "Responsive, claim, FEC")
+  }
+
   def showOpportunityLibrary = Action.async { request =>
-    opportunities.getOpenOpportunitySummaries.map { os => Ok(views.html.manage.showOpportunityLibrary(request.uri, os)) }
+    opportunities.getOpportunitySummaries.map { os => Ok(views.html.manage.showOpportunityLibrary(request.uri, os.map(libraryEntry))) }
   }
 
   def showOverviewPage(id: OpportunityId) = OpportunityAction(id).async { request =>
@@ -84,7 +91,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
 
   val DESCRIPTION = "description"
   val descriptionField = TextAreaField(Some(DESCRIPTION), DESCRIPTION, 501)
-  val descriptionQuestions = Map (DESCRIPTION ->
+  val descriptionQuestions = Map(DESCRIPTION ->
     Question("Be as specific as possible so that applicants fully understand the aim of the opportunity." +
       " This will help ensure that applications meet the criteria and objectives.")
   )
@@ -93,41 +100,44 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     val hints = FieldCheckHelpers.hinting(initial, Map(DESCRIPTION -> descriptionField.check))
     Ok(views.html.manage.editDescriptionForm(descriptionField, opp, section,
       routes.OpportunityController.editDescription(opp.id, section).url,
-      descriptionQuestions, initial, errs, hints ))
+      descriptionQuestions, initial, errs, hints))
   }
 
   def editDescription(id: OpportunityId, section: Int) = OpportunityAction(id) { request =>
-    request.opportunity.description.find(_.sectionNumber == section ) match {
+    request.opportunity.description.find(_.sectionNumber == section) match {
       case Some(sect) =>
-        val answers = JsObject (Seq (DESCRIPTION -> Json.toJson(sect.text) ) )
+        val answers = JsObject(Seq(DESCRIPTION -> Json.toJson(sect.text)))
         doEditDescription(request.opportunity, section, answers)
       case None => NotFound
     }
   }
 
   val VIEW_OPP_SECTION_FLASH = "VIEW_OPP_SECTION_BACK_URL"
+
   def saveDescription(id: OpportunityId, section: Int) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
     (request.body.values \ DESCRIPTION).toOption.map { fValue =>
       descriptionField.check(DESCRIPTION, fValue) match {
         case Nil =>
-            opportunities.saveDescriptionSectionText(id, section, Some(fValue.as[String])).map { _ =>
-              request.body.action match {
-                case Save =>
-                  Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id))
-                case Preview =>
-                  Redirect(controllers.manage.routes.OpportunityController.viewOppSection(id, section))
-                    .flashing(VIEW_OPP_SECTION_FLASH ->
-                              controllers.manage.routes.OpportunityController.editDescription(id,section).url)
-              }
-            }.recover {
-              case e =>
-                val errs = Seq(forms.validation.FieldError("", e.getMessage))
-                doEditDescription(request.opportunity, section, request.body.values, errs)
+          opportunities.saveDescriptionSectionText(id, section, Some(fValue.as[String])).map { _ =>
+            request.body.action match {
+              case Save =>
+                Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id))
+              case Preview =>
+                Redirect(controllers.manage.routes.OpportunityController.viewOppSection(id, section))
+                  .flashing(VIEW_OPP_SECTION_FLASH ->
+                    controllers.manage.routes.OpportunityController.editDescription(id, section).url)
             }
+          }.recover {
+            case e =>
+              val errs = Seq(forms.validation.FieldError("", e.getMessage))
+              doEditDescription(request.opportunity, section, request.body.values, errs)
+          }
         case errors =>
-          Future { doEditDescription(request.opportunity, section, request.body.values, errors) }
+          Future {
+            doEditDescription(request.opportunity, section, request.body.values, errors)
+          }
       }
-    }.getOrElse( Future.successful(BadRequest) )
+    }.getOrElse(Future.successful(BadRequest))
   }
 
   def viewTitle(id: OpportunityId) = OpportunityAction(id) { request =>
@@ -137,6 +147,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   def viewDescription(id: OpportunityId) = OpportunityAction(id) { request =>
     Ok(views.html.manage.viewDescription(request.opportunity))
   }
+
   def viewGrantValue(id: OpportunityId) = OpportunityAction(id) { request =>
     Ok(views.html.manage.viewGrantValue(request.opportunity))
   }
@@ -145,8 +156,11 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     Ok(views.html.manage.viewOppSection(request.opportunity, sectionNum, request.flash.get(VIEW_OPP_SECTION_FLASH)))
   }
 
-  def duplicate(opportunityId: OpportunityId) = OpportunityAction(opportunityId) { request =>
-    Ok(views.html.wip(controllers.manage.routes.OpportunityController.showOverviewPage(opportunityId).url))
+  def duplicate(id: OpportunityId) = Action.async { request =>
+    opportunities.duplicate(id).map {
+      case Some(newOppId) => Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(newOppId))
+      case None => NotFound
+    }
   }
 
   def viewDeadlines(id: OpportunityId) = OpportunityAction(id) { request =>
