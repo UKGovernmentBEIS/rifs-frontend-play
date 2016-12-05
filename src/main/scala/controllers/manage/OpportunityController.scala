@@ -34,8 +34,8 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     }.getOrElse(Redirect(controllers.manage.routes.OpportunityController.showNewOpportunityForm()))
   }
 
-  def showOpportunityLibrary = Action.async {
-    opportunities.getOpenOpportunitySummaries.map { os => Ok(views.html.manage.showOpportunityLibrary(os)) }
+  def showOpportunityLibrary = Action.async { request =>
+    opportunities.getOpenOpportunitySummaries.map { os => Ok(views.html.manage.showOpportunityLibrary(request.uri, os)) }
   }
 
   def showOverviewPage(id: OpportunityId) = OpportunityAction(id).async { request =>
@@ -188,6 +188,19 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
 
   private def dateValuesFor(ld: LocalDate) =
     DateValues(Some(ld.getDayOfMonth.toString), Some(ld.getMonthOfYear.toString), Some(ld.getYear.toString))
+
+  def previewTitle(id: OpportunityId) = OpportunityAction(id) { request =>
+    Ok(views.html.manage.previewTitle(request.opportunity))
+  }
+
+  def previewDescription(id: OpportunityId) = OpportunityAction(id) { request =>
+    Ok(views.html.manage.previewDescription(request.opportunity))
+  }
+
+  def previewDeadlines(id: OpportunityId) = OpportunityAction(id) { request =>
+    val answers = JsObject(Seq("deadlines" -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
+    Ok(views.html.manage.previewDeadlines(deadlinesField, request.opportunity, deadlineQuestions, answers))
+  }
 
 }
 
