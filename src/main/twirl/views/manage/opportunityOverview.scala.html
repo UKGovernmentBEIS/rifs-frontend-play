@@ -66,23 +66,16 @@ backLink=Some(BackLink("Opportunity library", controllers.manage.routes.Opportun
                                 </tr>
                                 <tr>
                                     <td>
-                                        3. <a id="op-setup-link3"
-                                              href="@controllers.manage.routes.OpportunityController.viewDescription(opportunity.id)"
-                                            > Opportunity description</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        4. <a id="op-setup-link4"
+                                        3. <a id="op-setup-link4"
                                               href="@controllers.manage.routes.OpportunityController.viewGrantValue(opportunity.id)"
                                             > Maximum grant value</a>
                                     </td>
                                 </tr>
 
-                                @opportunity.description.zipWithIndex.map { case (oppDesc, num) =>
+                                @opportunity.description.sortBy(_.sectionNumber).zipWithIndex.map { case (oppDesc, num) =>
                                 <tr>
                                     <td>
-                                        @(s"${num + 5}").
+                                        @(num + 4).
                                         <a href="@controllers.manage.routes.OpportunityController.viewOppSection(opportunity.id, oppDesc.sectionNumber)">
                                             @oppDesc.title
                                         </a>
