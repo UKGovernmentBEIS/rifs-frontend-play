@@ -81,7 +81,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   def saveTitle(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
     JsonHelpers.flatten(request.body.values) match {
       case _ => titleField.check(titleField.name, Json.toJson(JsonHelpers.flatten(request.body.values).getOrElse("title", ""))) match {
-        case Nil => opportunities.saveSummary(request.opportunity.summary.copy(title = JsonHelpers.flatten(request.body.values).getOrElse("title", ""))).map(_ => Ok(views.html.wip("")))
+        case Nil => opportunities.saveSummary(request.opportunity.summary.copy(title = JsonHelpers.flatten(request.body.values).getOrElse("title", ""))).map(_ => Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id)))
         case errs =>
           val hints = hinting(request.body.values, Map(titleField.name -> titleField.check))
           Future.successful(Ok(views.html.manage.editTitleForm(titleField, request.opportunity, titleQuestion, request.body.values, errs, hints))) //hints
