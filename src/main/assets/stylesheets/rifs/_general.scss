@@ -67,3 +67,14 @@
   text-align: right;
 }
 
+// For some pages (opportunity library for portfolio manager) we need to display the support column above full measure
+// rather than in a grid layout.
+.support-column-above-full-measure {
+  float: none;
+
+  @include media(desktop) {
+    float: right;
+  }
+
+}
+

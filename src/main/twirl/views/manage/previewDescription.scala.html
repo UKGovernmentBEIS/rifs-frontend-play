@@ -1,20 +1,25 @@
 @(
   opp: Opportunity
 )
-@import views.html.partials._
+
+@formatId(id: Long) = @{
+    f"RIFS$id%05d"
+}
 
 @main(s"${opp.title} - RIFS", backLink=Some(BackLink("Opportunity template",controllers.manage.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName=Some("Portfolio Peter")) {
     <div class="grid-row">
         <div class="column-full">
             <h1 class="heading-xlarge">
                 <span class="heading-secondary">@formatId(opp.id.id): @opp.title</span>
-                 Grant Value
+                Opportunity description
             </h1>
-            <dt class="heading-small">Value</dt>
-            <p class="heading-secondary"> Up to &pound;@("%,.0f".format(opp.value.amount)) per event</p>
+            @opp.description.map { des =>
+            <p class="text">@des.text</p>
+            }
+
             <div class="rifs-form-buttons">
                 <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(opp.id)" class="button">
-                   Continue</a>
+                   Close</a>
             </div>
 
         </div>

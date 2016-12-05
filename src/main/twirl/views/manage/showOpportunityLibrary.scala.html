@@ -1,41 +1,58 @@
-@(os: Seq[controllers.manage.OpportunityLibraryEntry])
+@(backUrl:String, os: Seq[controllers.manage.OpportunityLibraryEntry])
 
-@main("Opportunity list - RIFS", backLink = Some(BackLink("Create new opportunity", controllers.manage.routes.OpportunityController.showNewOpportunityForm().url)), displayUserName = Some("Portfolio Peter")) {
+@main("Opportunity list - RIFS", backLink=Some(BackLink("Create new opportunity", controllers.manage.routes.OpportunityController.showNewOpportunityForm().url)), displayUserName=Some("Portfolio Peter")) {
+
+    <!-- sidebar -->
+    <div id="support-column" class="support-column-above-full-measure">
+        <aside role="complementary">
+            <hr class="hr-blue">
+            <h3 class="heading-medium">Support</h3>
+            <ul class="list spacious">
+
+                <li>
+                    <a href="@controllers.manage.routes.OpportunityController.showPMGuidancePage(backUrl)">
+                        Guidance for Portfolio Managers</a>
+                </li>
+
+            </ul>
+        </aside>
+    </div>
+
     <div>
-        <h1 class="heading-xlarge">Opportunity library</h1>
+        <section>
+            <h1 class="heading-xlarge">Opportunity library</h1>
 
-        <p class="lede">You can open and reuse any template in this library.</p>
+            <p class="lede">You can open and reuse any template in this library.</p>
 
-        <table class="spacious mobile-one-column">
-            <thead>
-                <tr>
-                    <th>Ref.</th>
-                    <th>Title</th>
-                    <th>Status</th>
-                    <th>Structure</th>
-                    <th role="presentation">
-                </tr>
-            </thead>
-            <tbody>
-            @os.map { o =>
-                <tr>
-                    <td data-label="Ref.">@("%04d".format(o.id.id))</td>
-                    <td data-label="Title"><a href=@controllers.manage.routes.OpportunityController.showOpportunityPreview(o.id, None).url>@o.title</a></td>
-                    <td data-label="Status">@o.status</td>
-                    <td data-label="Structure">@o.structure</td>
-                </tr>
-            }
-            </tbody>
-        </table>
+            <table class="spacious mobile-one-column">
+                <thead>
+                    <tr>
+                        <th scope="col">Ref.</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Structure</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @os.map { o =>
+                    <tr>
+                        <td data-label="Ref.">@("%04d".format(o.id.id))</td>
+                        <td data-label="Title"><a href=@controllers.manage.routes.OpportunityController.showOpportunityPreview(o.id, None).url>@o.title</a></td>
+                        <td data-label="Status">@o.status</td>
+                        <td data-label="Structure">@o.structure</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
 
-        <div class="rifs-form-buttons">
-            <p>
-                <a href="@controllers.manage.routes.OpportunityController.showNewOpportunityForm()"
-                class="button"
-                >Cancel</a>
-            </p>
-        </div>
-
+            <div class="rifs-form-buttons">
+                <p>
+                    <a href="@controllers.manage.routes.OpportunityController.showNewOpportunityForm()"
+                    class="button"
+                    >Cancel</a>
+                </p>
+            </div>
+        </section>
     </div>
 }
 

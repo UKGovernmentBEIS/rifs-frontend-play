@@ -41,8 +41,8 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     OpportunityLibraryEntry(o.id, o.title, status, "Responsive, claim, FEC")
   }
 
-  def showOpportunityLibrary = Action.async {
-    opportunities.getOpportunitySummaries.map { os => Ok(views.html.manage.showOpportunityLibrary(os.map(libraryEntry))) }
+  def showOpportunityLibrary = Action.async { request =>
+    opportunities.getOpportunitySummaries.map { os => Ok(views.html.manage.showOpportunityLibrary(request.uri, os.map(libraryEntry))) }
   }
 
   def showOverviewPage(id: OpportunityId) = OpportunityAction(id).async { request =>
@@ -74,7 +74,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
 
   def editTitle(id: OpportunityId) = OpportunityAction(id) { request =>
     val answers = JsObject(Seq("title" -> Json.toJson(request.opportunity.title)))
-    val hints = hinting(answers, Map(titleField.name -> titleField.check))
+    val hints = hinting (answers, Map(titleField.name -> titleField.check))
     Ok(views.html.manage.editTitleForm(titleField, request.opportunity, titleQuestion, answers, Seq(), hints))
   }
 
@@ -202,6 +202,19 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
 
   private def dateValuesFor(ld: LocalDate) =
     DateValues(Some(ld.getDayOfMonth.toString), Some(ld.getMonthOfYear.toString), Some(ld.getYear.toString))
+
+  def previewTitle(id: OpportunityId) = OpportunityAction(id) { request =>
+    Ok(views.html.manage.previewTitle(request.opportunity))
+  }
+
+  def previewDescription(id: OpportunityId) = OpportunityAction(id) { request =>
+    Ok(views.html.manage.previewDescription(request.opportunity))
+  }
+
+  def previewDeadlines(id: OpportunityId) = OpportunityAction(id) { request =>
+    val answers = JsObject(Seq("deadlines" -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
+    Ok(views.html.manage.previewDeadlines(deadlinesField, request.opportunity, deadlineQuestions, answers))
+  }
 
 }
 

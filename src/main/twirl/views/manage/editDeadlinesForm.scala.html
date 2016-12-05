@@ -16,7 +16,7 @@
 
 @import views.html.partials._
 
-@main("RIFS - Edit Deadline", displayUserName = Some("Portfolio Peter")) {
+@main("Edit Deadline - RIFS", displayUserName = Some("Portfolio Peter")) {
 
     <div class="grid-row">
         <div class="column-two-thirds">
@@ -25,7 +25,8 @@
                 @Opportunity deadlines
             </h1>
 
-            <form method="POST" action="@controllers.manage.routes.OpportunityController.saveDeadlines(opp.id)">
+            <form method="POST" action="@controllers.manage.routes.OpportunityController.saveDeadlines(opp.id)"
+            novalidate="novalidate">
                 @field.renderFormInput(questions, answers, errs, hints)
 
                 <div class="rifs-form-buttons">
@@ -33,6 +34,17 @@
                     <input type="submit" name="@Preview.name" class="button--link-style" value="Preview this page"/>
                 </div>
             </form>
+        </div>
+
+        <div id="support-column" class="column-third">
+            <hr class="hr-blue">
+            <h2 class="heading-medium no-top-margin">Support</h2>
+            <ul class="list spacious">
+                <li>
+                    <a href="@controllers.manage.routes.OpportunityController.showPMGuidancePage(controllers.manage.routes.OpportunityController.editDeadlines(opp.id).toString)">
+                        Guidance on opportunity set-up</a>
+                </li>
+            </ul>
         </div>
     </div>
 
