@@ -36,6 +36,10 @@ The application can be viewed on `http://localhost:9000`
 sbt test
 ```
 
+####Acceptance Tests
+
+NOTE: Cucumber/acceptance tests are available in a separate project at: [rifs-test](https://github.com/UKGovernmentBEIS/rifs-test) 
+
 ### License
 
 [MIT License](LICENSE)
