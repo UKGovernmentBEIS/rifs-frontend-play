@@ -33,12 +33,14 @@
 
 @main(s"Opportunity: ${opportunity.title} - RIFS", backLink=Some(BackLink("Return to opportunity library", controllers.manage.routes.OpportunityController.showOpportunityLibrary().url)), displayUserName=Some("Portfolio Peter")) {
 
+    <div class="rifs-heading-panel">
+        <p>@formatId(opportunity.id.id) <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(opportunity.id).url">Template View</a></p>
+    </div>
+
+
     <div class="grid-row">
         <div class="column-two-thirds">
 
-            <div class="rifs-heading-panel">
-                <p>@formatId(opportunity.id.id) <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(opportunity.id).url">Template View</a></p>
-            </div>
 
             <header class="page-header">
                 <h1 class="heading-xlarge">@opportunity.title</h1>
