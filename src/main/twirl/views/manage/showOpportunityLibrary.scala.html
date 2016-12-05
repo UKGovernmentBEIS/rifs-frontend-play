@@ -34,7 +34,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                @os.map { o =>
+                @os.sortBy(_.id.id).map { o =>
                     <tr>
                         <td data-label="Ref.">@("%04d".format(o.id.id))</td>
                         <td data-label="Title"><a href=@controllers.manage.routes.OpportunityController.showOpportunityPreview(o.id, None).url>@o.title</a></td>
