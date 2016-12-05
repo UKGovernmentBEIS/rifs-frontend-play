@@ -14,6 +14,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionContext)
   extends ApplicationOps with JodaFormats with RestService with ValueClassFormats {
+  private val dtPattern = "dd MMM yyyy HH:mm:ss"
+  implicit val dtReads = Reads.jodaDateReads(dtPattern)
+  implicit val dtWrites = Writes.jodaDateWrites(dtPattern)
+
   implicit val jldReads = Reads.jodaLocalDateReads("d MMM yyyy")
   implicit val fieldReads = fields.FieldReads.fieldReads
   implicit val appSectionReads = Json.reads[ApplicationSection]
