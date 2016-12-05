@@ -56,7 +56,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     appForms.byOpportunityId(id).map {
       case Some(appForm) =>
         appForm.sections.find(_.sectionNumber == sectionNumber) match {
-          case Some(formSection) => Ok(views.html.manage.viewQuestions(request.opportunity, formSection))
+          case Some(formSection) => Ok(views.html.manage.viewQuestions(request.uri, request.opportunity, formSection))
           case None => NotFound
         }
       case None => NotFound

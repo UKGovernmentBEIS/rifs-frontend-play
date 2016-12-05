@@ -1,4 +1,5 @@
 @(
+        backUrl:String,
         opp: Opportunity,
         formSection: ApplicationFormSection
 )
@@ -6,6 +7,22 @@
 
 
 @main(s"${formSection.title} - RIFS", backLink = Some(BackLink("Opportunity Template", controllers.manage.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName=Some("Portfolio Peter")) {
+    <!-- sidebar -->
+    <div id="support-column" class="support-column-above-full-measure">
+        <aside role="complementary">
+            <hr class="hr-blue">
+            <h3 class="heading-medium">Support</h3>
+            <ul class="list spacious">
+
+                <li>
+                    <a href="@controllers.manage.routes.OpportunityController.showPMGuidancePage(backUrl)">
+                        Guidance for portfolio managers</a>
+                </li>
+
+            </ul>
+        </aside>
+    </div>
+
     <div class="grid-row">
         <div class="column-full">
             <h1 class="heading-xlarge">
