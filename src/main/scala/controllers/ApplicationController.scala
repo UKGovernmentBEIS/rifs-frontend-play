@@ -35,7 +35,7 @@ class ApplicationController @Inject()(
   }
 
   def reset = Action.async {
-    applications.deleteAll().map(_ => Redirect(controllers.routes.StartPageController.startPage()))
+    applications.reset().map(_ => Redirect(controllers.routes.StartPageController.startPage()))
   }
 
   import FieldCheckHelpers._
