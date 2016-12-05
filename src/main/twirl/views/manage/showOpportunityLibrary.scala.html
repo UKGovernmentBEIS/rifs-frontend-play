@@ -1,6 +1,6 @@
-@(os: Seq[Opportunity])
+@(os: Seq[controllers.manage.OpportunityLibraryEntry])
 
-@main("Opportunity list - RIFS", backLink=Some(BackLink("Create new opportunity", controllers.manage.routes.OpportunityController.showNewOpportunityForm().url)), displayUserName=Some("Portfolio Peter")) {
+@main("Opportunity list - RIFS", backLink = Some(BackLink("Create new opportunity", controllers.manage.routes.OpportunityController.showNewOpportunityForm().url)), displayUserName = Some("Portfolio Peter")) {
     <div>
         <h1 class="heading-xlarge">Opportunity library</h1>
 
@@ -17,14 +17,14 @@
                 </tr>
             </thead>
             <tbody>
-                @for((o, i) <- os.zipWithIndex) {
-                    <tr>
-                        <td data-label="Ref.">@("%04d".format(o.id.id))</td>
-                        <td data-label="Title"><a href=@controllers.manage.routes.OpportunityController.showOpportunityPreview(o.id, None).url>@o.title</a></td>
-                        <td data-label="Status">Open</td>
-                        <td data-label="Structure">Responsive, claim, FEC</td>
-                    </tr>
-                }
+            @os.map { o =>
+                <tr>
+                    <td data-label="Ref.">@("%04d".format(o.id.id))</td>
+                    <td data-label="Title"><a href=@controllers.manage.routes.OpportunityController.showOpportunityPreview(o.id, None).url>@o.title</a></td>
+                    <td data-label="Status">@o.status</td>
+                    <td data-label="Structure">@o.structure</td>
+                </tr>
+            }
             </tbody>
         </table>
 
