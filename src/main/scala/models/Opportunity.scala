@@ -22,10 +22,11 @@ case class Opportunity(
                         startDate: LocalDate,
                         endDate: Option[LocalDate],
                         value: OpportunityValue,
-                        publishedAt:Option[DateTime],
+                        publishedAt: Option[DateTime],
+                        duplicatedFrom: Option[OpportunityId],
                         description: Seq[OpportunityDescriptionSection]
                       ) {
-  lazy val summary: OpportunitySummary = OpportunitySummary(id, title, startDate, endDate, value, publishedAt)
+  lazy val summary: OpportunitySummary = OpportunitySummary(id, title, startDate, endDate, value, publishedAt, duplicatedFrom)
 }
 
 case class OpportunitySummary(
@@ -34,5 +35,6 @@ case class OpportunitySummary(
                                startDate: LocalDate,
                                endDate: Option[LocalDate],
                                value: OpportunityValue,
-                               publishedAt:Option[DateTime]
+                               publishedAt: Option[DateTime],
+                               duplicatedFrom: Option[OpportunityId]
                              )

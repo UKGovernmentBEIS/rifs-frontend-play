@@ -1,5 +1,4 @@
 @import models._
-@import partials._
 
 @(backUrl:String, opportunity: Opportunity, app: ApplicationForm, tabNumber: Option[Int] = None)
 
@@ -15,6 +14,12 @@ backLink=Some(BackLink("Opportunity library", controllers.manage.routes.Opportun
 <!-- main content -->
 <div class="grid-row">
     <div class="column-two-thirds">
+        @opportunity.duplicatedFrom.map { fromId =>
+            <div>
+                This is a copy of <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(fromId)">@formatId(fromId.id)</a>
+            </div>
+        }
+
         <h1 class="heading-xlarge">
             <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
             Opportunity template
