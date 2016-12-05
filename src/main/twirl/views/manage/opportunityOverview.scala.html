@@ -15,7 +15,7 @@ backLink=Some(BackLink("Opportunity library", controllers.manage.routes.Opportun
 <div class="grid-row">
     <div class="column-two-thirds">
         @opportunity.duplicatedFrom.map { fromId =>
-            <div class="panel rifs-panel rifs-border-narrow">
+            <div class="rifs-heading-panel">
                 This is a copy of <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(fromId)">@formatId(fromId.id)</a>
             </div>
         }

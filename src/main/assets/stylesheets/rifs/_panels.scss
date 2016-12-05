@@ -1,24 +1,27 @@
 // Panels
-
-.rifs-border-narrow {
+.rifs-summary-panel {
+  @extend .panel;
+  background-color: $panel-colour;
   border-color: $black;
   border-left-width: 5px;
-}
-
-.rifs-panel {
-  background-color: $panel-colour;
   margin-top: 15px;
 
   dl {
-    padding-top: 0.75em;
     padding-bottom: 1em;
+    padding-top: .75em;
   }
 
   .rifs-form-buttons {
-    margin-top: 1em;
     margin-bottom: 1em;
+    margin-top: 1em;
   }
 
+}
+
+.rifs-heading-panel {
+  @extend .rifs-summary-panel;
+  background-color: lighten($govuk-blue, 50%);
+  border-color: $govuk-blue;
 }
 
 .rifs-error-panel {
