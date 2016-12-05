@@ -1,5 +1,7 @@
-@(field: forms.DateTimeRangeField,
+@(field: forms.TextAreaField,
         opp: Opportunity,
+        sectionNo: Int,
+        backUrl: String,
         questions: Map[String, Question],
         answers: play.api.libs.json.JsObject,
         errs: Seq[forms.validation.FieldError],
@@ -10,23 +12,34 @@
     errs.filter(p => p.path == field.name)
 }
 
-@errors.map { e =>
-    <span class="error-message" role="alert">@e.err</span>
+@formatId(id: Long) = @{
+    f"RIFS$id%05d"
 }
 
-@import views.html.partials._
-
-@main("Edit Deadline - RIFS", displayUserName = Some("Portfolio Peter")) {
+@main("RIFS - Edit Description", displayUserName = Some("Portfolio Peter")) {
 
     <div class="grid-row">
         <div class="column-two-thirds">
             <h1 class="heading-xlarge">
                 <span class="heading-secondary">@formatId(opp.id.id): @opp.title</span>
-                @Opportunity deadlines
+                @Opportunity description
             </h1>
 
-            <form method="POST" action="@controllers.manage.routes.OpportunityController.saveDeadlines(opp.id)"
-            novalidate="novalidate">
+            <form method="POST" action="@controllers.manage.routes.OpportunityController.saveDescription(opp.id, sectionNo)">
+
+                @if(errors.nonEmpty) {
+                <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
+
+                    <h1 class="heading-medium error-summary-heading" id="error-summary-heading">
+                        The information you entered is not valid
+                    </h1>
+
+                    <p>
+                        Please correct the problems indicated below.
+                    </p>
+                </div>
+                }
+
                 @field.renderFormInput(questions, answers, errs, hints)
 
                 <div class="rifs-form-buttons">
@@ -35,16 +48,8 @@
                 </div>
             </form>
         </div>
-
         <div id="support-column" class="column-third">
-            <hr class="hr-blue">
-            <h2 class="heading-medium no-top-margin">Support</h2>
-            <ul class="list spacious">
-                <li>
-                    <a href="@controllers.manage.routes.OpportunityController.showPMGuidancePage(controllers.manage.routes.OpportunityController.editDeadlines(opp.id).toString)">
-                        Guidance on opportunity set-up</a>
-                </li>
-            </ul>
+            @partials.editOpportunitySidebar(backUrl, 6, 2)
         </div>
     </div>
 

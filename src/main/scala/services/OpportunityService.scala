@@ -11,6 +11,10 @@ import play.api.libs.ws.WSClient
 import scala.concurrent.{ExecutionContext, Future}
 
 class OpportunityService @Inject()(val ws: WSClient)(implicit val ec: ExecutionContext) extends OpportunityOps with RestService with ValueClassFormats {
+  private val dtPattern = "dd MMM yyyy HH:mm:ss"
+  implicit val dtReads = Reads.jodaDateReads(dtPattern)
+  implicit val dtWrites = Writes.jodaDateWrites(dtPattern)
+
   implicit val jldReads = Reads.jodaLocalDateReads("d MMM yyyy")
   implicit val jldWrites = Writes.jodaLocalDateWrites("d MMM yyyy")
   implicit val odsFmt = Json.format[OpportunityDescriptionSection]
@@ -20,6 +24,11 @@ class OpportunityService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
   implicit val oppSummaryFmt = Json.format[OpportunitySummary]
 
   val baseUrl = Config.config.business.baseUrl
+
+  override def getOpportunitySummaries: Future[Seq[Opportunity]] = {
+    val url = s"$baseUrl/opportunity/summaries"
+    getMany[Opportunity](url)
+  }
 
   override def getOpenOpportunitySummaries: Future[Seq[Opportunity]] = {
     val url = s"$baseUrl/opportunity/open/summaries"
@@ -36,8 +45,13 @@ class OpportunityService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     put(url, opp)
   }
 
-  override def saveDescriptionSection(id: OpportunityId, descSect: OpportunityDescriptionSection): Future[Unit] = {
-    val url = s"$baseUrl/manage/opportunity/${id.id}/description"
-    put(url, descSect)
+  override def saveDescriptionSectionText(id: OpportunityId, sectionNo: Int, descSect: Option[String]): Future[Unit] = {
+    val url = s"$baseUrl/manage/opportunity/${id.id}/description/$sectionNo"
+    post(url, descSect.getOrElse(""))
+  }
+
+  override def duplicate(id: OpportunityId) :Future[Option[OpportunityId]] = {
+    val url = s"$baseUrl/opportunity/${id.id}/duplicate"
+    postWithResult[OpportunityId, String](url, "")
   }
 }

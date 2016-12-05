@@ -3,8 +3,6 @@ package controllers
 import javax.inject.Inject
 
 import actions.OpportunityAction
-import controllers.manage.CreateOpportunityChoice
-import forms.DateTimeRangeField
 import models.OpportunityId
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, OpportunityOps}

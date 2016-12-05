@@ -34,7 +34,7 @@ class EventAudienceFormSpec extends WordSpecLike with Matchers with OptionValues
       ApplicationId(1),
       1,
       1,
-      OpportunitySummary(OpportunityId(1), "Research priorities in health care", new LocalDate(), None, OpportunityValue(0, "")),
+      OpportunitySummary(OpportunityId(1), "Research priorities in health care", new LocalDate(), None, OpportunityValue(0, ""), None, None),
       fs,
       None)
 

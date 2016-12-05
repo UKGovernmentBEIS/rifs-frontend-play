@@ -1,6 +1,6 @@
 package models
 
-import org.joda.time.LocalDate
+import org.joda.time.{DateTime, LocalDate}
 
 object OpportunityDefs {
   val ABOUT_SECTION_NO = 1
@@ -22,9 +22,11 @@ case class Opportunity(
                         startDate: LocalDate,
                         endDate: Option[LocalDate],
                         value: OpportunityValue,
+                        publishedAt: Option[DateTime],
+                        duplicatedFrom: Option[OpportunityId],
                         description: Seq[OpportunityDescriptionSection]
                       ) {
-  lazy val summary: OpportunitySummary = OpportunitySummary(id, title, startDate, endDate, value)
+  lazy val summary: OpportunitySummary = OpportunitySummary(id, title, startDate, endDate, value, publishedAt, duplicatedFrom)
 }
 
 case class OpportunitySummary(
@@ -32,5 +34,7 @@ case class OpportunitySummary(
                                title: String,
                                startDate: LocalDate,
                                endDate: Option[LocalDate],
-                               value: OpportunityValue
+                               value: OpportunityValue,
+                               publishedAt: Option[DateTime],
+                               duplicatedFrom: Option[OpportunityId]
                              )
