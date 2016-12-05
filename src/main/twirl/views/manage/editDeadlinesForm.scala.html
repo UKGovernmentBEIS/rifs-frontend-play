@@ -31,7 +31,7 @@
 
                 <div class="rifs-form-buttons">
                     <input type="submit" name="@Save.name" class="button button--start" value="Save">
-                    <input type="submit" name="@Preview.name" class="button--link-style" value="Preview this page"/>
+                    <a class="button--link-style" href=@controllers.manage.routes.OpportunityController.previewDeadlines(opp.id)>Preview this page</a>
                 </div>
             </form>
         </div>

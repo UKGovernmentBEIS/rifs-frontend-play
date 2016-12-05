@@ -141,15 +141,24 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   }
 
   def viewTitle(id: OpportunityId) = OpportunityAction(id) { request =>
-    Ok(views.html.manage.viewTitle(request.opportunity))
+    request.opportunity.publishedAt match {
+      case Some(dateval) => Ok(views.html.manage.viewTitle(request.opportunity))
+      case None => Redirect(controllers.manage.routes.OpportunityController.editTitle(id))
+    }
   }
 
   def viewDescription(id: OpportunityId) = OpportunityAction(id) { request =>
-    Ok(views.html.manage.viewDescription(request.opportunity))
+    request.opportunity.publishedAt match {
+      case Some(dateval) => Ok(views.html.manage.viewDescription(request.opportunity))
+      case None => Redirect(controllers.manage.routes.OpportunityController.editDescription(id,1))
+    }
   }
 
   def viewGrantValue(id: OpportunityId) = OpportunityAction(id) { request =>
-    Ok(views.html.manage.viewGrantValue(request.opportunity))
+    request.opportunity.publishedAt match {
+      case Some(dateval) => Ok(views.html.manage.viewGrantValue(request.opportunity))
+      case None => Ok(views.html.wip(""))
+    }
   }
 
   def viewOppSection(id: OpportunityId, sectionNum: Int) = OpportunityAction(id) { request =>
@@ -165,7 +174,10 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
 
   def viewDeadlines(id: OpportunityId) = OpportunityAction(id) { request =>
     val answers = JsObject(Seq("deadlines" -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
-    Ok(views.html.manage.viewDeadlines(deadlinesField, request.opportunity, deadlineQuestions, answers))
+    request.opportunity.publishedAt match {
+      case Some(dateval) => Ok(views.html.manage.viewDeadlines(deadlinesField, request.opportunity, deadlineQuestions, answers))
+      case None => Redirect(controllers.manage.routes.OpportunityController.editDeadlines(id))
+    }
   }
 
   implicit val dvFmt = Json.format[DateValues]
