@@ -89,18 +89,16 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     }
   }
 
-  val SECTION = "section"
-  val sectionField = TextAreaField(None, SECTION, 500)
-  val descriptionQuestions = Map(SECTION ->
-    Question("Be as specific as possible so that applicants fully understand the aim of the opportunity." +
-      " This will help ensure that applications meet the criteria and objectives.")
-  )
+  val SECTION_FIELD_NAME = "section"
+  val sectionField = TextAreaField(None, SECTION_FIELD_NAME, 500)
 
   def doEditSection(opp: Opportunity, sectionNum: Int, initial: JsObject, errs: Seq[forms.validation.FieldError] = Nil) = {
-    val hints = FieldCheckHelpers.hinting(initial, Map(SECTION -> sectionField.check))
+    val hints = FieldCheckHelpers.hinting(initial, Map(SECTION_FIELD_NAME -> sectionField.check))
     opp.description.find(_.sectionNumber == sectionNum) match {
-      case Some(section) => Ok(views.html.manage.editOppSectionForm(sectionField, opp, section,
-        routes.OpportunityController.editSection(opp.id, sectionNum).url, descriptionQuestions, initial, errs, hints))
+      case Some(section) =>
+        val q = Question(section.description.getOrElse(""), None, section.helpText)
+        Ok(views.html.manage.editOppSectionForm(sectionField, opp, section,
+          routes.OpportunityController.editSection(opp.id, sectionNum).url, Map("section" -> q), initial, errs, hints))
       case None => NotFound
     }
 
@@ -109,7 +107,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   def editSection(id: OpportunityId, section: Int) = OpportunityAction(id) { request =>
     request.opportunity.description.find(_.sectionNumber == section) match {
       case Some(sect) =>
-        val answers = JsObject(Seq(SECTION -> Json.toJson(sect.text)))
+        val answers = JsObject(Seq(SECTION_FIELD_NAME -> Json.toJson(sect.text)))
         doEditSection(request.opportunity, section, answers)
       case None => NotFound
     }
@@ -118,8 +116,8 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   val VIEW_OPP_SECTION_FLASH = "VIEW_OPP_SECTION_BACK_URL"
 
   def saveSection(id: OpportunityId, sectionNum: Int) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
-    (request.body.values \ SECTION).toOption.map { fValue =>
-      sectionField.check(SECTION, fValue) match {
+    (request.body.values \ SECTION_FIELD_NAME).toOption.map { fValue =>
+      sectionField.check(SECTION_FIELD_NAME, fValue) match {
         case Nil =>
           opportunities.saveDescriptionSectionText(id, sectionNum, Some(fValue.as[String])).map { _ =>
             request.body.action match {

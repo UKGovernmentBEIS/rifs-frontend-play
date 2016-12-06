@@ -10,7 +10,7 @@ object OpportunityDefs {
 
 case class OpportunityId(id: Long) extends AnyVal
 
-case class OpportunityDescriptionSection(sectionNumber: Int, title: String, text: Option[String])
+case class OpportunityDescriptionSection(sectionNumber: Int, title: String, text: Option[String], description: Option[String], helpText: Option[String])
 
 case class OpportunityValue(amount: BigDecimal, unit: String)
 
