@@ -3,7 +3,8 @@
         questions: Map[String, Question],
         answers: play.api.libs.json.JsObject,
         errs: Seq[forms.validation.FieldError],
-        hints: Seq[forms.validation.FieldHint])
+        hints: Seq[forms.validation.FieldHint],
+        backUrl: String)
 
 
 @errors = @{
@@ -29,6 +30,9 @@
                     <a class="button--link-style" href=@controllers.manage.routes.OpportunityController.previewTitle(opp.id)>Preview this page</a>
                 </div>
             </form>
+        </div>
+        <div id="support-column" class="column-third">
+            @partials.editOpportunitySidebar(backUrl, 6, 2)
         </div>
     </div>
 

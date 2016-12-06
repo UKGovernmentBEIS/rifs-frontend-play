@@ -75,7 +75,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   def editTitle(id: OpportunityId) = OpportunityAction(id) { request =>
     val answers = JsObject(Seq("title" -> Json.toJson(request.opportunity.title)))
     val hints = hinting(answers, Map(titleField.name -> titleField.check))
-    Ok(views.html.manage.editTitleForm(titleField, request.opportunity, titleQuestion, answers, Seq(), hints))
+    Ok(views.html.manage.editTitleForm(titleField, request.opportunity, titleQuestion, answers, Seq(), hints, request.uri))
   }
 
   def saveTitle(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
@@ -84,7 +84,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
         case Nil => opportunities.saveSummary(request.opportunity.summary.copy(title = JsonHelpers.flatten(request.body.values).getOrElse("title", ""))).map(_ => Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id)))
         case errs =>
           val hints = hinting(request.body.values, Map(titleField.name -> titleField.check))
-          Future.successful(Ok(views.html.manage.editTitleForm(titleField, request.opportunity, titleQuestion, request.body.values, errs, hints))) //hints
+          Future.successful(Ok(views.html.manage.editTitleForm(titleField, request.opportunity, titleQuestion, request.body.values, errs, hints, request.uri))) //hints
       }
     }
   }
