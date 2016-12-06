@@ -84,8 +84,9 @@ backLink=Some(BackLink("Opportunity library", controllers.manage.routes.Opportun
                                 @opportunity.description.sortBy(_.sectionNumber).zipWithIndex.map { case (oppDesc, num) =>
                                 <tr>
                                     <td>
-                                        @(num + 4).
-                                        <a href="@controllers.manage.routes.OpportunityController.viewSection(opportunity.id, oppDesc.sectionNumber)">
+                                        @(s"${num + 4}.")
+                                        <a id="op-setup-link@(num + 4)"
+                                        href="@controllers.manage.routes.OpportunityController.viewSection(opportunity.id, oppDesc.sectionNumber)">
                                             @oppDesc.title
                                         </a>
                                     </td>
