@@ -18,7 +18,7 @@ opp.description.find(_.sectionNumber == sectionNumber)
                 @s.title</h1>
         @s.text.map(_.split("\n\n")).map { ps =>
             @ps.map { p =>
-                <p class="text">@p</p>
+                <p class="text preview-text">@p</p>
             }
         }
         }
