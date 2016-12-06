@@ -144,7 +144,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
 
   def viewGrantValue(id: OpportunityId) = OpportunityAction(id) { request =>
     request.opportunity.publishedAt match {
-      case Some(dateval) => Ok(views.html.manage.viewGrantValue(request.opportunity))
+      case Some(_) => Ok(views.html.manage.viewGrantValue(request.opportunity))
       case None => Ok(views.html.wip(""))
     }
   }
@@ -162,6 +162,10 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
       case Some(newOppId) => Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(newOppId))
       case None => NotFound
     }
+  }
+
+  def publish(id: OpportunityId) = Action { request =>
+    Ok(views.html.wip(routes.OpportunityController.showOverviewPage(id).url))
   }
 
   def viewDeadlines(id: OpportunityId) = OpportunityAction(id) { request =>
