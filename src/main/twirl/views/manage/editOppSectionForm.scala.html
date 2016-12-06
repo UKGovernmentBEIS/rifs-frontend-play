@@ -16,7 +16,7 @@
     f"RIFS$id%05d"
 }
 
-@main("RIFS - Edit Description", displayUserName = Some("Portfolio Peter")) {
+@main("RIFS - Edit Description" , backLink=Some(BackLink("Opportunity template",controllers.manage.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName = Some("Portfolio Peter")) {
 
     <div class="grid-row">
         <div class="column-two-thirds">
@@ -44,7 +44,10 @@
 
                 <div class="rifs-form-buttons">
                     <input type="submit" name="@Save.name" class="button button--start" value="Save">
-                    <input type="submit" name="@Preview.name" class="button--link-style" value="Preview this page"/>
+                    <a href="@controllers.manage.routes.OpportunityController.previewOppSection(opp.id, section.sectionNumber)"
+                       class="flat nobreak"
+                    >
+                        Preview this page</a>
                 </div>
             </form>
         </div>
