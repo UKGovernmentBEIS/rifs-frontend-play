@@ -76,7 +76,7 @@ backLink=Some(BackLink("Opportunity library", controllers.manage.routes.Opportun
                                 <tr>
                                     <td>
                                         @(num + 4).
-                                        <a href="@controllers.manage.routes.OpportunityController.viewOppSection(opportunity.id, oppDesc.sectionNumber)">
+                                        <a href="@controllers.manage.routes.OpportunityController.viewSection(opportunity.id, oppDesc.sectionNumber)">
                                             @oppDesc.title
                                         </a>
                                     </td>
