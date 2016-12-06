@@ -145,7 +145,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   def viewGrantValue(id: OpportunityId) = OpportunityAction(id) { request =>
     request.opportunity.publishedAt match {
       case Some(_) => Ok(views.html.manage.viewGrantValue(request.opportunity))
-      case None => Ok(views.html.wip(""))
+      case None => Ok(views.html.wip(routes.OpportunityController.showOverviewPage(id).url))
     }
   }
 
