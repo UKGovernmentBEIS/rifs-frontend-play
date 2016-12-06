@@ -2,6 +2,7 @@ package services
 
 import com.google.inject.ImplementedBy
 import models._
+import org.joda.time.DateTime
 
 import scala.concurrent.Future
 
@@ -18,6 +19,8 @@ trait OpportunityOps {
   def saveDescriptionSectionText(id: OpportunityId, sectionNo: Int, descSect: Option[String]): Future[Unit]
 
   def duplicate(id: OpportunityId): Future[Option[OpportunityId]]
+
+  def publish(id: OpportunityId): Future[Option[DateTime]]
 }
 
 

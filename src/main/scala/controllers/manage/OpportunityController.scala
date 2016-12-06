@@ -30,7 +30,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
 
   def chooseHowToCreateOpportunity(choiceText: Option[String]) = Action { implicit request =>
     CreateOpportunityChoice(choiceText).map {
-      case NewOpportunityChoice => Ok(views.html.wip(routes.OpportunityController.showNewOpportunityForm().url))
+      case NewOpportunityChoice => Ok(views.html.wip(controllers.manage.routes.OpportunityController.showOpportunityLibrary().url))
       case ReuseOpportunityChoice => Redirect(controllers.manage.routes.OpportunityController.showOpportunityLibrary())
     }.getOrElse(Redirect(controllers.manage.routes.OpportunityController.showNewOpportunityForm()))
   }
@@ -156,7 +156,6 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     }
   }
 
-
   def duplicate(id: OpportunityId) = Action.async { request =>
     opportunities.duplicate(id).map {
       case Some(newOppId) => Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(newOppId))
@@ -164,8 +163,11 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     }
   }
 
-  def publish(id: OpportunityId) = Action { request =>
-    Ok(views.html.wip(routes.OpportunityController.showOverviewPage(id).url))
+  def publish(id: OpportunityId) = OpportunityAction(id).async { request =>
+    opportunities.publish(id).map {
+      case Some(dt) => Redirect(controllers.manage.routes.OpportunityController.showOpportunityLibrary())
+      case None => NotFound
+    }
   }
 
   def viewDeadlines(id: OpportunityId) = OpportunityAction(id) { request =>
