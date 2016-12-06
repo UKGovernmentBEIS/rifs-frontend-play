@@ -37,31 +37,32 @@ GET         /wip                                                      controller
 GET         /manage/opportunity/new                                   controllers.manage.OpportunityController.showNewOpportunityForm
 GET         /manage/opportunity/choose                                controllers.manage.OpportunityController.chooseHowToCreateOpportunity(choice:Option[String])
 GET         /manage/opportunities/library                             controllers.manage.OpportunityController.showOpportunityLibrary
-GET         /manage/opportunity/:opportunityId                        controllers.manage.OpportunityController.showOpportunityPreview(opportunityId:OpportunityId, section:Option[Int])
+GET         /manage/opportunity/:id                                   controllers.manage.OpportunityController.showOpportunityPreview(id:OpportunityId, section:Option[Int])
 GET         /manage/opportunities/guidance                            controllers.manage.OpportunityController.showPMGuidancePage(backUrl: String)
 
-GET         /manage/opportunity/:id/deadlines/edit                    controllers.manage.OpportunityController.editDeadlines(id: OpportunityId)
 GET         /manage/opportunity/:id/deadlines                         controllers.manage.OpportunityController.viewDeadlines(id: OpportunityId)
 POST        /manage/opportunity/:id/deadlines                         controllers.manage.OpportunityController.saveDeadlines(id: OpportunityId)
-GET         /manage/opportunity/:id/title/edit                        controllers.manage.OpportunityController.editTitle(id: OpportunityId)
+GET         /manage/opportunity/:id/deadlines/edit                    controllers.manage.OpportunityController.editDeadlines(id: OpportunityId)
+
+GET         /manage/opportunity/:id/title                             controllers.manage.OpportunityController.viewTitle(id:OpportunityId)
 POST        /manage/opportunity/:id/title                             controllers.manage.OpportunityController.saveTitle(id: OpportunityId)
+GET         /manage/opportunity/:id/title/edit                        controllers.manage.OpportunityController.editTitle(id: OpportunityId)
 
 GET         /manage/opportunity/:id/section/:num/questions            controllers.manage.OpportunityController.viewQuestions(id: OpportunityId, num:Int)
-GET         /manage/opportunity/:opportunityId/title                  controllers.manage.OpportunityController.viewTitle(opportunityId:OpportunityId)
 
-GET         /manage/opportunity/:opportunityId/description            controllers.manage.OpportunityController.viewDescription(opportunityId:OpportunityId)
-GET         /manage/opportunity/:opportunityId/grantvalue             controllers.manage.OpportunityController.viewGrantValue(opportunityId:OpportunityId)
-GET         /manage/opportunity/:opportunityId/oppsection/:sectionid  controllers.manage.OpportunityController.viewOppSection(opportunityId:OpportunityId, sectionid:Int)
 
-GET         /manage/opportunity/:id/description/:section/edit         controllers.manage.OpportunityController.editDescription(id: OpportunityId, section: Int)
-POST        /manage/opportunity/:id/description/:section              controllers.manage.OpportunityController.saveDescription(id: OpportunityId, section: Int)
+GET         /manage/opportunity/:id/grantvalue                        controllers.manage.OpportunityController.viewGrantValue(id:OpportunityId)
 
-GET         /manage/opportunity/:opportunityId/overview               controllers.manage.OpportunityController.showOverviewPage(opportunityId:OpportunityId)
-POST        /manage/opportunity/:opportunityId/duplicate              controllers.manage.OpportunityController.duplicate(opportunityId:OpportunityId)
+GET         /manage/opportunity/:id/section/:num                      controllers.manage.OpportunityController.viewSection(id:OpportunityId, num:Int)
+POST        /manage/opportunity/:id/section/:num                      controllers.manage.OpportunityController.saveSection(id:OpportunityId, num:Int)
+GET         /manage/opportunity/:id/section/:num/edit                 controllers.manage.OpportunityController.editSection(id:OpportunityId, num:Int)
+
+GET         /manage/opportunity/:id/overview                          controllers.manage.OpportunityController.showOverviewPage(id:OpportunityId)
+POST        /manage/opportunity/:id/duplicate                         controllers.manage.OpportunityController.duplicate(id:OpportunityId)
+POST        /manage/opportunity/:id/publish                           controllers.manage.OpportunityController.publish(id:OpportunityId)
 
 GET         /manage/opportunity/:id/section/:sectionid/preview        controllers.manage.OpportunityController.previewOppSection(id: OpportunityId, sectionid:Int)
 GET         /manage/opportunity/:id/title/preview                     controllers.manage.OpportunityController.previewTitle(id: OpportunityId)
-GET         /manage/opportunity/:id/description/preview               controllers.manage.OpportunityController.previewDescription(id: OpportunityId)
 GET         /manage/opportunity/:id/deadlines/preview                 controllers.manage.OpportunityController.previewDeadlines(id: OpportunityId)
 
 

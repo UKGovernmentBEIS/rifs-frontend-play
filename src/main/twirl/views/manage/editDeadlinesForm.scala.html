@@ -16,7 +16,7 @@
 
 @import views.html.partials._
 
-@main("Edit Deadline - RIFS", displayUserName = Some("Portfolio Peter")) {
+@main("Edit Deadline - RIFS" , backLink=Some(BackLink("Opportunity template",controllers.manage.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName = Some("Portfolio Peter")) {
 
     <div class="grid-row">
         <div class="column-two-thirds">
@@ -31,7 +31,7 @@
 
                 <div class="rifs-form-buttons">
                     <input type="submit" name="@Save.name" class="button button--start" value="Save">
-                    <input type="submit" name="@Preview.name" class="button--link-style" value="Preview this page"/>
+                    <a class="button--link-style" href=@controllers.manage.routes.OpportunityController.previewDeadlines(opp.id)>Preview this page</a>
                 </div>
             </form>
         </div>
