@@ -1,0 +1,40 @@
+// Panels
+.rifs-summary-panel {
+  @extend .panel;
+  background-color: $panel-colour;
+  border-color: $black;
+  border-left-width: 5px;
+  margin-top: 15px;
+
+  dl {
+    padding-bottom: 1em;
+    padding-top: .75em;
+  }
+
+  .rifs-form-buttons {
+    margin-bottom: 1em;
+    margin-top: 1em;
+  }
+
+}
+
+.rifs-heading-panel {
+  @extend .rifs-summary-panel;
+  background-color: lighten($govuk-blue, 50%);
+  border-color: $govuk-blue;
+}
+
+.rifs-error-panel {
+  background-color: lighten($red, 50%);
+  border-color: $red;
+  border-left-width: 5px;
+}
+
+.rifs-confirmation-container {
+  background-color: $turquoise;
+  color: $white;
+  margin-bottom: 2em;
+  margin-top: 1.5em;
+  padding: 1.5em;
+  text-align: center;
+}

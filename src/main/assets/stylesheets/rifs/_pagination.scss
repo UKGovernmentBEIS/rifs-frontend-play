@@ -22,4 +22,9 @@ aside nav ol li {
 .part-number {
   display: inline-block;
   width: 1.25em;
+  text-align: right;
+}
+
+.page-navigation {
+  @extend %contain-floats;
 }

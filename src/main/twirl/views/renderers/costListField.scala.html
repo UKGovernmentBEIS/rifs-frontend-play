@@ -1,7 +1,5 @@
-@(field: forms.CostListField,
-        app: ApplicationOverview,
-        formSection: ApplicationFormSection,
-        questions: Map[String, Question],
+@(
+        app: ApplicationSectionDetail,
         items: Seq[forms.validation.CostItem],
         errs: Seq[forms.validation.FieldError])
 
@@ -34,7 +32,7 @@
         </tr>
         <tr class="footer-two-light">
             <td colspan="3">
-                <a href="@controllers.routes.CostController.addItem(app.id, formSection.sectionNumber)">
+                <a href="@controllers.routes.CostController.addItem(app.id, app.formSection.sectionNumber)">
                     Add item</a>
             </td>
         </tr>
@@ -46,13 +44,13 @@
         <tr>
             <td>
                 @item.itemNumber.map { num =>
-                <a href="@controllers.routes.CostController.editItem(app.id, formSection.sectionNumber, num)">@item.itemName</a>
+                <a href="@controllers.routes.CostController.editItem(app.id, app.formSection.sectionNumber, num)">@item.itemName</a>
                 }.getOrElse(item.itemName)
             </td>
             <td class="currency">@item.costText</td>
             <td class="align-right">
             @item.itemNumber.map { num =>
-                <a href="@controllers.routes.CostController.deleteItem(app.id, formSection.sectionNumber, num)">
+                <a href="@controllers.routes.CostController.deleteItem(app.id, app.formSection.sectionNumber, num)">
                     Delete</a>
             }</td>
         </tr>

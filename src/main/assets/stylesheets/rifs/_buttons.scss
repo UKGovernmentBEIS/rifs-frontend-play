@@ -1,0 +1,46 @@
+.rifs-form-buttons {
+
+  a, input, button {
+    margin-right: 1.5em;
+    margin-top: 1em;
+  }
+
+  .flat, .button--link-style {
+    line-height: 2em;
+    margin-top: 1em;
+    vertical-align: bottom;
+    display: inline-block;
+  }
+}
+
+// Buttons
+
+// Show a input element as if it was a link
+input.button--link-style {
+  @extend .font-small;
+  background: none;
+  border: 0;
+  color: $link-colour;
+  cursor: pointer;
+  margin-right: 1.5em;
+  padding: 0;
+  text-decoration: underline;
+}
+
+a.button.secondary,
+input.secondary {
+  background-color: $grey-3;
+  color: $black;
+}
+
+button.as-link {
+  background-color: transparent;
+  border: 0;
+  color: $link-colour;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1em;
+  padding: 0;
+  position: relative;
+  text-decoration: underline;
+}

@@ -1,0 +1,18 @@
+@(field: forms.DateTimeRangeField, startDate: String, accessibleStartDate: String, endDate: Option[String], accessibleEndDate: Option[String])
+
+<div class="duration-preview">
+    <div class="column-half definition-list">
+        <dl>
+            <dt class="heading-small">Start date</dt>
+            <dd aria-label="@accessibleStartDate">@startDate</dd>
+        </dl>
+    </div>
+
+    <div class="column-half definition-list">
+        <dl>
+            <dt class="heading-small">End date</dt>
+            <dd aria-label="@accessibleEndDate.getOrElse("None")">@endDate.getOrElse("None")</dd>
+        </dl>
+    </div>
+</div>
+

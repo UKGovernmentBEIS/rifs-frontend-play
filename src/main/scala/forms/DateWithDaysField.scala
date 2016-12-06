@@ -1,24 +1,26 @@
 package forms
 
-import controllers.JsonHelpers
-import forms.validation.{DateWithDaysValidator, DateWithDaysValues, FieldError, FieldHint}
-import models.{ApplicationFormSection, ApplicationOverview, Question}
-import org.joda.time.format._
-import play.api.Logger
-import play.api.libs.json.JsObject
+import controllers.{FieldCheck, FieldChecks, JsonHelpers}
+import forms.validation._
+import models._
+import play.api.libs.json.{JsObject, Json}
 import play.twirl.api.Html
 
-case class DateWithDaysField(name: String, validator: DateWithDaysValidator) extends Field {
+case class DateWithDaysField(name: String, allowPast: Boolean, minValue: Int, maxValue: Int) extends Field with DateTimeFormats {
+  implicit val dvReads = Json.reads[DateValues]
+  implicit val dtrReads = Json.reads[DateWithDaysValues]
 
-  val dateField = DateField(s"$name.date")
-  val daysField = TextField(Some("Days"), s"$name.days", isNumeric = true)
+  val dateField = DateField(s"$name.date", allowPast)
+  val daysField = TextField(Some("Days"), s"$name.days", isNumeric = true, 1)
 
-  val fmt = DateTimeFormat.forPattern("d MMMM yyyy")
+  val validator = DateWithDaysValidator(allowPast, minValue, maxValue)
 
-  override def renderFormInput(app: ApplicationOverview, formSection: ApplicationFormSection, questions: Map[String, Question], answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]): Html =
-    views.html.renderers.dateWithDaysField(this, app, formSection, questions, answers, errs, hints)
+  override val check: FieldCheck = FieldChecks.fromValidator(validator)
 
-  override def renderPreview(app: ApplicationOverview, formSection: ApplicationFormSection, answers: JsObject): Html = {
+  override def renderFormInput(questions: Map[String, Question], answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]) =
+    views.html.renderers.dateWithDaysField(this, questions, answers, errs, hints)
+
+  override def renderPreview(questions: Map[String, Question], answers: JsObject) = {
     val flattenedAnswers = JsonHelpers.flatten("", answers)
     val day = flattenedAnswers.get(s"${dateField.name}.day")
     val month = flattenedAnswers.get(s"${dateField.name}.month")
@@ -27,10 +29,9 @@ case class DateWithDaysField(name: String, validator: DateWithDaysValidator) ext
     val vs = DateWithDaysValues(Some(DateValues(day, month, year)), flattenedAnswers.get(s"${daysField.name}"))
     validator.validate("", vs).map { dwd =>
       val endDate = dwd.date.plusDays(dwd.days - 1)
-      views.html.renderers.preview.dateWithDaysField(this, fmt.print(dwd.date), dwd.days, fmt.print(endDate))
+      views.html.renderers.preview.dateWithDaysField(this, fmt.print(dwd.date), dwd.days, fmt.print(endDate), accessFmt.print(dwd.date), accessFmt.print(endDate))
     }.leftMap { errs =>
-      // TODO: we rely on only being called with valid answers, but what if they're not?
-      views.html.renderers.preview.dateWithDaysField(this, "", 0, "")
+      views.html.renderers.preview.dateWithDaysField(this, "", 0, "", "", "")
     }.fold(identity, identity)
   }
 }

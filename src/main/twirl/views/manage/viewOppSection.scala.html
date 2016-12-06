@@ -1,0 +1,35 @@
+@(
+opp: Opportunity,
+sectionNumber: Int,
+backUrl: Option[String] = None
+)
+@import views.html.partials._
+
+
+@currentSection = @{
+opp.description.find(_.sectionNumber == sectionNumber)
+}
+
+@main(s"${opp.title} - RIFS", backLink=Some(BackLink("Opportunity template",controllers.manage.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName=Some("Portfolio Peter")) {
+    <div class="grid-row">
+        <div class="column-full">
+            <h1 class="heading-xlarge">
+                <span class="heading-secondary">@formatId(opp.id.id): @opp.title</span>
+
+                @currentSection.map { s =>
+                    @s.title</h1>
+                    @s.text.map(_.split("\n\n")).map { ps =>
+                        @ps.map { p =>
+                            <p class="text">@p</p>
+                        }
+                    }
+                }
+
+            <div class="rifs-form-buttons">
+                <a href="@backUrl.getOrElse( controllers.manage.routes.OpportunityController.showOverviewPage(opp.id) )" class="button">
+                   Continue</a>
+            </div>
+
+        </div>
+    </div>
+}

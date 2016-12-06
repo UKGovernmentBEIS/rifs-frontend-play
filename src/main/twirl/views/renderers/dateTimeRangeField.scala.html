@@ -1,0 +1,59 @@
+@(field: forms.DateTimeRangeField,
+        questions:Map[String, Question],
+        answers: play.api.libs.json.JsObject,
+        errs: Seq[forms.validation.FieldError],
+        hints: Seq[forms.validation.FieldHint])
+
+@errors = @{
+    errs.filter(p => p.path == field.name)
+}
+
+@errors.map { e =>
+    <span class="error-message" role="alert">@e.err</span>
+}
+
+@yesChecked = @{
+    if (JsonHelpers.flatten(answers).get("deadlines.endDateProvided").contains("yes")) "checked" else ""
+}
+
+@noChecked = @{
+    if (!JsonHelpers.flatten(answers).get("deadlines.endDateProvided").contains("yes")) "checked" else ""
+}
+
+@endDateDisplayState = @{
+    if (JsonHelpers.flatten(answers).get("deadlines.endDateProvided").contains("yes")) "" else "js-hide-on-load"
+}
+
+@field.startDateField.renderFormInput(questions, answers, errs, hints)
+
+@yesId = @{field.name + "-yes"}
+@noId = @{field.name + "-no"}
+
+@if(!field.isEndDateMandatory)  {
+    <p class="question">
+        Does the opportunity have a closing date?
+    </p>
+
+    <div class="form-group">
+        <fieldset class="inline" for="@yesId">
+            <legend id="legend" class="visually-hidden">Does the opportunity have a closing date?</legend>
+            <label class="block-label selection-button-radio">
+                <input type="radio" id="@yesId" class="form-block js-show" data-for="#closing-date-container"
+                name="@(field.name).endDateProvided" value="yes" @yesChecked
+                aria-label="Select yes, the opportunity has a closing date.">
+                Yes
+            </label>
+            <label class="block-label selection-button-radio "  for="@noId">
+                <input type="radio" id="@noId" class="block-form js-hide" data-for="#closing-date-container"
+                name="@(field.name).endDateProvided" value="no" @noChecked
+                aria-label="Select no, the opportunity does not have a closing date.">
+                No
+            </label>
+        </fieldset>
+    </div>
+}
+
+
+<div id="closing-date-container" class="@endDateDisplayState panel panel-border-narrow">
+    @field.endDateField.renderFormInput(questions, answers, errs, hints)
+</div>

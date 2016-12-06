@@ -1,0 +1,50 @@
+@(
+        app:ApplicationSectionDetail,
+        items: Seq[forms.validation.CostItem],
+        answers: play.api.libs.json.JsObject,
+        errs: List[forms.validation.FieldError],
+        hints:List[forms.validation.FieldHint]
+)
+@import partials._
+
+@main(s"${app.formSection.title} - RIFS", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(app.id).url)), displayUserName=Some("Experienced Eric")) {
+    <div class="grid-row">
+        <div class="column-two-thirds">
+            <h1 class="heading-xlarge">
+                <span class="heading-secondary">@formatId(app.opportunity.id.id): @app.opportunity.title</span>
+                @app.formSection.title
+            </h1>
+
+            <form method="POST"
+                  action="@controllers.routes.ApplicationController.postSection(app.id, app.formSection.sectionNumber)"
+                  novalidate="novalidate">
+                @if(errs.nonEmpty) {
+                <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
+
+                    <h1 class="heading-medium error-summary-heading" id="error-summary-heading">
+                        The information you entered is not valid
+                    </h1>
+
+                    <p>
+                        Please correct the problems indicated below.
+                    </p>
+                </div>
+                }
+                @views.html.renderers.costListField(app, items, errs)
+
+                <label for="complete-checkbox" class="form-checkbox font-normal" style="width: 16em">
+                    <input id="complete-checkbox" type="checkbox" name="_complete_checkbox"/>
+                    Mark question as complete
+                </label>
+
+                <div class="rifs-form-buttons">
+                    <input type="submit" name="@Save.name" class="button button--start" value="Save and continue">
+                    <input type="submit" name="@Preview.name" class="button--link-style" value="Preview this page"/>
+                </div>
+            </form>
+        </div>
+        <div id="support-column" class="column-third">
+            @sidebar(app.opportunity.id, app.sectionCount, app.completedSectionCount)
+        </div>
+    </div>
+}

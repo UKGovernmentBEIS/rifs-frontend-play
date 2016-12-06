@@ -16,7 +16,11 @@ trait ApplicationOps {
 
   def overview(id: ApplicationId): Future[Option[ApplicationOverview]]
 
-  def deleteAll(): Future[Unit]
+  def detail(id: ApplicationId): Future[Option[ApplicationDetail]]
+
+  def sectionDetail(id: ApplicationId, sectionNum:Int): Future[Option[ApplicationSectionDetail]]
+
+  def reset(): Future[Unit]
 
   def saveSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[Unit]
 
@@ -35,4 +39,7 @@ trait ApplicationOps {
   def deleteSection(id: ApplicationId, sectionNumber: Int): Future[Unit]
 
   def clearSectionCompletedDate(id: ApplicationId, sectionNumber: Int): Future[Unit]
+
+  def submit(id: ApplicationId): Future[Option[SubmittedApplicationRef]]
+
 }

@@ -1,66 +1,72 @@
-@(opportunityId:OpportunityId)
+@(opportunityId: OpportunityId)
 
 
-@main(s"Guidance on grants") {
-<div id="middleframe">
-
-    <div class="gidrow">
-        <div class="column-two-thirds">
-
-
-            <h1 class="heading-xlarge">Guidance on seminars</h1>
+@main(s"Guidance on grants - RIFS", displayUserName=Some("Experienced Eric")) {
+<div class="grid-row">
+    <div class="column-two-thirds">
+        <div class="text">
+            <section>
+                <h1 class="heading-xlarge">Guidance on seminars</h1>
 
 
-            <h2 class="heading-large">Objectives</h2>
-            <div class="text">
-                <p>The main rationale for these seminars is to help the universities and institutes we fund to team up with researchers and other professionals to promote best practice
-                    and our strategic priorities.</p>
+                <h2 class="heading-large">Objectives</h2>
+                <div>
+                    <p>The main rationale for these seminars is to help the universities and institutes we fund to team up with researchers and other professionals to promote best practice
+                        and our strategic priorities.</p>
 
-                <p>They are also a great opportunity to raise awareness of your own organisation’s strategies, policies and procedures, while safeguarding your intellectual assets.</p>
-            </div>
-
-
-            <h2 class="heading-large">Topics and speakers</h2>
-            <div class="text">
-                <p>The most successful events have involved senior academics working with colleagues to develop a research programme and share their strategic vision.
-                    There are no fixed rules about topics which can include intellectual asset management, licensing and collaborative R&D.</p>
-
-                <p>A mix of activities such as presentations, case studies, audience participation and open discussion can help address issues, share experiences and communicate vision.</p>
-
-                <p>Feedback from previous events indicates that seminars lasting half a day are the most suitable.</p>
-
-                <p>Speakers might include internal or external business development professionals and others such as patent lawyers/agents and KTP advisors.</p>
-
-                <p>  Whenever possible, a member of our Swindon office staff will be available to participate in the seminar free of charge.</p>
-            </div>
+                    <p>They are also a great opportunity to raise awareness of your own organisation’s strategies, policies and procedures, while safeguarding your intellectual assets.</p>
+                </div>
 
 
-            <h2 class="heading-large"> Event audience</h2>
-            <div>
+                <h2 class="heading-large">Topics and speakers</h2>
+                <div>
+                    <p>The most successful events have involved senior academics working with colleagues to develop a research programme and share their strategic vision.
+                        There are no fixed rules about topics which can include intellectual asset management, licensing and collaborative R&D.</p>
 
-                <p class="text">If possible, examine the audience make-up from previous similar events. Who came to them and who is likely to come to your event?</p>
+                    <p>A mix of activities such as presentations, case studies, audience participation and open discussion can help address issues, share experiences and communicate vision.</p>
 
-                <p class="text"> It’s a good idea to invite people from relevant faculties, colleges or departments, and business development offices.</p>
+                    <p>Feedback from previous events indicates that seminars lasting half a day are the most suitable.</p>
 
-            </div>
+                    <p>Speakers might include internal or external business development professionals and others such as patent lawyers/agents and KTP advisors.</p>
 
-            <h2 class="heading-large">Costs</h2>
-            <div class="text">
-                <p>When you’re listing items, it’s fine to cluster them in groups, for example: printed materials including hand-outs, posters and feedback forms.</p>
-                <p> We’ve left plenty of room for justification, but don’t feel you have to use all of the wordcount, especially if the need for an item is obvious.</p>
-            </div>
+                    <p>
+                        Whenever possible, a member of our Swindon office staff will be available to participate in the seminar free of charge.</p>
+                </div>
+
+
+                <h2 class="heading-large"> Event audience</h2>
+                <div>
+                    <p>
+                        If possible, examine the audience make-up from previous similar events. Who came to them and who is likely to come to your event?</p>
+
+                    <p>
+                        It’s a good idea to invite people from relevant faculties, colleges or departments, and business development offices.</p>
+
+                </div>
+
+
+                <h2 class="heading-large">Costs</h2>
+                <div>
+                    <p>When you’re listing items, it’s fine to cluster them in groups, for example: printed materials including hand-outs, posters and feedback forms.</p>
+                    <p> We’ve left plenty of room for justification, but don’t feel you have to use all of the wordcount, especially if the need for an item is obvious.</p>
+                </div>
+            </section>
         </div>
-
-        <div id="support-column" class="column-third">
-            <hr class="hr-blue">
-            <h3 class="bold-small">Support</h3>
-            <ul class="list">
-                <li>
-                    <a href="@controllers.routes.OpportunityController.showOpportunity(opportunityId, None)">View opportunity details</a>
-                </li>
-            </ul>
-        </div>
-
     </div>
+
+
+    <div id="support-column" class="column-third">
+        <hr class="hr-blue">
+        <h3 class="bold-small">Support</h3>
+        <ul class="list">
+            <li>
+                <a href="@controllers.routes.OpportunityController.showOpportunity(opportunityId, None)">
+                    View opportunity details</a>
+            </li>
+        </ul>
+    </div>
+
 </div>
+
+
 }

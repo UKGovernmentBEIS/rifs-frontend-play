@@ -1,0 +1,80 @@
+// Global template elements
+#global-header-status {
+  @extend %contain-floats;
+  margin-top: .4em;
+
+  // prevent the backlink and the username running into each other on small mobiles
+  .backlink-container {
+    padding-right: 1.5em;
+  }
+
+  // provide enough space to avoid a clash when the username wraps underneath the Back link
+  line-height: 2.2em;
+}
+
+// General
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+.no-top-margin {
+  margin-top: 0;
+}
+
+.right-align,
+.align-right {
+  text-align: right;
+}
+
+.contain-floats {
+  @extend %contain-floats;
+}
+
+.greentick {
+  color: rgb(1, 130, 67);
+  font-size: 1.5em;
+  line-height: .5;
+  padding: 0 0 0 15px;
+}
+
+.status-column {
+  min-width: 8em;
+  width: 30%;
+}
+
+.no-lr-padding {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.no-l-padding {
+  padding-left: 0;
+}
+
+.no-r-padding {
+  padding-right: 0;
+}
+
+.nobreak {
+  white-space: nowrap;
+}
+
+.currency {
+  text-align: right;
+}
+
+// For some pages (opportunity library for portfolio manager) we need to display the support column above full measure
+// rather than in a grid layout.
+.support-column-above-full-measure {
+  float: none;
+
+  @include media(desktop) {
+    float: right;
+  }
+
+}
+

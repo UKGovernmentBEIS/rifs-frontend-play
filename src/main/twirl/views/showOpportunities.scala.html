@@ -1,6 +1,6 @@
 @(os: Seq[Opportunity])
 
-@main("Opportunity list") {
+@main("Opportunity list - RIFS", backLink=Some(BackLink("Return to dashboard", controllers.routes.StartPageController.startPage().url)), displayUserName=Some("Experienced Eric")) {
     <div>
         <h1 class="heading-xlarge">Open opportunities</h1>
 
@@ -8,7 +8,7 @@
 
         <table class="spacious">
             <tr>
-                <th>Opportunity title</th>
+                <th role="presentation">Opportunity title</th>
             </tr>
             @for((o,i) <- os.zipWithIndex) {
                 <tr><td>@{i+1}. <a href="/opportunity/@o.id.id">@o.title</a></td></tr>
@@ -17,3 +17,4 @@
 
     </div>
 }
+

@@ -1,36 +1,25 @@
 @(
-        app: ApplicationOverview,
-        section: Option[ApplicationSection],
-        formSection: ApplicationFormSection,
-        opportunity: Opportunity,
+        app: ApplicationSectionDetail,
         fields: Seq[forms.Field],
         answers: play.api.libs.json.JsObject,
         closeButton: String,
         editButton: Option[String]
 )
 
-@formatId(id: Long) = @{
-    f"RIFS$id%05d"
-}
+@import partials._
 
-@main(s"Event title") {
+@main(s"${app.formSection.title} - RIFS", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(app.id).url)), displayUserName=Some("Experienced Eric")) {
     <div class="grid-row">
         <div class="column-full">
-            <div class="breadcrumbs">
-                <ol>
-                    <li><a href="@controllers.routes.ApplicationController.show(app.id)">&lt; Return to application overview</a></li>
-                </ol>
-            </div>
-
             <h1 class="heading-xlarge">
-                <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
-                @formSection.title
+                <span class="heading-secondary">@formatId(app.opportunity.id.id): @app.opportunity.title</span>
+                @app.formSection.title
             </h1>
 
-            @fields.map(_.renderPreview(app, formSection, answers))
+            @fields.map(_.renderPreview(app.formSection.questionMap, answers))
 
             @if(editButton.isDefined){
-                @section.flatMap(_.completedAtText)
+                @app.section.flatMap(_.completedAtText)
 
                 <div class="rifs-form-buttons">
 

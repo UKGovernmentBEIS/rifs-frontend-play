@@ -3,10 +3,10 @@ package services
 import com.google.inject.Inject
 import com.wellfactored.playbindings.ValueClassFormats
 import config.Config
-import controllers.FieldCheckHelpers
 import controllers.FieldCheckHelpers.FieldErrors
+import controllers.{FieldCheck, FieldCheckHelpers, FieldChecks}
+import forms.validation.{CostItem, CostItemValues, CostSectionValidator, FieldError}
 import models._
-import play.api.Logger
 import play.api.libs.json._
 import play.api.libs.ws.WSClient
 
@@ -14,10 +14,27 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionContext)
   extends ApplicationOps with JodaFormats with RestService with ValueClassFormats {
+  private val dtPattern = "dd MMM yyyy HH:mm:ss"
+  implicit val dtReads = Reads.jodaDateReads(dtPattern)
+  implicit val dtWrites = Writes.jodaDateWrites(dtPattern)
+
+  implicit val jldReads = Reads.jodaLocalDateReads("d MMM yyyy")
+  implicit val fieldReads = fields.FieldReads.fieldReads
   implicit val appSectionReads = Json.reads[ApplicationSection]
   implicit val appReads = Json.reads[Application]
   implicit val appSecOvRead = Json.reads[ApplicationSectionOverview]
   implicit val appOvRead = Json.reads[ApplicationOverview]
+  implicit val saRefReads = Json.reads[SubmittedApplicationRef]
+  implicit val oppSecReads = Json.reads[OpportunityDescriptionSection]
+  implicit val oppValueReads = Json.reads[OpportunityValue]
+  implicit val oppDurReads = Json.reads[OpportunityDuration]
+  implicit val oppSummaryReads = Json.reads[OpportunitySummary]
+  implicit val oppReads = Json.reads[Opportunity]
+  implicit val appFormQReads = Json.reads[ApplicationFormQuestion]
+  implicit val appFormSecReads = Json.reads[ApplicationFormSection]
+  implicit val appFormReads = Json.reads[ApplicationForm]
+  implicit val appDetailReads = Json.reads[ApplicationDetail]
+  implicit val appSecDetailReads = Json.reads[ApplicationSectionDetail]
 
   val baseUrl = Config.config.business.baseUrl
 
@@ -31,17 +48,29 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     post(url, doc)
   }
 
-  import controllers.ApplicationData._
-
   override def completeSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors] = {
-    Logger.debug(s"checking doc $doc")
-    FieldCheckHelpers.check(doc, checksFor(sectionNumber)) match {
-      case Nil =>
-        val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/complete"
-        post(url, doc).map(_ => List())
-      case errs => Future.successful(errs)
+    sectionDetail(id, sectionNumber).flatMap {
+      case Some(app) =>
+        FieldCheckHelpers.check(doc, checksFor(app.formSection)) match {
+          case Nil =>
+            val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/complete"
+            post(url, doc).map(_ => List())
+          case errs => Future.successful(errs)
+        }
+      // TODO: Need better error handling here
+      case None => Future.successful(List(FieldError("", s"tried to save a non-existent section number $sectionNumber in application ${id.id}")))
     }
   }
+
+  implicit val civReads = Json.reads[CostItemValues]
+  implicit val ciReads = Json.reads[CostItem]
+
+  def checksFor(formSection: ApplicationFormSection): Map[String, FieldCheck] =
+    formSection.sectionType match {
+      case SectionTypeForm => formSection.fields.map(f => f.name -> f.check).toMap
+      case SectionTypeList => Map("items" -> FieldChecks.fromValidator(CostSectionValidator(2000)))
+    }
+
 
   override def saveItem(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors] = {
     val item = (doc \ "item").toOption.flatMap(_.validate[JsObject].asOpt).getOrElse(JsObject(Seq()))
@@ -85,9 +114,19 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     getOpt[ApplicationOverview](url)
   }
 
-  override def deleteAll(): Future[Unit] = {
-    val url = s"$baseUrl/application"
-    delete(url)
+  override def detail(id: ApplicationId): Future[Option[ApplicationDetail]] = {
+    val url = s"$baseUrl/application/${id.id}/detail"
+    getOpt[ApplicationDetail](url)
+  }
+
+  override def sectionDetail(id: ApplicationId, sectionNum: Int): Future[Option[ApplicationSectionDetail]] = {
+    val url = s"$baseUrl/application/${id.id}/section/$sectionNum/detail"
+    getOpt[ApplicationSectionDetail](url)
+  }
+
+  override def reset(): Future[Unit] = {
+    val url = s"$baseUrl/reset"
+    post(url, None)
   }
 
   override def deleteSection(id: ApplicationId, sectionNumber: Int): Future[Unit] = {
@@ -100,5 +139,8 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     put(url, None)
   }
 
-
+  override def submit(id: ApplicationId): Future[Option[SubmittedApplicationRef]] = {
+    val url = s"$baseUrl/application/${id.id}/submit"
+    postWithResult[SubmittedApplicationRef, String](url, "")
+  }
 }

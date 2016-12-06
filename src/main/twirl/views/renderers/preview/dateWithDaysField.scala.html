@@ -1,10 +1,10 @@
-@(field: forms.DateWithDaysField, startDate: String, days: Int, endDate: String)
+@(field: forms.DateWithDaysField, startDate: String, days: Int, endDate: String, accessibleStartDate: String, accessibleEndDate:String)
 
 <div class="duration-preview">
     <div class="column-third definition-list">
         <dl>
             <dt class="heading-small">Start date</dt>
-            <dd>@startDate</dd>
+            <dd aria-label="@accessibleStartDate">@startDate</dd>
         </dl>
     </div>
 
@@ -18,7 +18,7 @@
     <div class="column-third definition-list">
         <dl>
             <dt class="heading-small">End date</dt>
-            <dd>@endDate</dd>
+            <dd aria-label="@accessibleEndDate">@endDate</dd>
         </dl>
     </div>
 </div>

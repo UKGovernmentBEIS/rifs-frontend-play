@@ -1,0 +1,151 @@
+@(backUrl:String, opportunity: Opportunity, sectionNumber: Int)
+
+@sectionLink(title: String, sectionNum: Int) = {
+    <span class="part-number"> @sectionNum. </span>
+        @if(sectionNum == sectionNumber) {
+            @title
+        } else {
+            <a href="@controllers.manage.routes.OpportunityController.showOpportunityPreview(opportunity.id, Some(sectionNum))">@title</a>
+        }
+    }
+
+@titleCols() = @{
+    val titles = opportunity.description.sortBy(_.sectionNumber).map(s => (s.title, s.sectionNumber)).zipWithIndex
+    val midpoint: Int = Math.round(titles.length / 2.0).toInt
+    val (leftCols, b) = titles.splitAt(midpoint)
+    val rightCols = b.map(Some(_)) :+ None
+    leftCols.zip(rightCols)
+}
+
+@nextSection = @{
+    opportunity.description.find(_.sectionNumber == sectionNumber + 1)
+}
+
+@prevSection = @{
+    opportunity.description.find(_.sectionNumber == sectionNumber - 1)
+}
+
+@currentSection = @{
+    opportunity.description.find(_.sectionNumber == sectionNumber)
+}
+
+@import views.html.partials._
+
+@main(s"Opportunity: ${opportunity.title} - RIFS", backLink=Some(BackLink("Return to opportunity library", controllers.manage.routes.OpportunityController.showOpportunityLibrary().url)), displayUserName=Some("Portfolio Peter")) {
+
+    <div class="rifs-heading-panel">
+        <p>@formatId(opportunity.id.id) <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(opportunity.id).url">Template View</a></p>
+    </div>
+
+
+    <div class="grid-row">
+        <div class="column-two-thirds">
+
+
+            <header class="page-header">
+                <h1 class="heading-xlarge">@opportunity.title</h1>
+            </header>
+
+            <aside>
+                <nav role="navigation" class="page-navigation" aria-label="Navigation">
+                    <ol>
+                    @titleCols.map { case ((col1, idx), _) =>
+                    <li id="title-@(idx + 1)">
+                    @sectionLink(col1._1, col1._2)
+                    </li>
+                    }
+                    </ol>
+                    <ol>
+                    @titleCols.map { case (_, col2) =>
+                        @col2.map { case (t, idx) =>
+                        <li id="title-@(idx + 1)">
+                        @sectionLink(t._1, t._2)
+                        </li>
+                        }.getOrElse("")
+                    }
+                    </ol>
+                </nav>
+            </aside>
+
+            @currentSection.map { s =>
+
+                <div class="rifs-summary-panel">
+                    <aside role="complementary" class="notice">
+                        <div class="column-half definition-list">
+                            <dl>
+                                <dt class="heading-small">Deadline</dt>
+                                <dd>Apply any time</dd>
+                            </dl>
+                        </div>
+
+                        <div class="column-half definition-list">
+                            <dl>
+                                <dt class="heading-small">Value</dt>
+                                <dd>&pound;@("%,.0f".format(opportunity.value.amount)) @opportunity.value.unit</dd>
+                            </dl>
+                        </div>
+                    </aside>
+                </div>
+
+                <article>
+                    <h2 class="heading-large">@s.sectionNumber. @s.title</h2>
+                    @s.text.map(_.split("\n\n")).map { ps =>
+                        @ps.map { p =>
+                            <p class="text">@p</p>
+                        }
+                    }
+                </article>
+
+                <footer>
+                    <nav class="govuk-previous-and-next-navigation" role="navigation" aria-label="Pagination">
+                        <ul class="group">
+                            @prevSection.map { s =>
+                            <li class="previous-page">
+                                <a href="@controllers.manage.routes.OpportunityController.showOpportunityPreview(opportunity.id, Some(s.sectionNumber))"
+                                title="Navigate to the previous page."
+                                rel="previous">
+                                    <span class="pagination-part-title">Previous</span>
+                                    <span class="pagination-part-label">@s.title</span>
+                                </a>
+                            </li>
+                            }.getOrElse {
+                                <li class="previous-page" aria-hidden="true"></li>
+                            }
+
+                            @nextSection.map { s =>
+                            <li class="next-page">
+                                <a href="@controllers.manage.routes.OpportunityController.showOpportunityPreview(opportunity.id, Some(s.sectionNumber))"
+                                title="Navigate to the next page."
+                                rel="next">
+                                    <span class="pagination-part-title">Next</span>
+                                    <span class="pagination-label">@s.title</span>
+                                </a>
+                            </li>
+                            }.getOrElse {
+                                <li class="next-page" aria-hidden="true"></li>
+                            }
+                        </ul>
+                    </nav>
+                </footer>
+            </div>
+
+
+        <div id="support-column" class="column-third">
+            <aside role="complementary">
+                <hr class="hr-blue">
+                <h3 class="heading-medium">Support</h3>
+                <ul class="list spacious">
+
+                    <li>
+                        <a href="@controllers.manage.routes.OpportunityController.showPMGuidancePage(backUrl)">Guidance on
+                            seminars</a>
+                    </li>
+
+                </ul>
+            </aside>
+        </div>
+
+    </div>
+}
+
+}

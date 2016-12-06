@@ -1,9 +1,4 @@
-@(field: forms.CostListField, costs: Seq[forms.validation.CostItem])
-
-@formatId(id: Long) = @{
-    f"RIFS$id%05d"
-}
-
+@(costs: Seq[forms.validation.CostItem])
 
 <table class="rifs-costs-table">
     <thead>

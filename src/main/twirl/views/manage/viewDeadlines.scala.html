@@ -1,0 +1,27 @@
+@(
+        field: forms.DateTimeRangeField,
+        opp: Opportunity,
+        questions: Map[String, Question],
+        answers: play.api.libs.json.JsObject)
+
+@import views.html.partials._
+
+@main(s"${opp.title} - RIFS", backLink = Some(BackLink("Opportunity template", controllers.manage.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName=Some("Portfolio Peter")) {
+    <div class="grid-row">
+        <div class="column-two-thirds">
+            <h1 class="heading-xlarge">
+                <span class="heading-secondary">@formatId(opp.id.id): @opp.title</span>
+                @Opportunity deadlines
+            </h1>
+
+            <form method="POST" action="@controllers.manage.routes.OpportunityController.saveDeadlines(opp.id)">
+                @field.renderPreview(questions, answers)
+
+                <div class="rifs-form-buttons">
+                    <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(opp.id)" class="button">
+                        Continue</a>
+                </div>
+            </form>
+        </div>
+    </div>
+}

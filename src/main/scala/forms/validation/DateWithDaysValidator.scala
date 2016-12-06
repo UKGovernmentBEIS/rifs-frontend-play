@@ -1,6 +1,7 @@
 package forms.validation
 
 import cats.data.ValidatedNel
+import cats.syntax.cartesian._
 import forms.DateValues
 import org.joda.time.LocalDate
 
@@ -8,7 +9,7 @@ case class DateWithDaysValues(date: Option[DateValues], days: Option[String])
 
 case class DateWithDays(date: LocalDate, days: Int)
 
-case class DateWithDaysValidator(allowPast: Boolean, minValue: Int = Int.MinValue, maxValue: Int = Int.MaxValue) extends FieldValidator[DateWithDaysValues, DateWithDays] {
+case class DateWithDaysValidator(allowPast: Boolean, minValue: Int, maxValue: Int) extends FieldValidator[DateWithDaysValues, DateWithDays] {
 
   val dateValidator = DateFieldValidator(allowPast)
   val daysValidator = IntValidator(minValue, maxValue)
@@ -20,10 +21,6 @@ case class DateWithDaysValidator(allowPast: Boolean, minValue: Int = Int.MinValu
     val dateV: ValidatedNel[FieldError, LocalDate] = dateValidator.validate(s"$path.date", dv)
     val daysV: ValidatedNel[FieldError, Int] = daysValidator.validate(s"$path.days", days)
 
-    // IDEA doesn't think this import is used - take care not to optimise it away! I've duplicated
-    // it in a comment so it's easy to restore if you lose it by mistake.
-    //import cats.syntax.cartesian._
-    import cats.syntax.cartesian._
-    (dateV |@| daysV).map(DateWithDays.apply _)
+    (dateV |@| daysV).map(DateWithDays.apply)
   }
 }
