@@ -16,7 +16,7 @@
 
 @import views.html.partials._
 
-@main("Edit Deadline - RIFS", displayUserName = Some("Portfolio Peter")) {
+@main("Edit Deadline - RIFS" , backLink=Some(BackLink("Opportunity template",controllers.manage.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName = Some("Portfolio Peter")) {
 
     <div class="grid-row">
         <div class="column-two-thirds">
