@@ -8,9 +8,6 @@ object OpportunityDefs {
   val CRITERIA_SECTION_NO = 3
 }
 
-
-
-
 case class OpportunityId(id: Long) extends AnyVal
 
 case class OpportunityDescriptionSection(sectionNumber: Int, title: String, text: Option[String], description: Option[String], helpText: Option[String])
@@ -39,8 +36,8 @@ case class Opportunity(
 
   lazy val statusString: String = {
     publishedAt.isDefined match {
-      case true if startDate.isAfter(LocalDate.now()) => OPPORTUNITY_STATUS_QUEUED
-      case true if endDate.getOrElse(LocalDate.now()).isBefore(LocalDate.now()) => OPPORTUNITY_STATUS_CLOSED
+      case true if startDate.isAfter(LocalDate.now) => OPPORTUNITY_STATUS_QUEUED
+      case true if endDate.getOrElse(LocalDate.now.isBefore(LocalDate.now)) => OPPORTUNITY_STATUS_CLOSED
       case true => OPPORTUNITY_STATUS_OPEN
       case false => OPPORTUNITY_STATUS_DRAFT
     }
