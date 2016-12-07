@@ -5,6 +5,7 @@ import javax.inject.Inject
 import com.wellfactored.playbindings.ValueClassFormats
 import config.Config
 import models._
+import org.joda.time.DateTime
 import play.api.libs.json.{Json, Reads, Writes}
 import play.api.libs.ws.WSClient
 
@@ -53,5 +54,10 @@ class OpportunityService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
   override def duplicate(id: OpportunityId) :Future[Option[OpportunityId]] = {
     val url = s"$baseUrl/opportunity/${id.id}/duplicate"
     postWithResult[OpportunityId, String](url, "")
+  }
+
+  override def publish(id: OpportunityId) :Future[Option[DateTime]] = {
+    val url = s"$baseUrl/opportunity/${id.id}/publish"
+    postWithResult[DateTime, Option[String]](url, None)
   }
 }

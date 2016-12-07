@@ -32,6 +32,24 @@
             var output = rule(input.value, config);
             helper.innerHTML = output;
         });
+
+        input.addEventListener('paste', function() {
+            // The paste event fires before the element has received the
+            // pasted text.
+            window.setTimeout(function() {
+                var output = rule(input.value, config);
+                helper.innerHTML = output;
+            }, 200);
+        });
+
+        input.addEventListener('drop', function() {
+            // drop events happen before the drop event has completed
+            // so we need this hack to wait for the drop event to complete.
+            window.setTimeout(function() {
+                var output = rule(input.value, config);
+                helper.innerHTML = output;
+            }, 200);
+        });
     }
 
     function rifsHelperText() {
