@@ -8,6 +8,9 @@ object OpportunityDefs {
   val CRITERIA_SECTION_NO = 3
 }
 
+
+
+
 case class OpportunityId(id: Long) extends AnyVal
 
 case class OpportunityDescriptionSection(sectionNumber: Int, title: String, text: Option[String], description: Option[String], helpText: Option[String])
@@ -26,15 +29,21 @@ case class Opportunity(
                         duplicatedFrom: Option[OpportunityId],
                         description: Seq[OpportunityDescriptionSection]
                       ) {
+
+  val OPPORTUNITY_STATUS_OPEN = "Open"
+  val OPPORTUNITY_STATUS_CLOSED = "Closed"
+  val OPPORTUNITY_STATUS_DRAFT = "Draft"
+  val OPPORTUNITY_STATUS_QUEUED = "Queued"
+
   lazy val summary: OpportunitySummary = OpportunitySummary(id, title, startDate, endDate, value, publishedAt, duplicatedFrom)
 
   lazy val statusString: String = {
     publishedAt.isDefined match {
-      case true if startDate.isAfter(LocalDate.now()) => "Queued"
-      case true if endDate.isEmpty => "Open"
-      case true if endDate.get.isBefore(LocalDate.now()) => "Closed"
-      case true => "Open"
-      case false => "Draft"
+      case true if startDate.isAfter(LocalDate.now()) => OPPORTUNITY_STATUS_QUEUED
+      case true if endDate.isEmpty => OPPORTUNITY_STATUS_OPEN
+      case true if endDate.get.isBefore(LocalDate.now()) => OPPORTUNITY_STATUS_CLOSED
+      case true => OPPORTUNITY_STATUS_OPEN
+      case false => OPPORTUNITY_STATUS_DRAFT
     }
   }
 }
