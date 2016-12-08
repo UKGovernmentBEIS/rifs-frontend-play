@@ -1,5 +1,6 @@
 @(
-  opp: Opportunity
+  opp: Opportunity,
+  backUrl: Option[String]
 )
 
 @formatId(id: Long) = @{
@@ -16,7 +17,7 @@
 
             <p class="heading-secondary">@opp.title</p>
             <div class="rifs-form-buttons">
-                <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(opp.id)" class="button">
+                <a href="@backUrl.getOrElse(controllers.manage.routes.OpportunityController.showOverviewPage(opp.id))" class="button">
                    Close</a>
             </div>
 
