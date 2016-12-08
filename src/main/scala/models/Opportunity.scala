@@ -38,7 +38,7 @@ case class Opportunity(
     }
   }
 
-  lazy val isStartDatePassed = startDate.isBefore(LocalDate.now)
+  lazy val isStartDatePassed = startDate.isEqual(LocalDate.now) || startDate.isBefore(LocalDate.now)
 
   lazy val isEndDatePassed = endDate.exists(_.isBefore(LocalDate.now))
 }
