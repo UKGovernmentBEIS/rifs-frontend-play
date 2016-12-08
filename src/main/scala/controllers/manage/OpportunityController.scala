@@ -9,7 +9,8 @@ import controllers._
 import forms.validation.DateTimeRangeValues
 import forms._
 import models._
-import org.joda.time.LocalDate
+import org.joda.time.{LocalDate, LocalDateTime}
+import org.joda.time.format.DateTimeFormat
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, OpportunityOps}
@@ -206,8 +207,11 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   }
 
   def publish(id: OpportunityId) = OpportunityAction(id).async { request =>
+    val emailto = "Portfolio.Manager@rifs.gov.uk"
+    val dtf = DateTimeFormat.forPattern("HH:mm:ss")
     opportunities.publish(id).map {
-      case Some(dt) => Redirect(controllers.manage.routes.OpportunityController.showOpportunityLibrary())
+      case Some(dt) =>
+        Ok(views.html.manage.submitOpportunity(request.opportunity.id, emailto, dtf.print(dt)))
       case None => NotFound
     }
   }
