@@ -21,8 +21,13 @@ case class OpportunityLibraryEntry(id: OpportunityId, title: String, status: Str
 class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: ApplicationFormOps, OpportunityAction: OpportunityAction)(implicit ec: ExecutionContext) extends Controller {
 
   def showOpportunityPreview(id: OpportunityId, sectionNumber: Option[Int]) = OpportunityAction(id) { implicit request =>
-    Ok(views.html.manage.opportunityPreview(request.uri, request.opportunity, sectionNumber.getOrElse(1)))
+    Ok(views.html.manage.opportunityPreview(finalpreview = false, request.uri, request.opportunity, sectionNumber.getOrElse(1)))
   }
+
+  def previewOpportunity(id: OpportunityId, sectionNumber: Option[Int]) = OpportunityAction(id) { implicit request =>
+    Ok(views.html.manage.opportunityPreview(finalpreview = true, request.uri, request.opportunity, sectionNumber.getOrElse(1)))
+  }
+
 
   def showNewOpportunityForm() = Action { request =>
     Ok(views.html.manage.newOpportunityChoice(request.uri))
