@@ -28,3 +28,59 @@ aside nav ol li {
 .page-navigation {
   @extend %contain-floats;
 }
+
+.show-all-parts {
+  display: none;
+  padding: 1em $gutter 1em 10px;
+  border: solid $grey-2;
+  border-width: 1px 0 1px 0;
+  margin-bottom: .5em;
+}
+
+.show-all-parts-open {
+  display: block;
+  background: transparent file-url('accordian-arrow.png') 45px 90px no-repeat 100% -42px;
+  background-position: 100% -42px !important;
+  border: solid $grey-2;
+  border-width: 1px 0 0 0;
+}
+
+.show-all-parts-closed {
+  display: block;
+  background: transparent file-url('accordian-arrow.png') no-repeat 100% 6px ;
+  background-size: 45px 90px;
+  background-position-y: 6px !important;
+  border: solid $grey-2;
+  border-width: 1px 0 1px 0;
+}
+
+
+
+body.js-enabled {
+  .show-all-parts {
+    // Automatically show the show-all-parts element on mobile with js
+    @include media(mobile) {
+      display: block;
+      background: transparent file-url('accordian-arrow.png') no-repeat 100% 6px ;
+      background-size: 45px 90px;
+    }
+  }
+  @include media(mobile) {
+    // Automatically hide the page navigation elements on mobile with js
+    aside div#nav-container {
+      display: none;
+    }
+
+
+    // Open and close states on the navigation container that emcopmasses the <nav> lnks
+    .nav-open {
+      display: block !important;
+      border: solid #bfc1c3;
+      border-width: 0 0 1px 0;
+    }
+
+    .nav-closed {
+      display: none;
+    }
+  }
+}
