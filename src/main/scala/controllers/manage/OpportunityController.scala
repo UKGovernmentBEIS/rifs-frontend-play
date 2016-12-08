@@ -35,11 +35,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     }.getOrElse(Redirect(controllers.manage.routes.OpportunityController.showNewOpportunityForm()))
   }
 
-
-  private def libraryEntry(o: Opportunity): OpportunityLibraryEntry = {
-    val status = o.publishedAt.map(_ => "Open").getOrElse("Unpublished")
-    OpportunityLibraryEntry(o.id, o.title, status, "Responsive, claim, FEC")
-  }
+  private def libraryEntry(o: Opportunity): OpportunityLibraryEntry = OpportunityLibraryEntry(o.id, o.title, o.statusString, "Responsive, claim, FEC")
 
   def showOpportunityLibrary = Action.async { request =>
     opportunities.getOpportunitySummaries.map { os => Ok(views.html.manage.showOpportunityLibrary(request.uri, os.map(libraryEntry))) }
