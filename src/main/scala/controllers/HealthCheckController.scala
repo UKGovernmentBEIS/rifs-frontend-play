@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.Inject
 
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc.{Action, Controller}
 import rifs.frontend.buildinfo.BuildInfo
 import services.BackendHealthCheckOps
@@ -19,9 +19,14 @@ class HealthCheckController @Inject()(backend: BackendHealthCheckOps)(implicit e
     // convert it
     val ourVersion = Json.toJson(BuildInfo.toMap.mapValues(_.toString)).as[JsObject]
 
-    backend.version().map { backendVersion =>
-      val serviceVersions = JsObject(Seq("rifs-business" -> backendVersion))
-      Ok(ourVersion + ("services" -> serviceVersions))
+    val backendVersion = backend.version().map { backendVersion =>
+      JsObject(Seq("rifs-business" -> backendVersion))
+    }.recover {
+      case t => JsObject(Seq("rifs-business" -> JsString(s"Could not retrieve version: ${t.getMessage}")))
+    }
+
+    backendVersion.map { bv =>
+      Ok(ourVersion + ("services" -> bv))
     }
   }
 }
