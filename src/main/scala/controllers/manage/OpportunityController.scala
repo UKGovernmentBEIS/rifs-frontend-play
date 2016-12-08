@@ -6,7 +6,7 @@ import actions.OpportunityAction
 import cats.data.Validated._
 import controllers.FieldCheckHelpers.hinting
 import controllers._
-import forms.validation.DateTimeRangeValues
+import forms.validation.{CurrencyValidator, DateTimeRangeValues}
 import forms._
 import models._
 import org.joda.time.LocalDate
@@ -150,7 +150,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   }
 
   val GRANT_VALUE_FIELD_NAME = "grantValue"
-  val grantValueField = CurrencyField(None, GRANT_VALUE_FIELD_NAME)
+  val grantValueField = CurrencyField(None, GRANT_VALUE_FIELD_NAME, Some(CurrencyValidator.positiveOnly))
   val VIEW_GRANT_VALUE_FLASH = "ViewGrantValueFlash"
 
   def editGrantValue(id: OpportunityId) = OpportunityAction(id) { request =>

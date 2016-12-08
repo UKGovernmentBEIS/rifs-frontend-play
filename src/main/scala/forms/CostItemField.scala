@@ -10,7 +10,7 @@ case class CostItemField(name: String) extends Field {
   implicit val civReads = Json.reads[CostItemValues]
 
   val itemNameField = TextField(Some("Item"), s"$name.itemName", isNumeric = false, 20)
-  val costField = CurrencyField(Some("Cost"), s"$name.cost")
+  val costField = CurrencyField(Some("Cost"), s"$name.cost", None)
   val justificationField = TextAreaField(Some("Justification of item"), s"$name.justification", 500)
 
   override def check: FieldCheck = FieldChecks.fromValidator(CostItemValidator)
