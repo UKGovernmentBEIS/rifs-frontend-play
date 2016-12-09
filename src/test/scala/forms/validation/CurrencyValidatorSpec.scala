@@ -15,7 +15,7 @@ class CurrencyValidatorSpec extends WordSpecLike with Matchers {
     }
 
     "accept a numeric value and round it to 2dp" in {
-      CurrencyValidator().validate("", Some("123.456")) shouldBe BigDecimal(123.46).valid
+      CurrencyValidator.anyValue.validate("", Some("123.456")) shouldBe BigDecimal(123.46).valid
     }
 
     "accept a numeric value containing commas" in {
@@ -27,8 +27,8 @@ class CurrencyValidatorSpec extends WordSpecLike with Matchers {
     }
 
     "Reject 0 or negative" in {
-      CurrencyValidator.positiveOnly.validate("", Some("0") )  shouldBe an[Invalid[_]]
-      CurrencyValidator.positiveOnly.validate("", Some("- 0.01") )  shouldBe an[Invalid[_]]
+      CurrencyValidator.greaterThanZero.validate("", Some("0") )  shouldBe an[Invalid[_]]
+      CurrencyValidator.greaterThanZero.validate("", Some("- 0.01") )  shouldBe an[Invalid[_]]
     }
 
     "Reject values which are less then minimum specified" in {

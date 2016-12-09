@@ -8,7 +8,8 @@ import scala.util.Try
 object CurrencyValidator {
   def apply() = new CurrencyValidator(None)
   def apply(minValue: BigDecimal) = new CurrencyValidator(Some(minValue))
-  final val positiveOnly = apply( BigDecimal(0.0) )
+  final val greaterThanZero = apply( BigDecimal(0.0) )
+  final val anyValue = apply()
 }
 
 class CurrencyValidator(minValue: Option[BigDecimal]) extends FieldValidator[Option[String], BigDecimal] {

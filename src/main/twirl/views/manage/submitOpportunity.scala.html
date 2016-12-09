@@ -1,0 +1,28 @@
+@(oppid: OpportunityId, emailto: String, submittime: String)
+
+@import views.html.partials._
+
+@main(s"Opportunity submitted - RIFS", displayUserName=Some("Portfolio Peter")) {
+<!-- main content -->
+    <div>
+        <div class="rifs-confirmation-container" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+            <h1 class="heading-xlarge"> Opportunity published at @submittime</h1>
+            <p class="bold-medium"> Your reference number is</p>
+            <p class="bold-xlarge"> @formatId(oppid.id)</p>
+        </div>
+
+        <div class="text">
+            <p>
+                We have sent a confirmation email to <span class="nobreak bold-small">@emailto</span>
+            </p>
+
+            <h2 class="heading-medium">What happens next? </h2>
+            <p>
+            Start managing your opportunity from your
+                <a class="button--link-style" href=@controllers.manage.routes.OpportunityController.showOverviewPage(oppid)>
+                    Opportunity Dashboard</a>
+
+            </p>
+        </div>
+    </div>
+}
