@@ -11,6 +11,7 @@ GET         /opportunities                                            controller
 
 GET         /opportunities/guidance/:opportunityId                    controllers.OpportunityController.showGuidancePage(opportunityId:OpportunityId)
 GET         /opportunity/:opportunityId                               controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
+GET         /opportunity/:id/section/:num                             controllers.OpportunityController.showOpportunitySection(id:OpportunityId, num:Int)
 
 GET         /application_form/:id/apply                               controllers.ApplicationController.showOrCreateForForm(id: ApplicationFormId)
 

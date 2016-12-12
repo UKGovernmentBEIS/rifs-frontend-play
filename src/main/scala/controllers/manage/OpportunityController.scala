@@ -6,10 +6,10 @@ import actions.OpportunityAction
 import cats.data.Validated._
 import controllers.FieldCheckHelpers.hinting
 import controllers._
-import forms.validation.{CurrencyValidator, DateTimeRangeValues}
 import forms._
+import forms.validation.{CurrencyValidator, DateTimeRangeValues}
 import models._
-import org.joda.time.{LocalDate, LocalDateTime}
+import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller}
@@ -79,17 +79,17 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   def saveTitle(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
     JsonHelpers.flatten(request.body.values) match {
       case _ => titleField.check(titleField.name, Json.toJson(JsonHelpers.flatten(request.body.values).getOrElse(TITLE_FIELD_NAME, ""))) match {
-        case Nil => opportunities.saveSummary(request.opportunity.summary.copy(title = JsonHelpers.flatten(request.body.values).getOrElse(TITLE_FIELD_NAME, ""))).map{_ =>
-            request.body.action match {
-              case Preview =>
-                Redirect(controllers.manage.routes.OpportunityController.previewTitle(id))
-                  .flashing(PREVIEW_BACK_URL_FLASH -> controllers.manage.routes.OpportunityController.editTitle(id).url)
-              case _ =>
-                Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id))
-
-            }
+        case Nil => opportunities.saveSummary(request.opportunity.summary.copy(title = JsonHelpers.flatten(request.body.values).getOrElse(TITLE_FIELD_NAME, ""))).map { _ =>
+          request.body.action match {
+            case Preview =>
+              Redirect(controllers.manage.routes.OpportunityController.previewTitle(id))
+                .flashing(PREVIEW_BACK_URL_FLASH -> controllers.manage.routes.OpportunityController.editTitle(id).url)
+            case _ =>
+              Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id))
 
           }
+
+        }
         case errs =>
           val hints = hinting(request.body.values, Map(titleField.name -> titleField.check))
           Future.successful(Ok(views.html.manage.editTitleForm(titleField, request.opportunity, titleQuestion, request.body.values, errs, hints, request.uri))) //hints
@@ -164,10 +164,10 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   def editGrantValue(id: OpportunityId) = OpportunityAction(id) { request =>
     request.opportunity.publishedAt match {
       case Some(_) => BadRequest
-      case None => doEditCostSection( request.opportunity,
-                                      JsObject(Seq(GRANT_VALUE_FIELD_NAME -> JsNumber(request.opportunity.value.amount))),
-                                      Nil
-                                  )
+      case None => doEditCostSection(request.opportunity,
+        JsObject(Seq(GRANT_VALUE_FIELD_NAME -> JsNumber(request.opportunity.value.amount))),
+        Nil
+      )
     }
   }
 
@@ -184,7 +184,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
       grantValueField.check(GRANT_VALUE_FIELD_NAME, fValue) match {
         case Nil =>
           val summary = request.opportunity.summary
-          opportunities.saveSummary( summary.copy(value = summary.value.copy(amount = fValue.as[BigDecimal])) ).map { _ =>
+          opportunities.saveSummary(summary.copy(value = summary.value.copy(amount = fValue.as[BigDecimal]))).map { _ =>
             request.body.action match {
               case Preview =>
                 Redirect(controllers.manage.routes.OpportunityController.previewGrantValue(id))
@@ -251,12 +251,13 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
         deadlinesField.validator.validate(deadlinesField.name, vs) match {
           case Valid(v) =>
             val summary = request.opportunity.summary.copy(startDate = v.startDate, endDate = v.endDate)
-            opportunities.saveSummary(summary).map{_ => request.body.action match {
-              case Preview =>
-                Redirect( controllers.manage.routes.OpportunityController.previewDeadlines(id) )
-                  .flashing(PREVIEW_BACK_URL_FLASH -> controllers.manage.routes.OpportunityController.editDeadlines(id).url)
-              case _ =>
-                Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id) )
+            opportunities.saveSummary(summary).map { _ =>
+              request.body.action match {
+                case Preview =>
+                  Redirect(controllers.manage.routes.OpportunityController.previewDeadlines(id))
+                    .flashing(PREVIEW_BACK_URL_FLASH -> controllers.manage.routes.OpportunityController.editDeadlines(id).url)
+                case _ =>
+                  Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id))
               }
             }
           case Invalid(errors) =>
@@ -291,6 +292,8 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     val answers = JsObject(Seq(DEADLINES_FIELD_NAME -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
     Ok(views.html.manage.previewDeadlines(deadlinesField, request.opportunity, deadlineQuestions, answers, request.flash.get(PREVIEW_BACK_URL_FLASH)))
   }
+
+
 
 }
 
