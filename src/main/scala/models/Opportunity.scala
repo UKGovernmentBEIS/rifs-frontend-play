@@ -26,7 +26,21 @@ case class Opportunity(
                         duplicatedFrom: Option[OpportunityId],
                         description: Seq[OpportunityDescriptionSection]
                       ) {
+
   lazy val summary: OpportunitySummary = OpportunitySummary(id, title, startDate, endDate, value, publishedAt, duplicatedFrom)
+
+  lazy val statusString: String = {
+    publishedAt.isDefined match {
+      case true if isEndDatePassed => "Closed"
+      case true if isStartDatePassed => "Open"
+      case true => "Queued"
+      case false => "Draft"
+    }
+  }
+
+  lazy val isStartDatePassed = startDate.isEqual(LocalDate.now) || startDate.isBefore(LocalDate.now)
+
+  lazy val isEndDatePassed = endDate.exists(_.isBefore(LocalDate.now))
 }
 
 case class OpportunitySummary(

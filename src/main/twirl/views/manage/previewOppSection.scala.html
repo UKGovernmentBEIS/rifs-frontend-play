@@ -1,6 +1,7 @@
 @(
 opp: Opportunity,
-sectionNumber: Int
+sectionNumber: Int,
+backUrl: Option[String]
 )
 
 @import views.html.partials._
@@ -24,7 +25,7 @@ opp.description.find(_.sectionNumber == sectionNumber)
         }
 
         <div class="rifs-form-buttons">
-            <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(opp.id)" class="button">
+            <a href="@backUrl.getOrElse(controllers.manage.routes.OpportunityController.showOverviewPage(opp.id))" class="button">
                 Close</a>
         </div>
     </section>

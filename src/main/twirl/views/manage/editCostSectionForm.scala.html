@@ -1,6 +1,5 @@
-@(field: forms.TextAreaField,
+@(field: forms.CurrencyField,
         opp: Opportunity,
-        section:OpportunityDescriptionSection,
         backUrl: String,
         questions: Map[String, Question],
         answers: play.api.libs.json.JsObject,
@@ -16,16 +15,16 @@
     f"RIFS$id%05d"
 }
 
-@main("RIFS - Edit Description" , backLink=Some(BackLink("Opportunity template",controllers.manage.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName = Some("Portfolio Peter")) {
+@main("RIFS - Edit Grant Value" , backLink=Some(BackLink("Opportunity template",controllers.manage.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName = Some("Portfolio Peter")) {
 
     <div class="grid-row">
         <div class="column-two-thirds">
             <h1 class="heading-xlarge">
                 <span class="heading-secondary">@formatId(opp.id.id): @opp.title</span>
-                @section.title
+                Grant value
             </h1>
 
-            <form method="POST" action="@controllers.manage.routes.OpportunityController.saveSection(opp.id, section.sectionNumber)">
+            <form method="POST" action="@controllers.manage.routes.OpportunityController.saveGrantValue(opp.id)">
 
                 @if(errors.nonEmpty) {
                 <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
@@ -50,7 +49,7 @@
         </div>
 
         <div id="support-column" class="column-third">
-            @partials.editOpportunitySidebar(backUrl, 6, 2)
+            @partials.editOpportunitySidebar(backUrl, 6, 0)
         </div>
     </div>
 

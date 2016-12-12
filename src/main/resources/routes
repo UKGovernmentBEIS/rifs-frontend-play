@@ -53,6 +53,9 @@ GET         /manage/opportunity/:id/section/:num/questions            controller
 
 
 GET         /manage/opportunity/:id/grantvalue                        controllers.manage.OpportunityController.viewGrantValue(id:OpportunityId)
+POST        /manage/opportunity/:id/grantvalue                        controllers.manage.OpportunityController.saveGrantValue(id:OpportunityId)
+GET         /manage/opportunity/:id/grantvalue/edit                   controllers.manage.OpportunityController.editGrantValue(id:OpportunityId)
+GET         /manage/opportunity/:id/grantvalue/preview                controllers.manage.OpportunityController.previewGrantValue(id:OpportunityId)
 
 GET         /manage/opportunity/:id/section/:num                      controllers.manage.OpportunityController.viewSection(id:OpportunityId, num:Int)
 POST        /manage/opportunity/:id/section/:num                      controllers.manage.OpportunityController.saveSection(id:OpportunityId, num:Int)
