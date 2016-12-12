@@ -1,6 +1,8 @@
 // Global template elements
 #global-header-status {
   @extend %contain-floats;
+  // provide enough space to avoid a clash when the username wraps underneath the Back link
+  line-height: 2.2em;
   margin-top: .4em;
 
   // prevent the backlink and the username running into each other on small mobiles
@@ -8,8 +10,6 @@
     padding-right: 1.5em;
   }
 
-  // provide enough space to avoid a clash when the username wraps underneath the Back link
-  line-height: 2.2em;
 }
 
 // General
@@ -78,3 +78,7 @@
 
 }
 
+a {
+  color: $govuk-blue;
+  cursor: pointer;
+}
