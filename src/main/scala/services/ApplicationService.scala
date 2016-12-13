@@ -143,4 +143,9 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     val url = s"$baseUrl/application/${id.id}/submit"
     postWithResult[SubmittedApplicationRef, String](url, "")
   }
+
+  override def updatePersonalReference(id: ApplicationId, reference: String) = {
+    val url = s"$baseUrl/application/${id.id}/personal-ref"
+    post(url, reference)
+  }
 }

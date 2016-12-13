@@ -42,4 +42,5 @@ trait ApplicationOps {
 
   def submit(id: ApplicationId): Future[Option[SubmittedApplicationRef]]
 
+  def updatePersonalReference(id: ApplicationId, reference: String): Future[Unit]
 }

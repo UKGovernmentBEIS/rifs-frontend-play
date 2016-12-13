@@ -1,0 +1,52 @@
+@(
+        control: forms.TextField,
+        app: ApplicationDetail,
+        questions: Map[String, Question],
+        answers: play.api.libs.json.JsObject,
+        errs: List[forms.validation.FieldError],
+        hints:List[forms.validation.FieldHint]
+)
+@import partials._
+
+@main(s"Create Application Reference - RIFS", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(app.id).url)), displayUserName=Some("Experienced Eric")) {
+    <div class="grid-row">
+        <div class="column-two-thirds">
+            <h1 class="heading-xlarge">
+                <span class="heading-secondary">@formatId(app.opportunity.id.id): @app.opportunity.title</span>
+                How do you want to identify this application?
+            </h1>
+
+            <form method="POST"
+                  action="@controllers.routes.ApplicationController.savePersonalRef(app.id)"
+                  novalidate="novalidate">
+                <p>
+                    Give your application a short and memorable title or reference. This is for your personal use.
+                </p>
+                <p>
+                    You'll enter a title for your event when you start your application.
+                </p>
+                @if(errs.nonEmpty) {
+                <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
+
+                    <h1 class="heading-medium error-summary-heading" id="error-summary-heading">
+                        The information you entered is not valid
+                    </h1>
+
+                    <p>
+                        Please correct the problems indicated below.
+                    </p>
+                </div>
+                }
+                @control.renderFormInput(questions, answers, errs, hints)
+
+                <div class="rifs-form-buttons">
+                    <input type="submit" name="@Save.name" class="button button--start" value="Save and continue">
+                    <input type="submit" name="@Skip.name" class="button--link-style" value="No, thanks take me to the application"/>
+                </div>
+            </form>
+        </div>
+        <div id="support-column" class="column-third">
+            @sidebarNoCounter(app.opportunity.id)
+        </div>
+    </div>
+}
