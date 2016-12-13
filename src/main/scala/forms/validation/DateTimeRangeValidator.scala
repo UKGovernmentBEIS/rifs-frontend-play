@@ -5,6 +5,7 @@ import cats.syntax.cartesian._
 import cats.syntax.validated._
 import forms.DateValues
 import org.joda.time.LocalDate
+import play.Logger
 
 /**
   *
@@ -57,11 +58,12 @@ case class DateTimeRangeValidator(allowPast: Boolean, isEndDateMandatory: Boolea
       }
 
       val startDateV: ValidatedNel[FieldError, LocalDate] = dateValidator.validate(s"$path.startDate", sdv).leftMap {
-        v => NonEmptyList.of(FieldError(s"$path.startDate", mustProvideValidStartDateMessage))
+        v => v
       }
+
       // First check that the end date is valid if it's present
       val endDateValid = edvo.map(dateValidator.validate(s"$path.endDate", _).map(Some(_))).getOrElse(None.valid).leftMap {
-        v => NonEmptyList.of(FieldError(s"$path.endDate", mustProvideValidEndDateMessage))
+        v => v
       }
 
       // And then check if it's present if the `endDateProvided` flag is set
