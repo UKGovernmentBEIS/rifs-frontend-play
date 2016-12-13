@@ -1,6 +1,6 @@
 package forms.validation
 
-import cats.data.ValidatedNel
+import cats.data.{NonEmptyList, ValidatedNel}
 import cats.syntax.cartesian._
 import cats.syntax.validated._
 import forms.DateValues
@@ -8,9 +8,13 @@ import org.joda.time.LocalDate
 
 import scala.util.Try
 
-case class DateFieldValidator(allowPast: Boolean) extends FieldValidator[DateValues, LocalDate] {
+object DateFieldValidator {
   val mustProvideAValidDateMsg = "Must provide a valid date"
   val mustBeTodayOrLaterMsg = "Must be today or later"
+}
+
+case class DateFieldValidator(allowPast: Boolean) extends FieldValidator[DateValues, LocalDate] {
+  import DateFieldValidator._
 
   override def normalise(vs: DateValues): DateValues = vs.copy(
     day = vs.day.map(_.trim()),
@@ -31,7 +35,10 @@ case class DateFieldValidator(allowPast: Boolean) extends FieldValidator[DateVal
     val validatedInts: ValidatedNel[FieldError, (Int, Int, Int)] =
       (mandatoryInt(s"$path.day", vs.day, "day") |@|
         mandatoryInt(s"$path.month", vs.month, "month") |@|
-        mandatoryInt(s"$path.year", vs.year, "year")).tupled
+        mandatoryInt(s"$path.year", vs.year, "year"))
+        .tupled.leftMap { v =>
+        NonEmptyList.of(FieldError(s"$path", mustProvideAValidDateMsg))
+      }
     validatedInts.andThen { case (d, m, y) => validateDate(path, d, m, y) }
   }
 

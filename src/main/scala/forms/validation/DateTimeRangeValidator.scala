@@ -57,14 +57,10 @@ case class DateTimeRangeValidator(allowPast: Boolean, isEndDateMandatory: Boolea
         case v => v
       }
 
-      val startDateV: ValidatedNel[FieldError, LocalDate] = dateValidator.validate(s"$path.startDate", sdv).leftMap {
-        v => v
-      }
+      val startDateV: ValidatedNel[FieldError, LocalDate] = dateValidator.validate(s"$path.startDate", sdv)
 
       // First check that the end date is valid if it's present
-      val endDateValid = edvo.map(dateValidator.validate(s"$path.endDate", _).map(Some(_))).getOrElse(None.valid).leftMap {
-        v => v
-      }
+      val endDateValid = edvo.map(dateValidator.validate(s"$path.endDate", _).map(Some(_))).getOrElse(None.valid)
 
       // And then check if it's present if the `endDateProvided` flag is set
       val endDateV = endDateValid.map(od => (od, vs.endDateProvided.exists(_.trim == "yes"))).andThen(endDateIsPresentIfSupplied.validate(path, _))
