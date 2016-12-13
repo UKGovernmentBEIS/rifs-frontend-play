@@ -11,11 +11,9 @@
     errs.filter(p => p.path == field.name)
 }
 
-@formatId(id: Long) = @{
-    f"RIFS$id%05d"
-}
+@import views.html.partials._
 
-@main("RIFS - Edit Grant Value" , backLink=Some(BackLink("Opportunity template",controllers.manage.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName = Some("Portfolio Peter")) {
+@main("Edit grant value - RIFS" , backLink=Some(BackLink("Opportunity template",controllers.manage.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName = Some("Portfolio Peter")) {
 
     <div class="grid-row">
         <div class="column-two-thirds">
