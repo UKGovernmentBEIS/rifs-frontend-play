@@ -229,7 +229,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     val dtf = DateTimeFormat.forPattern("HH:mm:ss")
     opportunities.publish(id).map {
       case Some(dt) =>
-        Ok(views.html.manage.submitOpportunity(request.opportunity.id, emailto, dtf.print(dt)))
+        Ok(views.html.manage.publishedOpportunity(request.opportunity.id, emailto, dtf.print(dt)))
       case None => NotFound
     }
   }
