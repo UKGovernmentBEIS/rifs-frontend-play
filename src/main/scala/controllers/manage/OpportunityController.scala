@@ -21,13 +21,9 @@ case class OpportunityLibraryEntry(id: OpportunityId, title: String, status: Str
 
 class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: ApplicationFormOps, OpportunityAction: OpportunityAction)(implicit ec: ExecutionContext) extends Controller {
 
-  def showOpportunityPreview(id: OpportunityId, sectionNumber: Option[Int]) = OpportunityAction(id) { implicit request =>
-    Redirect(controllers.manage.routes.OpportunityController.showOpportunityPreviewSection(id, sectionNumber.getOrElse(1)))
-  }
-
-  def showOpportunityPreviewSection(id: OpportunityId, sectionNumber: Int) = OpportunityAction(id).async { implicit request =>
+  def showOpportunityPreview(id: OpportunityId, sectionNumber: Option[Int]) = OpportunityAction(id).async { implicit request =>
     appForms.byOpportunityId(id).map {
-      case Some(appForm)=>Ok(views.html.manage.opportunityPreview(request.uri, request.opportunity, sectionNumber, appForm))
+      case Some(appForm) => Ok(views.html.manage.opportunityPreview(request.uri, request.opportunity, sectionNumber.getOrElse(1), appForm))
       case None => NotFound
     }
   }
@@ -119,11 +115,16 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
 
   }
 
-  def editSection(id: OpportunityId, section: Int) = OpportunityAction(id) { request =>
-    request.opportunity.description.find(_.sectionNumber == section) match {
-      case Some(sect) =>
-        val answers = JsObject(Seq(SECTION_FIELD_NAME -> Json.toJson(sect.text)))
-        doEditSection(request.opportunity, section, answers)
+  def editSection(id: OpportunityId, sectionNum: Int) = OpportunityAction(id).async { request =>
+    appForms.byOpportunityId(id).map {
+      case Some(appForm) =>
+        request.opportunity.description.find(_.sectionNumber == sectionNum) match {
+          case Some(sect) if sect.sectionType == OppSectionType.Text =>
+            val answers = JsObject(Seq(SECTION_FIELD_NAME -> Json.toJson(sect.text)))
+            doEditSection(request.opportunity, sectionNum, answers)
+          case Some(sect) => Ok(views.html.manage.whatWeWillAskPreview(request.uri, request.opportunity, sectionNum, appForm))
+          case None => NotFound
+        }
       case None => NotFound
     }
   }
