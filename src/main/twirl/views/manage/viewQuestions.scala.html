@@ -21,8 +21,7 @@
 
             <section>
                 <h1 class="heading-xlarge">
-                    <span class="heading-secondary">@formatId(opp.id.id): @opp.title</span>
-                    @formSection.title
+`                    @formSection.title
                 </h1>
 
                 @formSection.fields.map(_.renderFormInput(formSection.questionMap, play.api.libs.json.JsObject(Seq()), List(), List()))
