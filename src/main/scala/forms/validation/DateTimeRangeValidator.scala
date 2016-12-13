@@ -1,11 +1,10 @@
 package forms.validation
 
-import cats.data.{NonEmptyList, ValidatedNel}
+import cats.data.ValidatedNel
 import cats.syntax.cartesian._
 import cats.syntax.validated._
 import forms.DateValues
 import org.joda.time.LocalDate
-import play.Logger
 
 /**
   *

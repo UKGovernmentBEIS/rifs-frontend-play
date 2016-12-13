@@ -14,6 +14,7 @@ object DateFieldValidator {
 }
 
 case class DateFieldValidator(allowPast: Boolean) extends FieldValidator[DateValues, LocalDate] {
+
   import DateFieldValidator._
 
   override def normalise(vs: DateValues): DateValues = vs.copy(
