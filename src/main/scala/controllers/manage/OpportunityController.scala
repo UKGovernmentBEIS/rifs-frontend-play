@@ -23,10 +23,18 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
 
   def showOpportunityPreview(id: OpportunityId, sectionNumber: Option[Int]) = OpportunityAction(id).async { implicit request =>
     appForms.byOpportunityId(id).map {
-      case Some(appForm) => Ok(views.html.manage.opportunityPreview(request.uri, request.opportunity, sectionNumber.getOrElse(1), appForm))
+      case Some(appForm) => Ok(views.html.manage.opportunityPreview(finalpreview = false, request.uri, request.opportunity, sectionNumber.getOrElse(1), appForm))
       case None => NotFound
     }
   }
+
+  def previewOpportunity(id: OpportunityId, sectionNumber: Option[Int]) = OpportunityAction(id).async { implicit request =>
+    appForms.byOpportunityId(id).map {
+      case Some(appForm) => Ok(views.html.manage.opportunityPreview(finalpreview = true, request.uri, request.opportunity, sectionNumber.getOrElse(1), appForm))
+      case None => NotFound
+    }
+  }
+
 
   def showNewOpportunityForm() = Action { request =>
     Ok(views.html.manage.newOpportunityChoice(request.uri))
