@@ -40,6 +40,7 @@ GET         /manage/opportunity/new                                   controller
 GET         /manage/opportunity/choose                                controllers.manage.OpportunityController.chooseHowToCreateOpportunity(choice:Option[String])
 GET         /manage/opportunities/library                             controllers.manage.OpportunityController.showOpportunityLibrary
 GET         /manage/opportunity/:id                                   controllers.manage.OpportunityController.showOpportunityPreview(id:OpportunityId, section:Option[Int])
+GET         /manage/opportunity/:id/section/:num                      controllers.manage.OpportunityController.showOpportunityPreviewSection(id:OpportunityId, num:Int)
 GET         /manage/opportunities/guidance                            controllers.manage.OpportunityController.showPMGuidancePage(backUrl: String)
 
 GET         /manage/opportunity/:id/deadlines                         controllers.manage.OpportunityController.viewDeadlines(id: OpportunityId)

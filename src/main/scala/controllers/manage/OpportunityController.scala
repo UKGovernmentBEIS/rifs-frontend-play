@@ -22,7 +22,14 @@ case class OpportunityLibraryEntry(id: OpportunityId, title: String, status: Str
 class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: ApplicationFormOps, OpportunityAction: OpportunityAction)(implicit ec: ExecutionContext) extends Controller {
 
   def showOpportunityPreview(id: OpportunityId, sectionNumber: Option[Int]) = OpportunityAction(id) { implicit request =>
-    Ok(views.html.manage.opportunityPreview(request.uri, request.opportunity, sectionNumber.getOrElse(1)))
+    Redirect(controllers.manage.routes.OpportunityController.showOpportunityPreviewSection(id, sectionNumber.getOrElse(1)))
+  }
+
+  def showOpportunityPreviewSection(id: OpportunityId, sectionNumber: Int) = OpportunityAction(id).async { implicit request =>
+    appForms.byOpportunityId(id).map {
+      case Some(appForm)=>Ok(views.html.manage.opportunityPreview(request.uri, request.opportunity, sectionNumber, appForm))
+      case None => NotFound
+    }
   }
 
   def showNewOpportunityForm() = Action { request =>
@@ -292,7 +299,6 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     val answers = JsObject(Seq(DEADLINES_FIELD_NAME -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
     Ok(views.html.manage.previewDeadlines(deadlinesField, request.opportunity, deadlineQuestions, answers, request.flash.get(PREVIEW_BACK_URL_FLASH)))
   }
-
 
 
 }
