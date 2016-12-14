@@ -26,7 +26,9 @@ class ApplicationController @Inject()(
 
   def showOrCreateForForm(id: ApplicationFormId) = Action.async {
     applications.getOrCreateForForm(id).map {
-      case Some(app) => redirectToOverview(app.id)
+      case Some(app) =>
+        app.personalReference.map{_=> redirectToOverview(app.id) }
+                              .getOrElse( Redirect( controllers.routes.ApplicationController.editPersonalRef( app.id ) ) )
       case None => NotFound
     }
   }
