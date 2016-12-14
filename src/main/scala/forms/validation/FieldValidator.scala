@@ -2,8 +2,7 @@ package forms.validation
 
 import cats.data.ValidatedNel
 import play.api.libs.json.JsValue
-import shapeless.tag
-import shapeless.tag.@@
+import shapeless.tag._
 
 case class FieldError(path: String, err: String)
 
@@ -29,7 +28,7 @@ trait FieldValidator[A, B] {
     */
   final def denormal(a: Normalised[A]): A = a
 
-  private def normal(a: A): Normalised[A] = tag[NormalisedTag](a)
+  private def normal(a: A): Normalised[A] = a.asInstanceOf[A @@ NormalisedTag]
 
   final def validate(path: String, a: A): ValidatedNel[FieldError, B] = doValidation(path, normal(normalise(a)))
 
