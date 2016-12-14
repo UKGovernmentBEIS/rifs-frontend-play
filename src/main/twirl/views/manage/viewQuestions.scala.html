@@ -21,7 +21,7 @@
 
             <section>
                 <h1 class="heading-xlarge">
-`                    @formSection.title
+                    @formSection.title
                 </h1>
 
                 @formSection.fields.map(_.renderFormInput(formSection.questionMap, play.api.libs.json.JsObject(Seq()), List(), List()))
