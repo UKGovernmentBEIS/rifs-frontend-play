@@ -41,24 +41,28 @@
             </header>
 
             <aside>
-                <nav role="navigation" class="page-navigation" aria-label="Navigation">
-                    <ol>
-                    @titleCols.map { case ((col1, idx), _) =>
-                    <li id="title-@(idx + 1)">
-                    @sectionLink(col1._1, col1._2)
-                    </li>
-                    }
-                    </ol>
-                    <ol>
-                    @titleCols.map { case (_, col2) =>
-                        @col2.map { case (t, idx) =>
+                <a class="js-navigation-toggle show-all-parts" data-for="#nav-container">
+                    Show all parts of this opportunity</a>
+                <div id="nav-container">
+                    <nav role="navigation" class="page-navigation" aria-label="Navigation">
+                        <ol>
+                        @titleCols.map { case ((col1, idx), _) =>
                         <li id="title-@(idx + 1)">
-                        @sectionLink(t._1, t._2)
+                        @sectionLink(col1._1, col1._2)
                         </li>
-                        }.getOrElse("")
-                    }
-                    </ol>
-                </nav>
+                        }
+                        </ol>
+                        <ol>
+                        @titleCols.map { case (_, col2) =>
+                            @col2.map { case (t, idx) =>
+                            <li id="title-@(idx + 1)">
+                            @sectionLink(t._1, t._2)
+                            </li>
+                            }.getOrElse("")
+                        }
+                        </ol>
+                    </nav>
+                </div>
             </aside>
 
             @currentSection.map { s =>

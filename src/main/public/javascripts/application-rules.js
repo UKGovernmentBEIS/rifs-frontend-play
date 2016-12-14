@@ -99,4 +99,38 @@ $(document).ready(function () {
         var el = $(selector);
         el.hide();
     });
+
+    $('.js-navigation-toggle').click(function(){
+
+        // A selector for the element to toggle is stashed in the data-for attribute
+        var selector = $(this).attr('data-for');
+        var el = $(selector);
+
+        if (el.is(':visible')) {
+            // Changes on the <a> link driving this
+            $(this)
+                .removeClass('show-all-parts-open')
+                .addClass('show-all-parts-closed');
+
+            // Change the verb of the link
+            $(this).text($(this).text().replace('Hide', 'Show'));
+
+            // Handle presentation changes to the navigation container
+            el.removeClass('nav-open').addClass('nav-closed');
+        } else {
+
+            // Changes on the <a> link driving this
+            $(this)
+                .removeClass('show-all-parts-closed')
+                .addClass('show-all-parts-open');
+
+            // Change the verb of the link
+            $(this).text($(this).text().replace('Show', 'Hide'));
+
+            // Handle presentation changes to the navigation container
+            el
+                .removeClass('nav-closed')
+                .addClass('nav-open');
+        }
+    });
 });

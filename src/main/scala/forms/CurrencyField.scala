@@ -6,7 +6,7 @@ import models._
 import play.api.libs.json._
 import play.twirl.api.Html
 
-case class CurrencyField(label: Option[String], name: String) extends Field {
+case class CurrencyField(label: Option[String], name: String, validator: Option[CurrencyValidator]) extends Field {
   implicit val osReads = new Reads[Option[String]] {
     override def reads(json: JsValue): JsResult[Option[String]] =
       json match {
@@ -15,7 +15,7 @@ case class CurrencyField(label: Option[String], name: String) extends Field {
       }
   }
 
-  override val check: FieldCheck = FieldChecks.fromValidator(CurrencyValidator)
+  override val check: FieldCheck = FieldChecks.fromValidator(validator.getOrElse(CurrencyValidator.anyValue))
 
   override def renderFormInput(questions: Map[String, Question], answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]) =
     views.html.renderers.currencyField(this, questions, JsonHelpers.flatten(answers), errs, hints)

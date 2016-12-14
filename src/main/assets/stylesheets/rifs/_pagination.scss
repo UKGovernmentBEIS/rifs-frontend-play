@@ -21,10 +21,64 @@ aside nav ol li {
 
 .part-number {
   display: inline-block;
-  width: 1.25em;
   text-align: right;
+  width: 1.25em;
 }
 
 .page-navigation {
   @extend %contain-floats;
+}
+
+.show-all-parts {
+  border: solid $grey-2;
+  border-width: 1px 0;
+  display: none;
+  margin-bottom: .5em;
+  padding: 1em $gutter 1em 10px;
+}
+
+
+
+.js-enabled {
+
+  @include media(mobile) {
+    .show-all-parts {
+      // Automatically show the show-all-parts element on mobile with js
+      background: transparent file-url('accordian-arrow.png') no-repeat 100% 6px;
+      background-size: 45px 90px;
+      display: block;
+    }
+
+    .show-all-parts-open {
+      background: transparent file-url('accordian-arrow.png') 45px 90px no-repeat 100% -42px;
+      background-position: 100% -42px;
+      border: solid $grey-2;
+      border-width: 1px 0 0;
+      display: block;
+    }
+
+    .show-all-parts-closed {
+      background: transparent file-url('accordian-arrow.png') no-repeat 100% 6px;
+      background-position-y: 6px;
+      background-size: 45px 90px;
+      border: solid $grey-2;
+      border-width: 1px 0;
+      display: block;
+    }
+
+    // Automatically hide the page navigation elements on mobile with js
+    #nav-container {
+      display: none;
+
+      &.nav-open {
+        border: solid $grey-2;
+        border-width: 0 0 1px;
+        display: block;
+      }
+
+      &.nav-closed {
+        display: none;
+      }
+    }
+  }
 }
