@@ -22,6 +22,7 @@ GET         /application/:id/section/:num                             controller
 POST        /application/:id/section/:num                             controllers.ApplicationController.postSection(id: ApplicationId, num:Int)
 GET         /application/:id/section/:num/edit                        controllers.ApplicationController.editSectionForm(id: ApplicationId, num:Int)
 POST        /application/:id/section/:num/edit                        controllers.ApplicationController.resetAndEditSection(id: ApplicationId, num:Int)
+GET         /application/:id/personal-ref/edit                        controllers.ApplicationController.editPersonalRef(id: ApplicationId)
 
 GET         /application/:id/section/:num/preview                     controllers.ApplicationPreviewController.previewSection(id: ApplicationId, num:Int)
 GET         /application/:id/preview                                  controllers.ApplicationPreviewController.applicationPreview(id: ApplicationId)
@@ -69,7 +70,7 @@ POST        /manage/opportunity/:id/publish                           controller
 GET         /manage/opportunity/:id/section/:sectionid/preview        controllers.manage.OpportunityController.previewOppSection(id: OpportunityId, sectionid:Int)
 GET         /manage/opportunity/:id/title/preview                     controllers.manage.OpportunityController.previewTitle(id: OpportunityId)
 GET         /manage/opportunity/:id/deadlines/preview                 controllers.manage.OpportunityController.previewDeadlines(id: OpportunityId)
-GET         /manage/opportunity/:id/preview                           controllers.manage.OpportunityController.previewOpportunity(id: OpportunityId, section:Option[Int])
+GET         /manage/opportunity/:id/preview                           controllers.manage.OpportunityController.showOpportunityPublishPreview(id: OpportunityId, section:Option[Int])
 
 
 # Health check
