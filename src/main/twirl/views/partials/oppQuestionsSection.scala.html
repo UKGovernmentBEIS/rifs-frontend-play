@@ -1,0 +1,27 @@
+@(appForm: ApplicationForm, constraintText: Map[String, String], descriptionText: Map[String, String])
+
+@appForm.sections.sortBy(_.sectionNumber).map { section =>
+    <h3>@section.title</h3>
+    <p>
+    @section.questions.map { q =>
+        @q.text
+    }
+    </p>
+
+    @section.questions.map { q =>
+        @section.fields.find(_.name == q.key).map(f => descriptionText.get(f.name)).map { text =>
+            @text.map(_.split("\n").toList).getOrElse(Nil).map { line =>
+                <p>@line</p>
+            }
+        }
+    }
+
+    <p>
+    @section.questions.map { q =>
+        @section.fields.find(_.name == q.key).map { f =>
+            <em>@constraintText.get(f.name)</em>
+        }
+    }
+    </p>
+
+}
