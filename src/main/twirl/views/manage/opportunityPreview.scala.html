@@ -1,4 +1,4 @@
-@(finalpreview:Boolean, backUrl:String, opportunity: Opportunity, sectionNumber: Int)
+@(backUrl:String, opportunity: Opportunity, sectionNumber: Int)
 
 @sectionLink(title: String, sectionNum: Int) = {
     <span class="part-number"> @sectionNum. </span>
@@ -30,16 +30,6 @@
 }
 
 @import views.html.partials._
-
-@main(s"Opportunity: ${opportunity.title} - RIFS", backLink=Some(BackLink("Return to opportunity library", controllers.manage.routes.OpportunityController.showOpportunityLibrary().url)), displayUserName=Some("Portfolio Peter")) {
-
-    <div class="rifs-heading-panel">
-        @if(finalpreview){
-        <p>This is an applicant preview of  <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(opportunity.id).url">@formatId(opportunity.id.id)</a></p>
-        }else{
-        <p>@formatId(opportunity.id.id) <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(opportunity.id).url">Template View</a></p>
-        }
-    </div>
 
 
     <div class="grid-row">
@@ -154,6 +144,4 @@
         </div>
 
     </div>
-}
-
 }

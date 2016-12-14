@@ -18,14 +18,20 @@
                     <span class="heading-secondary">@formatId(app.opportunity.id.id): @app.opportunity.title</span>
                     Application overview
                 </h1>
-                <p>
-                <table width="100%">
-                    <tr>
-                        <td style="border-bottom-style:none; text-align: left">@app.personalReference.getOrElse(changePersonalRef("Add personal reference"))</td>
-                        <td style="border-bottom-style:none; text-align: right">@app.personalReference.map(_=>changePersonalRef("Change"))</td>
-                    </tr>
-                </table>
-                </p>
+
+                <div class="grid-row">
+                    <div class="column-half">
+                        <p>
+                            @app.personalReference.getOrElse(changePersonalRef("Add personal reference"))
+                        </p>
+                    </div>
+                    <div class="column-half text-center-lg-only ">
+                        <p>
+                            @app.personalReference.map(_=>changePersonalRef("Change"))
+                        </p>
+                    </div>
+                </div>
+
                 <p>Complete all application sections before submitting to RIFS.</p>
             </div>
 
