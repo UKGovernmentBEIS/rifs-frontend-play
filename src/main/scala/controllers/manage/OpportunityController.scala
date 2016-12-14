@@ -23,14 +23,22 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
 
   def showOpportunityPreview(id: OpportunityId, sectionNumber: Option[Int]) = OpportunityAction(id).async { implicit request =>
     appForms.byOpportunityId(id).map {
-      case Some(appForm) => Ok(views.html.manage.previewDefaultOpportunity(finalpreview = false, request.uri, request.opportunity, sectionNumber.getOrElse(1), appForm))
+      case Some(appForm) => Ok(views.html.manage.previewDefaultOpportunity(request.uri, request.opportunity, sectionNumber.getOrElse(1), appForm))
       case None => NotFound
     }
   }
 
+  def showOpportunityPublishPreview(id: OpportunityId, sectionNumber: Option[Int]) = OpportunityAction(id).async { implicit request =>
+    appForms.byOpportunityId(id).map {
+      case Some(appForm) => Ok(views.html.manage.previewPublishOpportunity(request.uri, request.opportunity, sectionNumber.getOrElse(1), appForm))
+      case None => NotFound
+    }
+  }
+
+
   def previewOpportunity(id: OpportunityId, sectionNumber: Option[Int]) = OpportunityAction(id).async { implicit request =>
     appForms.byOpportunityId(id).map {
-      case Some(appForm) => Ok(views.html.manage.previewDefaultOpportunity(finalpreview = true, request.uri, request.opportunity, sectionNumber.getOrElse(1), appForm))
+      case Some(appForm) => Ok(views.html.manage.previewDefaultOpportunity(request.uri, request.opportunity, sectionNumber.getOrElse(1), appForm))
       case None => NotFound
     }
   }
@@ -220,12 +228,11 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
 
   def viewSection(id: OpportunityId, sectionNum: Int) = OpportunityAction(id).async { request =>
     appForms.byOpportunityId(id).map {
-      case Some(appForm)
-      => request.opportunity.publishedAt match {
+      case Some(appForm) => request.opportunity.publishedAt match {
         case Some(_) => Ok(views.html.manage.viewOppSection(request.opportunity, appForm, sectionNum, request.flash.get(PREVIEW_BACK_URL_FLASH)))
         case None => Redirect(controllers.manage.routes.OpportunityController.editSection(id, sectionNum))
-        case None => NotFound
       }
+      case None => NotFound
     }
   }
 
