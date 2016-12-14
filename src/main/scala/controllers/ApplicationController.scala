@@ -133,7 +133,7 @@ class ApplicationController @Inject()(
             Ok( views.html.personalReferenceForm( appRefField, request.appDetail, appRefQuestion, request.body.values, errs, hints) )
           )
       }
-      case Skip =>
+      case _ =>
         Future.successful( Redirect( controllers.routes.ApplicationController.show(request.appDetail.id) ) )
     }
 
