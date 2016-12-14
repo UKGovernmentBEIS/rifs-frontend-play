@@ -1,4 +1,4 @@
-@(backUrl:String, opportunity: Opportunity, sectionNumber: Int)
+@(backUrl:String, opportunity: Opportunity, sectionNumber: Int, appForm: ApplicationForm)
 
 @sectionLink(title: String, sectionNum: Int) = {
     <span class="part-number"> @sectionNum. </span>
@@ -87,11 +87,7 @@
 
                 <article>
                     <h2 class="heading-large">@s.sectionNumber. @s.title</h2>
-                    @s.text.map(_.split("\n\n")).map { ps =>
-                        @ps.map { p =>
-                            <p class="text">@p</p>
-                        }
-                    }
+                    @renderSectionText(s, appForm)
                 </article>
 
                 <footer>

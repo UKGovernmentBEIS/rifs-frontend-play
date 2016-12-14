@@ -6,10 +6,10 @@ import actions.OpportunityAction
 import cats.data.Validated._
 import controllers.FieldCheckHelpers.hinting
 import controllers._
-import forms.validation.{CurrencyValidator, DateTimeRangeValues}
 import forms._
+import forms.validation.{CurrencyValidator, DateTimeRangeValues}
 import models._
-import org.joda.time.{LocalDate, LocalDateTime}
+import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller}
@@ -21,12 +21,26 @@ case class OpportunityLibraryEntry(id: OpportunityId, title: String, status: Str
 
 class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: ApplicationFormOps, OpportunityAction: OpportunityAction)(implicit ec: ExecutionContext) extends Controller {
 
-  def showOpportunityPreview(id: OpportunityId, sectionNumber: Option[Int]) = OpportunityAction(id) { implicit request =>
-    Ok(views.html.manage.previewDefaultOpportunity(request.uri, request.opportunity, sectionNumber.getOrElse(1)))
+  def showOpportunityPreview(id: OpportunityId, sectionNumber: Option[Int]) = OpportunityAction(id).async { implicit request =>
+    appForms.byOpportunityId(id).map {
+      case Some(appForm) => Ok(views.html.manage.previewDefaultOpportunity(request.uri, request.opportunity, sectionNumber.getOrElse(1), appForm))
+      case None => NotFound
+    }
   }
 
-  def showOpportunityPublishPreview(id: OpportunityId, sectionNumber: Option[Int]) = OpportunityAction(id) { implicit request =>
-    Ok(views.html.manage.previewPublishOpportunity(request.uri, request.opportunity, sectionNumber.getOrElse(1)))
+  def showOpportunityPublishPreview(id: OpportunityId, sectionNumber: Option[Int]) = OpportunityAction(id).async { implicit request =>
+    appForms.byOpportunityId(id).map {
+      case Some(appForm) => Ok(views.html.manage.previewPublishOpportunity(request.uri, request.opportunity, sectionNumber.getOrElse(1), appForm))
+      case None => NotFound
+    }
+  }
+
+
+  def previewOpportunity(id: OpportunityId, sectionNumber: Option[Int]) = OpportunityAction(id).async { implicit request =>
+    appForms.byOpportunityId(id).map {
+      case Some(appForm) => Ok(views.html.manage.previewDefaultOpportunity(request.uri, request.opportunity, sectionNumber.getOrElse(1), appForm))
+      case None => NotFound
+    }
   }
 
   def showNewOpportunityForm() = Action { request =>
@@ -83,17 +97,17 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   def saveTitle(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
     JsonHelpers.flatten(request.body.values) match {
       case _ => titleField.check(titleField.name, Json.toJson(JsonHelpers.flatten(request.body.values).getOrElse(TITLE_FIELD_NAME, ""))) match {
-        case Nil => opportunities.saveSummary(request.opportunity.summary.copy(title = JsonHelpers.flatten(request.body.values).getOrElse(TITLE_FIELD_NAME, ""))).map{_ =>
-            request.body.action match {
-              case Preview =>
-                Redirect(controllers.manage.routes.OpportunityController.previewTitle(id))
-                  .flashing(PREVIEW_BACK_URL_FLASH -> controllers.manage.routes.OpportunityController.editTitle(id).url)
-              case _ =>
-                Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id))
-
-            }
+        case Nil => opportunities.saveSummary(request.opportunity.summary.copy(title = JsonHelpers.flatten(request.body.values).getOrElse(TITLE_FIELD_NAME, ""))).map { _ =>
+          request.body.action match {
+            case Preview =>
+              Redirect(controllers.manage.routes.OpportunityController.previewTitle(id))
+                .flashing(PREVIEW_BACK_URL_FLASH -> controllers.manage.routes.OpportunityController.editTitle(id).url)
+            case _ =>
+              Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id))
 
           }
+
+        }
         case errs =>
           val hints = hinting(request.body.values, Map(titleField.name -> titleField.check))
           Future.successful(Ok(views.html.manage.editTitleForm(titleField, request.opportunity, titleQuestion, request.body.values, errs, hints, request.uri))) //hints
@@ -116,11 +130,16 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
 
   }
 
-  def editSection(id: OpportunityId, section: Int) = OpportunityAction(id) { request =>
-    request.opportunity.description.find(_.sectionNumber == section) match {
-      case Some(sect) =>
-        val answers = JsObject(Seq(SECTION_FIELD_NAME -> Json.toJson(sect.text)))
-        doEditSection(request.opportunity, section, answers)
+  def editSection(id: OpportunityId, sectionNum: Int) = OpportunityAction(id).async { request =>
+    appForms.byOpportunityId(id).map {
+      case Some(appForm) =>
+        request.opportunity.description.find(_.sectionNumber == sectionNum) match {
+          case Some(sect) if sect.sectionType == OppSectionType.Text =>
+            val answers = JsObject(Seq(SECTION_FIELD_NAME -> Json.toJson(sect.text)))
+            doEditSection(request.opportunity, sectionNum, answers)
+          case Some(sect) => Ok(views.html.manage.whatWeWillAskPreview(request.uri, request.opportunity, sectionNum, appForm))
+          case None => NotFound
+        }
       case None => NotFound
     }
   }
@@ -168,10 +187,10 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   def editGrantValue(id: OpportunityId) = OpportunityAction(id) { request =>
     request.opportunity.publishedAt match {
       case Some(_) => BadRequest
-      case None => doEditCostSection( request.opportunity,
-                                      JsObject(Seq(GRANT_VALUE_FIELD_NAME -> JsNumber(request.opportunity.value.amount))),
-                                      Nil
-                                  )
+      case None => doEditCostSection(request.opportunity,
+        JsObject(Seq(GRANT_VALUE_FIELD_NAME -> JsNumber(request.opportunity.value.amount))),
+        Nil
+      )
     }
   }
 
@@ -188,7 +207,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
       grantValueField.check(GRANT_VALUE_FIELD_NAME, fValue) match {
         case Nil =>
           val summary = request.opportunity.summary
-          opportunities.saveSummary( summary.copy(value = summary.value.copy(amount = fValue.as[BigDecimal])) ).map { _ =>
+          opportunities.saveSummary(summary.copy(value = summary.value.copy(amount = fValue.as[BigDecimal]))).map { _ =>
             request.body.action match {
               case Preview =>
                 Redirect(controllers.manage.routes.OpportunityController.previewGrantValue(id))
@@ -207,75 +226,87 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     Ok(views.html.manage.viewGrantValue(request.opportunity, request.flash.get(PREVIEW_BACK_URL_FLASH)))
   }
 
-  def viewSection(id: OpportunityId, sectionNum: Int) = OpportunityAction(id) { request =>
-    request.opportunity.publishedAt match {
-      case Some(_) => Ok(views.html.manage.viewOppSection(request.opportunity, sectionNum, request.flash.get(PREVIEW_BACK_URL_FLASH)))
-      case None => Redirect(controllers.manage.routes.OpportunityController.editSection(id, sectionNum))
-    }
-  }
-
-  def duplicate(id: OpportunityId) = Action.async { request =>
-    opportunities.duplicate(id).map {
-      case Some(newOppId) => Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(newOppId))
+  def viewSection(id: OpportunityId, sectionNum: Int) = OpportunityAction(id).async { request =>
+    appForms.byOpportunityId(id).map {
+      case Some(appForm) => request.opportunity.publishedAt match {
+        case Some(_) => Ok(views.html.manage.viewOppSection(request.opportunity, appForm, sectionNum, request.flash.get(PREVIEW_BACK_URL_FLASH)))
+        case None => Redirect(controllers.manage.routes.OpportunityController.editSection(id, sectionNum))
+      }
       case None => NotFound
     }
   }
 
-  def publish(id: OpportunityId) = OpportunityAction(id).async { request =>
-    val emailto = "Portfolio.Manager@rifs.gov.uk"
-    val dtf = DateTimeFormat.forPattern("HH:mm:ss")
-    opportunities.publish(id).map {
-      case Some(dt) =>
-        Ok(views.html.manage.publishedOpportunity(request.opportunity.id, emailto, dtf.print(dt)))
-      case None => NotFound
-    }
+  def duplicate(id: OpportunityId) = Action.async {
+    request =>
+      opportunities.duplicate(id).map {
+        case Some(newOppId) => Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(newOppId))
+        case None => NotFound
+      }
+  }
+
+  def publish(id: OpportunityId) = OpportunityAction(id).async {
+    request =>
+      val emailto = "Portfolio.Manager@rifs.gov.uk"
+      val dtf = DateTimeFormat.forPattern("HH:mm:ss")
+      opportunities.publish(id).map {
+        case Some(dt) =>
+          Ok(views.html.manage.publishedOpportunity(request.opportunity.id, emailto, dtf.print(dt)))
+        case None => NotFound
+      }
   }
 
   val DEADLINES_FIELD_NAME = "deadlines"
 
-  def viewDeadlines(id: OpportunityId) = OpportunityAction(id) { request =>
-    val answers = JsObject(Seq(DEADLINES_FIELD_NAME -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
-    request.opportunity.publishedAt match {
-      case Some(dateval) => Ok(views.html.manage.viewDeadlines(deadlinesField, request.opportunity, deadlineQuestions, answers))
-      case None => Redirect(controllers.manage.routes.OpportunityController.editDeadlines(id))
-    }
+  def viewDeadlines(id: OpportunityId) = OpportunityAction(id) {
+    request =>
+      val answers = JsObject(Seq(DEADLINES_FIELD_NAME -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
+      request.opportunity.publishedAt match {
+        case Some(dateval) => Ok(views.html.manage.viewDeadlines(deadlinesField, request.opportunity, deadlineQuestions, answers))
+        case None => Redirect(controllers.manage.routes.OpportunityController.editDeadlines(id))
+      }
   }
 
   implicit val dvFmt = Json.format[DateValues]
   implicit val dtrFmt = Json.format[DateTimeRangeValues]
 
-  def editDeadlines(id: OpportunityId) = OpportunityAction(id) { request =>
-    val answers = JsObject(Seq(DEADLINES_FIELD_NAME -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
-    Ok(views.html.manage.editDeadlinesForm(deadlinesField, request.opportunity, deadlineQuestions, answers, Seq(), Seq()))
+  def editDeadlines(id: OpportunityId) = OpportunityAction(id) {
+    request =>
+      val answers = JsObject(Seq(DEADLINES_FIELD_NAME -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
+      Ok(views.html.manage.editDeadlinesForm(deadlinesField, request.opportunity, deadlineQuestions, answers, Seq(), Seq()))
   }
 
-  def saveDeadlines(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
-    (request.body.values \ DEADLINES_FIELD_NAME).validate[DateTimeRangeValues] match {
-      case JsSuccess(vs, _) =>
-        deadlinesField.validator.validate(deadlinesField.name, vs) match {
-          case Valid(v) =>
-            val summary = request.opportunity.summary.copy(startDate = v.startDate, endDate = v.endDate)
-            opportunities.saveSummary(summary).map{_ => request.body.action match {
-              case Preview =>
-                Redirect( controllers.manage.routes.OpportunityController.previewDeadlines(id) )
-                  .flashing(PREVIEW_BACK_URL_FLASH -> controllers.manage.routes.OpportunityController.editDeadlines(id).url)
-              case _ =>
-                Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id) )
+  def saveDeadlines(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) {
+    implicit request =>
+      (request.body.values \ DEADLINES_FIELD_NAME).validate[DateTimeRangeValues] match {
+        case JsSuccess(vs, _) =>
+          deadlinesField.validator.validate(deadlinesField.name, vs) match {
+            case Valid(v) =>
+              val summary = request.opportunity.summary.copy(startDate = v.startDate, endDate = v.endDate)
+              opportunities.saveSummary(summary).map {
+                _ =>
+                  request.body.action match {
+                    case Preview =>
+                      Redirect(controllers.manage.routes.OpportunityController.previewDeadlines(id))
+                        .flashing(PREVIEW_BACK_URL_FLASH -> controllers.manage.routes.OpportunityController.editDeadlines(id).url)
+                    case _ =>
+                      Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id))
+                  }
               }
-            }
-          case Invalid(errors) =>
-            Future.successful(Ok(views.html.manage.editDeadlinesForm(deadlinesField, request.opportunity, deadlineQuestions, request.body.values, errors.toList, Seq())))
-        }
-      case JsError(errors) => Future.successful(BadRequest(errors.toString))
-    }
+            case Invalid(errors) =>
+              Future.successful(Ok(views.html.manage.editDeadlinesForm(deadlinesField, request.opportunity, deadlineQuestions, request.body.values, errors.toList, Seq())))
+          }
+        case JsError(errors) => Future.successful(BadRequest(errors.toString))
+      }
   }
 
-  def showPMGuidancePage(backUrl: String) = Action { request =>
-    Ok(views.html.manage.guidance(backUrl))
+  def showPMGuidancePage(backUrl: String) = Action {
+    request =>
+      Ok(views.html.manage.guidance(backUrl))
   }
 
-  def previewOppSection(id: OpportunityId, sectionid: Int) = OpportunityAction(id) { request =>
-    Ok(views.html.manage.previewOppSection(request.opportunity, sectionid, request.flash.get(PREVIEW_BACK_URL_FLASH)))
+  def previewOppSection(id: OpportunityId, sectionid: Int) = OpportunityAction(id) {
+    request =>
+      Ok(views.html.manage.previewOppSection(request.opportunity, sectionid, request.flash.get(PREVIEW_BACK_URL_FLASH)))
   }
 
   private def dateTimeRangeValuesFor(opp: Opportunity) = {
@@ -287,14 +318,17 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   private def dateValuesFor(ld: LocalDate) =
     DateValues(Some(ld.getDayOfMonth.toString), Some(ld.getMonthOfYear.toString), Some(ld.getYear.toString))
 
-  def previewTitle(id: OpportunityId) = OpportunityAction(id) { request =>
-    Ok(views.html.manage.previewTitle(request.opportunity, request.flash.get(PREVIEW_BACK_URL_FLASH)))
+  def previewTitle(id: OpportunityId) = OpportunityAction(id) {
+    request =>
+      Ok(views.html.manage.previewTitle(request.opportunity, request.flash.get(PREVIEW_BACK_URL_FLASH)))
   }
 
-  def previewDeadlines(id: OpportunityId) = OpportunityAction(id) { request =>
-    val answers = JsObject(Seq(DEADLINES_FIELD_NAME -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
-    Ok(views.html.manage.previewDeadlines(deadlinesField, request.opportunity, deadlineQuestions, answers, request.flash.get(PREVIEW_BACK_URL_FLASH)))
+  def previewDeadlines(id: OpportunityId) = OpportunityAction(id) {
+    request =>
+      val answers = JsObject(Seq(DEADLINES_FIELD_NAME -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
+      Ok(views.html.manage.previewDeadlines(deadlinesField, request.opportunity, deadlineQuestions, answers, request.flash.get(PREVIEW_BACK_URL_FLASH)))
   }
+
 
 }
 
