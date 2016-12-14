@@ -41,13 +41,10 @@ case class DateFieldValidator(allowPast: Boolean) extends FieldValidator[DateVal
       case None => FieldError(path, mustProvideAValidDateMsg).invalidNel
     }
 
-  def validatePastDate(path: String, ld: LocalDate): ValidatedNel[FieldError, LocalDate] = {
+  def validatePastDate(path: String, ld: LocalDate): ValidatedNel[FieldError, LocalDate] =
     if (!allowPast && ld.isBefore(LocalDate.now())) FieldError(path, mustBeTodayOrLaterMsg).invalidNel
     else ld.valid
-  }
 
-  override def validate(path: String, vs: DateValues): ValidatedNel[FieldError, LocalDate] = {
-    validateDMY(path, vs).andThen(validateDate(path, _)).andThen(validatePastDate(path, _))
-  }
-
+  override def validate(path: String, vs: DateValues): ValidatedNel[FieldError, LocalDate] =
+    validateDMY(path, normalise(vs)).andThen(validateDate(path, _)).andThen(validatePastDate(path, _))
 }
