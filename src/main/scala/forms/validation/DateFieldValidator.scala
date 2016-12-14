@@ -15,7 +15,6 @@ object DateFieldValidator {
   val mustBeTodayOrLaterMsg = "Must be today or later"
 }
 
-
 case class DateFieldValidator(allowPast: Boolean) extends FieldValidator[DateValues, LocalDate] {
 
   import DateFieldValidator._
@@ -27,11 +26,15 @@ case class DateFieldValidator(allowPast: Boolean) extends FieldValidator[DateVal
     MandatoryValidator(Some(displayName)).validate(path, s).andThen(IntValidator().validate(path, _))
 
   def validateDMY(path: String, vs: Normalised[DateValues]): ValidatedNel[FieldError, DMY] = {
+
+    def normaliseYear(y: Int) = if (y < 100) y + LocalDate.now.getCenturyOfEra * 100 else y
+
     (mandatoryInt(s"$path.day", vs.day, "day") |@|
       mandatoryInt(s"$path.month", vs.month, "month") |@|
       mandatoryInt(s"$path.year", vs.year, "year")).tupled
-      .map { case (d, m, y) => DMY(d, m, y) }
-      .leftMap(_ => NonEmptyList.of(FieldError(s"$path", mustProvideAValidDateMsg)))
+      .map { case (d, m, y) =>
+        DMY(d, m, normaliseYear(y))
+      }.leftMap(_ => NonEmptyList.of(FieldError(s"$path", mustProvideAValidDateMsg)))
   }
 
   def validateDate(path: String, dmy: DMY): ValidatedNel[FieldError, LocalDate] =

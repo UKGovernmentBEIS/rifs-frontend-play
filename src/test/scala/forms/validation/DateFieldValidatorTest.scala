@@ -1,6 +1,7 @@
 package forms.validation
 
 import forms.DateValues
+import org.joda.time.LocalDate
 import org.scalatest.{Matchers, WordSpecLike}
 
 class DateFieldValidatorTest extends WordSpecLike with Matchers {
@@ -54,6 +55,13 @@ class DateFieldValidatorTest extends WordSpecLike with Matchers {
 
     "produce no errors when date fields are valid after normalisation and any date is allowed" in {
       DateFieldValidator(true).validate("test", DateValues(Some(" 30 "), Some(" 6"), Some("2016 "))).leftMap {
+        errs => fail(s"Unexpected errors were produced: $errs")
+      }
+    }
+
+    "produce no errors when year is 2-digits but intended to be a future date" in {
+      val now = LocalDate.now
+      DateFieldValidator(false).validate("test", DateValues(Some("30"), Some("6"), Some((now.getYear - 1999).toString))).leftMap {
         errs => fail(s"Unexpected errors were produced: $errs")
       }
     }
