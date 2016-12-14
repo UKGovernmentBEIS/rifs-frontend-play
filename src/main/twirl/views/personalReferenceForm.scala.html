@@ -8,7 +8,9 @@
 )
 @import partials._
 
-@main(s"Create Application Reference - RIFS", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(app.id).url)), displayUserName=Some("Experienced Eric")) {
+@main(s"Create Application Reference - RIFS",
+        backLink=Some(BackLink("Return to opportunity list",controllers.routes.OpportunityController.showOpportunities().url)),
+        displayUserName=Some("Experienced Eric")) {
     <div class="grid-row">
         <div class="column-two-thirds">
             <h1 class="heading-xlarge">
