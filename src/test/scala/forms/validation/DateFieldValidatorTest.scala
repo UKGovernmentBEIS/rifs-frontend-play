@@ -51,5 +51,11 @@ class DateFieldValidatorTest extends WordSpecLike with Matchers {
         errs => fail(s"Unexpected errors were produced: $errs")
       }
     }
+
+    "produce no errors when date fields are valid after normalisation and any date is allowed" in {
+      DateFieldValidator(true).validate("test", DateValues(Some(" 30 "), Some(" 6"), Some("2016 "))).leftMap {
+        errs => fail(s"Unexpected errors were produced: $errs")
+      }
+    }
   }
 }

@@ -15,19 +15,18 @@ object DateFieldValidator {
   val mustBeTodayOrLaterMsg = "Must be today or later"
 }
 
+
 case class DateFieldValidator(allowPast: Boolean) extends FieldValidator[DateValues, LocalDate] {
 
   import DateFieldValidator._
 
-  override def normalise(vs: DateValues): DateValues = vs.copy(
-    day = vs.day.map(_.trim()),
-    month = vs.month.map(_.trim()),
-    year = vs.year.map(_.trim())
-  )
+  override def normalise(vs: DateValues): DateValues =
+    vs.copy(day = vs.day.map(_.trim()), month = vs.month.map(_.trim()), year = vs.year.map(_.trim()))
 
-  def mandatoryInt(path: String, s: Option[String], displayName: String): ValidatedNel[FieldError, Int] = MandatoryValidator(Some(displayName)).validate(path, s).andThen(IntValidator().validate(path, _))
+  def mandatoryInt(path: String, s: Option[String], displayName: String): ValidatedNel[FieldError, Int] =
+    MandatoryValidator(Some(displayName)).validate(path, s).andThen(IntValidator().validate(path, _))
 
-  def validateDMY(path: String, vs: DateValues): ValidatedNel[FieldError, DMY] = {
+  def validateDMY(path: String, vs: Normalised[DateValues]): ValidatedNel[FieldError, DMY] = {
     (mandatoryInt(s"$path.day", vs.day, "day") |@|
       mandatoryInt(s"$path.month", vs.month, "month") |@|
       mandatoryInt(s"$path.year", vs.year, "year")).tupled
@@ -45,6 +44,6 @@ case class DateFieldValidator(allowPast: Boolean) extends FieldValidator[DateVal
     if (!allowPast && ld.isBefore(LocalDate.now())) FieldError(path, mustBeTodayOrLaterMsg).invalidNel
     else ld.valid
 
-  override def validate(path: String, vs: DateValues): ValidatedNel[FieldError, LocalDate] =
-    validateDMY(path, normalise(vs)).andThen(validateDate(path, _)).andThen(validatePastDate(path, _))
+  override def doValidation(path: String, vs: Normalised[DateValues]): ValidatedNel[FieldError, LocalDate] =
+    validateDMY(path, vs).andThen(validateDate(path, _)).andThen(validatePastDate(path, _))
 }
