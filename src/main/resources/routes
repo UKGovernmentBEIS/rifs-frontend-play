@@ -69,6 +69,7 @@ POST        /manage/opportunity/:id/publish                           controller
 GET         /manage/opportunity/:id/section/:sectionid/preview        controllers.manage.OpportunityController.previewOppSection(id: OpportunityId, sectionid:Int)
 GET         /manage/opportunity/:id/title/preview                     controllers.manage.OpportunityController.previewTitle(id: OpportunityId)
 GET         /manage/opportunity/:id/deadlines/preview                 controllers.manage.OpportunityController.previewDeadlines(id: OpportunityId)
+GET         /manage/opportunity/:id/preview                           controllers.manage.OpportunityController.previewOpportunity(id: OpportunityId, section:Option[Int])
 
 
 # Health check
