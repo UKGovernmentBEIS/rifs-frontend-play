@@ -23,6 +23,7 @@ POST        /application/:id/section/:num                             controller
 GET         /application/:id/section/:num/edit                        controllers.ApplicationController.editSectionForm(id: ApplicationId, num:Int)
 POST        /application/:id/section/:num/edit                        controllers.ApplicationController.resetAndEditSection(id: ApplicationId, num:Int)
 GET         /application/:id/personal-ref/edit                        controllers.ApplicationController.editPersonalRef(id: ApplicationId)
+POST        /application/:id/personal-ref                             controllers.ApplicationController.savePersonalRef(id: ApplicationId)
 
 GET         /application/:id/section/:num/preview                     controllers.ApplicationPreviewController.previewSection(id: ApplicationId, num:Int)
 GET         /application/:id/preview                                  controllers.ApplicationPreviewController.applicationPreview(id: ApplicationId)
