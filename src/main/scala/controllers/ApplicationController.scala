@@ -107,4 +107,8 @@ class ApplicationController @Inject()(
   def checksFor(formSection: ApplicationFormSection): Map[String, FieldCheck] =
     formSection.fields.map(f => f.name -> f.check).toMap
 
+  def editPersonalRef(id: ApplicationId) = AppDetailAction(id) { request =>
+    Ok( views.html.wip( controllers.routes.ApplicationController.show(id).url ) )
+  }
+
 }

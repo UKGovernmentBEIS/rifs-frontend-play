@@ -5,6 +5,10 @@
 
 @errorClass = @{if(errs.nonEmpty) "rifs-error-panel" else ""}
 
+@changePersonalRef(title: String) = {
+    <a href="@controllers.routes.ApplicationController.editPersonalRef(app.id)">@title</a>
+}
+
 @main(s"Overview - RIFS", backLink=Some(BackLink("Return to my dashboard", controllers.routes.OpportunityController.wip(routes.StartPageController.startPage().url).url)), displayUserName=Some("Experienced Eric")) {
     <!-- main content -->
     <div class="grid-row">
@@ -14,6 +18,20 @@
                     <span class="heading-secondary">@formatId(app.opportunity.id.id): @app.opportunity.title</span>
                     Application overview
                 </h1>
+
+                <div class="grid-row">
+                    <div class="column-half">
+                        <p>
+                            @app.personalReference.getOrElse(changePersonalRef("Add personal reference"))
+                        </p>
+                    </div>
+                    <div class="column-half text-center-lg-only ">
+                        <p>
+                            @app.personalReference.map(_=>changePersonalRef("Change"))
+                        </p>
+                    </div>
+                </div>
+
                 <p>Complete all application sections before submitting to RIFS.</p>
             </div>
 

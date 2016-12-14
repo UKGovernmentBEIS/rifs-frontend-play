@@ -8,10 +8,11 @@ case class ApplicationId(id: Long) extends AnyVal
 
 case class ApplicationSectionId(id: Long) extends AnyVal
 
-case class Application(id: ApplicationId, applicationFormId: ApplicationFormId)
+case class Application(id: ApplicationId, applicationFormId: ApplicationFormId, personalReference: Option[String])
 
 case class ApplicationDetail(
                               id: ApplicationId,
+                              personalReference: Option[String],
                               sectionCount: Int,
                               completedSectionCount: Int,
                               opportunity: OpportunitySummary,
