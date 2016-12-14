@@ -1,4 +1,4 @@
-@(backUrl:String, opportunity: Opportunity, sectionNumber: Int)
+@(backUrl:String, opportunity: Opportunity, sectionNumber: Int, appForm: ApplicationForm)
 
 @sectionLink(title: String, sectionNum: Int) = {
     <span class="part-number"> @sectionNum. </span>
@@ -36,5 +36,5 @@
     <div class="rifs-heading-panel">
         <p>@formatId(opportunity.id.id) <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(opportunity.id).url">Template View</a></p>
     </div>
-    @opportunityPreview(backUrl, opportunity, sectionNumber)
+    @opportunityPreview(backUrl, opportunity, sectionNumber, appForm)
 }
