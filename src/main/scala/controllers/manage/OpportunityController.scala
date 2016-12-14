@@ -219,76 +219,88 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     Ok(views.html.manage.viewGrantValue(request.opportunity, request.flash.get(PREVIEW_BACK_URL_FLASH)))
   }
 
-  def viewSection(id: OpportunityId, sectionNum: Int) = OpportunityAction(id) { request =>
-    request.opportunity.publishedAt match {
-      case Some(_) => Ok(views.html.manage.viewOppSection(request.opportunity, sectionNum, request.flash.get(PREVIEW_BACK_URL_FLASH)))
-      case None => Redirect(controllers.manage.routes.OpportunityController.editSection(id, sectionNum))
+  def viewSection(id: OpportunityId, sectionNum: Int) = OpportunityAction(id).async { request =>
+    appForms.byOpportunityId(id).map {
+      case Some(appForm)
+      => request.opportunity.publishedAt match {
+        case Some(_) => Ok(views.html.manage.viewOppSection(request.opportunity, appForm, sectionNum, request.flash.get(PREVIEW_BACK_URL_FLASH)))
+        case None => Redirect(controllers.manage.routes.OpportunityController.editSection(id, sectionNum))
+        case None => NotFound
+      }
     }
   }
 
-  def duplicate(id: OpportunityId) = Action.async { request =>
-    opportunities.duplicate(id).map {
-      case Some(newOppId) => Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(newOppId))
-      case None => NotFound
-    }
+  def duplicate(id: OpportunityId) = Action.async {
+    request =>
+      opportunities.duplicate(id).map {
+        case Some(newOppId) => Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(newOppId))
+        case None => NotFound
+      }
   }
 
-  def publish(id: OpportunityId) = OpportunityAction(id).async { request =>
-    val emailto = "Portfolio.Manager@rifs.gov.uk"
-    val dtf = DateTimeFormat.forPattern("HH:mm:ss")
-    opportunities.publish(id).map {
-      case Some(dt) =>
-        Ok(views.html.manage.publishedOpportunity(request.opportunity.id, emailto, dtf.print(dt)))
-      case None => NotFound
-    }
+  def publish(id: OpportunityId) = OpportunityAction(id).async {
+    request =>
+      val emailto = "Portfolio.Manager@rifs.gov.uk"
+      val dtf = DateTimeFormat.forPattern("HH:mm:ss")
+      opportunities.publish(id).map {
+        case Some(dt) =>
+          Ok(views.html.manage.publishedOpportunity(request.opportunity.id, emailto, dtf.print(dt)))
+        case None => NotFound
+      }
   }
 
   val DEADLINES_FIELD_NAME = "deadlines"
 
-  def viewDeadlines(id: OpportunityId) = OpportunityAction(id) { request =>
-    val answers = JsObject(Seq(DEADLINES_FIELD_NAME -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
-    request.opportunity.publishedAt match {
-      case Some(dateval) => Ok(views.html.manage.viewDeadlines(deadlinesField, request.opportunity, deadlineQuestions, answers))
-      case None => Redirect(controllers.manage.routes.OpportunityController.editDeadlines(id))
-    }
+  def viewDeadlines(id: OpportunityId) = OpportunityAction(id) {
+    request =>
+      val answers = JsObject(Seq(DEADLINES_FIELD_NAME -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
+      request.opportunity.publishedAt match {
+        case Some(dateval) => Ok(views.html.manage.viewDeadlines(deadlinesField, request.opportunity, deadlineQuestions, answers))
+        case None => Redirect(controllers.manage.routes.OpportunityController.editDeadlines(id))
+      }
   }
 
   implicit val dvFmt = Json.format[DateValues]
   implicit val dtrFmt = Json.format[DateTimeRangeValues]
 
-  def editDeadlines(id: OpportunityId) = OpportunityAction(id) { request =>
-    val answers = JsObject(Seq(DEADLINES_FIELD_NAME -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
-    Ok(views.html.manage.editDeadlinesForm(deadlinesField, request.opportunity, deadlineQuestions, answers, Seq(), Seq()))
+  def editDeadlines(id: OpportunityId) = OpportunityAction(id) {
+    request =>
+      val answers = JsObject(Seq(DEADLINES_FIELD_NAME -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
+      Ok(views.html.manage.editDeadlinesForm(deadlinesField, request.opportunity, deadlineQuestions, answers, Seq(), Seq()))
   }
 
-  def saveDeadlines(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
-    (request.body.values \ DEADLINES_FIELD_NAME).validate[DateTimeRangeValues] match {
-      case JsSuccess(vs, _) =>
-        deadlinesField.validator.validate(deadlinesField.name, vs) match {
-          case Valid(v) =>
-            val summary = request.opportunity.summary.copy(startDate = v.startDate, endDate = v.endDate)
-            opportunities.saveSummary(summary).map { _ =>
-              request.body.action match {
-                case Preview =>
-                  Redirect(controllers.manage.routes.OpportunityController.previewDeadlines(id))
-                    .flashing(PREVIEW_BACK_URL_FLASH -> controllers.manage.routes.OpportunityController.editDeadlines(id).url)
-                case _ =>
-                  Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id))
+  def saveDeadlines(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) {
+    implicit request =>
+      (request.body.values \ DEADLINES_FIELD_NAME).validate[DateTimeRangeValues] match {
+        case JsSuccess(vs, _) =>
+          deadlinesField.validator.validate(deadlinesField.name, vs) match {
+            case Valid(v) =>
+              val summary = request.opportunity.summary.copy(startDate = v.startDate, endDate = v.endDate)
+              opportunities.saveSummary(summary).map {
+                _ =>
+                  request.body.action match {
+                    case Preview =>
+                      Redirect(controllers.manage.routes.OpportunityController.previewDeadlines(id))
+                        .flashing(PREVIEW_BACK_URL_FLASH -> controllers.manage.routes.OpportunityController.editDeadlines(id).url)
+                    case _ =>
+                      Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id))
+                  }
               }
-            }
-          case Invalid(errors) =>
-            Future.successful(Ok(views.html.manage.editDeadlinesForm(deadlinesField, request.opportunity, deadlineQuestions, request.body.values, errors.toList, Seq())))
-        }
-      case JsError(errors) => Future.successful(BadRequest(errors.toString))
-    }
+            case Invalid(errors) =>
+              Future.successful(Ok(views.html.manage.editDeadlinesForm(deadlinesField, request.opportunity, deadlineQuestions, request.body.values, errors.toList, Seq())))
+          }
+        case JsError(errors) => Future.successful(BadRequest(errors.toString))
+      }
   }
 
-  def showPMGuidancePage(backUrl: String) = Action { request =>
-    Ok(views.html.manage.guidance(backUrl))
+  def showPMGuidancePage(backUrl: String) = Action {
+    request =>
+      Ok(views.html.manage.guidance(backUrl))
   }
 
-  def previewOppSection(id: OpportunityId, sectionid: Int) = OpportunityAction(id) { request =>
-    Ok(views.html.manage.previewOppSection(request.opportunity, sectionid, request.flash.get(PREVIEW_BACK_URL_FLASH)))
+  def previewOppSection(id: OpportunityId, sectionid: Int) = OpportunityAction(id) {
+    request =>
+      Ok(views.html.manage.previewOppSection(request.opportunity, sectionid, request.flash.get(PREVIEW_BACK_URL_FLASH)))
   }
 
   private def dateTimeRangeValuesFor(opp: Opportunity) = {
@@ -300,13 +312,15 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   private def dateValuesFor(ld: LocalDate) =
     DateValues(Some(ld.getDayOfMonth.toString), Some(ld.getMonthOfYear.toString), Some(ld.getYear.toString))
 
-  def previewTitle(id: OpportunityId) = OpportunityAction(id) { request =>
-    Ok(views.html.manage.previewTitle(request.opportunity, request.flash.get(PREVIEW_BACK_URL_FLASH)))
+  def previewTitle(id: OpportunityId) = OpportunityAction(id) {
+    request =>
+      Ok(views.html.manage.previewTitle(request.opportunity, request.flash.get(PREVIEW_BACK_URL_FLASH)))
   }
 
-  def previewDeadlines(id: OpportunityId) = OpportunityAction(id) { request =>
-    val answers = JsObject(Seq(DEADLINES_FIELD_NAME -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
-    Ok(views.html.manage.previewDeadlines(deadlinesField, request.opportunity, deadlineQuestions, answers, request.flash.get(PREVIEW_BACK_URL_FLASH)))
+  def previewDeadlines(id: OpportunityId) = OpportunityAction(id) {
+    request =>
+      val answers = JsObject(Seq(DEADLINES_FIELD_NAME -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
+      Ok(views.html.manage.previewDeadlines(deadlinesField, request.opportunity, deadlineQuestions, answers, request.flash.get(PREVIEW_BACK_URL_FLASH)))
   }
 
 

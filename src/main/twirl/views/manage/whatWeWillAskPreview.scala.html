@@ -1,5 +1,7 @@
 @(backUrl: String, opp: Opportunity, sectionNumber: Int, appForm: ApplicationForm)
 
+@import partials._
+
 @currentSection = @{
     opp.description.find(_.sectionNumber == sectionNumber)
 }
@@ -22,15 +24,7 @@
                 <article>
                     <h2 class="heading-large">@s.sectionNumber. @s.title</h2>
                     <div class="text">
-                    @if(s.sectionType == OppSectionType.Questions) {
-                        @helpers.textForQuestions(appForm)
-                    } else {
-                        @s.text.map(_.split("\n\n")).map { ps =>
-                            @ps.map { p =>
-                                <p class="text">@p</p>
-                            }
-                        }
-                    }
+                    @renderSectionText(s, appForm)
                     </div>
                 </article>
 
