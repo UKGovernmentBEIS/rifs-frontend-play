@@ -246,15 +246,23 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
 
   def publish(id: OpportunityId) = OpportunityAction(id).async {
     request =>
-      val emailto = "Portfolio.Manager@rifs.gov.uk"
-      val dtf = DateTimeFormat.forPattern("HH:mm:ss")
-      opportunities.publish(id).map {
-        case Some(dt) =>
-          Ok(views.html.manage.publishedOpportunity(request.opportunity.id, emailto, dtf.print(dt)))
-        case None => NotFound
+      val oppdate = request.opportunity.startDate
+      if(request.opportunity.value.amount >=2000 && oppdate != null && oppdate.isAfter(LocalDate.now())){
+        val emailto = "Portfolio.Manager@rifs.gov.uk"
+        val dtf = DateTimeFormat.forPattern("HH:mm:ss")
+        opportunities.publish(id).map {
+          case Some(dt) =>
+            Ok(views.html.manage.publishedOpportunity(request.opportunity.id, emailto, dtf.print(dt)))
+          case None => NotFound
+        }
+      } else {
+        appForms.byOpportunityId(id).map {
+          case Some(appForm) => Ok(views.html.manage.opportunityOverview(request.uri, request.opportunity, appForm))
+          case None => NotFound
+        }
       }
   }
-
+  
   val DEADLINES_FIELD_NAME = "deadlines"
 
   def viewDeadlines(id: OpportunityId) = OpportunityAction(id) {
