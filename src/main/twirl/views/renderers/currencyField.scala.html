@@ -17,7 +17,7 @@
     }
     <label for="@field.name">@field.label</label>
     <div class="input-icon">
-        <i>£</i>
+        <i>&pound;</i>
         <input type="text" id="@field.name" class='form-control text-field currency' title="@field.name" name="@field.name" value='@answers.get(field.name)'>
     </div>
     <div class="inline right-align hint-text" id="@(field.name)_hint_text">@hints.find(_.path == field.name).map(_.hint)</div>
