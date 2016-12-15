@@ -58,7 +58,7 @@ and was unable to set the sass load-path.  The following folder structure is the
 that because of this the vendor dependencies are actually checked into the source code. 
 
 
-Folder explanation:--
+Folder explanation:
 
 * `colours` - the colours folder from the GDS Frontend Toolkit
 * `design-patterns` - also from the GDS Frontend Toolkit
