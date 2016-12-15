@@ -2,9 +2,8 @@ package forms
 
 import controllers.{FieldCheck, FieldChecks, JsonHelpers}
 import forms.validation.{DateFieldValidator, FieldError, FieldHint}
-import models.{ApplicationSectionDetail, Question}
+import models.Question
 import play.api.libs.json.{JsObject, Json}
-import play.twirl.api.Html
 
 case class DateValues(day: Option[String], month: Option[String], year: Option[String])
 

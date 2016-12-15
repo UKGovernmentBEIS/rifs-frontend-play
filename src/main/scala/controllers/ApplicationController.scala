@@ -3,11 +3,12 @@ package controllers
 import javax.inject.Inject
 
 import actions.{AppDetailAction, AppSectionAction}
-import forms.validation.SectionError
+import forms.TextField
+import forms.validation.{FieldError, SectionError}
 import models._
 import org.joda.time.LocalDateTime
 import org.joda.time.format.DateTimeFormat
-import play.api.libs.json.JsObject
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
 
@@ -25,7 +26,9 @@ class ApplicationController @Inject()(
 
   def showOrCreateForForm(id: ApplicationFormId) = Action.async {
     applications.getOrCreateForForm(id).map {
-      case Some(app) => redirectToOverview(app.id)
+      case Some(app) =>
+        app.personalReference.map{_=> redirectToOverview(app.id) }
+                              .getOrElse( Redirect( controllers.routes.ApplicationController.editPersonalRef( app.id ) ) )
       case None => NotFound
     }
   }
@@ -35,7 +38,7 @@ class ApplicationController @Inject()(
   }
 
   def reset = Action.async {
-    applications.deleteAll().map(_ => Redirect(controllers.routes.StartPageController.startPage()))
+    applications.reset().map(_ => Redirect(controllers.routes.StartPageController.startPage()))
   }
 
   import FieldCheckHelpers._
@@ -106,5 +109,34 @@ class ApplicationController @Inject()(
 
   def checksFor(formSection: ApplicationFormSection): Map[String, FieldCheck] =
     formSection.fields.map(f => f.name -> f.check).toMap
+
+  val APP_REF_FIELD_NAME = "application-ref"
+  val appRefField = TextField(label = Some(APP_REF_FIELD_NAME), name = APP_REF_FIELD_NAME, isNumeric = false, maxWords = 20)
+  val appRefQuestion = Map(APP_REF_FIELD_NAME -> Question("My application reference"))
+
+  def editPersonalRef(id: ApplicationId) = AppDetailAction(id) { request =>
+    val answers = JsObject(Seq(APP_REF_FIELD_NAME -> Json.toJson(request.appDetail.personalReference.getOrElse(""))))
+    val hints = hinting(answers, Map(appRefField.name -> appRefField.check))
+    Ok( views.html.personalReferenceForm( appRefField, request.appDetail, appRefQuestion, answers, Nil, hints) )
+  }
+
+  def savePersonalRef(id: ApplicationId) = AppDetailAction(id).async(JsonForm.parser)  { request =>
+    request.body.action match {
+      case Save => appRefField.check(appRefField.name, Json.toJson(JsonHelpers.flatten(request.body.values).getOrElse(APP_REF_FIELD_NAME, ""))) match {
+        case Nil =>
+          applications.updatePersonalReference(request.appDetail.id, JsonHelpers.flatten(request.body.values).getOrElse(APP_REF_FIELD_NAME, "") ).map { _ =>
+            Redirect( controllers.routes.ApplicationController.show(request.appDetail.id) )
+          }
+        case errs =>
+          val hints = hinting(request.body.values, Map(appRefField.name -> appRefField.check))
+          Future.successful(
+            Ok( views.html.personalReferenceForm( appRefField, request.appDetail, appRefQuestion, request.body.values, errs, hints) )
+          )
+      }
+      case _ =>
+        Future.successful( Redirect( controllers.routes.ApplicationController.show(request.appDetail.id) ) )
+    }
+
+  }
 
 }

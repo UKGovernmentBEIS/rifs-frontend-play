@@ -8,25 +8,35 @@
 
 @import views.html.partials._
 
+@actionLink = @{
+    if (opportunity.publishedAt.isEmpty) controllers.manage.routes.OpportunityController.publish(opportunity.id)
+    else controllers.manage.routes.OpportunityController.duplicate(opportunity.id)
+}
+
+@actionLabel = @{
+    if (opportunity.publishedAt.isEmpty) "Publish opportunity"
+    else "Duplicate opportunity"
+}
+
 @main(s"Opportunity template setup - RIFS", displayUserName=username(),
 backLink=Some(BackLink("Opportunity library", controllers.manage.routes.OpportunityController.showOpportunityLibrary().url))) {
 
 <!-- main content -->
-<div class="grid-row">
+    @opportunity.duplicatedFrom.map { fromId =>
+        <div class="rifs-heading-panel">
+            This is a copy of <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(fromId)">@formatId(fromId.id)</a>
+        </div>
+    }
+
+    <div class="grid-row">
     <div class="column-two-thirds">
-        @opportunity.duplicatedFrom.map { fromId =>
-            <div class="rifs-heading-panel">
-                This is a copy of <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(fromId)">@formatId(fromId.id)</a>
-            </div>
-        }
 
         <h1 class="heading-xlarge">
             <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
             Opportunity template
         </h1>
 
-        <form method="POST"
-        action="@controllers.manage.routes.OpportunityController.duplicate(opportunity.id)">
+        <form method="POST" action="@actionLink">
 
             <section class="more">
 
@@ -53,37 +63,32 @@ backLink=Some(BackLink("Opportunity library", controllers.manage.routes.Opportun
                                 <tr>
                                     <td>
                                         1. <a id="op-setup-link1"
-                                              href="@controllers.manage.routes.OpportunityController.viewTitle(opportunity.id)"
+                                              href="@controllers.manage.routes.TitleController.view(opportunity.id)"
                                             > Opportunity title</a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
                                         2. <a id="op-setup-link2"
-                                              href="@controllers.manage.routes.OpportunityController.viewDeadlines(opportunity.id)"
+                                              href="@controllers.manage.routes.DeadlineController.view(opportunity.id)"
                                             > Opportunity deadlines</a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
                                         3. <a id="op-setup-link3"
-                                              href="@controllers.manage.routes.OpportunityController.viewDescription(opportunity.id)"
-                                            > Opportunity description</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        4. <a id="op-setup-link4"
-                                              href="@controllers.manage.routes.OpportunityController.viewGrantValue(opportunity.id)"
+                                              href="@controllers.manage.routes.GrantValueController.view(opportunity.id)"
                                             > Maximum grant value</a>
                                     </td>
                                 </tr>
 
-                                @opportunity.description.zipWithIndex.map { case (oppDesc, num) =>
+                                @opportunity.description.sortBy(_.sectionNumber).zipWithIndex.map { case (oppDesc, num) =>
                                 <tr>
                                     <td>
-                                        @(s"${num + 5}").
-                                        <a href="@controllers.manage.routes.OpportunityController.viewOppSection(opportunity.id, oppDesc.sectionNumber)">
+                                        @(s"${num + 4}.")
+                                        <a id="op-setup-link@(num + 4)"
+                                        href="@controllers.manage.routes.OppSectionController.view(opportunity.id, oppDesc.sectionNumber)">
+                                        href="@controllers.manage.routes.OppSectionController.view(opportunity.id, oppDesc.sectionNumber)">
                                             @oppDesc.title
                                         </a>
                                     </td>
@@ -131,13 +136,13 @@ backLink=Some(BackLink("Opportunity library", controllers.manage.routes.Opportun
                                     <td>Grant type</td><td>Seminar</td>
                                 </tr>
                                 <tr>
-                                    <td>Grant type</td><td>Seminar</td>
+                                    <td>Cost type</td><td>FEC</td>
                                 </tr>
                                 <tr>
                                     <td>Grant mode</td><td>Responsive</td>
                                 </tr>
                                 <tr>
-                                    <td>Pre-review check</td><td>No</td>
+                                    <td>Submission check</td><td>No</td>
                                 </tr>
                                 <tr>
                                     <td>Peer review</td><td>No</td>
@@ -146,7 +151,7 @@ backLink=Some(BackLink("Opportunity library", controllers.manage.routes.Opportun
                                     <td>Peer review sift</td><td>No</td>
                                 </tr>
                                 <tr>
-                                    <td>Application response</td><td>No</td>
+                                    <td>Applicant response</td><td>No</td>
                                 </tr>
                                 <tr>
                                     <td>Panel</td><td>No</td>
@@ -161,11 +166,9 @@ backLink=Some(BackLink("Opportunity library", controllers.manage.routes.Opportun
             </section>
 
             <p class="rifs-form-buttons">
-                <input type="submit" name="@Save.name" class="button button--start" value="Duplicate opportunity">
-                <a href="@controllers.manage.routes.OpportunityController.showOpportunityPreview(opportunity.id, None)"
-                   class="flat nobreak"
-                >
-                    Applicant view</a>
+                <input type="submit" name="@Save.name" class="button button--start" value="@actionLabel">
+                <a href="@controllers.manage.routes.OpportunityController.showOpportunityPublishPreview(opportunity.id, None)" class="flat nobreak">
+                Applicant view</a>
             </p>
         </form>
     </div>

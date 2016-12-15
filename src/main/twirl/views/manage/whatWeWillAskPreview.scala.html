@@ -1,0 +1,51 @@
+@(backUrl: String, opp: Opportunity, sectionNumber: Int, appForm: ApplicationForm)
+
+@import partials._
+
+@currentSection = @{
+    opp.description.find(_.sectionNumber == sectionNumber)
+}
+
+@main(s"Opportunity: ${opp.title} - RIFS", backLink = Some(BackLink("Opportunity template",controllers.manage.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName = Some("Portfolio Peter")) {
+
+    <div class="rifs-heading-panel">
+        <p>This section is automatically generated from the questions on the application form</p>
+    </div>
+
+    <div class="grid-row">
+        <div class="column-two-thirds">
+
+
+            <header class="page-header">
+                <h1 class="heading-xlarge">@opp.title</h1>
+            </header>
+
+            @currentSection.map { s =>
+                <article>
+                    <h2 class="heading-large">@s.sectionNumber. @s.title</h2>
+                    <div class="text">
+                    @renderSectionText(s, appForm)
+                    </div>
+                </article>
+
+            </div>
+
+        <div id="support-column" class="column-third">
+            <aside role="complementary">
+                <hr class="hr-blue">
+                <h2 class="heading-medium no-top-margin">Support</h2>
+                <ul class="list spacious">
+
+                    <li>
+                        <a href="@controllers.manage.routes.OpportunityController.showPMGuidancePage(backUrl)">
+                            Guidance on
+                            seminars</a>
+                    </li>
+
+                </ul>
+            </aside>
+        </div>
+    </div>
+}
+
+}

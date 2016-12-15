@@ -1,6 +1,6 @@
 package forms.validation
 
-import cats.data.{NonEmptyList, ValidatedNel}
+import cats.data.ValidatedNel
 import cats.syntax.cartesian._
 import cats.syntax.validated._
 import forms.DateValues
@@ -46,7 +46,7 @@ case class DateTimeRangeValidator(allowPast: Boolean, isEndDateMandatory: Boolea
     * can be further validated.
     */
   lazy val fieldLevelValidations = new FieldValidator[DateTimeRangeValues, DateTimeRange] {
-    override def validate(path: String, vs: DateTimeRangeValues): ValidatedNel[FieldError, DateTimeRange] = {
+    override def doValidation(path: String, vs: Normalised[DateTimeRangeValues]): ValidatedNel[FieldError, DateTimeRange] = {
       val sdv: DateValues = vs.startDate.getOrElse(DateValues(None, None, None))
 
       // If no text values are provided for day/month/year of end date then treat it as
@@ -56,13 +56,10 @@ case class DateTimeRangeValidator(allowPast: Boolean, isEndDateMandatory: Boolea
         case v => v
       }
 
-      val startDateV: ValidatedNel[FieldError, LocalDate] = dateValidator.validate(s"$path.startDate", sdv).leftMap {
-        v => NonEmptyList.of(FieldError(s"$path.startDate", mustProvideValidStartDateMessage))
-      }
+      val startDateV: ValidatedNel[FieldError, LocalDate] = dateValidator.validate(s"$path.startDate", sdv)
+
       // First check that the end date is valid if it's present
-      val endDateValid = edvo.map(dateValidator.validate(s"$path.endDate", _).map(Some(_))).getOrElse(None.valid).leftMap {
-        v => NonEmptyList.of(FieldError(s"$path.endDate", mustProvideValidEndDateMessage))
-      }
+      val endDateValid = edvo.map(dateValidator.validate(s"$path.endDate", _).map(Some(_))).getOrElse(None.valid)
 
       // And then check if it's present if the `endDateProvided` flag is set
       val endDateV = endDateValid.map(od => (od, vs.endDateProvided.exists(_.trim == "yes"))).andThen(endDateIsPresentIfSupplied.validate(path, _))
@@ -76,7 +73,7 @@ case class DateTimeRangeValidator(allowPast: Boolean, isEndDateMandatory: Boolea
     * irrespective of the value of `endDateProvided`.
     */
   lazy val endDateIsPresentIfMandatory = new FieldValidator[DateTimeRange, DateTimeRange] {
-    override def validate(path: String, vs: DateTimeRange): ValidatedNel[FieldError, DateTimeRange] = {
+    override def doValidation(path: String, vs: Normalised[DateTimeRange]): ValidatedNel[FieldError, DateTimeRange] = {
       (isEndDateMandatory, vs.endDate) match {
         case (true, None) => FieldError(s"$path.endDate", mustProvideValidEndDateMessage).invalidNel
         case _ => vs.valid
@@ -89,8 +86,8 @@ case class DateTimeRangeValidator(allowPast: Boolean, isEndDateMandatory: Boolea
     * then the user has actually provided values for the end date.
     */
   lazy val endDateIsPresentIfSupplied = new FieldValidator[(Option[LocalDate], Boolean), Option[LocalDate]] {
-    override def validate(path: String, vs: (Option[LocalDate], Boolean)) = {
-      vs match {
+    override def doValidation(path: String, vs: Normalised[(Option[LocalDate], Boolean)]) = {
+      denormal(vs) match {
         case (None, true) => FieldError(s"$path.endDate", mustProvideValidEndDateMessage).invalidNel
         case _ => vs._1.valid
       }
@@ -98,7 +95,7 @@ case class DateTimeRangeValidator(allowPast: Boolean, isEndDateMandatory: Boolea
   }
 
   lazy val startDateIsBeforeEndDate = new FieldValidator[DateTimeRange, DateTimeRange] {
-    override def validate(path: String, dtr: DateTimeRange): ValidatedNel[FieldError, DateTimeRange] = {
+    override def doValidation(path: String, dtr: Normalised[DateTimeRange]): ValidatedNel[FieldError, DateTimeRange] = {
       dtr.endDate.map(_.isAfter(dtr.startDate)) match {
         case Some(false) =>
           FieldError(path, endMustBeLaterThanStartMessage).invalidNel
@@ -107,7 +104,7 @@ case class DateTimeRangeValidator(allowPast: Boolean, isEndDateMandatory: Boolea
     }
   }
 
-  override def validate(path: String, vs: DateTimeRangeValues): ValidatedNel[FieldError, DateTimeRange] = {
+  override def doValidation(path: String, vs: Normalised[DateTimeRangeValues]): ValidatedNel[FieldError, DateTimeRange] = {
     (fieldLevelValidations andThen endDateIsPresentIfMandatory andThen startDateIsBeforeEndDate).validate(path, vs)
   }
 }

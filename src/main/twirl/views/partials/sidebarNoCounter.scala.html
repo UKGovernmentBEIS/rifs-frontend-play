@@ -1,0 +1,15 @@
+@(
+        opportunityId: OpportunityId
+)
+<hr class="hr-blue">
+<h2 class="heading-medium no-top-margin">Support</h2>
+<ul class="list spacious">
+    <li>
+        <a href="@controllers.routes.OpportunityController.showGuidancePage(opportunityId)">
+            Guidance on seminars</a>
+    </li>
+    <li>
+        <a href="@controllers.routes.OpportunityController.showOpportunity(opportunityId, None)">
+            View opportunity details</a>
+    </li>
+</ul>

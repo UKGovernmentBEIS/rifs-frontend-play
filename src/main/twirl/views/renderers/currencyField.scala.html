@@ -16,6 +16,9 @@
         <span class="error-message">@e.err</span>
     }
     <label for="@field.name">@field.label</label>
-    &pound;<input type="text" id="@field.name" class='form-control currency-field' title="@field.name" name="@field.name" value='@answers.get(field.name)'>
+    <div class="input-icon">
+        <i>&pound;</i>
+        <input type="text" id="@field.name" class='form-control text-field currency' title="@field.name" name="@field.name" value='@answers.get(field.name)'>
+    </div>
     <div class="inline right-align hint-text" id="@(field.name)_hint_text">@hints.find(_.path == field.name).map(_.hint)</div>
 </div>

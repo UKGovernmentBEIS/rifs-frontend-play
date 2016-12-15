@@ -20,6 +20,11 @@ case object SaveItem extends ButtonAction {
   override val name: String = "_save_item_button"
 }
 
+case object Skip extends ButtonAction {
+  override val name: String = "_skip_item_button"
+}
+
+
 case object completeAndPreview extends ButtonAction {
   override val name: String = "_complete_and_preview_button"
 }
@@ -32,6 +37,7 @@ object ButtonAction {
       case Preview.name => Some(Preview)
       case SaveItem.name => Some(SaveItem)
       case completeAndPreview.name => Some(completeAndPreview)
+      case Skip.name => Some(Skip)
       case _ => None
     }
   }

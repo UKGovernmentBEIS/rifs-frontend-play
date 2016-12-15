@@ -1,4 +1,4 @@
-@(backUrl:String, opportunity: Opportunity, sectionNumber: Int)
+@(backUrl:String, opportunity: Opportunity, sectionNumber: Int, appForm: ApplicationForm)
 
 @sectionLink(title: String, sectionNum: Int) = {
     <span class="part-number"> @sectionNum. </span>
@@ -31,12 +31,6 @@
 
 @import views.html.partials._
 
-@main(s"Opportunity: ${opportunity.title} - RIFS", backLink=Some(BackLink("Return to opportunity library", controllers.manage.routes.OpportunityController.showOpportunityLibrary().url)), displayUserName=Some("Portfolio Peter")) {
-
-    <div class="rifs-heading-panel">
-        <p>@formatId(opportunity.id.id) <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(opportunity.id).url">Template View</a></p>
-    </div>
-
 
     <div class="grid-row">
         <div class="column-two-thirds">
@@ -47,24 +41,28 @@
             </header>
 
             <aside>
-                <nav role="navigation" class="page-navigation" aria-label="Navigation">
-                    <ol>
-                    @titleCols.map { case ((col1, idx), _) =>
-                    <li id="title-@(idx + 1)">
-                    @sectionLink(col1._1, col1._2)
-                    </li>
-                    }
-                    </ol>
-                    <ol>
-                    @titleCols.map { case (_, col2) =>
-                        @col2.map { case (t, idx) =>
+                <a class="js-navigation-toggle show-all-parts" data-for="#nav-container">
+                    Show all parts of this opportunity</a>
+                <div id="nav-container">
+                    <nav role="navigation" class="page-navigation" aria-label="Navigation">
+                        <ol>
+                        @titleCols.map { case ((col1, idx), _) =>
                         <li id="title-@(idx + 1)">
-                        @sectionLink(t._1, t._2)
+                        @sectionLink(col1._1, col1._2)
                         </li>
-                        }.getOrElse("")
-                    }
-                    </ol>
-                </nav>
+                        }
+                        </ol>
+                        <ol>
+                        @titleCols.map { case (_, col2) =>
+                            @col2.map { case (t, idx) =>
+                            <li id="title-@(idx + 1)">
+                            @sectionLink(t._1, t._2)
+                            </li>
+                            }.getOrElse("")
+                        }
+                        </ol>
+                    </nav>
+                </div>
             </aside>
 
             @currentSection.map { s =>
@@ -89,11 +87,7 @@
 
                 <article>
                     <h2 class="heading-large">@s.sectionNumber. @s.title</h2>
-                    @s.text.map(_.split("\n\n")).map { ps =>
-                        @ps.map { p =>
-                            <p class="text">@p</p>
-                        }
-                    }
+                    @renderSectionText(s, appForm)
                 </article>
 
                 <footer>
@@ -133,7 +127,7 @@
         <div id="support-column" class="column-third">
             <aside role="complementary">
                 <hr class="hr-blue">
-                <h3 class="heading-medium">Support</h3>
+                <h2 class="heading-medium no-top-margin">Support</h2>
                 <ul class="list spacious">
 
                     <li>
@@ -146,6 +140,4 @@
         </div>
 
     </div>
-}
-
 }

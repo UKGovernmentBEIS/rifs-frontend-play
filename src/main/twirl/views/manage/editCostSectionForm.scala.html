@@ -1,6 +1,5 @@
-@(field: forms.TextAreaField,
+@(field: forms.CurrencyField,
         opp: Opportunity,
-        sectionNo: Int,
         backUrl: String,
         questions: Map[String, Question],
         answers: play.api.libs.json.JsObject,
@@ -12,20 +11,18 @@
     errs.filter(p => p.path == field.name)
 }
 
-@formatId(id: Long) = @{
-    f"RIFS$id%05d"
-}
+@import views.html.partials._
 
-@main("RIFS - Edit Description", displayUserName = Some("Portfolio Peter")) {
+@main("Edit grant value - RIFS" , backLink=Some(BackLink("Opportunity template",controllers.manage.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName = Some("Portfolio Peter")) {
 
     <div class="grid-row">
         <div class="column-two-thirds">
             <h1 class="heading-xlarge">
                 <span class="heading-secondary">@formatId(opp.id.id): @opp.title</span>
-                @Opportunity description
+                Grant value
             </h1>
 
-            <form method="POST" action="@controllers.manage.routes.OpportunityController.saveDescription(opp.id, sectionNo)">
+            <form method="POST" action="@controllers.manage.routes.GrantValueController.save(opp.id)">
 
                 @if(errors.nonEmpty) {
                 <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
@@ -48,9 +45,11 @@
                 </div>
             </form>
         </div>
+
         <div id="support-column" class="column-third">
-            @partials.editOpportunitySidebar(backUrl, 6, 2)
+            @partials.editOpportunitySidebar(backUrl, 6, 0)
         </div>
     </div>
+
 
 }

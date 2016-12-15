@@ -1,5 +1,6 @@
 @(
-  opp: Opportunity
+  opp: Opportunity,
+  backUrl: Option[String] = None
 )
 @import views.html.partials._
 
@@ -8,12 +9,12 @@
         <div class="column-full">
             <h1 class="heading-xlarge">
                 <span class="heading-secondary">@formatId(opp.id.id): @opp.title</span>
-                 Grant Value
+                 Grant value
             </h1>
             <dt class="heading-small">Value</dt>
             <p class="heading-secondary"> Up to &pound;@("%,.0f".format(opp.value.amount)) per event</p>
             <div class="rifs-form-buttons">
-                <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(opp.id)" class="button">
+                <a href="@backUrl.getOrElse(controllers.manage.routes.OpportunityController.showOverviewPage(opp.id))" class="button">
                    Continue</a>
             </div>
 

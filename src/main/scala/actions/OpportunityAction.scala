@@ -22,3 +22,4 @@ class OpportunityAction @Inject()(opportunities: OpportunityOps)(implicit ec:Exe
       }
     }
 }
+

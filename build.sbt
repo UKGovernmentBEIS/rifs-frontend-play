@@ -16,6 +16,7 @@ git.useGitDescribe := true
 routesImport ++= Seq(
   "models._",
   "models.PlayBindings._",
+  "controllers._",
   "com.wellfactored.playbindings.ValueClassUrlBinders._"
 )
 
@@ -40,6 +41,8 @@ libraryDependencies ++= Seq(
   "org.typelevel" %% "cats" % "0.7.2",
   "com.github.melrief" %% "pureconfig" % "0.1.6",
   "com.wellfactored" %% "play-bindings" % "1.1.0",
+  "com.beachape" %% "enumeratum" % "1.5.2",
+  "com.beachape" %% "enumeratum-play-json" % "1.5.2",
 
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
   "org.jsoup" % "jsoup" % "1.9.2" % Test

@@ -15,10 +15,10 @@ case class CostItem(itemName: String, cost: BigDecimal, justification: String, i
 
 case object CostItemValidator extends FieldValidator[CostItemValues, CostItem] {
   val itemValidator = MandatoryValidator(Some("item")).andThen(WordCountValidator(20))
-  val costValidator = CurrencyValidator
+  val costValidator = CurrencyValidator.anyValue
   val justificationValidator = MandatoryValidator(Some("justification")).andThen(WordCountValidator(200))
 
-  override def validate(path: String, a: CostItemValues): ValidatedNel[FieldError, CostItem] = {
+  override def doValidation(path: String, a: Normalised[CostItemValues]): ValidatedNel[FieldError, CostItem] = {
     val itemV = itemValidator.validate(s"$path.itemName", a.itemName)
     val costV = costValidator.validate(s"$path.cost", a.cost)
     val justV = justificationValidator.validate(s"$path.justification", a.justification)
@@ -34,18 +34,18 @@ case object CostItemValidator extends FieldValidator[CostItemValues, CostItem] {
 
 case class CostSectionValidator(maxValue: BigDecimal) extends FieldValidator[CostList, List[CostItem]] {
   val nonEmptyV = new FieldValidator[List[CostItem], List[CostItem]] {
-    override def validate(path: String, items: List[CostItem]): ValidatedNel[FieldError, List[CostItem]] =
+    override def doValidation(path: String, items: Normalised[List[CostItem]]): ValidatedNel[FieldError, List[CostItem]] =
       if (items.isEmpty) FieldError(path, s"Must provide at least one item.").invalidNel
       else items.validNel
   }
 
   val notTooCostlyV = new FieldValidator[List[CostItem], List[CostItem]] {
-    override def validate(path: String, items: List[CostItem]): ValidatedNel[FieldError, List[CostItem]] =
+    override def doValidation(path: String, items: Normalised[List[CostItem]]): ValidatedNel[FieldError, List[CostItem]] =
       if (items.map(_.cost).sum > maxValue) FieldError(path, s"Total requested exceeds limit. Please check costs of items.").invalidNel
       else items.validNel
   }
 
-  override def validate(path: String, cvs: CostList): ValidatedNel[FieldError, List[CostItem]] = {
+  override def doValidation(path: String, cvs: Normalised[CostList]): ValidatedNel[FieldError, List[CostItem]] = {
     nonEmptyV.andThen(notTooCostlyV).validate("", cvs.items)
   }
 }

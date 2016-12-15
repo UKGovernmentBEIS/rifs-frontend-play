@@ -2,7 +2,9 @@
         field: forms.DateTimeRangeField,
         opp: Opportunity,
         questions: Map[String, Question],
-        answers: play.api.libs.json.JsObject)
+        answers: play.api.libs.json.JsObject,
+        backUrl: Option[String]
+)
 
 @formatId(id: Long) = @{
     f"RIFS$id%05d"
@@ -16,11 +18,11 @@
                 @Opportunity deadlines
             </h1>
 
-            <form method="POST" action="@controllers.manage.routes.OpportunityController.saveDeadlines(opp.id)">
+            <form method="POST" action="@controllers.manage.routes.DeadlineController.save(opp.id)">
                 @field.renderPreview(questions, answers)
 
                 <div class="rifs-form-buttons">
-                    <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(opp.id)" class="button">
+                    <a href="@backUrl.getOrElse(controllers.manage.routes.OpportunityController.showOverviewPage(opp.id))" class="button">
                         Close</a>
                 </div>
             </form>

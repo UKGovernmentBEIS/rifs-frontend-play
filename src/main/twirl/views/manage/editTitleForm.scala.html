@@ -3,7 +3,8 @@
         questions: Map[String, Question],
         answers: play.api.libs.json.JsObject,
         errs: Seq[forms.validation.FieldError],
-        hints: Seq[forms.validation.FieldHint])
+        hints: Seq[forms.validation.FieldHint],
+        backUrl: String)
 
 
 @errors = @{
@@ -12,7 +13,7 @@
 
 @import views.html.partials._
 
-@main("RIFS - Edit Title", displayUserName = Some("Portfolio Peter")) {
+@main("Edit title - RIFS", backLink=Some(BackLink("Opportunity template",controllers.manage.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName = Some("Portfolio Peter")) {
 
     <div class="grid-row">
         <div class="column-two-thirds">
@@ -21,7 +22,7 @@
                 @Opportunity title
             </h1>
 
-            <form method="POST" action="@controllers.manage.routes.OpportunityController.saveTitle(opp.id)">
+            <form method="POST" action="@controllers.manage.routes.TitleController.save(opp.id)">
                 @field.renderFormInput(questions, answers, errs, hints)
 
                 <div class="rifs-form-buttons">
@@ -29,6 +30,9 @@
                     <input type="submit" name="@Preview.name" class="button--link-style" value="Preview this page"/>
                 </div>
             </form>
+        </div>
+        <div id="support-column" class="column-third">
+            @partials.editOpportunitySidebar(backUrl, 6, 2)
         </div>
     </div>
 

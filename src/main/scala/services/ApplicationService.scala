@@ -124,9 +124,9 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     getOpt[ApplicationSectionDetail](url)
   }
 
-  override def deleteAll(): Future[Unit] = {
-    val url = s"$baseUrl/application"
-    delete(url)
+  override def reset(): Future[Unit] = {
+    val url = s"$baseUrl/reset"
+    post(url, None)
   }
 
   override def deleteSection(id: ApplicationId, sectionNumber: Int): Future[Unit] = {
@@ -142,5 +142,10 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
   override def submit(id: ApplicationId): Future[Option[SubmittedApplicationRef]] = {
     val url = s"$baseUrl/application/${id.id}/submit"
     postWithResult[SubmittedApplicationRef, String](url, "")
+  }
+
+  override def updatePersonalReference(id: ApplicationId, reference: String) = {
+    val url = s"$baseUrl/application/${id.id}/personal-ref"
+    post(url, reference)
   }
 }

@@ -32,6 +32,24 @@
             var output = rule(input.value, config);
             helper.innerHTML = output;
         });
+
+        input.addEventListener('paste', function() {
+            // The paste event fires before the element has received the
+            // pasted text.
+            window.setTimeout(function() {
+                var output = rule(input.value, config);
+                helper.innerHTML = output;
+            }, 200);
+        });
+
+        input.addEventListener('drop', function() {
+            // drop events happen before the drop event has completed
+            // so we need this hack to wait for the drop event to complete.
+            window.setTimeout(function() {
+                var output = rule(input.value, config);
+                helper.innerHTML = output;
+            }, 200);
+        });
     }
 
     function rifsHelperText() {
@@ -80,5 +98,39 @@ $(document).ready(function () {
         var selector = $(this).attr('data-for');
         var el = $(selector);
         el.hide();
+    });
+
+    $('.js-navigation-toggle').click(function(){
+
+        // A selector for the element to toggle is stashed in the data-for attribute
+        var selector = $(this).attr('data-for');
+        var el = $(selector);
+
+        if (el.is(':visible')) {
+            // Changes on the <a> link driving this
+            $(this)
+                .removeClass('show-all-parts-open')
+                .addClass('show-all-parts-closed');
+
+            // Change the verb of the link
+            $(this).text($(this).text().replace('Hide', 'Show'));
+
+            // Handle presentation changes to the navigation container
+            el.removeClass('nav-open').addClass('nav-closed');
+        } else {
+
+            // Changes on the <a> link driving this
+            $(this)
+                .removeClass('show-all-parts-closed')
+                .addClass('show-all-parts-open');
+
+            // Change the verb of the link
+            $(this).text($(this).text().replace('Show', 'Hide'));
+
+            // Handle presentation changes to the navigation container
+            el
+                .removeClass('nav-closed')
+                .addClass('nav-open');
+        }
     });
 });

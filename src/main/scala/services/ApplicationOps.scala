@@ -20,7 +20,7 @@ trait ApplicationOps {
 
   def sectionDetail(id: ApplicationId, sectionNum:Int): Future[Option[ApplicationSectionDetail]]
 
-  def deleteAll(): Future[Unit]
+  def reset(): Future[Unit]
 
   def saveSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[Unit]
 
@@ -42,4 +42,5 @@ trait ApplicationOps {
 
   def submit(id: ApplicationId): Future[Option[SubmittedApplicationRef]]
 
+  def updatePersonalReference(id: ApplicationId, reference: String): Future[Unit]
 }
