@@ -3,11 +3,7 @@ package controllers.manage
 import javax.inject.Inject
 
 import actions.OpportunityAction
-import cats.data.Validated._
-import controllers.FieldCheckHelpers.hinting
-import controllers._
-import forms._
-import forms.validation.{CurrencyValidator, DateTimeRangeValues, FieldError}
+import forms.validation.FieldError
 import models._
 import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
