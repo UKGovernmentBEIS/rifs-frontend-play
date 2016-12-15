@@ -4,9 +4,9 @@ import javax.inject.Inject
 
 import actions.OpportunityAction
 import cats.data.Validated.{Invalid, Valid}
-import controllers.{FieldCheckHelpers, JsonForm, Preview}
-import forms.{CurrencyField, DateTimeRangeField, DateValues}
-import forms.validation.{CurrencyValidator, DateTimeRangeValues}
+import controllers.{JsonForm, Preview}
+import forms.validation.DateTimeRangeValues
+import forms.{DateTimeRangeField, DateValues}
 import models.{Opportunity, OpportunityId, Question}
 import org.joda.time.LocalDate
 import play.api.libs.json._
@@ -16,7 +16,7 @@ import services.OpportunityOps
 import scala.concurrent.{ExecutionContext, Future}
 
 class DeadlineController @Inject()(opportunities: OpportunityOps, OpportunityAction: OpportunityAction)(implicit ec: ExecutionContext) extends Controller {
-  val DEADLINES_FIELD_NAME = "deadlines"
+  val deadlinesFieldName = "deadlines"
   val deadlinesField = DateTimeRangeField("deadlines", allowPast = false, isEndDateMandatory = false)
   val deadlineQuestions = Map(
     "deadlines.startDate" -> Question("When does the opportunity open?"),
@@ -35,7 +35,7 @@ class DeadlineController @Inject()(opportunities: OpportunityOps, OpportunityAct
 
   def view(id: OpportunityId) = OpportunityAction(id) {
     request =>
-      val answers = JsObject(Seq(DEADLINES_FIELD_NAME -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
+      val answers = JsObject(Seq(deadlinesFieldName -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
       request.opportunity.publishedAt match {
         case Some(dateval) => Ok(views.html.manage.viewDeadlines(deadlinesField, request.opportunity, deadlineQuestions, answers))
         case None => Redirect(controllers.manage.routes.DeadlineController.edit(id))
@@ -44,13 +44,13 @@ class DeadlineController @Inject()(opportunities: OpportunityOps, OpportunityAct
 
 
   def edit(id: OpportunityId) = OpportunityAction(id) { request =>
-      val answers = JsObject(Seq(DEADLINES_FIELD_NAME -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
+      val answers = JsObject(Seq(deadlinesFieldName -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
       Ok(views.html.manage.editDeadlinesForm(deadlinesField, request.opportunity, deadlineQuestions, answers, Seq(), Seq()))
   }
 
   def save(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) {
     implicit request =>
-      (request.body.values \ DEADLINES_FIELD_NAME).validate[DateTimeRangeValues] match {
+      (request.body.values \ deadlinesFieldName).validate[DateTimeRangeValues] match {
         case JsSuccess(vs, _) =>
           deadlinesField.validator.validate(deadlinesField.name, vs) match {
             case Valid(v) =>
@@ -74,7 +74,7 @@ class DeadlineController @Inject()(opportunities: OpportunityOps, OpportunityAct
 
   def preview(id: OpportunityId) = OpportunityAction(id) {
     request =>
-      val answers = JsObject(Seq(DEADLINES_FIELD_NAME -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
+      val answers = JsObject(Seq(deadlinesFieldName -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
       Ok(views.html.manage.previewDeadlines(deadlinesField, request.opportunity, deadlineQuestions, answers, request.flash.get(PREVIEW_BACK_URL_FLASH)))
   }
 }

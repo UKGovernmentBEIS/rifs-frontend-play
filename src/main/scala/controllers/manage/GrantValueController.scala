@@ -14,9 +14,9 @@ import services.OpportunityOps
 import scala.concurrent.{ExecutionContext, Future}
 
 class GrantValueController @Inject()(opportunities: OpportunityOps, OpportunityAction: OpportunityAction)(implicit ec: ExecutionContext) extends Controller {
-  val GRANT_VALUE_FIELD_NAME = "grantValue"
-  val grantValueField = CurrencyField(None, GRANT_VALUE_FIELD_NAME, Some(CurrencyValidator.greaterThanZero))
-  val VIEW_GRANT_VALUE_FLASH = "ViewGrantValueFlash"
+  val grantValueFieldName = "grantValue"
+  val grantValueField = CurrencyField(None, grantValueFieldName, Some(CurrencyValidator.greaterThanZero))
+  val viewGrantValueFlash = "ViewGrantValueFlash"
 
   def view(id: OpportunityId) = OpportunityAction(id) { request =>
     request.opportunity.publishedAt match {
@@ -29,23 +29,23 @@ class GrantValueController @Inject()(opportunities: OpportunityOps, OpportunityA
     request.opportunity.publishedAt match {
       case Some(_) => BadRequest
       case None => doEditSection(request.opportunity,
-        JsObject(Seq(GRANT_VALUE_FIELD_NAME -> JsNumber(request.opportunity.value.amount))),
+        JsObject(Seq(grantValueFieldName -> JsNumber(request.opportunity.value.amount))),
         Nil
       )
     }
   }
 
   def doEditSection(opp: Opportunity, initial: JsObject, errs: Seq[forms.validation.FieldError]) = {
-    val hints = FieldCheckHelpers.hinting(initial, Map(GRANT_VALUE_FIELD_NAME -> grantValueField.check))
+    val hints = FieldCheckHelpers.hinting(initial, Map(grantValueFieldName -> grantValueField.check))
     val q = Question("Maximum amount from this opportunity", None, None)
 
     Ok(views.html.manage.editCostSectionForm(grantValueField, opp,
-      routes.GrantValueController.edit(opp.id).url, Map(GRANT_VALUE_FIELD_NAME -> q), initial, errs, hints))
+      routes.GrantValueController.edit(opp.id).url, Map(grantValueFieldName -> q), initial, errs, hints))
   }
 
   def save(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
-    (request.body.values \ GRANT_VALUE_FIELD_NAME).toOption.map { fValue =>
-      grantValueField.check(GRANT_VALUE_FIELD_NAME, fValue) match {
+    (request.body.values \ grantValueFieldName).toOption.map { fValue =>
+      grantValueField.check(grantValueFieldName, fValue) match {
         case Nil =>
           val summary = request.opportunity.summary
           opportunities.saveSummary(summary.copy(value = summary.value.copy(amount = fValue.as[BigDecimal]))).map { _ =>

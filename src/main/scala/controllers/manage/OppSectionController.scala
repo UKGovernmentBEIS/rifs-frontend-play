@@ -13,16 +13,16 @@ import services.{ApplicationFormOps, OpportunityOps}
 import scala.concurrent.{ExecutionContext, Future}
 
 class OppSectionController @Inject()(appForms: ApplicationFormOps,opportunities: OpportunityOps, OpportunityAction: OpportunityAction)(implicit ec: ExecutionContext) extends Controller {
-  val SECTION_FIELD_NAME = "section"
-  val sectionField = TextAreaField(None, SECTION_FIELD_NAME, 500)
+  val sectionFieldName = "section"
+  val sectionField = TextAreaField(None, sectionFieldName, 500)
 
   def doEdit(opp: Opportunity, sectionNum: Int, initial: JsObject, errs: Seq[forms.validation.FieldError] = Nil) = {
-    val hints = FieldCheckHelpers.hinting(initial, Map(SECTION_FIELD_NAME -> sectionField.check))
+    val hints = FieldCheckHelpers.hinting(initial, Map(sectionFieldName -> sectionField.check))
     opp.description.find(_.sectionNumber == sectionNum) match {
       case Some(section) =>
         val q = Question(section.description.getOrElse(""), None, section.helpText)
         Ok(views.html.manage.editOppSectionForm(sectionField, opp, section,
-          routes.OppSectionController.edit(opp.id, sectionNum).url, Map(SECTION_FIELD_NAME -> q), initial, errs, hints))
+          routes.OppSectionController.edit(opp.id, sectionNum).url, Map(sectionFieldName -> q), initial, errs, hints))
       case None => NotFound
     }
   }
@@ -32,7 +32,7 @@ class OppSectionController @Inject()(appForms: ApplicationFormOps,opportunities:
       case Some(appForm) =>
         request.opportunity.description.find(_.sectionNumber == sectionNum) match {
           case Some(sect) if sect.sectionType == OppSectionType.Text =>
-            val answers = JsObject(Seq(SECTION_FIELD_NAME -> Json.toJson(sect.text)))
+            val answers = JsObject(Seq(sectionFieldName -> Json.toJson(sect.text)))
             doEdit(request.opportunity, sectionNum, answers)
           case Some(sect) => Ok(views.html.manage.whatWeWillAskPreview(request.uri, request.opportunity, sectionNum, appForm))
           case None => NotFound
@@ -42,8 +42,8 @@ class OppSectionController @Inject()(appForms: ApplicationFormOps,opportunities:
   }
 
   def save(id: OpportunityId, sectionNum: Int) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
-    (request.body.values \ SECTION_FIELD_NAME).toOption.map { fValue =>
-      sectionField.check(SECTION_FIELD_NAME, fValue) match {
+    (request.body.values \ sectionFieldName).toOption.map { fValue =>
+      sectionField.check(sectionFieldName, fValue) match {
         case Nil =>
           opportunities.saveDescriptionSectionText(id, sectionNum, Some(fValue.as[String])).map { _ =>
             request.body.action match {

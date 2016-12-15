@@ -15,20 +15,20 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class TitleController @Inject()(opportunities: OpportunityOps, OpportunityAction: OpportunityAction)(implicit ec: ExecutionContext) extends Controller {
 
-  val TITLE_FIELD_NAME = "title"
-  val titleField = TextField(label = Some(TITLE_FIELD_NAME), name = TITLE_FIELD_NAME, isNumeric = false, maxWords = 20)
-  val titleQuestion = Map(TITLE_FIELD_NAME -> Question("What is your opportunity called ?"))
+  val titleFieldName = "title"
+  val titleField = TextField(label = Some(titleFieldName), name = titleFieldName, isNumeric = false, maxWords = 20)
+  val titleQuestion = Map(titleFieldName -> Question("What is your opportunity called ?"))
 
   def edit(id: OpportunityId) = OpportunityAction(id) { request =>
-    val answers = JsObject(Seq(TITLE_FIELD_NAME -> Json.toJson(request.opportunity.title)))
+    val answers = JsObject(Seq(titleFieldName -> Json.toJson(request.opportunity.title)))
     val hints = hinting(answers, Map(titleField.name -> titleField.check))
     Ok(views.html.manage.editTitleForm(titleField, request.opportunity, titleQuestion, answers, Seq(), hints, request.uri))
   }
 
   def save(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
     JsonHelpers.flatten(request.body.values) match {
-      case _ => titleField.check(titleField.name, Json.toJson(JsonHelpers.flatten(request.body.values).getOrElse(TITLE_FIELD_NAME, ""))) match {
-        case Nil => opportunities.saveSummary(request.opportunity.summary.copy(title = JsonHelpers.flatten(request.body.values).getOrElse(TITLE_FIELD_NAME, ""))).map { _ =>
+      case _ => titleField.check(titleField.name, Json.toJson(JsonHelpers.flatten(request.body.values).getOrElse(titleFieldName, ""))) match {
+        case Nil => opportunities.saveSummary(request.opportunity.summary.copy(title = JsonHelpers.flatten(request.body.values).getOrElse(titleFieldName, ""))).map { _ =>
           request.body.action match {
             case Preview =>
               Redirect(controllers.manage.routes.TitleController.preview(id))
