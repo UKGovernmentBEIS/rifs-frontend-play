@@ -38,7 +38,10 @@ sbt test
 
 ####Acceptance Tests
 
-NOTE: Cucumber/acceptance tests are available in a separate project at: [rifs-test](https://github.com/UKGovernmentBEIS/rifs-test) 
+NOTE: Cucumber/acceptance tests are available in a separate project at: [rifs-test](https://github.com/UKGovernmentBEIS/rifs-test)
+ 
+### Documentation
+[Frontend Developers](docs/frontend.md)
 
 ### License
 

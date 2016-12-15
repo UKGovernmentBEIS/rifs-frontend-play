@@ -77,21 +77,21 @@ backLink=Some(BackLink("Opportunity library", controllers.manage.routes.Opportun
                                 <tr>
                                     <td>
                                         1. <a id="op-setup-link1"
-                                              href="@controllers.manage.routes.OpportunityController.viewTitle(opportunity.id)"
+                                              href="@controllers.manage.routes.TitleController.view(opportunity.id)"
                                             > Opportunity title</a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
                                         2. <a id="op-setup-link2"
-                                              href="@controllers.manage.routes.OpportunityController.viewDeadlines(opportunity.id)"
+                                              href="@controllers.manage.routes.DeadlineController.view(opportunity.id)"
                                             > Opportunity deadlines</a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
                                         3. <a id="op-setup-link3"
-                                              href="@controllers.manage.routes.OpportunityController.viewGrantValue(opportunity.id)"
+                                              href="@controllers.manage.routes.GrantValueController.view(opportunity.id)"
                                             > Maximum grant value</a>
                                     </td>
                                 </tr>
@@ -101,7 +101,7 @@ backLink=Some(BackLink("Opportunity library", controllers.manage.routes.Opportun
                                     <td>
                                         @(s"${num + 4}.")
                                         <a id="op-setup-link@(num + 4)"
-                                        href="@controllers.manage.routes.OpportunityController.viewSection(opportunity.id, oppDesc.sectionNumber)">
+                                        href="@controllers.manage.routes.OppSectionController.view(opportunity.id, oppDesc.sectionNumber)">
                                             @oppDesc.title
                                         </a>
                                     </td>

@@ -22,7 +22,7 @@
                 Grant value
             </h1>
 
-            <form method="POST" action="@controllers.manage.routes.OpportunityController.saveGrantValue(opp.id)">
+            <form method="POST" action="@controllers.manage.routes.GrantValueController.save(opp.id)">
 
                 @if(errors.nonEmpty) {
                 <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">

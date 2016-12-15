@@ -16,6 +16,7 @@ git.useGitDescribe := true
 routesImport ++= Seq(
   "models._",
   "models.PlayBindings._",
+  "controllers._",
   "com.wellfactored.playbindings.ValueClassUrlBinders._"
 )
 

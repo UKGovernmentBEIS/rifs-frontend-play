@@ -25,7 +25,7 @@
                 @Opportunity deadlines
             </h1>
 
-            <form method="POST" action="@controllers.manage.routes.OpportunityController.saveDeadlines(opp.id)"
+            <form method="POST" action="@controllers.manage.routes.DeadlineController.save(opp.id)"
             novalidate="novalidate">
                 @field.renderFormInput(questions, answers, errs, hints)
 
@@ -41,7 +41,7 @@
             <h2 class="heading-medium no-top-margin">Support</h2>
             <ul class="list spacious">
                 <li>
-                    <a href="@controllers.manage.routes.OpportunityController.showPMGuidancePage(controllers.manage.routes.OpportunityController.editDeadlines(opp.id).toString)">
+                    <a href="@controllers.manage.routes.OpportunityController.showPMGuidancePage(controllers.manage.routes.DeadlineController.edit(opp.id).toString)">
                         Guidance on opportunity set-up</a>
                 </li>
             </ul>
