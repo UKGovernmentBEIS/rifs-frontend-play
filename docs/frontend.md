@@ -22,12 +22,36 @@ a collection of sass repositories and a page template
 * [Screen reader poll from RNIB](https://www.rnib.org.uk/webaim-screen-reader-survey-5-what-are-trends)
 * [Tink's blog](http://tink.uk/)
 
-## User experience
+## UX Prototypes
 
 The UX language is efficient and simple.  This is the result of much thought and synthesis from the UX team, and 
 considerable research with the users.  
 
-The UX team have provided high fidelity mock-ups of the screens and interactions.  [View the protoype](FIXME.axshare.com)
+The UX team have provided high fidelity mock-ups of the screens and interactions.  
+
+* [Appplicant Journey](http://37w3jk.axshare.com/#g=1&p=start_page)
+* [Portfolio Manager Journey](http://3skvvc.axshare.com/#g=1&p=start_page)
+
+## Hosting
+
+View the [The demonstration site](https://rifs-demo.herokuapp.com)
+
+
+## Tools
+
+You may want to consider using [IntelliJ Ultimate](https://www.jetbrains.com/idea/) with the Scala plugin.
+
+[Virtualbox](https://www.virtualbox.org/) and [Microsoft's virtual machine images](https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/)
+allow various flavours of IE to be run on the desktop.
+
+If you use macOS it's worth finding out how to use [VoiceOver](https://www.apple.com/voiceover/info/guide/).
+
+On Windows you can use [NVDS](http://www.nvaccess.org/) and [JAWS](http://www.freedomscientific.com/Products/Blindness/JAWS).
+
+
+
+
+
 
 
 
