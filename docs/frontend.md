@@ -49,9 +49,25 @@ If you use macOS it's worth finding out how to use [VoiceOver](https://www.apple
 On Windows you can use [NVDS](http://www.nvaccess.org/) and [JAWS](http://www.freedomscientific.com/Products/Blindness/JAWS).
 
 
+## Code
+
+The sass for the site is located here: [stylesheets](https://github.com/UKGovernmentBEIS/rifs-frontend-play/tree/master/src/main/assets/stylesheets) 
+
+Logically the application sass depends on GDS Elements which depends on GDS Frontend Toolkit, but the SBT sass plugin 
+and was unable to set the sass load-path.  The following folder structure is the work-around, and it's important to note 
+that because of this the vendor dependencies are actually checked into the source code. 
 
 
+Folder explanation:--
 
+* `colours` - the colours folder from the GDS Frontend Toolkit
+* `design-patterns` - also from the GDS Frontend Toolkit
+* `elements` - files from GDS Elements SASS repo
+* `static` - files taken from [AlphaGov static repo](https://github.com/alphagov/static)
+* The files in the `stylesheets` folder itself are from the GDS Frontend Toolkit
+ 
+The [application.scss](https://github.com/UKGovernmentBEIS/rifs-frontend-play/blob/master/src/main/assets/stylesheets/application.scss) file
+pulls everything needed in.  
 
 
 
