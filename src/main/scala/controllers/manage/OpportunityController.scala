@@ -7,7 +7,7 @@ import cats.data.Validated._
 import controllers.FieldCheckHelpers.hinting
 import controllers._
 import forms._
-import forms.validation.{CurrencyValidator, DateTimeRangeValues}
+import forms.validation.{CurrencyValidator, DateTimeRangeValues, FieldError}
 import models._
 import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
@@ -62,7 +62,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
 
   def showOverviewPage(id: OpportunityId) = OpportunityAction(id).async { request =>
     appForms.byOpportunityId(id).map {
-      case Some(appForm) => Ok(views.html.manage.opportunityOverview(request.uri, request.opportunity, appForm))
+      case Some(appForm) => Ok(views.html.manage.opportunityOverview(List(), request.uri, request.opportunity, appForm))
       case None => NotFound
     }
   }
@@ -247,7 +247,20 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
   def publish(id: OpportunityId) = OpportunityAction(id).async {
     request =>
       val oppdate = request.opportunity.startDate
-      if(request.opportunity.value.amount >=2000 && oppdate != null && oppdate.isAfter(LocalDate.now())){
+
+      val valueError : Option[FieldError] =
+        if (request.opportunity.value.amount > 2000)
+          Some(FieldError("", "Amount is over £2000. Please review "))
+        else None
+
+      val dateError:Option[FieldError] =
+        if (oppdate.isBefore(LocalDate.now()))
+          Some(FieldError("","Opportunity start date is incorrect. Please review"))
+        else None
+
+      val errs: Seq[FieldError] = (valueError ++ dateError).toSeq
+
+      if(request.opportunity.value.amount <=2000 && oppdate.isAfter(LocalDate.now())){
         val emailto = "Portfolio.Manager@rifs.gov.uk"
         val dtf = DateTimeFormat.forPattern("HH:mm:ss")
         opportunities.publish(id).map {
@@ -257,7 +270,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
         }
       } else {
         appForms.byOpportunityId(id).map {
-          case Some(appForm) => Ok(views.html.manage.opportunityOverview(request.uri, request.opportunity, appForm))
+          case Some(appForm) => Ok(views.html.manage.opportunityOverview(errs, request.uri, request.opportunity, appForm))
           case None => NotFound
         }
       }
