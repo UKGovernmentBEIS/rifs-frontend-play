@@ -3,7 +3,13 @@ package controllers.manage
 import javax.inject.Inject
 
 import actions.OpportunityAction
+import cats.data.Validated._
+import controllers.FieldCheckHelpers.hinting
+import controllers._
+import forms._
+import forms.validation.{CurrencyValidator, DateTimeRangeValues, FieldError}
 import models._
+import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, OpportunityOps}
@@ -54,7 +60,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
 
   def showOverviewPage(id: OpportunityId) = OpportunityAction(id).async { request =>
     appForms.byOpportunityId(id).map {
-      case Some(appForm) => Ok(views.html.manage.opportunityOverview(request.uri, request.opportunity, appForm))
+      case Some(appForm) => Ok(views.html.manage.opportunityOverview(List(), request.uri, request.opportunity, appForm))
       case None => NotFound
     }
   }
@@ -80,12 +86,33 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
 
   def publish(id: OpportunityId) = OpportunityAction(id).async {
     request =>
-      val emailto = "Portfolio.Manager@rifs.gov.uk"
-      val dtf = DateTimeFormat.forPattern("HH:mm:ss")
-      opportunities.publish(id).map {
-        case Some(dt) =>
-          Ok(views.html.manage.publishedOpportunity(request.opportunity.id, emailto, dtf.print(dt)))
-        case None => NotFound
+      val oppdate = request.opportunity.startDate
+
+      val valueError : Option[FieldError] =
+        if (request.opportunity.value.amount > 2000)
+          Some(FieldError("", "Maximum grant value is over £2000. Please review "))
+        else None
+
+      val dateError:Option[FieldError] =
+        if (oppdate.isBefore(LocalDate.now()))
+          Some(FieldError("","Opportunity start date is incorrect. Please review"))
+        else None
+
+      val errs: Seq[FieldError] = (valueError ++ dateError).toSeq
+
+      if(request.opportunity.value.amount <=2000 && oppdate.isAfter(LocalDate.now())){
+        val emailto = "Portfolio.Manager@rifs.gov.uk"
+        val dtf = DateTimeFormat.forPattern("HH:mm:ss")
+        opportunities.publish(id).map {
+          case Some(dt) =>
+            Ok(views.html.manage.publishedOpportunity(request.opportunity.id, emailto, dtf.print(dt)))
+          case None => NotFound
+        }
+      } else {
+        appForms.byOpportunityId(id).map {
+          case Some(appForm) => Ok(views.html.manage.opportunityOverview(errs, request.uri, request.opportunity, appForm))
+          case None => NotFound
+        }
       }
   }
 

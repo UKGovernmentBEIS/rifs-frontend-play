@@ -1,6 +1,6 @@
 @import models._
 
-@(backUrl:String, opportunity: Opportunity, app: ApplicationForm, tabNumber: Option[Int] = None)
+@(errs: Seq[forms.validation.FieldError], backUrl:String, opportunity: Opportunity, app: ApplicationForm, tabNumber: Option[Int] = None)
 
 @username() = @{
     Some("Portfolio Peter")
@@ -17,6 +17,7 @@
     if (opportunity.publishedAt.isEmpty) "Publish opportunity"
     else "Duplicate opportunity"
 }
+@errorClass = @{if(errs.nonEmpty) "rifs-error-panel" else ""}
 
 @main(s"Opportunity template setup - RIFS", displayUserName=username(),
 backLink=Some(BackLink("Opportunity library", controllers.manage.routes.OpportunityController.showOpportunityLibrary().url))) {
@@ -30,6 +31,19 @@ backLink=Some(BackLink("Opportunity library", controllers.manage.routes.Opportun
 
     <div class="grid-row">
     <div class="column-two-thirds">
+
+        @if(errs.nonEmpty) {
+        <div class="panel @errorClass" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+            <ul class="list list-bullet">
+                @errs.map { e =>
+                <li class="bold-small">
+                    @e.path &nbsp;
+                    @e.err
+                </li>
+                }
+            </ul>
+        </div>
+        }
 
         <h1 class="heading-xlarge">
             <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
