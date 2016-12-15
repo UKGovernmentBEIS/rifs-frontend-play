@@ -21,7 +21,7 @@ class GrantValueController @Inject()(opportunities: OpportunityOps, OpportunityA
   def view(id: OpportunityId) = OpportunityAction(id) { request =>
     request.opportunity.publishedAt match {
       case Some(_) => Ok(views.html.manage.viewGrantValue(request.opportunity))
-      case None => Redirect(controllers.manage.routes.GrantValueController.editGrantValue(id))
+      case None => Redirect(controllers.manage.routes.GrantValueController.edit(id))
     }
   }
 
@@ -40,7 +40,7 @@ class GrantValueController @Inject()(opportunities: OpportunityOps, OpportunityA
     val q = Question("Maximum amount from this opportunity", None, None)
 
     Ok(views.html.manage.editCostSectionForm(grantValueField, opp,
-      routes.GrantValueController.editGrantValue(opp.id).url, Map(GRANT_VALUE_FIELD_NAME -> q), initial, errs, hints))
+      routes.GrantValueController.edit(opp.id).url, Map(GRANT_VALUE_FIELD_NAME -> q), initial, errs, hints))
   }
 
   def save(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
@@ -51,9 +51,9 @@ class GrantValueController @Inject()(opportunities: OpportunityOps, OpportunityA
           opportunities.saveSummary(summary.copy(value = summary.value.copy(amount = fValue.as[BigDecimal]))).map { _ =>
             request.body.action match {
               case Preview =>
-                Redirect(controllers.manage.routes.GrantValueController.previewGrantValue(id))
+                Redirect(controllers.manage.routes.GrantValueController.preview(id))
                   .flashing(PREVIEW_BACK_URL_FLASH ->
-                    controllers.manage.routes.GrantValueController.editGrantValue(id).url)
+                    controllers.manage.routes.GrantValueController.edit(id).url)
               case _ =>
                 Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id))
             }

@@ -14,7 +14,7 @@
                 @Opportunity deadlines
             </h1>
 
-            <form method="POST" action="@controllers.manage.routes.OpportunityController.saveDeadlines(opp.id)">
+            <form method="POST" action="@controllers.manage.routes.DeadlineController.save(opp.id)">
                 @field.renderPreview(questions, answers)
 
                 <div class="rifs-form-buttons">
