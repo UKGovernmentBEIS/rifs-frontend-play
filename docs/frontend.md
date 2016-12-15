@@ -10,7 +10,7 @@ do not carry the Crown logo.
 
 * [The GDS service manual](https://www.gov.uk/service-manual/developers)
 * [GDS Elements](https://www.gov.uk/service-manual/design/using-the-govuk-template-frontend-toolkit-and-elements) - 
-a collection of sass repositories and a page template
+a collection of [SASS](http://sass-lang.com/guide) repositories and a page template
 * [Design patterns](https://www.gov.uk/service-manual/user-centred-design/resources/patterns/index.html)
 * [Progressive enhancement](https://www.gov.uk/service-manual/technology/using-progressive-enhancement)
 * [Targeted browsers](https://www.gov.uk/service-manual/technology/designing-for-different-browsers-and-devices)
