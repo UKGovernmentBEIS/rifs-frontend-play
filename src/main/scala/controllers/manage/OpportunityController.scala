@@ -7,7 +7,7 @@ import cats.data.Validated._
 import controllers.FieldCheckHelpers.hinting
 import controllers._
 import forms._
-import forms.validation.{CurrencyValidator, DateTimeRangeValues}
+import forms.validation.DateTimeRangeValues
 import models._
 import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
@@ -144,7 +144,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     }
   }
 
-  val PREVIEW_BACK_URL_FLASH = "PREVIEW_BACK_URL_FLASH"
+
 
   def saveSection(id: OpportunityId, sectionNum: Int) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
     (request.body.values \ SECTION_FIELD_NAME).toOption.map { fValue =>
@@ -170,60 +170,6 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
       case Some(dateval) => Ok(views.html.manage.viewTitle(request.opportunity))
       case None => Redirect(controllers.manage.routes.OpportunityController.editTitle(id))
     }
-  }
-
-
-  def viewGrantValue(id: OpportunityId) = OpportunityAction(id) { request =>
-    request.opportunity.publishedAt match {
-      case Some(_) => Ok(views.html.manage.viewGrantValue(request.opportunity))
-      case None => Redirect(controllers.manage.routes.OpportunityController.editGrantValue(id))
-    }
-  }
-
-  val GRANT_VALUE_FIELD_NAME = "grantValue"
-  val grantValueField = CurrencyField(None, GRANT_VALUE_FIELD_NAME, Some(CurrencyValidator.greaterThanZero))
-  val VIEW_GRANT_VALUE_FLASH = "ViewGrantValueFlash"
-
-  def editGrantValue(id: OpportunityId) = OpportunityAction(id) { request =>
-    request.opportunity.publishedAt match {
-      case Some(_) => BadRequest
-      case None => doEditCostSection(request.opportunity,
-        JsObject(Seq(GRANT_VALUE_FIELD_NAME -> JsNumber(request.opportunity.value.amount))),
-        Nil
-      )
-    }
-  }
-
-  def doEditCostSection(opp: Opportunity, initial: JsObject, errs: Seq[forms.validation.FieldError]) = {
-    val hints = FieldCheckHelpers.hinting(initial, Map(GRANT_VALUE_FIELD_NAME -> grantValueField.check))
-    val q = Question("Maximum amount from this opportunity", None, None)
-
-    Ok(views.html.manage.editCostSectionForm(grantValueField, opp,
-      routes.OpportunityController.editGrantValue(opp.id).url, Map(GRANT_VALUE_FIELD_NAME -> q), initial, errs, hints))
-  }
-
-  def saveGrantValue(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
-    (request.body.values \ GRANT_VALUE_FIELD_NAME).toOption.map { fValue =>
-      grantValueField.check(GRANT_VALUE_FIELD_NAME, fValue) match {
-        case Nil =>
-          val summary = request.opportunity.summary
-          opportunities.saveSummary(summary.copy(value = summary.value.copy(amount = fValue.as[BigDecimal]))).map { _ =>
-            request.body.action match {
-              case Preview =>
-                Redirect(controllers.manage.routes.OpportunityController.previewGrantValue(id))
-                  .flashing(PREVIEW_BACK_URL_FLASH ->
-                    controllers.manage.routes.OpportunityController.editGrantValue(id).url)
-              case _ =>
-                Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id))
-            }
-          }
-        case errors => Future.successful(doEditCostSection(request.opportunity, request.body.values, errors))
-      }
-    }.getOrElse(Future.successful(BadRequest))
-  }
-
-  def previewGrantValue(id: OpportunityId) = OpportunityAction(id) { request =>
-    Ok(views.html.manage.viewGrantValue(request.opportunity, request.flash.get(PREVIEW_BACK_URL_FLASH)))
   }
 
   def viewSection(id: OpportunityId, sectionNum: Int) = OpportunityAction(id).async { request =>
@@ -266,8 +212,6 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
       }
   }
 
-  implicit val dvFmt = Json.format[DateValues]
-  implicit val dtrFmt = Json.format[DateTimeRangeValues]
 
   def editDeadlines(id: OpportunityId) = OpportunityAction(id) {
     request =>
