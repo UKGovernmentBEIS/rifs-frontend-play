@@ -62,15 +62,15 @@ POST        /manage/opportunity/:id/grantvalue                        controller
 GET         /manage/opportunity/:id/grantvalue/edit                   controllers.manage.GrantValueController.edit(id:OpportunityId)
 GET         /manage/opportunity/:id/grantvalue/preview                controllers.manage.GrantValueController.preview(id:OpportunityId)
 
-GET         /manage/opportunity/:id/section/:num                      controllers.manage.OpportunityController.viewSection(id:OpportunityId, num:Int)
-POST        /manage/opportunity/:id/section/:num                      controllers.manage.OpportunityController.saveSection(id:OpportunityId, num:Int)
-GET         /manage/opportunity/:id/section/:num/edit                 controllers.manage.OpportunityController.editSection(id:OpportunityId, num:Int)
+GET         /manage/opportunity/:id/section/:num                      controllers.manage.OppSectionController.view(id:OpportunityId, num:Int)
+POST        /manage/opportunity/:id/section/:num                      controllers.manage.OppSectionController.save(id:OpportunityId, num:Int)
+GET         /manage/opportunity/:id/section/:num/edit                 controllers.manage.OppSectionController.edit(id:OpportunityId, num:Int)
+GET         /manage/opportunity/:id/section/:sectionid/preview        controllers.manage.OppSectionController.preview(id: OpportunityId, sectionid:Int)
 
 GET         /manage/opportunity/:id/overview                          controllers.manage.OpportunityController.showOverviewPage(id:OpportunityId)
 POST        /manage/opportunity/:id/duplicate                         controllers.manage.OpportunityController.duplicate(id:OpportunityId)
 POST        /manage/opportunity/:id/publish                           controllers.manage.OpportunityController.publish(id:OpportunityId)
 
-GET         /manage/opportunity/:id/section/:sectionid/preview        controllers.manage.OpportunityController.previewOppSection(id: OpportunityId, sectionid:Int)
 
 GET         /manage/opportunity/:id/preview                           controllers.manage.OpportunityController.showOpportunityPublishPreview(id: OpportunityId, section:Option[Int])
 
