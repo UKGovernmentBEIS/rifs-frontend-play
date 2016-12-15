@@ -49,9 +49,10 @@ POST        /manage/opportunity/:id/deadlines                         controller
 GET         /manage/opportunity/:id/deadlines/edit                    controllers.manage.DeadlineController.edit(id: OpportunityId)
 GET         /manage/opportunity/:id/deadlines/preview                 controllers.manage.DeadlineController.preview(id: OpportunityId)
 
-GET         /manage/opportunity/:id/title                             controllers.manage.OpportunityController.viewTitle(id:OpportunityId)
-POST        /manage/opportunity/:id/title                             controllers.manage.OpportunityController.saveTitle(id: OpportunityId)
-GET         /manage/opportunity/:id/title/edit                        controllers.manage.OpportunityController.editTitle(id: OpportunityId)
+GET         /manage/opportunity/:id/title                             controllers.manage.TitleController.view(id:OpportunityId)
+POST        /manage/opportunity/:id/title                             controllers.manage.TitleController.save(id: OpportunityId)
+GET         /manage/opportunity/:id/title/edit                        controllers.manage.TitleController.edit(id: OpportunityId)
+GET         /manage/opportunity/:id/title/preview                     controllers.manage.TitleController.preview(id: OpportunityId)
 
 GET         /manage/opportunity/:id/section/:num/questions            controllers.manage.OpportunityController.viewQuestions(id: OpportunityId, num:Int)
 
@@ -70,7 +71,6 @@ POST        /manage/opportunity/:id/duplicate                         controller
 POST        /manage/opportunity/:id/publish                           controllers.manage.OpportunityController.publish(id:OpportunityId)
 
 GET         /manage/opportunity/:id/section/:sectionid/preview        controllers.manage.OpportunityController.previewOppSection(id: OpportunityId, sectionid:Int)
-GET         /manage/opportunity/:id/title/preview                     controllers.manage.OpportunityController.previewTitle(id: OpportunityId)
 
 GET         /manage/opportunity/:id/preview                           controllers.manage.OpportunityController.showOpportunityPublishPreview(id: OpportunityId, section:Option[Int])
 

@@ -35,7 +35,6 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     }
   }
 
-
   def previewOpportunity(id: OpportunityId, sectionNumber: Option[Int]) = OpportunityAction(id).async { implicit request =>
     appForms.byOpportunityId(id).map {
       case Some(appForm) => Ok(views.html.manage.previewDefaultOpportunity(request.uri, request.opportunity, sectionNumber.getOrElse(1), appForm))
@@ -75,39 +74,6 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
           case None => NotFound
         }
       case None => NotFound
-    }
-  }
-
-
-
-  val TITLE_FIELD_NAME = "title"
-  val titleField = TextField(label = Some(TITLE_FIELD_NAME), name = TITLE_FIELD_NAME, isNumeric = false, maxWords = 20)
-  val titleQuestion = Map(TITLE_FIELD_NAME -> Question("What is your opportunity called ?"))
-
-  def editTitle(id: OpportunityId) = OpportunityAction(id) { request =>
-    val answers = JsObject(Seq(TITLE_FIELD_NAME -> Json.toJson(request.opportunity.title)))
-    val hints = hinting(answers, Map(titleField.name -> titleField.check))
-    Ok(views.html.manage.editTitleForm(titleField, request.opportunity, titleQuestion, answers, Seq(), hints, request.uri))
-  }
-
-  def saveTitle(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
-    JsonHelpers.flatten(request.body.values) match {
-      case _ => titleField.check(titleField.name, Json.toJson(JsonHelpers.flatten(request.body.values).getOrElse(TITLE_FIELD_NAME, ""))) match {
-        case Nil => opportunities.saveSummary(request.opportunity.summary.copy(title = JsonHelpers.flatten(request.body.values).getOrElse(TITLE_FIELD_NAME, ""))).map { _ =>
-          request.body.action match {
-            case Preview =>
-              Redirect(controllers.manage.routes.OpportunityController.previewTitle(id))
-                .flashing(PREVIEW_BACK_URL_FLASH -> controllers.manage.routes.OpportunityController.editTitle(id).url)
-            case _ =>
-              Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id))
-
-          }
-
-        }
-        case errs =>
-          val hints = hinting(request.body.values, Map(titleField.name -> titleField.check))
-          Future.successful(Ok(views.html.manage.editTitleForm(titleField, request.opportunity, titleQuestion, request.body.values, errs, hints, request.uri))) //hints
-      }
     }
   }
 
@@ -159,13 +125,6 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     }.getOrElse(Future.successful(BadRequest))
   }
 
-  def viewTitle(id: OpportunityId) = OpportunityAction(id) { request =>
-    request.opportunity.publishedAt match {
-      case Some(dateval) => Ok(views.html.manage.viewTitle(request.opportunity))
-      case None => Redirect(controllers.manage.routes.OpportunityController.editTitle(id))
-    }
-  }
-
   def viewSection(id: OpportunityId, sectionNum: Int) = OpportunityAction(id).async { request =>
     appForms.byOpportunityId(id).map {
       case Some(appForm) => request.opportunity.publishedAt match {
@@ -195,8 +154,6 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
       }
   }
 
-
-
   def showPMGuidancePage(backUrl: String) = Action {
     request =>
       Ok(views.html.manage.guidance(backUrl))
@@ -206,15 +163,6 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     request =>
       Ok(views.html.manage.previewOppSection(request.opportunity, sectionid, request.flash.get(PREVIEW_BACK_URL_FLASH)))
   }
-
-
-  def previewTitle(id: OpportunityId) = OpportunityAction(id) {
-    request =>
-      Ok(views.html.manage.previewTitle(request.opportunity, request.flash.get(PREVIEW_BACK_URL_FLASH)))
-  }
-
-
-
 }
 
 sealed trait CreateOpportunityChoice {
