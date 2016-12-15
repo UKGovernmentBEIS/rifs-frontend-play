@@ -54,7 +54,7 @@ On Windows you can use [NVDS](http://www.nvaccess.org/) and [JAWS](http://www.fr
 The sass for the site is located here: [stylesheets](https://github.com/UKGovernmentBEIS/rifs-frontend-play/tree/master/src/main/assets/stylesheets) 
 
 Logically the application sass depends on GDS Elements which depends on GDS Frontend Toolkit, but the SBT sass plugin 
-and was unable to set the sass load-path.  The following folder structure is the work-around, and it's important to note 
+was unable to set the sass load-path.  The following folder structure is the work-around, and it's important to note 
 that because of this the vendor dependencies are actually checked into the source code. 
 
 
