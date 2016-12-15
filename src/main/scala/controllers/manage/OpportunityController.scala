@@ -250,7 +250,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
 
       val valueError : Option[FieldError] =
         if (request.opportunity.value.amount > 2000)
-          Some(FieldError("", "Amount is over £2000. Please review "))
+          Some(FieldError("", "Maximum grant value is over £2000. Please review "))
         else None
 
       val dateError:Option[FieldError] =
