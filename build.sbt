@@ -38,7 +38,7 @@ libraryDependencies ++= Seq(
   ws,
   "joda-time" % "joda-time" % "2.7",
   "org.joda" % "joda-convert" % "1.7",
-  "org.typelevel" %% "cats" % "0.7.2",
+  "org.typelevel" %% "cats" % "0.8.1",
   "com.github.melrief" %% "pureconfig" % "0.1.6",
   "com.wellfactored" %% "play-bindings" % "1.1.0",
   "com.beachape" %% "enumeratum" % "1.5.2",

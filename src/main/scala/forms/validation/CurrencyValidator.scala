@@ -2,6 +2,7 @@ package forms.validation
 
 import cats.data.ValidatedNel
 import cats.syntax.validated._
+import forms.validation.FieldValidator.Normalised
 
 import scala.util.Try
 
@@ -18,7 +19,7 @@ class CurrencyValidator(minValue: Option[BigDecimal]) extends FieldValidator[Opt
   override def normalise(os: Option[String]): Option[String] = os.map(_.trim().replaceAll(",", ""))
 
   override def doValidation(path: String, value: Normalised[Option[String]]): ValidatedNel[FieldError, BigDecimal] = {
-    Try(BigDecimal(normalise(value).getOrElse("")).setScale(2, BigDecimal.RoundingMode.HALF_UP)).toOption match {
+    Try(BigDecimal(value.getOrElse("")).setScale(2, BigDecimal.RoundingMode.HALF_UP)).toOption match {
       case Some(bd) => minValue match {
         case Some(min) if bd <= min => FieldError(path, s"The value must be greater than $min").invalidNel
         case _ => bd.validNel

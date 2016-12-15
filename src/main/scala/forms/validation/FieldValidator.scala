@@ -1,19 +1,24 @@
 package forms.validation
 
 import cats.data.ValidatedNel
-import play.api.libs.json.JsValue
 import shapeless.tag._
 
 case class FieldError(path: String, err: String)
 
 case class FieldHint(path: String, hint: String, matchingJsType: Option[String] = None, matchingJsConfig: Option[String] = None)
 
-trait FieldValidator[A, B] {
-  outer =>
+object FieldValidator {
 
   sealed trait NormalisedTag
 
   type Normalised[T] = T @@ NormalisedTag
+}
+
+trait FieldValidator[A, B] {
+  outer =>
+
+  import FieldValidator._
+
 
   /**
     * Provide a way for the validator to normalise the input value. To keep things simple for the validator
@@ -28,20 +33,24 @@ trait FieldValidator[A, B] {
     */
   final def denormal(a: Normalised[A]): A = a
 
-  private def normal(a: A): Normalised[A] = a.asInstanceOf[A @@ NormalisedTag]
+  private def normaliseAndTag(a: A): Normalised[A] = normalise(a).asInstanceOf[A @@ NormalisedTag]
 
-  final def validate(path: String, a: A): ValidatedNel[FieldError, B] = doValidation(path, normal(normalise(a)))
+  final def validate(path: String, a: A): ValidatedNel[FieldError, B] = doValidation(path, normaliseAndTag(a))
 
   protected def doValidation(path: String, a: Normalised[A]): ValidatedNel[FieldError, B]
 
-  def hintText(path: String, jv: JsValue): List[FieldHint] = List()
+  final def hintText(path: String, a: A): List[FieldHint] = doHinting(path, normaliseAndTag(a))
+
+  protected def doHinting(path: String, a: Normalised[A]): List[FieldHint] = List()
 
   def andThen[C](v2: FieldValidator[B, C]): FieldValidator[A, C] = new FieldValidator[A, C] {
     override def doValidation(path: String, a: Normalised[A]): ValidatedNel[FieldError, C] = outer.validate(path, a).andThen(v2.validate(path, _))
 
-    override def hintText(path: String, jv: JsValue): List[FieldHint] = v2.hintText(path, jv) ++ outer.hintText(path, jv)
+    override def doHinting(path: String, a: Normalised[A]): List[FieldHint] = {
+      val bHints = outer.validate(path, a).map(b => v2.hintText(path, b)).valueOr(_ => Nil)
+      bHints ++ outer.hintText(path, a)
+    }
   }
-
 }
 
 

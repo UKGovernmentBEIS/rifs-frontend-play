@@ -4,6 +4,7 @@ import cats.data.{NonEmptyList, ValidatedNel}
 import cats.syntax.cartesian._
 import cats.syntax.validated._
 import forms.DateValues
+import forms.validation.FieldValidator.Normalised
 import org.joda.time.LocalDate
 
 import scala.util.Try

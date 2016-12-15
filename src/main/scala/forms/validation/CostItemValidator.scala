@@ -3,7 +3,7 @@ package forms.validation
 import cats.data.ValidatedNel
 import cats.syntax.cartesian._
 import cats.syntax.validated._
-import play.api.libs.json.{JsString, JsValue}
+import forms.validation.FieldValidator.Normalised
 
 case class CostItemValues(itemName: Option[String], cost: Option[String], justification: Option[String], itemNumber: Option[Int])
 
@@ -18,17 +18,16 @@ case object CostItemValidator extends FieldValidator[CostItemValues, CostItem] {
   val costValidator = CurrencyValidator.anyValue
   val justificationValidator = MandatoryValidator(Some("justification")).andThen(WordCountValidator(200))
 
-  override def doValidation(path: String, a: Normalised[CostItemValues]): ValidatedNel[FieldError, CostItem] = {
-    val itemV = itemValidator.validate(s"$path.itemName", a.itemName)
-    val costV = costValidator.validate(s"$path.cost", a.cost)
-    val justV = justificationValidator.validate(s"$path.justification", a.justification)
+  override def doValidation(path: String, costItemValues: Normalised[CostItemValues]): ValidatedNel[FieldError, CostItem] = {
+    val itemV = itemValidator.validate(s"$path.itemName", costItemValues.itemName)
+    val costV = costValidator.validate(s"$path.cost", costItemValues.cost)
+    val justV = justificationValidator.validate(s"$path.justification", costItemValues.justification)
 
     (itemV |@| costV |@| justV).map(CostItem.apply(_, _, _, None))
   }
 
-  override def hintText(path: String, jv: JsValue): List[FieldHint] = {
-    val just = (jv \ "justification").validate[JsString].asOpt.getOrElse(JsString(""))
-    justificationValidator.hintText(s"$path.justification", just)
+  override def doHinting(path: String, costItemValues: Normalised[CostItemValues]): List[FieldHint] = {
+    justificationValidator.hintText(s"$path.justification", costItemValues.justification)
   }
 }
 

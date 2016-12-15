@@ -2,6 +2,7 @@ package forms.validation
 
 import cats.data.ValidatedNel
 import cats.syntax.validated._
+import forms.validation.FieldValidator.Normalised
 
 case class MandatoryValidator(displayName: Option[String] = None) extends FieldValidator[Option[String], String] {
   override def normalise(os: Option[String]): Option[String] = os.map(_.trim())

@@ -2,7 +2,7 @@ package forms.validation
 
 import cats.data.ValidatedNel
 import cats.syntax.validated._
-import play.api.libs.json.JsValue
+import forms.validation.FieldValidator.Normalised
 
 case class WordCountValidator(maxWords: Int) extends FieldValidator[String, String] {
 
@@ -11,14 +11,14 @@ case class WordCountValidator(maxWords: Int) extends FieldValidator[String, Stri
   override def normalise(s: String): String = s.trim()
 
   override def doValidation(path: String, s: Normalised[String]): ValidatedNel[FieldError, String] = {
-    normalise(s) match {
+    s match {
       case n if n.split("\\s+").length > maxWords => FieldError(path, "Word limit exceeded").invalidNel
       case n => n.validNel
     }
   }
 
-  override def hintText(path: String, jv: JsValue): List[FieldHint] = {
-    val wordCount = normalise(jv.validate[String].asOpt.getOrElse("")).split("\\s+").filterNot(_ == "").length
+  override def doHinting(path: String, s: Normalised[String]): List[FieldHint] = {
+    val wordCount = s.split("\\s+").filterNot(_ == "").length
 
     val text = wordCount match {
       case 0 => noWords(maxWords)

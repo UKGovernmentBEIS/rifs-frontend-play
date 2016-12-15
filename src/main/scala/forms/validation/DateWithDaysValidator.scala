@@ -3,6 +3,7 @@ package forms.validation
 import cats.data.ValidatedNel
 import cats.syntax.cartesian._
 import forms.DateValues
+import forms.validation.FieldValidator.Normalised
 import org.joda.time.LocalDate
 
 case class DateWithDaysValues(date: Option[DateValues], days: Option[String])

@@ -29,7 +29,7 @@ object FieldChecks {
 
     override def apply(path: String, value: JsValue): List[FieldError] = validator.validate(path, decodeString(value)).fold(_.toList, _ => List())
 
-    override def hint(path: String, value: JsValue): List[FieldHint] = validator.hintText(path, value)
+    override def hint(path: String, value: JsValue): List[FieldHint] = validator.hintText(path, value.validate[String].asOpt)
   }
 
   def mandatoryText(wordLimit: Int, displayName: Option[String] = None) = new OptionalFieldCheck[String] {
@@ -55,7 +55,7 @@ object FieldChecks {
       }
     }
 
-    override def hint(path: String, jv: JsValue): List[FieldHint] = v.hintText(path, jv)
+    override def hint(path: String, jv: JsValue): List[FieldHint] = jv.validate[T].asOpt.map(t => v.hintText(path, t)).getOrElse(Nil)
   }
 
 
