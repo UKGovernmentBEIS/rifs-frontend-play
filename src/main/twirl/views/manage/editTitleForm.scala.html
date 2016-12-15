@@ -22,7 +22,7 @@
                 @Opportunity title
             </h1>
 
-            <form method="POST" action="@controllers.manage.routes.OpportunityController.saveTitle(opp.id)">
+            <form method="POST" action="@controllers.manage.routes.TitleController.save(opp.id)">
                 @field.renderFormInput(questions, answers, errs, hints)
 
                 <div class="rifs-form-buttons">

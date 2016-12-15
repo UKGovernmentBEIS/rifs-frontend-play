@@ -23,7 +23,7 @@
                 @section.title
             </h1>
 
-            <form method="POST" action="@controllers.manage.routes.OpportunityController.saveSection(opp.id, section.sectionNumber)">
+            <form method="POST" action="@controllers.manage.routes.OppSectionController.save(opp.id, section.sectionNumber)">
 
                 @if(errors.nonEmpty) {
                 <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
