@@ -2,7 +2,7 @@ package controllers
 
 import forms.DateValues
 import forms.validation.DateTimeRangeValues
-import play.api.libs.json.Json
+import play.api.libs.json._
 
 package object manage {
   implicit val dvFmt = Json.format[DateValues]
@@ -27,5 +27,12 @@ package object manage {
 
   case object ReuseOpportunityChoice extends CreateOpportunityChoice {
     val name = "reuse"
+  }
+
+  implicit def OptionReads[T: Reads] = new Reads[Option[T]] {
+    override def reads(json: JsValue): JsResult[Option[T]] = json match {
+      case JsNull => JsSuccess(None)
+      case j => j.validate[T].map(Some(_))
+    }
   }
 }
