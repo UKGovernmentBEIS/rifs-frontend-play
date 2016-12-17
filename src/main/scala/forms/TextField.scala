@@ -1,13 +1,15 @@
 package forms
 
 import controllers.{FieldCheck, FieldChecks, JsonHelpers}
-import forms.validation.{FieldError, FieldHint}
-import models.{ApplicationSectionDetail, Question}
+import forms.validation.{FieldError, FieldHint, MandatoryValidator, WordCountValidator}
+import models.Question
 import play.api.libs.json.JsObject
-import play.twirl.api.Html
+import controllers.manage._
 
 case class TextField(label: Option[String], name: String, isNumeric: Boolean, maxWords: Int) extends Field {
-  override val check: FieldCheck = FieldChecks.mandatoryText(maxWords)
+  val validator = MandatoryValidator(label).andThen(WordCountValidator(maxWords))
+
+  override val check: FieldCheck = FieldChecks.fromValidator(validator)
 
   override val previewCheck: FieldCheck = FieldChecks.mandatoryCheck
 
