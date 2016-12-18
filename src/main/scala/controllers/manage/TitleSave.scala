@@ -18,7 +18,7 @@ trait TitleSave extends SummarySave {
   def OpportunityAction: OpportunityAction
 
   val fieldName = "title"
-  val field = TextField(label = Some(fieldName), name = fieldName, isNumeric = false, maxWords = 20)
+  val field = TextField(None, name = fieldName, isNumeric = false, maxWords = 20)
   val questions = Map(fieldName -> Question("What is your opportunity called ?"))
 
   def save(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
