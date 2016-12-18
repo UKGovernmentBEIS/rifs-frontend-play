@@ -3,25 +3,33 @@ package controllers.manage
 import javax.inject.Inject
 
 import actions.OpportunityAction
-import cats.data.Validated.{Invalid, Valid}
-import controllers.{JsonForm, Preview}
-import forms.validation.DateTimeRangeValues
+import controllers.FieldCheckHelpers
 import forms.{DateTimeRangeField, DateValues}
+import forms.validation.{DateTimeRange, DateTimeRangeValues, FieldError, FieldHint}
 import models.{Opportunity, OpportunityId, Question}
 import org.joda.time.LocalDate
 import play.api.libs.json._
 import play.api.mvc._
+import play.twirl.api.Html
 import services.OpportunityOps
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
-class DeadlineController @Inject()(opportunities: OpportunityOps, OpportunityAction: OpportunityAction)(implicit ec: ExecutionContext) extends Controller {
-  val deadlinesFieldName = "deadlines"
-  val deadlinesField = DateTimeRangeField("deadlines", allowPast = false, isEndDateMandatory = false)
-  val deadlineQuestions = Map(
-    "deadlines.startDate" -> Question("When does the opportunity open?"),
-    "deadlines.endDate" -> Question("What is the closing date?")
+class DeadlineController @Inject()(
+                                    val opportunities: OpportunityOps,
+                                    val OpportunityAction: OpportunityAction)
+                                  (implicit val ec: ExecutionContext)
+  extends Controller with SummarySave[DateTimeRangeValues, DateTimeRange]  {
+
+  override implicit val inReads: Reads[DateTimeRangeValues] = Json.reads[DateTimeRangeValues]
+
+  override val fieldName = "deadlines"
+  val field = DateTimeRangeField(fieldName, allowPast = false, isEndDateMandatory = false)
+  val questions = Map(
+    s"$fieldName.startDate" -> Question("When does the opportunity open?"),
+    s"$fieldName.endDate" -> Question("What is the closing date?")
   )
+  override val validator = field.validator
 
   private def dateTimeRangeValuesFor(opp: Opportunity) = {
     val sdv = dateValuesFor(opp.startDate)
@@ -33,48 +41,32 @@ class DeadlineController @Inject()(opportunities: OpportunityOps, OpportunityAct
     DateValues(Some(ld.getDayOfMonth.toString), Some(ld.getMonthOfYear.toString), Some(ld.getYear.toString))
 
 
-  def view(id: OpportunityId) = OpportunityAction(id) {
-    request =>
-      val answers = JsObject(Seq(deadlinesFieldName -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
-      request.opportunity.publishedAt match {
-        case Some(dateval) => Ok(views.html.manage.viewDeadlines(deadlinesField, request.opportunity, deadlineQuestions, answers))
-        case None => Redirect(controllers.manage.routes.DeadlineController.edit(id))
-      }
+  def view(id: OpportunityId) = OpportunityAction(id) { request =>
+    val answers = JsObject(Seq(fieldName -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
+    if (request.opportunity.isPublished)
+      Ok(views.html.manage.viewDeadlines(field, request.opportunity, questions, answers))
+    else
+      Redirect(editPage(id))
   }
-
 
   def edit(id: OpportunityId) = OpportunityAction(id) { request =>
-      val answers = JsObject(Seq(deadlinesFieldName -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
-      Ok(views.html.manage.editDeadlinesForm(deadlinesField, request.opportunity, deadlineQuestions, answers, Seq(), Seq()))
+    val answers = JsObject(Seq(fieldName -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
+    Ok(views.html.manage.editDeadlinesForm(field, request.opportunity, questions, answers, Seq(), Seq()))
   }
 
-  def save(id: OpportunityId) = OpportunityAction(id).async(JsonForm.parser) {
-    implicit request =>
-      (request.body.values \ deadlinesFieldName).validate[DateTimeRangeValues] match {
-        case JsSuccess(vs, _) =>
-          deadlinesField.validator.validate(deadlinesField.name, vs) match {
-            case Valid(v) =>
-              val summary = request.opportunity.summary.copy(startDate = v.startDate, endDate = v.endDate)
-              opportunities.saveSummary(summary).map {
-                _ =>
-                  request.body.action match {
-                    case Preview =>
-                      Redirect(controllers.manage.routes.DeadlineController.preview(id))
-                        .flashing(PREVIEW_BACK_URL_FLASH -> controllers.manage.routes.DeadlineController.edit(id).url)
-                    case _ =>
-                      Redirect(controllers.manage.routes.OpportunityController.showOverviewPage(id))
-                  }
-              }
-            case Invalid(errors) =>
-              Future.successful(Ok(views.html.manage.editDeadlinesForm(deadlinesField, request.opportunity, deadlineQuestions, request.body.values, errors.toList, Seq())))
-          }
-        case JsError(errors) => Future.successful(BadRequest(errors.toString))
-      }
+  def preview(id: OpportunityId) = OpportunityAction(id) { request =>
+      val answers = JsObject(Seq(fieldName -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
+      Ok(views.html.manage.previewDeadlines(field, request.opportunity, questions, answers, request.flash.get(PREVIEW_BACK_URL_FLASH)))
   }
 
-  def preview(id: OpportunityId) = OpportunityAction(id) {
-    request =>
-      val answers = JsObject(Seq(deadlinesFieldName -> Json.toJson(dateTimeRangeValuesFor(request.opportunity))))
-      Ok(views.html.manage.previewDeadlines(deadlinesField, request.opportunity, deadlineQuestions, answers, request.flash.get(PREVIEW_BACK_URL_FLASH)))
+  override def doEdit(opportunity: Opportunity, values: JsObject, errors: Seq[FieldError]): Html = {
+    val hints = FieldCheckHelpers.hinting(values, Map(fieldName -> field.check))
+    views.html.manage.editDeadlinesForm(field, opportunity, questions, values, errors.toList, hints)
   }
+
+  def updateSummary(opportunity: Opportunity, v: DateTimeRange) =
+    opportunity.summary.copy(startDate = v.startDate, endDate = v.endDate)
+
+  override def editPage(id: OpportunityId): Call =
+    controllers.manage.routes.DeadlineController.edit(id)
 }

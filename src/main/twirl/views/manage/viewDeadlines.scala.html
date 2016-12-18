@@ -11,17 +11,15 @@
         <div class="column-two-thirds">
             <h1 class="heading-xlarge">
                 <span class="heading-secondary">@formatId(opp.id.id): @opp.title</span>
-                @Opportunity deadlines
+                Opportunity deadlines
             </h1>
 
-            <form method="POST" action="@controllers.manage.routes.DeadlineController.save(opp.id)">
                 @field.renderPreview(questions, answers)
 
                 <div class="rifs-form-buttons">
                     <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(opp.id)" class="button">
                         Continue</a>
                 </div>
-            </form>
         </div>
     </div>
 }
