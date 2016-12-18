@@ -84,19 +84,19 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     request =>
       val oppdate = request.opportunity.startDate
 
-      val valueError : Option[FieldError] =
+      val valueError: Option[FieldError] =
         if (request.opportunity.value.amount > 2000)
           Some(FieldError("", "Maximum grant value is over £2000. Please review "))
         else None
 
-      val dateError:Option[FieldError] =
+      val dateError: Option[FieldError] =
         if (oppdate.isBefore(LocalDate.now()))
-          Some(FieldError("","Opportunity start date is incorrect. Please review"))
+          Some(FieldError("", "Opportunity start date is incorrect. Please review"))
         else None
 
       val errs: Seq[FieldError] = (valueError ++ dateError).toSeq
 
-      if(request.opportunity.value.amount <=2000 && oppdate.isAfter(LocalDate.now())){
+      if (request.opportunity.value.amount <= 2000 && oppdate.isAfter(LocalDate.now())) {
         val emailto = "Portfolio.Manager@rifs.gov.uk"
         val dtf = DateTimeFormat.forPattern("HH:mm:ss")
         opportunities.publish(id).map {
@@ -112,8 +112,7 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
       }
   }
 
-  def showPMGuidancePage(backUrl: String) = Action {
-    request =>
-      Ok(views.html.manage.guidance(backUrl))
+  def showPMGuidancePage(backUrl: String) = Action { request =>
+    Ok(views.html.manage.guidance(backUrl))
   }
 }
