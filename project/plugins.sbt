@@ -18,3 +18,5 @@ addSbtPlugin("com.codacy" % "sbt-codacy-coverage" % "1.3.7")
 addSbtPlugin("org.irundaia.sbt" % "sbt-sassify" % "1.4.2")
 
 addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.6.1")
+
+addSbtPlugin("de.heikoseeberger" % "sbt-header"   % "1.6.0")
