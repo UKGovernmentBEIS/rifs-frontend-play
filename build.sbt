@@ -36,11 +36,11 @@ PlayKeys.playMonitoredFiles ++= (sourceDirectories in(Compile, TwirlKeys.compile
 
 libraryDependencies ++= Seq(
   ws,
-  "joda-time" % "joda-time" % "2.7",
-  "org.joda" % "joda-convert" % "1.7",
-  "org.typelevel" %% "cats" % "0.8.1",
-  "com.github.melrief" %% "pureconfig" % "0.1.6",
-  "com.wellfactored" %% "play-bindings" % "1.1.0",
+  "joda-time" % "joda-time" % "2.9.6",
+  "org.joda" % "joda-convert" % "1.8.1",
+  "org.typelevel" %% "cats-core" % "0.8.1",
+  "com.github.melrief" %% "pureconfig" % "0.4.0",
+  "com.wellfactored" %% "play-bindings" % "2.0.0",
   "com.beachape" %% "enumeratum" % "1.5.2",
   "com.beachape" %% "enumeratum-play-json" % "1.5.2",
 
