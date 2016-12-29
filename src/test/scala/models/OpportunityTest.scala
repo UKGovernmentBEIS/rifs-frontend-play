@@ -1,7 +1,26 @@
+/*
+ * Copyright (C) 2016  Department for Business, Energy and Industrial Strategy
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package models
 
 import org.joda.time.{DateTime, LocalDate}
 import org.scalatest.{Matchers, OptionValues, WordSpecLike}
+import eu.timepit.refined._
+import eu.timepit.refined.numeric._
 
 class OpportunityTest extends WordSpecLike with Matchers with OptionValues {
   val testDateBeforeCurrent = LocalDate.now.minusMonths(1)
@@ -9,7 +28,7 @@ class OpportunityTest extends WordSpecLike with Matchers with OptionValues {
   val testDateCurrent = LocalDate.now
   val publishedDate: DateTime = DateTime.now.minusMonths(1)
 
-  def opp(startDate: LocalDate, endDate: Option[LocalDate], publishedAt: Option[DateTime]) = Opportunity(OpportunityId(1), "Test opportunity", startDate, endDate, OpportunityValue(2000.00, "spondulix"), publishedAt, None, Seq())
+  def opp(startDate: LocalDate, endDate: Option[LocalDate], publishedAt: Option[DateTime]) = Opportunity(OpportunityId(refineMV[Positive](1)), "Test opportunity", startDate, endDate, OpportunityValue(2000.00, "spondulix"), publishedAt, None, Seq())
 
   "validate" when {
     "Opportunity is published and starts before current date " should {
