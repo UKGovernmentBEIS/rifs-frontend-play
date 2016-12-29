@@ -1,5 +1,7 @@
 @(backUrl:String, opportunity: Opportunity, sectionNumber: Int, appForm: ApplicationForm)
 
+@import views.html.helpers._
+
 @sectionLink(title: String, sectionNum: Int) = {
     <span class="part-number"> @sectionNum. </span>
         @if(sectionNum == sectionNumber) {

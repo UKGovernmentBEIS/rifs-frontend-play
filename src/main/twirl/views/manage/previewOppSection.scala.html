@@ -4,7 +4,7 @@ sectionNumber: Int,
 backUrl: Option[String]
 )
 
-@import views.html.partials._
+@import helpers._
 
 @currentSection = @{
 opp.description.find(_.sectionNumber == sectionNumber)

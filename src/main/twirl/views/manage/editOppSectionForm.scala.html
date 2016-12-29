@@ -12,7 +12,7 @@
     errs.filter(p => p.path == field.name)
 }
 
-@import views.html.partials._
+@import views.html.helpers._
 
 @main("Edit description - RIFS" , backLink=Some(BackLink("Opportunity template",controllers.manage.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName = Some("Portfolio Peter")) {
 

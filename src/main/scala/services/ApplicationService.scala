@@ -21,7 +21,7 @@ import com.google.inject.Inject
 import com.wellfactored.playbindings.ValueClassFormats
 import config.Config
 import controllers.FieldCheckHelpers.FieldErrors
-import controllers.{FieldCheck, FieldCheckHelpers, FieldChecks}
+import controllers.{FieldCheck, FieldCheckHelpers, FieldChecks, RefinedBinders}
 import forms.validation.{CostItem, CostItemValues, CostSectionValidator, FieldError}
 import models._
 import play.api.libs.json._
@@ -30,7 +30,7 @@ import play.api.libs.ws.WSClient
 import scala.concurrent.{ExecutionContext, Future}
 
 class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionContext)
-  extends ApplicationOps with JodaFormats with RestService with ValueClassFormats {
+  extends ApplicationOps with JodaFormats with RestService with ValueClassFormats with RefinedBinders {
   private val dtPattern = "dd MMM yyyy HH:mm:ss"
   implicit val dtReads = Reads.jodaDateReads(dtPattern)
   implicit val dtWrites = Writes.jodaDateWrites(dtPattern)
@@ -143,7 +143,7 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
 
   override def reset(): Future[Unit] = {
     val url = s"$baseUrl/reset"
-    post(url, None)
+    post(url, "")
   }
 
   override def deleteSection(id: ApplicationId, sectionNumber: Int): Future[Unit] = {
@@ -153,7 +153,7 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
 
   override def clearSectionCompletedDate(id: ApplicationId, sectionNumber: Int): Future[Unit] = {
     val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/markNotCompleted"
-    put(url, None)
+    put(url, "")
   }
 
   override def submit(id: ApplicationId): Future[Option[SubmittedApplicationRef]] = {

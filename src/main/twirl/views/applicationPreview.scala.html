@@ -7,7 +7,7 @@
 
 @import models._
 @import partials._
-
+@import helpers._
 
 @sectionLink(title: String, sectionNum: Int) = {
     <span class="part-number">@sectionNum. </span>
@@ -20,10 +20,6 @@
     val (leftCols, b) = titles.splitAt(midpoint)
     val rightCols = b.map(Some(_)) :+ None
     leftCols.zip(rightCols)
-}
-
-@formatId(id: Long) = @{
-    f"RIFS $id%04d"
 }
 
 @main(s"Opportunity ${app.opportunity.title} - RIFS", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(app.id).url)), displayUserName=Some("Experienced Eric")) {

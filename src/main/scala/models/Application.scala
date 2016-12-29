@@ -17,11 +17,13 @@
 
 package models
 
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.numeric.Positive
 import org.joda.time.LocalDateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.libs.json.JsObject
 
-case class ApplicationId(id: Long) extends AnyVal
+case class ApplicationId(id: Long Refined Positive)
 
 case class ApplicationSectionId(id: Long) extends AnyVal
 

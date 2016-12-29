@@ -7,6 +7,7 @@
         hints:List[forms.validation.FieldHint]
 )
 @import partials._
+@import helpers._
 
 @main(s"Create Application Reference - RIFS",
         backLink=Some(BackLink("Return to opportunity list",controllers.routes.OpportunityController.showOpportunities().url)),

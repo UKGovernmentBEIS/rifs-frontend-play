@@ -21,6 +21,7 @@ import javax.inject.Inject
 
 import com.wellfactored.playbindings.ValueClassFormats
 import config.Config
+import controllers.RefinedBinders
 import models._
 import play.api.libs.json._
 import play.api.libs.ws.WSClient
@@ -28,8 +29,7 @@ import play.api.libs.ws.WSClient
 import scala.concurrent.{ExecutionContext, Future}
 
 class ApplicationFormService @Inject()(val ws: WSClient)(implicit val ec: ExecutionContext)
-  extends ApplicationFormOps with JodaFormats with RestService with ValueClassFormats {
-
+  extends ApplicationFormOps with JodaFormats with RestService with ValueClassFormats with RefinedBinders {
   implicit val fieldReads = fields.FieldReads.fieldReads
   implicit val appFormQuestionReads = Json.reads[ApplicationFormQuestion]
   implicit val appSecRead = Json.reads[ApplicationFormSection]

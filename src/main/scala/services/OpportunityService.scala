@@ -21,6 +21,7 @@ import javax.inject.Inject
 
 import com.wellfactored.playbindings.ValueClassFormats
 import config.Config
+import controllers.RefinedBinders
 import models._
 import org.joda.time.DateTime
 import play.api.libs.json.{Json, Reads, Writes}
@@ -28,7 +29,12 @@ import play.api.libs.ws.WSClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class OpportunityService @Inject()(val ws: WSClient)(implicit val ec: ExecutionContext) extends OpportunityOps with RestService with ValueClassFormats {
+class OpportunityService @Inject()(val ws: WSClient)(implicit val ec: ExecutionContext)
+  extends OpportunityOps
+    with RestService
+    with ValueClassFormats
+    with RefinedBinders {
+
   private val dtPattern = "dd MMM yyyy HH:mm:ss"
   implicit val dtReads = Reads.jodaDateReads(dtPattern)
   implicit val dtWrites = Writes.jodaDateWrites(dtPattern)
@@ -68,12 +74,12 @@ class OpportunityService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     post(url, descSect.getOrElse(""))
   }
 
-  override def duplicate(id: OpportunityId) :Future[Option[OpportunityId]] = {
+  override def duplicate(id: OpportunityId): Future[Option[OpportunityId]] = {
     val url = s"$baseUrl/opportunity/${id.id}/duplicate"
     postWithResult[OpportunityId, String](url, "")
   }
 
-  override def publish(id: OpportunityId) :Future[Option[DateTime]] = {
+  override def publish(id: OpportunityId): Future[Option[DateTime]] = {
     val url = s"$baseUrl/opportunity/${id.id}/publish"
     postWithResult[DateTime, Option[String]](url, None)
   }

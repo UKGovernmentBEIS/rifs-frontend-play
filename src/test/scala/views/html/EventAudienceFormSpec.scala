@@ -1,5 +1,7 @@
 package views.html
 
+import eu.timepit.refined._
+import eu.timepit.refined.numeric.{Positive, _}
 import forms.TextAreaField
 import forms.validation.FieldHint
 import models._
@@ -31,7 +33,7 @@ class EventAudienceFormSpec extends WordSpecLike with Matchers with OptionValues
     val fs: ApplicationFormSection = ApplicationFormSection(5, "Event Audience", Seq(q), SectionTypeForm, Seq(TextAreaField(Some("label"), name, 200)))
 
     val app = ApplicationSectionDetail(
-      ApplicationId(1),
+      ApplicationId(refineMV[Positive](1)),
       1,
       1,
       OpportunitySummary(OpportunityId(1), "Research priorities in health care", new LocalDate(), None, OpportunityValue(0, ""), None, None),

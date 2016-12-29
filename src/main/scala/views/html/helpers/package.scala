@@ -17,6 +17,8 @@
 
 package views.html
 
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.numeric.Positive
 import forms.{TextAreaField, TextField}
 import models.ApplicationForm
 import play.twirl.api.Html
@@ -40,5 +42,9 @@ package object helpers {
 
     views.html.partials.oppQuestionsSection(appForm, Map(constraints: _*), Map(descriptions: _*))
   }
+
+  def formatId(id: Long): String = f"RIFS $id%04d"
+
+  def formatId(id: Long Refined Positive): String = formatId(id.value)
 
 }

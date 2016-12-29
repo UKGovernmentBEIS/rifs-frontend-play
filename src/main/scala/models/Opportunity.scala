@@ -19,7 +19,9 @@ package models
 
 import enumeratum.EnumEntry.Lowercase
 import enumeratum._
+import eu.timepit.refined.api.Refined
 import org.joda.time.{DateTime, LocalDate}
+import eu.timepit.refined.numeric.Positive
 
 sealed trait OppSectionType extends EnumEntry with Lowercase
 
@@ -29,11 +31,15 @@ object OppSectionType extends Enum[OppSectionType] with PlayJsonEnum[OppSectionT
   case object Questions extends OppSectionType
 
   case object Text extends OppSectionType
-
 }
 
+case class OpportunityId(id: IdType)
 
-case class OpportunityId(id: Long) extends AnyVal
+object OpportunityId {
+  implicit val ordering = new Ordering[OpportunityId] {
+    override def compare(x: OpportunityId, y: OpportunityId) = implicitly[Ordering[Long]].compare(x.id.value, y.id.value)
+  }
+}
 
 case class OpportunityDescriptionSection(sectionNumber: Int, title: String, text: Option[String], description: Option[String], helpText: Option[String], sectionType: OppSectionType)
 

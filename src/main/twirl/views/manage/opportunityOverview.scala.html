@@ -6,7 +6,7 @@
     Some("Portfolio Peter")
 }
 
-@import views.html.partials._
+@import helpers._
 
 @actionLink = @{
     if (opportunity.publishedAt.isEmpty) controllers.manage.routes.OpportunityController.publish(opportunity.id)
