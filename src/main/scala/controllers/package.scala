@@ -18,6 +18,7 @@
 import eu.timepit.refined.api.{RefType, Validate}
 import play.api.libs.json.{JsError, JsSuccess, Reads, Writes}
 import play.api.mvc.{PathBindable, QueryStringBindable}
+import scala.language.higherKinds
 
 package object controllers {
   trait RefinedBinders {

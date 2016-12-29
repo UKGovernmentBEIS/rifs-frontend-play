@@ -13,6 +13,8 @@ lazy val `rifs-frontend-play` = (project in file("."))
 
 git.useGitDescribe := true
 
+scalacOptions ++= Seq("-feature")
+
 routesImport ++= Seq(
   "models._",
   "models.PlayBindings._",
