@@ -13,11 +13,10 @@
 }
 
 @titleCols() = @{
-    val titles = opportunity.description.sortBy(_.sectionNumber).map(s => (s.title, s.sectionNumber)).zipWithIndex
+    val titles = opportunity.description.sortBy(_.sectionNumber).map(s => (s.title, s.sectionNumber))
     val midpoint: Int = Math.round(titles.length / 2.0).toInt
-    val (leftCols, b) = titles.splitAt(midpoint)
-    val rightCols = b.map(Some(_)) :+ None
-    leftCols.zip(rightCols)
+    val (leftCols, rightCols) = titles.splitAt(midpoint)
+    (leftCols, rightCols)
 }
 
 @nextSection = @{
@@ -44,19 +43,13 @@
             <div id="nav-container">
                 <nav role="navigation" class="page-navigation" aria-label="Navigation">
                     <ol>
-                    @titleCols.map { case (((title, sectionNum), idx), _) =>
-                    <li id="title-@(idx + 1)">
-                    @sectionLink(title, sectionNum)
-                    </li>
+                    @titleCols._1.map { case ((title, sectionNum)) =>
+                    <li id="title-@(sectionNum)"> @sectionLink(title, sectionNum) </li>
                     }
                     </ol>
                     <ol>
-                    @titleCols.map { case (_, col2) =>
-                        @col2.map { case ((title, sectionNum), idx) =>
-                        <li id="title-@(idx + 1)">
-                        @sectionLink(title, sectionNum)
-                        </li>
-                        }.getOrElse("")
+                    @titleCols._2.map { case ((title, sectionNum)) =>
+                    <li id="title-@(sectionNum)"> @sectionLink(title, sectionNum) </li>
                     }
                     </ol>
                 </nav>
