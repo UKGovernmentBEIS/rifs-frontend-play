@@ -41,8 +41,8 @@ class DateWithDaysValidatorSpec extends WordSpecLike with Matchers with OptionVa
 
     "date is in the past and `allowPast` is false" should {
       val validator = DateWithDaysValidator(allowPast = false, 1, 9)
-      val now = LocalDate.now
-      val dateValues = DateValues(Some(now.getDayOfMonth.toString), Some((now.getMonthOfYear - 1).toString), Some(now.getYear.toString))
+      val yesterday = LocalDate.now.minusDays(1)
+      val dateValues = DateValues(Some(yesterday.getDayOfMonth.toString), Some(yesterday.getMonthOfYear.toString), Some(yesterday.getYear.toString))
       val result = validator.validate("test", DateWithDaysValues(Some(dateValues), Some("2"))).swap.toOption.value.toList
 
       "return one error" in {
@@ -56,8 +56,8 @@ class DateWithDaysValidatorSpec extends WordSpecLike with Matchers with OptionVa
 
   "date is in the past and `allowPast` is true" should {
     val validator = DateWithDaysValidator(allowPast = true, 1, 9)
-    val now = LocalDate.now
-    val dateValues = DateValues(Some(now.getDayOfMonth.toString), Some((now.getMonthOfYear - 1).toString), Some(now.getYear.toString))
+    val yesterday = LocalDate.now.minusDays(1)
+    val dateValues = DateValues(Some(yesterday.getDayOfMonth.toString), Some(yesterday.getMonthOfYear.toString), Some(yesterday.getYear.toString))
     val result = validator.validate("test", DateWithDaysValues(Some(dateValues), Some("2")))
 
     "Return no error" in {
