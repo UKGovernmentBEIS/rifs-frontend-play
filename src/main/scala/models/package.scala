@@ -16,12 +16,15 @@
  */
 
 import eu.timepit.refined.api.Refined
+import eu.timepit.refined.collection.NonEmpty
 import eu.timepit.refined.numeric.Positive
 
 package object models {
-  type IdType = Long Refined Positive
+  type LongId = Long Refined Positive
 
-  implicit val idTypeOrdering = new Ordering[IdType] {
-    override def compare(x: IdType, y: IdType) = implicitly[Ordering[Long]].compare(x.value, y.value)
+  type NonEmptyString = String Refined NonEmpty
+
+  implicit val idTypeOrdering = new Ordering[LongId] {
+    override def compare(x: LongId, y: LongId) = implicitly[Ordering[Long]].compare(x.value, y.value)
   }
 }

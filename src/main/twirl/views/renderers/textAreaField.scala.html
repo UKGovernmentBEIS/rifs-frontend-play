@@ -4,6 +4,7 @@
         errs: Seq[forms.validation.FieldError],
         hints: Seq[forms.validation.FieldHint])
 
+@import helpers._
 
 @errors = @{
     errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}."))
@@ -16,7 +17,7 @@
     <p class="text">@q.longDescription</p>
     <details>
         <summary role="button"><span class="summary">Help with this section</span></summary>
-        <div class="panel panel-border-narrow">@for(line <- q.helpText.getOrElse("").split("\n")) {
+        <div class="panel panel-border-narrow">@for(line <- splitLines(q.helpText)) {
             <p>@line</p>
         }</div>
     </details>

@@ -20,8 +20,9 @@ package controllers
 import javax.inject.Inject
 
 import actions.{AppDetailAction, AppSectionAction}
+import eu.timepit.refined.auto._
 import forms.TextField
-import forms.validation.{FieldError, SectionError}
+import forms.validation.SectionError
 import models._
 import org.joda.time.LocalDateTime
 import org.joda.time.format.DateTimeFormat

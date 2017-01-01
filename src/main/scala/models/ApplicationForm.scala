@@ -20,9 +20,9 @@ package models
 import forms.Field
 import play.api.libs.json._
 
-case class ApplicationFormId(id: Long) extends AnyVal
+case class ApplicationFormId(id: LongId)
 
-case class ApplicationFormQuestion(key: String, text: String, description: Option[String], helpText: Option[String])
+case class ApplicationFormQuestion(key: String, text: NonEmptyString, description: Option[NonEmptyString], helpText: Option[NonEmptyString])
 
 case class ApplicationFormSection(sectionNumber: Int, title: String, questions: Seq[ApplicationFormQuestion], sectionType: ApplicationFormSectionType, fields: Seq[Field]) {
   /**

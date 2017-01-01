@@ -21,6 +21,7 @@ import javax.inject.Inject
 
 import actions.OpportunityAction
 import controllers.FieldCheckHelpers
+import eu.timepit.refined.auto._
 import forms.CurrencyField
 import forms.validation.{CurrencyValidator, FieldError}
 import models._

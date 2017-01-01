@@ -17,4 +17,4 @@
 
 package models
 
-case class Question(text: String, longDescription: Option[String] = None, helpText: Option[String] = None)
+case class Question(text: NonEmptyString, longDescription: Option[NonEmptyString] = None, helpText: Option[NonEmptyString] = None)

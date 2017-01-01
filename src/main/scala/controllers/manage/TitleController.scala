@@ -22,6 +22,7 @@ import javax.inject.Inject
 import actions.OpportunityAction
 import controllers.FieldCheckHelpers
 import controllers.FieldCheckHelpers.hinting
+import eu.timepit.refined.auto._
 import forms.TextField
 import forms.validation.FieldError
 import models.{Opportunity, OpportunityId, Question}

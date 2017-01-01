@@ -31,15 +31,15 @@ object OppSectionType extends Enum[OppSectionType] with PlayJsonEnum[OppSectionT
   case object Text extends OppSectionType
 }
 
-case class OpportunityId(id: IdType)
+case class OpportunityId(id: LongId)
 
 object OpportunityId {
   implicit val ordering = new Ordering[OpportunityId] {
-    override def compare(x: OpportunityId, y: OpportunityId) = implicitly[Ordering[IdType]].compare(x.id, y.id)
+    override def compare(x: OpportunityId, y: OpportunityId) = implicitly[Ordering[LongId]].compare(x.id, y.id)
   }
 }
 
-case class OpportunityDescriptionSection(sectionNumber: Int, title: String, text: Option[String], description: Option[String], helpText: Option[String], sectionType: OppSectionType)
+case class OpportunityDescriptionSection(sectionNumber: Int, title: NonEmptyString, text: Option[NonEmptyString], description: NonEmptyString, helpText: Option[NonEmptyString], sectionType: OppSectionType)
 
 case class OpportunityValue(amount: BigDecimal, unit: String)
 

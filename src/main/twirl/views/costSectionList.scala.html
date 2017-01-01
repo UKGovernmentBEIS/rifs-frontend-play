@@ -29,7 +29,7 @@
                 <p class="text">@q.longDescription</p>
                 <details>
                     <summary role="button"><span class="summary">Help with this section</span></summary>
-                    <div class="panel panel-border-narrow">@for(line <- q.helpText.getOrElse("").split("\n")) {
+                    <div class="panel panel-border-narrow">@for(line <- q.helpText.map(_.value).getOrElse("").split("\n")) {
                         <p>@line</p>
                     }</div>
                 </details>

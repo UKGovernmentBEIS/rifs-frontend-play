@@ -37,7 +37,7 @@ class OppSectionController @Inject()(appForms: ApplicationFormOps,opportunities:
     val hints = FieldCheckHelpers.hinting(initial, Map(sectionFieldName -> sectionField.check))
     opp.description.find(_.sectionNumber == sectionNum) match {
       case Some(section) =>
-        val q = Question(section.description.getOrElse(""), None, section.helpText)
+        val q = Question(section.description, None, section.helpText)
         Ok(views.html.manage.editOppSectionForm(sectionField, opp, section,
           routes.OppSectionController.edit(opp.id, sectionNum).url, Map(sectionFieldName -> q), initial, errs, hints))
       case None => NotFound
@@ -49,7 +49,7 @@ class OppSectionController @Inject()(appForms: ApplicationFormOps,opportunities:
       case Some(appForm) =>
         request.opportunity.description.find(_.sectionNumber == sectionNum) match {
           case Some(sect) if sect.sectionType == OppSectionType.Text =>
-            val answers = JsObject(Seq(sectionFieldName -> Json.toJson(sect.text)))
+            val answers = JsObject(Seq(sectionFieldName -> Json.toJson(sect.text.map(_.value))))
             doEdit(request.opportunity, sectionNum, answers)
           case Some(sect) => Ok(views.html.manage.whatWeWillAskPreview(request.uri, request.opportunity, sectionNum, appForm))
           case None => NotFound
@@ -86,7 +86,7 @@ class OppSectionController @Inject()(appForms: ApplicationFormOps,opportunities:
       case None => NotFound
     }
   }
-  def preview(id: OpportunityId, sectionid: Int) = OpportunityAction(id) { request =>
-      Ok(views.html.manage.previewOppSection(request.opportunity, sectionid, request.flash.get(PREVIEW_BACK_URL_FLASH)))
+  def preview(id: OpportunityId, sectionNum: Int) = OpportunityAction(id) { request =>
+      Ok(views.html.manage.previewOppSection(request.opportunity, sectionNum, request.flash.get(PREVIEW_BACK_URL_FLASH)))
   }
 }

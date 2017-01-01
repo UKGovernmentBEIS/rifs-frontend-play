@@ -1,5 +1,7 @@
 @(appForm: ApplicationForm, opportunity: Opportunity, section: OpportunityDescriptionSection)
 
+@import eu.timepit.refined.auto._
+
 @sectionLink(title: String, sectionNum: Int) = {
     <span class="part-number">
         @sectionNum.
