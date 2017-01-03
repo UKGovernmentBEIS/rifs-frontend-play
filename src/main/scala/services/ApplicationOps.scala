@@ -35,27 +35,27 @@ trait ApplicationOps {
 
   def detail(id: ApplicationId): Future[Option[ApplicationDetail]]
 
-  def sectionDetail(id: ApplicationId, sectionNum:Int): Future[Option[ApplicationSectionDetail]]
+  def sectionDetail(id: ApplicationId, sectionNum: AppSectionNumber): Future[Option[ApplicationSectionDetail]]
 
   def reset(): Future[Unit]
 
-  def saveSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[Unit]
+  def saveSection(id: ApplicationId, sectionNumber: AppSectionNumber, doc: JsObject): Future[Unit]
 
-  def completeSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors]
+  def completeSection(id: ApplicationId, sectionNumber: AppSectionNumber, doc: JsObject): Future[FieldErrors]
 
-  def saveItem(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors]
+  def saveItem(id: ApplicationId, sectionNumber: AppSectionNumber, doc: JsObject): Future[FieldErrors]
 
-  def getItem[T: Reads](id: ApplicationId, sectionNumber: Int, itemNumber: Int): Future[Option[T]]
+  def getItem[T: Reads](id: ApplicationId, sectionNumber: AppSectionNumber, itemNumber: Int): Future[Option[T]]
 
-  def deleteItem(id: ApplicationId, sectionNumber: Int, itemNumber: Int): Future[Unit]
+  def deleteItem(id: ApplicationId, sectionNumber: AppSectionNumber, itemNumber: Int): Future[Unit]
 
-  def getSection(id: ApplicationId, sectionNumber: Int): Future[Option[ApplicationSection]]
+  def getSection(id: ApplicationId, sectionNumber: AppSectionNumber): Future[Option[ApplicationSection]]
 
   def getSections(id: ApplicationId): Future[Seq[ApplicationSection]]
 
-  def deleteSection(id: ApplicationId, sectionNumber: Int): Future[Unit]
+  def deleteSection(id: ApplicationId, sectionNumber: AppSectionNumber): Future[Unit]
 
-  def clearSectionCompletedDate(id: ApplicationId, sectionNumber: Int): Future[Unit]
+  def clearSectionCompletedDate(id: ApplicationId, sectionNumber: AppSectionNumber): Future[Unit]
 
   def submit(id: ApplicationId): Future[Option[SubmittedApplicationRef]]
 

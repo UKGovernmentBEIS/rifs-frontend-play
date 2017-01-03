@@ -25,7 +25,7 @@ import cats.data.ValidatedNel
 import cats.syntax.validated._
 import controllers.FieldCheckHelpers.FieldErrors
 import forms.validation.{CostItem, CostItemValidator, CostItemValues, FieldError}
-import models.{ApplicationId, ApplicationSectionDetail}
+import models.{ApplicationId, ApplicationSectionDetail, AppSectionNumber}
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller, Result}
 import services.ApplicationOps
@@ -42,7 +42,7 @@ class CostController @Inject()(
   implicit val costItemValuesF = Json.format[CostItemValues]
   implicit val costItemF = Json.format[CostItem]
 
-  def addItem(applicationId: ApplicationId, sectionNumber: Int) = AppSectionAction(applicationId, sectionNumber) { implicit request =>
+  def addItem(applicationId: ApplicationId, sectionNumber: AppSectionNumber) = AppSectionAction(applicationId, sectionNumber) { implicit request =>
     showItemForm(request.appSection, JsObject(List.empty), List.empty)
   }
 
@@ -54,7 +54,7 @@ class CostController @Inject()(
     }
   }
 
-  def editItem(applicationId: ApplicationId, sectionNumber: Int, itemNumber: Int) = AppSectionAction(applicationId, sectionNumber) { request =>
+  def editItem(applicationId: ApplicationId, sectionNumber: AppSectionNumber, itemNumber: Int) = AppSectionAction(applicationId, sectionNumber) { request =>
     val itemO = request.appSection.section.flatMap { s =>
       findItem(s.answers, itemNumber)
     }
@@ -79,7 +79,7 @@ class CostController @Inject()(
     items.find(o => hasItemNumber(o, itemNumber))
   }
 
-  def saveItem(applicationId: ApplicationId, sectionNumber: Int, itemNumber: Int) = AppSectionAction(applicationId, sectionNumber).async(JsonForm.parser) { implicit request =>
+  def saveItem(applicationId: ApplicationId, sectionNumber: AppSectionNumber, itemNumber: Int) = AppSectionAction(applicationId, sectionNumber).async(JsonForm.parser) { implicit request =>
     validateItem(request.body.values) match {
       case Valid(ci) =>
         val itemJson = Json.toJson(ci).as[JsObject] + ("itemNumber" -> JsNumber(itemNumber))
@@ -92,7 +92,7 @@ class CostController @Inject()(
     }
   }
 
-  def createItem(applicationId: ApplicationId, sectionNumber: Int) = AppSectionAction(applicationId, sectionNumber).async(JsonForm.parser) { implicit request =>
+  def createItem(applicationId: ApplicationId, sectionNumber: AppSectionNumber) = AppSectionAction(applicationId, sectionNumber).async(JsonForm.parser) { implicit request =>
     validateItem(request.body.values) match {
       case Valid(ci) => applications.saveItem(request.appSection.id, request.appSection.sectionNumber, JsObject(Seq("item" -> Json.toJson(ci)))).map {
         case Nil => redirectToSectionForm(applicationId, sectionNumber)
@@ -102,7 +102,7 @@ class CostController @Inject()(
     }
   }
 
-  def deleteItem(applicationId: ApplicationId, sectionNumber: Int, itemNumber: Int) = Action.async {
+  def deleteItem(applicationId: ApplicationId, sectionNumber: AppSectionNumber, itemNumber: Int) = Action.async {
     applications.deleteItem(applicationId, sectionNumber, itemNumber).flatMap { _ =>
       // Check if we deleted the last item in the list and, if so, delete the section so
       // it will go back to the Not Started state.

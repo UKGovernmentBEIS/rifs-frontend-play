@@ -1,10 +1,10 @@
-@(backUrl: String, opportunity: Opportunity, sectionNumber: Int, appForm: ApplicationForm)
+@(backUrl: String, opportunity: Opportunity, sectionNumber: OppSectionNumber, appForm: ApplicationForm)
 
     @import eu.timepit.refined.auto._
     @import partials._
 
-@sectionLink(title: String, sectionNum: Int) = {
-    <span class="part-number"> @sectionNum. </span>
+@sectionLink(title: String, sectionNum: OppSectionNumber) = {
+    <span class="part-number"> @sectionNum.num. </span>
 @if(sectionNum == sectionNumber) {
     @title
 } else {
@@ -20,11 +20,11 @@
 }
 
 @nextSection = @{
-    opportunity.description.find(_.sectionNumber == sectionNumber + 1)
+    sectionNumber.next.flatMap(n => opportunity.description.find(_.sectionNumber == n))
 }
 
 @prevSection = @{
-    opportunity.description.find(_.sectionNumber == sectionNumber - 1)
+    sectionNumber.prev.flatMap(n => opportunity.description.find(_.sectionNumber == n))
 }
 
 @currentSection = @{
@@ -77,7 +77,7 @@
             </div>
 
             <article>
-                <h2 class="heading-large">@s.sectionNumber. @s.title</h2>
+                <h2 class="heading-large">@s.sectionNumber.num. @s.title</h2>
                 @renderSectionText(s, appForm)
             </article>
         }

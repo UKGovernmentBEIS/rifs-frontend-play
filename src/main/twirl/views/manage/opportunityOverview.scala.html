@@ -124,7 +124,7 @@ backLink=Some(BackLink("Opportunity library", controllers.manage.routes.Opportun
                             @app.sections.sortBy(_.sectionNumber).map { fs =>
                                 <tr>
                                     <td>
-                                        @fs.sectionNumber. <a id="section-@fs.sectionNumber-link"
+                                        @fs.sectionNumber.num. <a id="section-@fs.sectionNumber-link"
                                                               href="@controllers.manage.routes.OpportunityController.viewQuestions(opportunity.id, fs.sectionNumber)"
                                                             > @fs.title</a>
                                     </td>

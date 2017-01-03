@@ -17,14 +17,20 @@
 
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.collection.NonEmpty
-import eu.timepit.refined.numeric.Positive
+import eu.timepit.refined.numeric.{NonNegative, Positive}
 
 package object models {
   type LongId = Long Refined Positive
 
   type NonEmptyString = String Refined NonEmpty
+  type NonNegativeInt = Int Refined NonNegative
+  type PosInt = Int Refined Positive
 
-  implicit val idTypeOrdering = new Ordering[LongId] {
-    override def compare(x: LongId, y: LongId) = implicitly[Ordering[Long]].compare(x.value, y.value)
+  implicit val longIdOrd = new Ordering[LongId] {
+    override def compare(x: LongId, y: LongId): Int = implicitly[Ordering[Long]].compare(x.value, y.value)
+  }
+
+  implicit val posIntOrd = new Ordering[PosInt] {
+    override def compare(x: PosInt, y: PosInt): Int = implicitly[Ordering[Int]].compare(x.value, y.value)
   }
 }

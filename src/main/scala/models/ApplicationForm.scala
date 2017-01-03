@@ -24,7 +24,7 @@ case class ApplicationFormId(id: LongId)
 
 case class ApplicationFormQuestion(key: String, text: NonEmptyString, description: Option[NonEmptyString], helpText: Option[NonEmptyString])
 
-case class ApplicationFormSection(sectionNumber: Int, title: String, questions: Seq[ApplicationFormQuestion], sectionType: ApplicationFormSectionType, fields: Seq[Field]) {
+case class ApplicationFormSection(sectionNumber: AppSectionNumber, title: String, questions: Seq[ApplicationFormQuestion], sectionType: ApplicationFormSectionType, fields: Seq[Field]) {
   /**
     * Convenience function to turn the sequence of `ApplicationFormQuestions` sent by the backend into a
     * Map of `String -> Question` used by the form templates
@@ -42,7 +42,9 @@ case class ApplicationFormSection(sectionNumber: Int, title: String, questions: 
   }
 }
 
-case class ApplicationForm(id: ApplicationFormId, opportunityId: OpportunityId, sections: Seq[ApplicationFormSection])
+case class ApplicationForm(id: ApplicationFormId, opportunityId: OpportunityId, sections: Seq[ApplicationFormSection]) {
+  def section(num: AppSectionNumber): Option[ApplicationFormSection] = sections.find(_.sectionNumber == num)
+}
 
 sealed trait ApplicationFormSectionType {
   def name: String

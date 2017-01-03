@@ -19,7 +19,7 @@ package actions
 
 import javax.inject.Inject
 
-import models.{Opportunity, OpportunityDescriptionSection, OpportunityId}
+import models.{OppSectionNumber, Opportunity, OpportunityDescriptionSection, OpportunityId}
 import play.api.mvc.Results.NotFound
 import play.api.mvc.{ActionBuilder, Request, Result, WrappedRequest}
 import services.OpportunityOps
@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 case class OppSectionRequest[A](opportunity: Opportunity, section: OpportunityDescriptionSection, request: Request[A]) extends WrappedRequest[A](request)
 
 class OppSectionAction @Inject()(opportunities: OpportunityOps)(implicit ec: ExecutionContext) {
-  def apply(id: OpportunityId, sectionNum: Int): ActionBuilder[OppSectionRequest] =
+  def apply(id: OpportunityId, sectionNum: OppSectionNumber): ActionBuilder[OppSectionRequest] =
     new ActionBuilder[OppSectionRequest] {
       override def invokeBlock[A](request: Request[A], next: (OppSectionRequest[A]) => Future[Result]): Future[Result] = {
         opportunities.byId(id).flatMap {

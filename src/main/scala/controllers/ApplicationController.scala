@@ -45,8 +45,8 @@ class ApplicationController @Inject()(
   def showOrCreateForForm(id: ApplicationFormId) = Action.async {
     applications.getOrCreateForForm(id).map {
       case Some(app) =>
-        app.personalReference.map{_=> redirectToOverview(app.id) }
-                              .getOrElse( Redirect( controllers.routes.ApplicationController.editPersonalRef( app.id ) ) )
+        app.personalReference.map { _ => redirectToOverview(app.id) }
+          .getOrElse(Redirect(controllers.routes.ApplicationController.editPersonalRef(app.id)))
       case None => NotFound
     }
   }
@@ -61,18 +61,18 @@ class ApplicationController @Inject()(
 
   import FieldCheckHelpers._
 
-  def editSectionForm(id: ApplicationId, sectionNumber: Int) = AppSectionAction(id, sectionNumber) { request =>
+  def editSectionForm(id: ApplicationId, sectionNumber: AppSectionNumber) = AppSectionAction(id, sectionNumber) { request =>
     val hints = request.appSection.section.map(s => hinting(s.answers, checksFor(request.appSection.formSection))).getOrElse(List.empty)
     actionHandler.renderSectionForm(request.appSection, noErrors, hints)
   }
 
-  def resetAndEditSection(id: ApplicationId, sectionNumber: Int) = Action.async { request =>
+  def resetAndEditSection(id: ApplicationId, sectionNumber: AppSectionNumber) = Action.async { request =>
     applications.clearSectionCompletedDate(id, sectionNumber).map { _ =>
       Redirect(controllers.routes.ApplicationController.editSectionForm(id, sectionNumber))
     }
   }
 
-  def showSectionForm(id: ApplicationId, sectionNumber: Int) = AppSectionAction(id, sectionNumber) { request =>
+  def showSectionForm(id: ApplicationId, sectionNumber: AppSectionNumber) = AppSectionAction(id, sectionNumber) { request =>
     request.appSection.section match {
       case None =>
         val hints = hinting(JsObject(List.empty), checksFor(request.appSection.formSection))
@@ -87,7 +87,7 @@ class ApplicationController @Inject()(
     }
   }
 
-  def postSection(id: ApplicationId, sectionNumber: Int) = AppSectionAction(id, sectionNumber).async(JsonForm.parser) {
+  def postSection(id: ApplicationId, sectionNumber: AppSectionNumber) = AppSectionAction(id, sectionNumber).async(JsonForm.parser) {
     implicit request =>
       request.body.action match {
         case Complete => actionHandler.doComplete(request.appSection, request.body.values)
@@ -133,26 +133,26 @@ class ApplicationController @Inject()(
   val appRefQuestion = Map(APP_REF_FIELD_NAME -> Question("My application reference"))
 
   def editPersonalRef(id: ApplicationId) = AppDetailAction(id) { request =>
-    val answers = JsObject(Seq(APP_REF_FIELD_NAME -> Json.toJson(request.appDetail.personalReference.getOrElse(""))))
+    val answers = JsObject(Seq(APP_REF_FIELD_NAME -> Json.toJson(request.appDetail.personalReference.map(_.value).getOrElse(""))))
     val hints = hinting(answers, Map(appRefField.name -> appRefField.check))
-    Ok( views.html.personalReferenceForm( appRefField, request.appDetail, appRefQuestion, answers, Nil, hints) )
+    Ok(views.html.personalReferenceForm(appRefField, request.appDetail, appRefQuestion, answers, Nil, hints))
   }
 
-  def savePersonalRef(id: ApplicationId) = AppDetailAction(id).async(JsonForm.parser)  { request =>
+  def savePersonalRef(id: ApplicationId) = AppDetailAction(id).async(JsonForm.parser) { request =>
     request.body.action match {
       case Save => appRefField.check(appRefField.name, Json.toJson(JsonHelpers.flatten(request.body.values).getOrElse(APP_REF_FIELD_NAME, ""))) match {
         case Nil =>
-          applications.updatePersonalReference(request.appDetail.id, JsonHelpers.flatten(request.body.values).getOrElse(APP_REF_FIELD_NAME, "") ).map { _ =>
-            Redirect( controllers.routes.ApplicationController.show(request.appDetail.id) )
+          applications.updatePersonalReference(request.appDetail.id, JsonHelpers.flatten(request.body.values).getOrElse(APP_REF_FIELD_NAME, "")).map { _ =>
+            Redirect(controllers.routes.ApplicationController.show(request.appDetail.id))
           }
         case errs =>
           val hints = hinting(request.body.values, Map(appRefField.name -> appRefField.check))
           Future.successful(
-            Ok( views.html.personalReferenceForm( appRefField, request.appDetail, appRefQuestion, request.body.values, errs, hints) )
+            Ok(views.html.personalReferenceForm(appRefField, request.appDetail, appRefQuestion, request.body.values, errs, hints))
           )
       }
       case _ =>
-        Future.successful( Redirect( controllers.routes.ApplicationController.show(request.appDetail.id) ) )
+        Future.successful(Redirect(controllers.routes.ApplicationController.show(request.appDetail.id)))
     }
 
   }

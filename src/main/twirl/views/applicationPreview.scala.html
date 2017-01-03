@@ -2,15 +2,15 @@
         app: ApplicationDetail,
         sections: Seq[ApplicationSection],
         title: Option[String],
-        answers: Map[Int, Seq[forms.Field]]
+        answers: Map[AppSectionNumber, Seq[forms.Field]]
 )
 
 @import models._
 @import partials._
 @import helpers._
 
-@sectionLink(title: String, sectionNum: Int) = {
-    <span class="part-number">@sectionNum. </span>
+@sectionLink(title: String, sectionNum: AppSectionNumber) = {
+    <span class="part-number">@sectionNum.num. </span>
     <a href="@controllers.routes.ApplicationController.showSectionForm(app.id, sectionNum)">@title</a>
 }
 

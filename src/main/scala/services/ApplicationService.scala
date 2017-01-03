@@ -60,12 +60,12 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     getOpt[Application](url)
   }
 
-  override def saveSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[Unit] = {
+  override def saveSection(id: ApplicationId, sectionNumber: AppSectionNumber, doc: JsObject): Future[Unit] = {
     val url = s"$baseUrl/application/${id.id}/section/$sectionNumber"
     post(url, doc)
   }
 
-  override def completeSection(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors] = {
+  override def completeSection(id: ApplicationId, sectionNumber: AppSectionNumber, doc: JsObject): Future[FieldErrors] = {
     sectionDetail(id, sectionNumber).flatMap {
       case Some(app) =>
         FieldCheckHelpers.check(doc, checksFor(app.formSection)) match {
@@ -89,7 +89,7 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     }
 
 
-  override def saveItem(id: ApplicationId, sectionNumber: Int, doc: JsObject): Future[FieldErrors] = {
+  override def saveItem(id: ApplicationId, sectionNumber: AppSectionNumber, doc: JsObject): Future[FieldErrors] = {
     val item = (doc \ "item").toOption.flatMap(_.validate[JsObject].asOpt).getOrElse(JsObject(Seq()))
     item \ "itemNumber" match {
       case JsDefined(JsNumber(itemNumber)) =>
@@ -101,17 +101,17 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     }
   }
 
-  override def deleteItem(id: ApplicationId, sectionNumber: Int, itemNumber: Int): Future[Unit] = {
+  override def deleteItem(id: ApplicationId, sectionNumber: AppSectionNumber, itemNumber: Int): Future[Unit] = {
     val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/item/$itemNumber"
     delete(url)
   }
 
-  override def getItem[T: Reads](id: ApplicationId, sectionNumber: Int, itemNumber: Int): Future[Option[T]] = {
+  override def getItem[T: Reads](id: ApplicationId, sectionNumber: AppSectionNumber, itemNumber: Int): Future[Option[T]] = {
     val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/item/$itemNumber"
     getOpt[T](url)
   }
 
-  override def getSection(id: ApplicationId, sectionNumber: Int): Future[Option[ApplicationSection]] = {
+  override def getSection(id: ApplicationId, sectionNumber: AppSectionNumber): Future[Option[ApplicationSection]] = {
     val url = s"$baseUrl/application/${id.id}/section/$sectionNumber"
     getOpt[ApplicationSection](url)
   }
@@ -136,7 +136,7 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     getOpt[ApplicationDetail](url)
   }
 
-  override def sectionDetail(id: ApplicationId, sectionNum: Int): Future[Option[ApplicationSectionDetail]] = {
+  override def sectionDetail(id: ApplicationId, sectionNum: AppSectionNumber): Future[Option[ApplicationSectionDetail]] = {
     val url = s"$baseUrl/application/${id.id}/section/$sectionNum/detail"
     getOpt[ApplicationSectionDetail](url)
   }
@@ -146,12 +146,12 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     post(url, "")
   }
 
-  override def deleteSection(id: ApplicationId, sectionNumber: Int): Future[Unit] = {
+  override def deleteSection(id: ApplicationId, sectionNumber: AppSectionNumber): Future[Unit] = {
     val url = s"$baseUrl/application/${id.id}/section/$sectionNumber"
     delete(url)
   }
 
-  override def clearSectionCompletedDate(id: ApplicationId, sectionNumber: Int): Future[Unit] = {
+  override def clearSectionCompletedDate(id: ApplicationId, sectionNumber: AppSectionNumber): Future[Unit] = {
     val url = s"$baseUrl/application/${id.id}/section/$sectionNumber/markNotCompleted"
     put(url, "")
   }

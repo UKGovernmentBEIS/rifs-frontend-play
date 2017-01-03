@@ -33,7 +33,7 @@ trait OpportunityOps {
 
   def saveSummary(opp: OpportunitySummary): Future[Unit]
 
-  def saveDescriptionSectionText(id: OpportunityId, sectionNo: Int, descSect: Option[String]): Future[Unit]
+  def saveDescriptionSectionText(id: OpportunityId, sectionNum: OppSectionNumber, descSect: Option[String]): Future[Unit]
 
   def duplicate(id: OpportunityId): Future[Option[OpportunityId]]
 

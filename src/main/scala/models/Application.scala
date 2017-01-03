@@ -17,6 +17,9 @@
 
 package models
 
+import eu.timepit.refined._
+import eu.timepit.refined.auto._
+import eu.timepit.refined.numeric.Positive
 import org.joda.time.LocalDateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.libs.json.JsObject
@@ -25,17 +28,36 @@ case class ApplicationId(id: LongId)
 
 case class ApplicationSectionId(id: LongId)
 
-case class Application(id: ApplicationId, applicationFormId: ApplicationFormId, personalReference: Option[String])
+case class AppSectionNumber(num: PosInt) {
+  def next: Option[AppSectionNumber] = refineV[Positive](num + 1).fold(
+    _ => None,
+    v => Some(AppSectionNumber(v))
+  )
+
+  def prev: Option[AppSectionNumber] = refineV[Positive](num - 1).fold(
+    _ => None,
+    v => Some(AppSectionNumber(v))
+  )
+}
+
+object AppSectionNumber {
+  implicit val ord = new Ordering[AppSectionNumber] {
+    override def compare(x: AppSectionNumber, y: AppSectionNumber): Int =
+      implicitly[Ordering[Int]].compare(x.num.value, y.num.value)
+  }
+}
+
+case class Application(id: ApplicationId, applicationFormId: ApplicationFormId, personalReference: Option[NonEmptyString])
 
 case class ApplicationDetail(
                               id: ApplicationId,
-                              personalReference: Option[String],
-                              sectionCount: Int,
-                              completedSectionCount: Int,
+                              personalReference: Option[NonEmptyString],
+                              sectionCount: NonNegativeInt,
+                              completedSectionCount: NonNegativeInt,
                               opportunity: OpportunitySummary,
                               applicationForm: ApplicationForm,
                               sections: Seq[ApplicationSection]) {
-  def sectionDetail(sectionNumber: Int): ApplicationSectionDetail =
+  def sectionDetail(sectionNumber: AppSectionNumber): ApplicationSectionDetail =
     ApplicationSectionDetail(
       id,
       sectionCount,
@@ -45,22 +67,24 @@ case class ApplicationDetail(
       applicationForm.sections.find(_.sectionNumber == sectionNumber).get,
       sections.find(_.sectionNumber == sectionNumber)
     )
+
+  def section(num: AppSectionNumber): Option[ApplicationSection] = sections.find(_.sectionNumber == num)
 }
 
 case class ApplicationSectionDetail(
                                      id: ApplicationId,
-                                     sectionCount: Int,
-                                     completedSectionCount: Int,
+                                     sectionCount: NonNegativeInt,
+                                     completedSectionCount: NonNegativeInt,
                                      opportunity: OpportunitySummary,
                                      formSection: ApplicationFormSection,
                                      section: Option[ApplicationSection]
-                                   ){
+                                   ) {
   val sectionNumber = formSection.sectionNumber
 }
 
 case class SubmittedApplicationRef(applicationRef: Long) extends AnyVal
 
-case class ApplicationSection(sectionNumber: Int, answers: JsObject, completedAt: Option[LocalDateTime]) {
+case class ApplicationSection(sectionNumber: AppSectionNumber, answers: JsObject, completedAt: Option[LocalDateTime]) {
   def isComplete: Boolean = completedAt.isDefined
 
   val dtf = DateTimeFormat.forPattern("d MMMM YYYY h:mma")
@@ -71,7 +95,7 @@ case class ApplicationSection(sectionNumber: Int, answers: JsObject, completedAt
   val status = completedAt.map(_ => "Completed").getOrElse("In progress")
 }
 
-case class ApplicationSectionOverview(sectionNumber: Int, completedAt: Option[LocalDateTime], answers: JsObject) {
+case class ApplicationSectionOverview(sectionNumber: AppSectionNumber, completedAt: Option[LocalDateTime], answers: JsObject) {
   def isComplete: Boolean = completedAt.isDefined
 
   val dtf = DateTimeFormat.forPattern("d MMMM YYYY h:mma")

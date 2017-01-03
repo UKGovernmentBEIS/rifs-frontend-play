@@ -2,9 +2,9 @@
 
 @import eu.timepit.refined.auto._
 
-@sectionLink(title: String, sectionNum: Int) = {
+@sectionLink(title: String, sectionNum: OppSectionNumber) = {
     <span class="part-number">
-        @sectionNum.
+        @sectionNum.num.
     </span>
 @if(sectionNum == section.sectionNumber) {
     @title
@@ -22,11 +22,11 @@
 }
 
 @nextSection = @{
-    opportunity.description.find(_.sectionNumber == section.sectionNumber + 1)
+    section.sectionNumber.next.flatMap(n => opportunity.description.find(_.sectionNumber == n))
 }
 
 @prevSection = @{
-    opportunity.description.find(_.sectionNumber == section.sectionNumber - 1)
+    section.sectionNumber.prev.flatMap(n => opportunity.description.find(_.sectionNumber == n))
 }
 
 @currentSection = @{
@@ -94,7 +94,7 @@
             </div>
 
             <article>
-                <h2 class="heading-large">@section.sectionNumber. @section.title</h2>
+                <h2 class="heading-large">@section.sectionNumber.num. @section.title</h2>
                 @if(section.sectionType == OppSectionType.Questions) {
                     @helpers.textForQuestions(appForm)
                 } else {

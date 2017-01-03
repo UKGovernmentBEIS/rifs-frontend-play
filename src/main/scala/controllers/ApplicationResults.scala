@@ -17,17 +17,17 @@
 
 package controllers
 
-import models.ApplicationId
+import models.{ApplicationId, AppSectionNumber}
 import play.api.mvc.Results._
 
 trait ApplicationResults {
 
   def wip(backLink: String) = Redirect(controllers.routes.OpportunityController.wip(backLink))
 
-  def sectionFormCall(applicationId: ApplicationId, sectionNumber: Int) =
+  def sectionFormCall(applicationId: ApplicationId, sectionNumber: AppSectionNumber) =
     controllers.routes.ApplicationController.showSectionForm(applicationId, sectionNumber)
 
-  def redirectToSectionForm(applicationId: ApplicationId, sectionNumber: Int) = Redirect(sectionFormCall(applicationId, sectionNumber))
+  def redirectToSectionForm(applicationId: ApplicationId, sectionNumber: AppSectionNumber) = Redirect(sectionFormCall(applicationId, sectionNumber))
 
   def redirectToOverview(applicationId: ApplicationId) = Redirect(controllers.routes.ApplicationController.show(applicationId))
 

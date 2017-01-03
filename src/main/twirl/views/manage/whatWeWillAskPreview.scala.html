@@ -1,4 +1,4 @@
-@(backUrl: String, opp: Opportunity, sectionNumber: Int, appForm: ApplicationForm)
+@(backUrl: String, opp: Opportunity, sectionNumber: OppSectionNumber, appForm: ApplicationForm)
 
 @import partials._
 
@@ -22,7 +22,7 @@
 
             @currentSection.map { s =>
                 <article>
-                    <h2 class="heading-large">@s.sectionNumber. @s.title</h2>
+                    <h2 class="heading-large">@s.sectionNumber.num. @s.title</h2>
                     <div class="text">
                     @renderSectionText(s, appForm)
                     </div>
