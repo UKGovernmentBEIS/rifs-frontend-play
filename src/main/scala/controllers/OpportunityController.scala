@@ -19,8 +19,9 @@ package controllers
 
 import javax.inject.Inject
 
+import eu.timepit.refined.auto._
 import actions.{OppSectionAction, OpportunityAction}
-import models.OpportunityId
+import models.{AppSectionNumber, OppSectionNumber, OpportunityId}
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, OpportunityOps}
 
@@ -37,11 +38,11 @@ class OpportunityController @Inject()(
     opportunities.getOpenOpportunitySummaries.map { os => Ok(views.html.showOpportunities(os)) }
   }
 
-  def showOpportunity(id: OpportunityId, sectionNumber: Option[Int]) = OpportunityAction(id) { request =>
-    Redirect(controllers.routes.OpportunityController.showOpportunitySection(id, sectionNumber.getOrElse(1)))
+  def showOpportunity(id: OpportunityId, sectionNumber: Option[OppSectionNumber]) = OpportunityAction(id) { request =>
+    Redirect(controllers.routes.OpportunityController.showOpportunitySection(id, sectionNumber.getOrElse(OppSectionNumber(1))))
   }
 
-  def showOpportunitySection(id: OpportunityId, sectionNum: Int) = OppSectionAction(id, sectionNum).async { request =>
+  def showOpportunitySection(id: OpportunityId, sectionNum: OppSectionNumber) = OppSectionAction(id, sectionNum).async { request =>
     appForms.byOpportunityId(id).map {
       case Some(appForm) => Ok(views.html.showOpportunity(appForm, request.opportunity, request.section))
       case None => NotFound

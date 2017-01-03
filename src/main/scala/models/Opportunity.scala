@@ -19,6 +19,9 @@ package models
 
 import enumeratum.EnumEntry.Lowercase
 import enumeratum._
+import eu.timepit.refined.auto._
+import eu.timepit.refined.numeric.Positive
+import eu.timepit.refined.refineV
 import org.joda.time.{DateTime, LocalDate}
 
 sealed trait OppSectionType extends EnumEntry with Lowercase
@@ -32,10 +35,36 @@ object OppSectionType extends Enum[OppSectionType] with PlayJsonEnum[OppSectionT
 
 }
 
+case class OpportunityId(id: LongId)
 
-case class OpportunityId(id: Long) extends AnyVal
+object OpportunityId {
+  implicit val ordering = new Ordering[OpportunityId] {
+    override def compare(x: OpportunityId, y: OpportunityId) = implicitly[Ordering[LongId]].compare(x.id, y.id)
+  }
+}
 
-case class OpportunityDescriptionSection(sectionNumber: Int, title: String, text: Option[String], description: Option[String], helpText: Option[String], sectionType: OppSectionType)
+case class SectionId(id: LongId)
+
+case class OppSectionNumber(num: PosInt) {
+  def next: Option[OppSectionNumber] = refineV[Positive](num + 1).fold(
+    _ => None,
+    v => Some(OppSectionNumber(v))
+  )
+
+  def prev: Option[OppSectionNumber] = refineV[Positive](num - 1).fold(
+    _ => None,
+    v => Some(OppSectionNumber(v))
+  )
+}
+
+object OppSectionNumber {
+  implicit val ord = new Ordering[OppSectionNumber] {
+    override def compare(x: OppSectionNumber, y: OppSectionNumber): Int =
+      implicitly[Ordering[PosInt]].compare(x.num, y.num)
+  }
+}
+
+case class OpportunityDescriptionSection(sectionNumber: OppSectionNumber, title: NonEmptyString, text: Option[NonEmptyString], description: NonEmptyString, helpText: Option[NonEmptyString], sectionType: OppSectionType)
 
 case class OpportunityValue(amount: BigDecimal, unit: String)
 

@@ -21,8 +21,9 @@ import javax.inject.Inject
 
 import actions.OpportunityAction
 import controllers.FieldCheckHelpers
+import eu.timepit.refined.auto._
+import forms.validation.{DateTimeRange, DateTimeRangeValues, FieldError}
 import forms.{DateTimeRangeField, DateValues}
-import forms.validation.{DateTimeRange, DateTimeRangeValues, FieldError, FieldHint}
 import models.{Opportunity, OpportunityId, Question}
 import org.joda.time.LocalDate
 import play.api.libs.json._

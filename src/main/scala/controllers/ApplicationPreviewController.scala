@@ -18,7 +18,7 @@
 package controllers
 
 import javax.inject.Inject
-
+import eu.timepit.refined.auto._
 import actions.AppSectionAction
 import forms.Field
 import forms.validation.CostItem
@@ -40,7 +40,7 @@ class ApplicationPreviewController @Inject()(
 
   implicit val ciReads = Json.reads[CostItem]
 
-  def previewSection(id: ApplicationId, sectionNumber: Int) = AppSectionAction(id, sectionNumber) { request =>
+  def previewSection(id: ApplicationId, sectionNumber: AppSectionNumber) = AppSectionAction(id, sectionNumber) { request =>
     val (backLink, editLink) = request.appSection.section.map(_.isComplete) match {
       case Some(true) =>
         (controllers.routes.ApplicationController.show(request.appSection.id).url,
@@ -67,7 +67,7 @@ class ApplicationPreviewController @Inject()(
     Ok(views.html.listSectionPreview(app, items, answers, backLink, editLink))
   }
 
-  def getFieldMap(form: ApplicationForm): Map[Int, Seq[Field]] = {
+  def getFieldMap(form: ApplicationForm): Map[AppSectionNumber, Seq[Field]] = {
     Map(form.sections.map(sec => sec.sectionNumber -> sec.fields): _*)
   }
 

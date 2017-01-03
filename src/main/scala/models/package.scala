@@ -15,17 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package services
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.collection.NonEmpty
+import eu.timepit.refined.numeric.{NonNegative, Positive}
 
-import org.joda.time.LocalDateTime
-import org.joda.time.format.DateTimeFormat
-import play.api.libs.json._
+package object models {
+  type LongId = Long Refined Positive
 
-import scala.util.{Failure, Success, Try}
+  type NonEmptyString = String Refined NonEmpty
+  type NonNegativeInt = Int Refined NonNegative
+  type PosInt = Int Refined Positive
 
-trait JodaFormats {
+  implicit val longIdOrd = new Ordering[LongId] {
+    override def compare(x: LongId, y: LongId): Int = implicitly[Ordering[Long]].compare(x.value, y.value)
+  }
 
-
-
-
+  implicit val posIntOrd = new Ordering[PosInt] {
+    override def compare(x: PosInt, y: PosInt): Int = implicitly[Ordering[Int]].compare(x.value, y.value)
+  }
 }

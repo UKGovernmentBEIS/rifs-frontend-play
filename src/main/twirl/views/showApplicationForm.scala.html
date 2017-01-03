@@ -1,5 +1,6 @@
 @import models._
 @import partials._
+@import helpers._
 
 @(app: ApplicationDetail, errs: Seq[forms.validation.SectionError])
 
@@ -64,7 +65,7 @@
                         @app.applicationForm.sections.sortBy(_.sectionNumber).map { fs =>
                             <tr>
                                 <td>
-                                    @fs.sectionNumber. <a id="section-@fs.sectionNumber-link" href="@controllers.routes.ApplicationController.showSectionForm(app.id, fs.sectionNumber)"> @fs.title</a>
+                                    @fs.sectionNumber.num. <a id="section-@fs.sectionNumber.num-link" href="@controllers.routes.ApplicationController.showSectionForm(app.id, fs.sectionNumber)"> @fs.title</a>
                                 </td>
                                 <td class="status-column">
                                 @statusText(app, fs.sectionNumber)

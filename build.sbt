@@ -2,6 +2,10 @@ import sbtbuildinfo.BuildInfoPlugin.autoImport._
 
 name := "rifs-frontend-play"
 
+startYear := Some(2016)
+
+organization := "uk.gov.beis.digital"
+
 scalaVersion := "2.11.8"
 
 lazy val `rifs-frontend-play` = (project in file("."))
@@ -13,11 +17,14 @@ lazy val `rifs-frontend-play` = (project in file("."))
 
 git.useGitDescribe := true
 
+scalacOptions ++= Seq("-feature")
+
 routesImport ++= Seq(
   "models._",
   "models.PlayBindings._",
   "controllers._",
-  "com.wellfactored.playbindings.ValueClassUrlBinders._"
+  "com.wellfactored.playbindings.ValueClassUrlBinders._",
+  "controllers.RefinedBinders._"
 )
 
 buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion)
@@ -43,6 +50,8 @@ libraryDependencies ++= Seq(
   "com.wellfactored" %% "play-bindings" % "2.0.0",
   "com.beachape" %% "enumeratum" % "1.5.2",
   "com.beachape" %% "enumeratum-play-json" % "1.5.2",
+  "eu.timepit" %% "refined" % "0.6.1",
+  "com.lunaryorn" %% "play-json-refined" % "0.1",
 
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
   "org.jsoup" % "jsoup" % "1.9.2" % Test

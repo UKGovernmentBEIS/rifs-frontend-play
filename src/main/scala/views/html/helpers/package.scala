@@ -17,8 +17,11 @@
 
 package views.html
 
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.auto._
+import eu.timepit.refined.numeric.Positive
 import forms.{TextAreaField, TextField}
-import models.ApplicationForm
+import models.{ApplicationForm, NonEmptyString}
 import play.twirl.api.Html
 
 package object helpers {
@@ -34,11 +37,19 @@ package object helpers {
     }
     val descriptions = appForm.sections.flatMap { s =>
       s.questions.flatMap { q =>
-        q.description.map(q.key -> _)
+        q.description.map(q.key -> _.value)
       }
     }
 
     views.html.partials.oppQuestionsSection(appForm, Map(constraints: _*), Map(descriptions: _*))
   }
+
+  def formatId(id: Long): String = f"RIFS $id%04d"
+
+  def formatId(id: Long Refined Positive): String = formatId(id.value)
+
+  def splitLines(s: String): Seq[String] = s.split("\n")
+
+  def splitLines(s: Option[NonEmptyString]): Seq[String] = s.map(nes=>splitLines(nes.value)).getOrElse(List[String]())
 
 }

@@ -17,6 +17,8 @@
 
 package views.html
 
+import eu.timepit.refined.auto._
+import eu.timepit.refined.numeric._
 import forms.TextAreaField
 import forms.validation.FieldHint
 import models._
@@ -42,16 +44,16 @@ class EventAudienceFormSpec extends WordSpecLike with Matchers with OptionValues
   }
 
   def generatePage(values: Option[JsObject]): Html = {
-    val section = values.map(vs => ApplicationSection(3, vs, None))
+    val section = values.map(vs => ApplicationSection(AppSectionNumber(3), vs, None))
     val name = "eventAudience"
-    val q = ApplicationFormQuestion(name, "Who is the event's target audience?", Option(""), Option("Help Text"))
-    val fs: ApplicationFormSection = ApplicationFormSection(5, "Event Audience", Seq(q), SectionTypeForm, Seq(TextAreaField(Some("label"), name, 200)))
+    val q = ApplicationFormQuestion(name, "Who is the event's target audience?", None, Option("Help Text"))
+    val fs: ApplicationFormSection = ApplicationFormSection(AppSectionNumber(5), "Event Audience", Seq(q), SectionTypeForm, Seq(TextAreaField(Some("label"), name, 200)))
 
     val app = ApplicationSectionDetail(
-      ApplicationId(1),
+      ApplicationId(1L),
       1,
       1,
-      OpportunitySummary(OpportunityId(1), "Research priorities in health care", new LocalDate(), None, OpportunityValue(0, ""), None, None),
+      OpportunitySummary(OpportunityId(1L), "Research priorities in health care", new LocalDate(), None, OpportunityValue(0, ""), None, None),
       fs,
       None)
 

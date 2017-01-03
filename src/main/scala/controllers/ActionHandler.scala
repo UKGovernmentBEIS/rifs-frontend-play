@@ -105,7 +105,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     } else Future.successful(redisplaySectionForm(app, answers, previewCheckErrs))
   }
 
-  def redirectToPreview(id: ApplicationId, sectionNumber: Int) =
+  def redirectToPreview(id: ApplicationId, sectionNumber: AppSectionNumber) =
     Redirect(routes.ApplicationPreviewController.previewSection(id, sectionNumber))
 
   def renderSectionForm(app: ApplicationSectionDetail,

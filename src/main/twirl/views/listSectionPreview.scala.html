@@ -6,7 +6,7 @@
         editButton: Option[String]
 )
 
-@import partials._
+@import helpers._
 
 @main(s"${app.formSection.title} - RIFS", backLink=Some(BackLink("Return to application overview",controllers.routes.ApplicationController.show(app.id).url)), displayUserName=Some("Experienced Eric")) {
     <div class="grid-row">

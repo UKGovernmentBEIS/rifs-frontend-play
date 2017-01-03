@@ -19,6 +19,7 @@ package controllers
 
 import forms._
 import forms.validation._
+import models.AppSectionNumber
 import play.api.libs.json._
 
 object ApplicationData {
@@ -34,12 +35,13 @@ object ApplicationData {
   implicit val civReads = Json.reads[CostItemValues]
   implicit val ciReads = Json.reads[CostItem]
 
-  def itemChecksFor(sectionNumber: Int): Map[String, FieldCheck] = sectionNumber match {
-    case 6 => Map("item" -> fromValidator(CostItemValidator))
+  def itemChecksFor(sectionNumber: AppSectionNumber): Map[String, FieldCheck] = sectionNumber.num.value match {
+    case
+      6 => Map("item" -> fromValidator(CostItemValidator))
     case _ => Map()
   }
 
-  def itemFieldsFor(sectionNum: Int): Option[Seq[Field]] = sectionNum match {
+  def itemFieldsFor(sectionNum: AppSectionNumber): Option[Seq[Field]] = sectionNum.num.value match {
     case 6 => Some(Seq(CostItemField("item")))
     case _ => None
   }

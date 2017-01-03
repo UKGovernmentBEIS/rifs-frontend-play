@@ -10,29 +10,29 @@ GET         /                                                         controller
 GET         /opportunities                                            controllers.OpportunityController.showOpportunities
 
 GET         /opportunities/guidance/:opportunityId                    controllers.OpportunityController.showGuidancePage(opportunityId:OpportunityId)
-GET         /opportunity/:opportunityId                               controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[Int])
-GET         /opportunity/:id/section/:num                             controllers.OpportunityController.showOpportunitySection(id:OpportunityId, num:Int)
+GET         /opportunity/:opportunityId                               controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[OppSectionNumber])
+GET         /opportunity/:id/section/:num                             controllers.OpportunityController.showOpportunitySection(id:OpportunityId, num:OppSectionNumber)
 
 GET         /application_form/:id/apply                               controllers.ApplicationController.showOrCreateForForm(id: ApplicationFormId)
 
 GET         /application/:id                                          controllers.ApplicationController.show(id: ApplicationId)
 POST        /application/:id                                          controllers.ApplicationController.submit(id: ApplicationId)
 
-GET         /application/:id/section/:num                             controllers.ApplicationController.showSectionForm(id: ApplicationId, num:Int)
-POST        /application/:id/section/:num                             controllers.ApplicationController.postSection(id: ApplicationId, num:Int)
-GET         /application/:id/section/:num/edit                        controllers.ApplicationController.editSectionForm(id: ApplicationId, num:Int)
-POST        /application/:id/section/:num/edit                        controllers.ApplicationController.resetAndEditSection(id: ApplicationId, num:Int)
+GET         /application/:id/section/:num                             controllers.ApplicationController.showSectionForm(id: ApplicationId, num:AppSectionNumber)
+POST        /application/:id/section/:num                             controllers.ApplicationController.postSection(id: ApplicationId, num:AppSectionNumber)
+GET         /application/:id/section/:num/edit                        controllers.ApplicationController.editSectionForm(id: ApplicationId, num:AppSectionNumber)
+POST        /application/:id/section/:num/edit                        controllers.ApplicationController.resetAndEditSection(id: ApplicationId, num:AppSectionNumber)
 GET         /application/:id/personal-ref/edit                        controllers.ApplicationController.editPersonalRef(id: ApplicationId)
 POST        /application/:id/personal-ref                             controllers.ApplicationController.savePersonalRef(id: ApplicationId)
 
-GET         /application/:id/section/:num/preview                     controllers.ApplicationPreviewController.previewSection(id: ApplicationId, num:Int)
+GET         /application/:id/section/:num/preview                     controllers.ApplicationPreviewController.previewSection(id: ApplicationId, num:AppSectionNumber)
 GET         /application/:id/preview                                  controllers.ApplicationPreviewController.applicationPreview(id: ApplicationId)
 
-GET         /application/:id/section/:num/add-item                    controllers.CostController.addItem(id:ApplicationId, num: Int)
-POST        /application/:id/section/:num/item                        controllers.CostController.createItem(id:ApplicationId, num: Int)
-POST        /application/:id/section/:num/item/:itemNum               controllers.CostController.saveItem(id:ApplicationId, num: Int, itemNum: Int)
-GET         /application/:id/section/:num/item/:itemNum/delete        controllers.CostController.deleteItem(id:ApplicationId, num: Int, itemNum: Int)
-GET         /application/:id/section/:num/item/:itemNum/edit          controllers.CostController.editItem(id:ApplicationId, num: Int, itemNum: Int)
+GET         /application/:id/section/:num/add-item                    controllers.CostController.addItem(id:ApplicationId, num: AppSectionNumber)
+POST        /application/:id/section/:num/item                        controllers.CostController.createItem(id:ApplicationId, num: AppSectionNumber)
+POST        /application/:id/section/:num/item/:itemNum               controllers.CostController.saveItem(id:ApplicationId, num: AppSectionNumber, itemNum: Int)
+GET         /application/:id/section/:num/item/:itemNum/delete        controllers.CostController.deleteItem(id:ApplicationId, num: AppSectionNumber, itemNum: Int)
+GET         /application/:id/section/:num/item/:itemNum/edit          controllers.CostController.editItem(id:ApplicationId, num: AppSectionNumber, itemNum: Int)
 
 GET         /reset                                                    controllers.ApplicationController.reset
 GET         /wip                                                      controllers.OpportunityController.wip(backUrl: String)
@@ -41,7 +41,7 @@ GET         /wip                                                      controller
 GET         /manage/opportunity/new                                   controllers.manage.OpportunityController.showNewOpportunityForm
 GET         /manage/opportunity/choose                                controllers.manage.OpportunityController.chooseHowToCreateOpportunity(choice:Option[String])
 GET         /manage/opportunities/library                             controllers.manage.OpportunityController.showOpportunityLibrary
-GET         /manage/opportunity/:id                                   controllers.manage.OpportunityController.showOpportunityPreview(id:OpportunityId, section:Option[Int])
+GET         /manage/opportunity/:id                                   controllers.manage.OpportunityController.showOpportunityPreview(id:OpportunityId, section:Option[OppSectionNumber])
 GET         /manage/opportunities/guidance                            controllers.manage.OpportunityController.showPMGuidancePage(backUrl: String)
 
 GET         /manage/opportunity/:id/deadlines                         controllers.manage.DeadlineController.view(id: OpportunityId)
@@ -54,7 +54,7 @@ POST        /manage/opportunity/:id/title                             controller
 GET         /manage/opportunity/:id/title/edit                        controllers.manage.TitleController.edit(id: OpportunityId)
 GET         /manage/opportunity/:id/title/preview                     controllers.manage.TitleController.preview(id: OpportunityId)
 
-GET         /manage/opportunity/:id/section/:num/questions            controllers.manage.OpportunityController.viewQuestions(id: OpportunityId, num:Int)
+GET         /manage/opportunity/:id/section/:num/questions            controllers.manage.OpportunityController.viewQuestions(id: OpportunityId, num:AppSectionNumber)
 
 
 GET         /manage/opportunity/:id/grantvalue                        controllers.manage.GrantValueController.view(id:OpportunityId)
@@ -62,17 +62,17 @@ POST        /manage/opportunity/:id/grantvalue                        controller
 GET         /manage/opportunity/:id/grantvalue/edit                   controllers.manage.GrantValueController.edit(id:OpportunityId)
 GET         /manage/opportunity/:id/grantvalue/preview                controllers.manage.GrantValueController.preview(id:OpportunityId)
 
-GET         /manage/opportunity/:id/section/:num                      controllers.manage.OppSectionController.view(id:OpportunityId, num:Int)
-POST        /manage/opportunity/:id/section/:num                      controllers.manage.OppSectionController.save(id:OpportunityId, num:Int)
-GET         /manage/opportunity/:id/section/:num/edit                 controllers.manage.OppSectionController.edit(id:OpportunityId, num:Int)
-GET         /manage/opportunity/:id/section/:sectionid/preview        controllers.manage.OppSectionController.preview(id: OpportunityId, sectionid:Int)
+GET         /manage/opportunity/:id/section/:num                      controllers.manage.OppSectionController.view(id:OpportunityId, num:OppSectionNumber)
+POST        /manage/opportunity/:id/section/:num                      controllers.manage.OppSectionController.save(id:OpportunityId, num:OppSectionNumber)
+GET         /manage/opportunity/:id/section/:num/edit                 controllers.manage.OppSectionController.edit(id:OpportunityId, num:OppSectionNumber)
+GET         /manage/opportunity/:id/section/:num/preview              controllers.manage.OppSectionController.preview(id: OpportunityId, num:OppSectionNumber)
 
 GET         /manage/opportunity/:id/overview                          controllers.manage.OpportunityController.showOverviewPage(id:OpportunityId)
 POST        /manage/opportunity/:id/duplicate                         controllers.manage.OpportunityController.duplicate(id:OpportunityId)
 POST        /manage/opportunity/:id/publish                           controllers.manage.OpportunityController.publish(id:OpportunityId)
 
 
-GET         /manage/opportunity/:id/preview                           controllers.manage.OpportunityController.showOpportunityPublishPreview(id: OpportunityId, section:Option[Int])
+GET         /manage/opportunity/:id/preview                           controllers.manage.OpportunityController.showOpportunityPublishPreview(id: OpportunityId, section:Option[OppSectionNumber])
 
 
 # Health check

@@ -1,13 +1,16 @@
-@(backUrl:String, opportunity: Opportunity, sectionNumber: Int, appForm: ApplicationForm)
+@(backUrl: String, opportunity: Opportunity, sectionNumber: OppSectionNumber, appForm: ApplicationForm)
 
-@sectionLink(title: String, sectionNum: Int) = {
-    <span class="part-number"> @sectionNum. </span>
-        @if(sectionNum == sectionNumber) {
-            @title
-        } else {
-            <a href="@controllers.manage.routes.OpportunityController.showOpportunityPreview(opportunity.id, Some(sectionNum))">@title</a>
-        }
-    }
+    @import eu.timepit.refined.auto._
+    @import helpers._
+
+@sectionLink(title: String, sectionNum: OppSectionNumber) = {
+    <span class="part-number"> @sectionNum.num. </span>
+@if(sectionNum == sectionNumber) {
+    @title
+} else {
+    <a href="@controllers.manage.routes.OpportunityController.showOpportunityPreview(opportunity.id, Some(sectionNum))">@title</a>
+}
+}
 
 @titleCols() = @{
     val titles = opportunity.description.sortBy(_.sectionNumber).map(s => (s.title, s.sectionNumber)).zipWithIndex
@@ -18,23 +21,22 @@
 }
 
 @nextSection = @{
-    opportunity.description.find(_.sectionNumber == sectionNumber + 1)
+    sectionNumber.next.flatMap(n => opportunity.description.find(_.sectionNumber == n))
 }
 
 @prevSection = @{
-    opportunity.description.find(_.sectionNumber == sectionNumber - 1)
+    sectionNumber.prev.flatMap(n => opportunity.description.find(_.sectionNumber == n))
 }
 
 @currentSection = @{
     opportunity.description.find(_.sectionNumber == sectionNumber)
 }
 
-@import views.html.partials._
-
-@main(s"Opportunity: ${opportunity.title} - RIFS", backLink=Some(BackLink("Return to opportunity library", controllers.manage.routes.OpportunityController.showOpportunityLibrary().url)), displayUserName=Some("Portfolio Peter")) {
+@main(s"Opportunity: ${opportunity.title} - RIFS", backLink = Some(BackLink("Return to opportunity library", controllers.manage.routes.OpportunityController.showOpportunityLibrary().url)), displayUserName = Some("Portfolio Peter")) {
 
     <div class="rifs-heading-panel">
-        <p>@formatId(opportunity.id.id) <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(opportunity.id).url">Template View</a></p>
+        <p>@formatId(opportunity.id.id) <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(opportunity.id).url">
+            Template View</a></p>
     </div>
     @opportunityPreview(backUrl, opportunity, sectionNumber, appForm)
 }

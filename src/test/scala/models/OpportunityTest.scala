@@ -17,6 +17,8 @@
 
 package models
 
+import eu.timepit.refined.auto._
+import eu.timepit.refined.numeric._
 import org.joda.time.{DateTime, LocalDate}
 import org.scalatest.{Matchers, OptionValues, WordSpecLike}
 
@@ -26,7 +28,7 @@ class OpportunityTest extends WordSpecLike with Matchers with OptionValues {
   val testDateCurrent = LocalDate.now
   val publishedDate: DateTime = DateTime.now.minusMonths(1)
 
-  def opp(startDate: LocalDate, endDate: Option[LocalDate], publishedAt: Option[DateTime]) = Opportunity(OpportunityId(1), "Test opportunity", startDate, endDate, OpportunityValue(2000.00, "spondulix"), publishedAt, None, Seq())
+  def opp(startDate: LocalDate, endDate: Option[LocalDate], publishedAt: Option[DateTime]) = Opportunity(OpportunityId(1L), "Test opportunity", startDate, endDate, OpportunityValue(2000.00, "spondulix"), publishedAt, None, Seq())
 
   "validate" when {
     "Opportunity is published and starts before current date " should {

@@ -1,27 +1,27 @@
 @(
-opp: Opportunity,
-sectionNumber: Int,
-backUrl: Option[String]
+        opp: Opportunity,
+        sectionNumber: OppSectionNumber,
+        backUrl: Option[String]
 )
 
-@import views.html.partials._
+    @import helpers._
 
 @currentSection = @{
-opp.description.find(_.sectionNumber == sectionNumber)
+    opp.description.find(_.sectionNumber == sectionNumber)
 }
 
-@main(s"${opp.title} - RIFS", backLink=Some(BackLink("Opportunity template",controllers.manage.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName=Some("Portfolio Peter")) {
+@main(s"${opp.title} - RIFS", backLink = Some(BackLink("Opportunity template", controllers.manage.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName = Some("Portfolio Peter")) {
     <section>
         <h1 class="heading-xlarge">
             <span class="heading-secondary">@formatId(opp.id.id): @opp.title</span>
+            @currentSection.map(_.title.value)</h1>
 
-            @currentSection.map { s =>
-                @s.title</h1>
-        @s.text.map(_.split("\n\n")).map { ps =>
-            @ps.map { p =>
-                <p class="text preview-text">@p</p>
+        @currentSection.map { s =>
+            @s.text.map(_.value.split("\n\n")).map { ps =>
+                @ps.map { p =>
+                    <p class="text preview-text">@p</p>
+                }
             }
-        }
         }
 
         <div class="rifs-form-buttons">

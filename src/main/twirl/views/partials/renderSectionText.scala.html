@@ -3,7 +3,7 @@
 @if(s.sectionType == OppSectionType.Questions) {
     @helpers.textForQuestions(appForm)
 } else {
-    @s.text.map(_.split("\n\n")).map { ps =>
+    @s.text.map(_.value.split("\n\n")).map { ps =>
         @ps.map { p =>
             <p class="text">@p</p>
         }

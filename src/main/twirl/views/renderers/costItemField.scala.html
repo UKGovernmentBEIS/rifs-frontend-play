@@ -4,6 +4,9 @@
         errs: Seq[forms.validation.FieldError],
         hints: Seq[forms.validation.FieldHint])
 
+@import helpers._
+@import eu.timepit.refined.auto._
+
 @errors = @{
     errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}."))
 }
@@ -27,10 +30,10 @@
 }
 
 @questions.get(field.name).map { q => <p class="question">@q.text</p>
-@q.longDescription.map { desc => @desc.split("\n").map { text => <p>@text</p> } }
+@q.longDescription.map { desc => @splitLines(desc).map { text => <p>@text</p> } }
     <details>
         <summary role="button"><span class="summary">Help with this section</span></summary>
-        <div class="panel panel-border-narrow">@for(line <- q.helpText.getOrElse("").split("\n")) {
+        <div class="panel panel-border-narrow">@for(line <- splitLines(q.helpText)) {
             <p>@line</p>
         }</div>
     </details>

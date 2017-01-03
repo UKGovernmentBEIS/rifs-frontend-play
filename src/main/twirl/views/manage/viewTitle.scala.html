@@ -2,7 +2,7 @@
   opp: Opportunity
 )
 
-@import views.html.partials._
+@import helpers._
 
 @main(s"${opp.title} - RIFS", backLink=Some(BackLink("Opportunity template",controllers.manage.routes.OpportunityController.showOverviewPage(opp.id).url)), displayUserName=Some("Portfolio Peter")) {
     <div class="grid-row">

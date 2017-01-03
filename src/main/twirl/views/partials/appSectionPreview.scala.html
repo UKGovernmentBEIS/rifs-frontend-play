@@ -1,8 +1,15 @@
 @(
-        app: ApplicationSectionDetail,
-        answers: play.api.libs.json.JsObject
+        sectionDetail: ApplicationSectionDetail
 )
-<div>
-    <h2 class="heading-medium">@app.formSection.sectionNumber . @app.formSection.title </h2>
-    @app.formSection.fields.map(_.renderPreview(app.formSection.questionMap, answers))
-</div>
+
+@sectionDetail.section.map { section =>
+    <div>
+        <h2 class="heading-medium">@sectionDetail.formSection.sectionNumber.num. @sectionDetail.formSection.title </h2>
+        @sectionDetail.formSection.fields.map(_.renderPreview(sectionDetail.formSection.questionMap, section.answers))
+    </div>
+}.getOrElse {
+    <div>
+        <p class="heading-medium">@sectionDetail.formSection.sectionNumber.num. @sectionDetail.formSection.title</p>
+        <p class="text">You have not supplied any answers for this section.</p>
+    </div>
+}

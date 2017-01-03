@@ -22,7 +22,7 @@ import javax.inject.Inject
 import actions.OpportunityAction
 import controllers.{FieldCheckHelpers, JsonForm, Preview}
 import forms.TextAreaField
-import models.{OppSectionType, Opportunity, OpportunityId, Question}
+import models.{AppSectionNumber, OppSectionNumber, OppSectionType, Opportunity, OpportunityId, Question}
 import play.api.libs.json._
 import play.api.mvc._
 import services.{ApplicationFormOps, OpportunityOps}
@@ -33,23 +33,23 @@ class OppSectionController @Inject()(appForms: ApplicationFormOps,opportunities:
   val sectionFieldName = "section"
   val sectionField = TextAreaField(None, sectionFieldName, 500)
 
-  def doEdit(opp: Opportunity, sectionNum: Int, initial: JsObject, errs: Seq[forms.validation.FieldError] = Nil) = {
+  def doEdit(opp: Opportunity, sectionNum: OppSectionNumber, initial: JsObject, errs: Seq[forms.validation.FieldError] = Nil) = {
     val hints = FieldCheckHelpers.hinting(initial, Map(sectionFieldName -> sectionField.check))
     opp.description.find(_.sectionNumber == sectionNum) match {
       case Some(section) =>
-        val q = Question(section.description.getOrElse(""), None, section.helpText)
+        val q = Question(section.description, None, section.helpText)
         Ok(views.html.manage.editOppSectionForm(sectionField, opp, section,
           routes.OppSectionController.edit(opp.id, sectionNum).url, Map(sectionFieldName -> q), initial, errs, hints))
       case None => NotFound
     }
   }
 
-  def edit(id: OpportunityId, sectionNum: Int) = OpportunityAction(id).async { request =>
+  def edit(id: OpportunityId, sectionNum: OppSectionNumber) = OpportunityAction(id).async { request =>
     appForms.byOpportunityId(id).map {
       case Some(appForm) =>
         request.opportunity.description.find(_.sectionNumber == sectionNum) match {
           case Some(sect) if sect.sectionType == OppSectionType.Text =>
-            val answers = JsObject(Seq(sectionFieldName -> Json.toJson(sect.text)))
+            val answers = JsObject(Seq(sectionFieldName -> Json.toJson(sect.text.map(_.value))))
             doEdit(request.opportunity, sectionNum, answers)
           case Some(sect) => Ok(views.html.manage.whatWeWillAskPreview(request.uri, request.opportunity, sectionNum, appForm))
           case None => NotFound
@@ -58,7 +58,7 @@ class OppSectionController @Inject()(appForms: ApplicationFormOps,opportunities:
     }
   }
 
-  def save(id: OpportunityId, sectionNum: Int) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
+  def save(id: OpportunityId, sectionNum: OppSectionNumber) = OpportunityAction(id).async(JsonForm.parser) { implicit request =>
     (request.body.values \ sectionFieldName).toOption.map { fValue =>
       sectionField.check(sectionFieldName, fValue) match {
         case Nil =>
@@ -77,7 +77,7 @@ class OppSectionController @Inject()(appForms: ApplicationFormOps,opportunities:
     }.getOrElse(Future.successful(BadRequest))
   }
 
-  def view(id: OpportunityId, sectionNum: Int) = OpportunityAction(id).async { request =>
+  def view(id: OpportunityId, sectionNum: OppSectionNumber) = OpportunityAction(id).async { request =>
     appForms.byOpportunityId(id).map {
       case Some(appForm) => request.opportunity.publishedAt match {
         case Some(_) => Ok(views.html.manage.viewOppSection(request.opportunity, appForm, sectionNum, request.flash.get(PREVIEW_BACK_URL_FLASH)))
@@ -86,7 +86,7 @@ class OppSectionController @Inject()(appForms: ApplicationFormOps,opportunities:
       case None => NotFound
     }
   }
-  def preview(id: OpportunityId, sectionid: Int) = OpportunityAction(id) { request =>
-      Ok(views.html.manage.previewOppSection(request.opportunity, sectionid, request.flash.get(PREVIEW_BACK_URL_FLASH)))
+  def preview(id: OpportunityId, sectionNum: OppSectionNumber) = OpportunityAction(id) { request =>
+      Ok(views.html.manage.previewOppSection(request.opportunity, sectionNum, request.flash.get(PREVIEW_BACK_URL_FLASH)))
   }
 }
