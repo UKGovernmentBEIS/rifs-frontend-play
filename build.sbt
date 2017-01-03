@@ -2,6 +2,10 @@ import sbtbuildinfo.BuildInfoPlugin.autoImport._
 
 name := "rifs-frontend-play"
 
+startYear := Some(2016)
+
+organization := "uk.gov.beis.digital"
+
 scalaVersion := "2.11.8"
 
 lazy val `rifs-frontend-play` = (project in file("."))
