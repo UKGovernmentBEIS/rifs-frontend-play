@@ -44,12 +44,12 @@
                 <nav role="navigation" class="page-navigation" aria-label="Navigation">
                     <ol>
                     @titleCols._1.map { case ((title, sectionNum)) =>
-                    <li id="title-@(sectionNum)"> @sectionLink(title, sectionNum) </li>
+                    <li id="title-@(sectionNum.num)"> @sectionLink(title, sectionNum) </li>
                     }
                     </ol>
                     <ol>
                     @titleCols._2.map { case ((title, sectionNum)) =>
-                    <li id="title-@(sectionNum)"> @sectionLink(title, sectionNum) </li>
+                    <li id="title-@(sectionNum.num)"> @sectionLink(title, sectionNum) </li>
                     }
                     </ol>
                 </nav>

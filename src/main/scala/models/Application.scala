@@ -57,16 +57,17 @@ case class ApplicationDetail(
                               opportunity: OpportunitySummary,
                               applicationForm: ApplicationForm,
                               sections: Seq[ApplicationSection]) {
-  def sectionDetail(sectionNumber: AppSectionNumber): ApplicationSectionDetail =
-    ApplicationSectionDetail(
-      id,
-      sectionCount,
-      completedSectionCount,
-      opportunity,
-      // TODO: remove the naked get
-      applicationForm.sections.find(_.sectionNumber == sectionNumber).get,
-      sections.find(_.sectionNumber == sectionNumber)
-    )
+  def sectionDetail(sectionNumber: AppSectionNumber): Option[ApplicationSectionDetail] =
+    applicationForm.section(sectionNumber).map { formSection =>
+      ApplicationSectionDetail(
+        id,
+        sectionCount,
+        completedSectionCount,
+        opportunity,
+        formSection,
+        section(sectionNumber)
+      )
+    }
 
   def section(num: AppSectionNumber): Option[ApplicationSection] = sections.find(_.sectionNumber == num)
 }
@@ -80,6 +81,7 @@ case class ApplicationSectionDetail(
                                      section: Option[ApplicationSection]
                                    ) {
   val sectionNumber = formSection.sectionNumber
+  lazy val answers = section.map(_.answers).getOrElse(JsObject(Nil))
 }
 
 case class SubmittedApplicationRef(applicationRef: Long) extends AnyVal

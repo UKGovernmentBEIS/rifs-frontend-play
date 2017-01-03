@@ -3,17 +3,11 @@
         answers: Map[AppSectionNumber, Seq[forms.Field]]
 )
 
+@import views.html.partials.appSectionPreview
+
 <article>
     @app.applicationForm.sections.sortBy(_.sectionNumber).map { formSection =>
-        @app.section(formSection.sectionNumber).map { section =>
-            @appSectionPreview(app.sectionDetail(section.sectionNumber), section.answers)
-        }.getOrElse {
-            <div>
-                <p class="heading-medium">@formSection.sectionNumber.num. @formSection.title</p>
-                <p class="text">You have not supplied any answers for this section.</p>
-            </div>
-
-        }
+        @app.sectionDetail(formSection.sectionNumber).map(s => appSectionPreview(s))
     }
 
 <p class="rifs-form-buttons">

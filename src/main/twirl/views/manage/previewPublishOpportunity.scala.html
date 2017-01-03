@@ -1,10 +1,10 @@
 @(backUrl:String, opportunity: Opportunity, sectionNumber: OppSectionNumber, appForm: ApplicationForm)
 
 @import helpers._
-@import eu.timepit.refined.auto._
+@import views.html.manage.opportunityPreview
 
 @sectionLink(title: String, sectionNum: OppSectionNumber) = {
-    <span class="part-number"> @sectionNum. </span>
+    <span class="part-number"> @sectionNum.num. </span>
         @if(sectionNum == sectionNumber) {
             @title
         } else {
