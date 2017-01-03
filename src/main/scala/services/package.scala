@@ -17,8 +17,8 @@
 
 import com.wellfactored.playbindings.ValueClassFormats
 import controllers.RefinedBinders
-import forms.validation.{CostItem, CostItemValues}
-import models.{Application, ApplicationDetail, ApplicationForm, ApplicationFormQuestion, ApplicationFormSection, ApplicationOverview, ApplicationSection, ApplicationSectionDetail, ApplicationSectionOverview, Opportunity, OpportunityDescriptionSection, OpportunityDuration, OpportunitySummary, OpportunityValue, SubmittedApplicationRef}
+import forms.validation._
+import models._
 import org.joda.time.LocalDateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.libs.json._
