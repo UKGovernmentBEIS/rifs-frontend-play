@@ -25,17 +25,7 @@ import scala.util.{Failure, Success, Try}
 
 trait JodaFormats {
 
-  implicit val jodaLocalDateTimeFormat = new Format[LocalDateTime] {
-    val dtf = DateTimeFormat.forPattern("dd MMM yyyy HH:mm:ss")
 
-    override def writes(o: LocalDateTime): JsValue = JsString(dtf.print(o))
 
-    override def reads(json: JsValue): JsResult[LocalDateTime] =
-      implicitly[Reads[JsString]].reads(json).flatMap { js =>
-        Try(dtf.parseLocalDateTime(js.value)) match {
-          case Success(s) => JsSuccess(s)
-          case Failure(t) => JsError(t.getMessage)
-        }
-      }
-  }
+
 }
