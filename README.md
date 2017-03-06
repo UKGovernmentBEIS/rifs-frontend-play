@@ -45,4 +45,4 @@ NOTE: Cucumber/acceptance tests are available in a separate project at: [rifs-te
 
 ### License
 
-[MIT License](LICENSE)
+[GPLv3](LICENSE)
